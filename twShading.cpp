@@ -37,7 +37,6 @@ int main(int, char **)
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
-
     char *vendor = (char *)glGetString( GL_VENDOR );
 	char *renderer = (char *)glGetString( GL_RENDERER );
 	char *version = (char *)glGetString( GL_VERSION );
@@ -55,7 +54,7 @@ int main(int, char **)
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glClearColor(0.5f, 0.7f, 0.8f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

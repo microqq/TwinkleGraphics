@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.6.3 )
-SET(CMAKE_SYSTEM_NAME Linux )
+SET(CMAKE_SYSTEM_NAME Windows )
 
 SET (CMAKE_C_COMPILER             "/usr/bin/clang-8")
 SET (CMAKE_C_FLAGS                "-Wall -std=c11")
