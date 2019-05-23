@@ -15,4 +15,12 @@ target_include_directories(twCommon PUBLIC
 )
 # #CMake Error: Cannot determine link language for target "twCommon"
 # set_target_properties(twCommon PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(twCommon -lglfw -lGL -lGLEW)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    target_link_libraries(twCommon -lglfw -lGL -lGLEW)
+endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    target_link_libraries(twCommon OpenGL32.lib)
+    target_link_libraries(twCommon "E:/Codes/glew-2.1.0/lib/Release/x64/glew32.lib")
+    target_link_libraries(twCommon "E:/Codes/glfw-3.3.bin.WIN64/lib-mingw-w64/libglfw3dll.a")
+endif()

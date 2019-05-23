@@ -24,6 +24,8 @@
 #    define DYNLIB_GETSYM( a, b ) dlsym( a, b )
 #    define DYNLIB_UNLOAD( a ) dlclose( a )
 #elif _WIN32 || _WIN64
+struct HINSTANCE__;
+typedef struct HINSTANCE__* hInstance;
 #    define DYNLIB_HANDLE hInstance
 #    define DYNLIB_LOAD( a ) LoadLibraryEx( a, NULL, 0 ) // we can not use LOAD_WITH_ALTERED_SEARCH_PATH with relative paths
 #    define DYNLIB_GETSYM( a, b ) GetProcAddress( a, b )

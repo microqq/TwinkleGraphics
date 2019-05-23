@@ -8,7 +8,10 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    # FIND_LIBRARY(COMM_LIB comm "D:/Program Files/glfw-3.3.bin.WIN64/lib-mingw-w64" NO_DEFAULT_PATH)
+    # FIND_LIBRARY(RUNTIME_LIB rt "D:/Program Files/glfw-3.3.bin.WIN64/lib-mingw-w64" NO_DEFAULT_PATH)
 endif()
+
 
 # # CTest
 # include(CTest)
