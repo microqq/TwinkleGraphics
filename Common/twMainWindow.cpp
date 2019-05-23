@@ -1,3 +1,5 @@
+
+
 #include "twMainWindow.h"
 
 namespace TwinkleGraphics
@@ -6,12 +8,10 @@ MainWindow::MainWindow(int width, int height)
     : _width(width)
     , _height(height)
 {
-    Initialise();
 }
 
 MainWindow::~MainWindow()
 {
-    Terminate();
 }
 
 void MainWindow::Frame()
@@ -50,10 +50,14 @@ void MainWindow::SetViewport(int8 index, const Rect& rect, uint32 mask, const RG
 
 GLFWMainWindow::GLFWMainWindow(int32 width, int32 height)
     : MainWindow(width, height)
-{}
+{
+    Initialise();
+}
 
 GLFWMainWindow::~GLFWMainWindow()
-{}
+{
+    Terminate();
+}
 
 void GLFWMainWindow::Run()
 {
@@ -110,6 +114,7 @@ void GLFWMainWindow::Initialise()
 void GLFWMainWindow::Terminate()
 {
     glfwTerminate();
+    _window = nullptr;
 }
 
 void GLFWMainWindow::Advance(float64 delta_time)
@@ -119,24 +124,33 @@ void GLFWMainWindow::Advance(float64 delta_time)
 
 void GLFWMainWindow::Render()
 {
-    for(int i = 0; i < _viewport_count; i++)
+    if(_viewport_count > 0)
     {
-        const Viewport& viewport = _viewports[i];
-        glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
-        glClear(viewport.clear_mask);
-        if(viewport.clear_mask & GL_COLOR_BUFFER_BIT != 0)
+        for (int i = 0; i < _viewport_count; i++)
         {
-            const RGBA& color = viewport.clear_color;
-            glClearColor(color.r, color.g, color.b, color.a);
+            const Viewport &viewport = _viewports[i];
+            glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
+            glClear(viewport.clear_mask);
+            if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
+            {
+                const RGBA &color = viewport.clear_color;
+                glClearColor(color.r, color.g, color.b, color.a);
+            }
+            if ((viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
+            {
+                glClearDepth(viewport.clear_depth);
+            }
+            if ((viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
+            {
+                glClearStencil(viewport.clear_stencil);
+            }
         }
-        if(viewport.clear_mask & GL_DEPTH_BUFFER_BIT != 0)
-        {
-            glClearDepth(viewport.clear_depth);
-        }
-        if(viewport.clear_mask & GL_STENCIL_BUFFER_BIT != 0)
-        {
-            glClearStencil(viewport.clear_stencil);
-        }
+    }
+    else
+    {
+        glViewport(0, 0, _width, _height);
+        glClear(GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
     /* Swap front and back buffers */

@@ -14,16 +14,21 @@ endif()
 # include(CTest)
 # enable_testing()
 
-## including path 
-include_directories([AFTER|BEFORE] [SYSTEM] ${PROJECT_SOURCE_DIR}/ThirdParty)
-
-## add executeable 
-add_executable(TwinkleShading ${PROJECT_SOURCE_DIR}/twShading.cpp)
-target_link_libraries(TwinkleShading -lglfw -lGL -lGLEW)
-
-## set output push
+# set output push
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+
+# including path 
+include_directories([AFTER|BEFORE] [SYSTEM] 
+    ${PROJECT_SOURCE_DIR}/ThirdParty 
+    ${PROJECT_SOURCE_DIR}/Common
+    ${PROJECT_SOURCE_DIR}/TwinkleShading
+)
+
+# add subdirectory
+add_subdirectory(Common)
+add_subdirectory(TwinkleShading)
+add_subdirectory(TwinkleRayTracing)
 
 # # CPACK
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})

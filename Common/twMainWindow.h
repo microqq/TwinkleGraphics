@@ -69,7 +69,7 @@ public:
 protected:
     virtual void Initialise() = 0;
     virtual void Terminate() = 0;
-    virtual void Advance(float64 delta_time = 0.0f);
+    virtual void Advance(float64 delta_time = 0.0f) = 0;
     virtual void Render() = 0;
     virtual void HandleEvents() = 0;
 
