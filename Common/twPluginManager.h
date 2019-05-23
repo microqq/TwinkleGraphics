@@ -9,7 +9,6 @@
 
 namespace TwinkleGraphics
 {
-typedef std::string PluginPath;
 typedef std::string PluginName;
 
 class PluginManager;
@@ -22,12 +21,12 @@ public:
     ~PluginManager();
 
     void FindPlugins(std::string& dir);
-    Plugin* GetPlugin(PluginPath& path);
+    Plugin* GetPlugin(PluginName& path);
     void InstallPlugin(Plugin* plugin);
-    void unInstallPlugin(Plugin* plugin);
+    void UnInstallPlugin(Plugin* plugin);
 
 private:
-    std::map<PluginPath, Plugin*> _plugins;
+    std::map<PluginName, Plugin*> _plugins;
 };
 
 }

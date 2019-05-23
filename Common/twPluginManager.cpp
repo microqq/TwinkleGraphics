@@ -21,7 +21,7 @@ void PluginManager::FindPlugins(std::string &dir)
 {
 }
 
-Plugin *PluginManager::GetPlugin(PluginPath &path)
+Plugin *PluginManager::GetPlugin(PluginName &path)
 {
     return nullptr;
 }
@@ -31,7 +31,7 @@ void PluginManager::InstallPlugin(Plugin *plugin)
 
 }
 
-void PluginManager::unInstallPlugin(Plugin *plugin)
+void PluginManager::UnInstallPlugin(Plugin *plugin)
 {
 }
 
