@@ -3,7 +3,7 @@
  * 
  */
 
-#include <filesystem>
+#include <iostream>
 
 #include "twDynLib.h"
 
@@ -19,19 +19,37 @@ DynLibManager::~DynLibManager()
     _dynlibs.clear();
 }
 
-void DynLibManager::Load(std::string &path)
+DynLib *DynLibManager::GetDynLib(std::string &path)
 {
     using MapDynLib = std::map<std::string, DynLib*>;
     MapDynLib::iterator it = _dynlibs.find(path);
     if(it != _dynlibs.end())
     {
-        return;
+        return it->second;
+    }
+
+    return nullptr;
+}
+
+DynLib* DynLibManager::Load(std::string &path)
+{
+    using MapDynLib = std::map<std::string, DynLib*>;
+    MapDynLib::iterator it = _dynlibs.find(path);
+    if(it != _dynlibs.end())
+    {
+        return  nullptr;
     }
 
     DynLib* dynlib = new DynLib(path);
     dynlib->Load();
+    if(!(dynlib->IsLoaded()))
+    {
+        SAFE_DEL(dynlib);
+        return nullptr;
+    }
 
     _dynlibs.insert(MapDynLib::value_type(path, dynlib));
+    return dynlib;
 }
 
 void DynLibManager::Unload(std::string &path)
@@ -65,6 +83,7 @@ DynLib::DynLib(std::string &name)
 
 DynLib::~DynLib()
 {
+    _handle = nullptr;
 }
 
 void DynLib::Load()
@@ -102,7 +121,7 @@ void DynLib::Unload()
         return;
     }
 
-    bool success = DYNLIB_UNLOAD(_handle);
+    bool success = !(DYNLIB_UNLOAD(_handle));
 #ifdef __linux__  
 #elif _WIN32 || _WIN64
 #endif    
@@ -118,4 +137,10 @@ void DynLib::Unload()
 
     _unloaded = true;
 }
+
+void* DynLib::GetSymbol(std::string& symbol)
+{
+    return (void*)DYNLIB_GETSYM(_handle, symbol.c_str());
+}
+
 } // namespace TwinkleGraphics

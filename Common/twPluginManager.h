@@ -20,12 +20,16 @@ public:
     PluginManager(/* args */);
     ~PluginManager();
 
-    void FindPlugins(std::string& dir);
-    Plugin* GetPlugin(PluginName& path);
+    Plugin* LoadPlugin(std::string& path);
+    void UnloadPlugin(std::string& path);
+
+    Plugin* GetPlugin(PluginName& name);
     void InstallPlugin(Plugin* plugin);
     void UnInstallPlugin(Plugin* plugin);
 
 private:
+    typedef std::map<PluginName, Plugin*> MapPlugins;
+
     std::map<PluginName, Plugin*> _plugins;
 };
 

@@ -2,10 +2,10 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 SET(Common_SRCs 
-    ${CMAKE_CURRENT_LIST_DIR}/twPlugin.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twPluginManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twView.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

@@ -18,8 +18,8 @@ endif()
 # enable_testing()
 
 # set output push
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 
 # including path 
 include_directories([AFTER|BEFORE] [SYSTEM] 

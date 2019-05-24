@@ -5,42 +5,61 @@
 namespace TwinkleGraphics
 {
 MainWindow::MainWindow(int width, int height)
-    : _width(width)
+    : _views()
+    , _width(width)
     , _height(height)
+    , _view_count(0)
 {
 }
 
 MainWindow::~MainWindow()
 {
+    for(auto view : _views)
+    { view = nullptr; }
 }
 
-void MainWindow::Frame()
+void MainWindow::AddViews(View **views, int num)
 {
-    Advance(0.0f);
-
-    Render();
-
-    HandleEvents();
+    if(views != nullptr)
+    {
+        for(int i = 0; i < num; i++)
+        {
+            if(views[i] !=  nullptr)
+            {
+                AddView(views[i]);
+            }
+        }        
+    }
 }
 
-void MainWindow::SetViewport(int8 index, const Viewport& viewport)
+void MainWindow::AddView(View *view)
 {
-    if(index >= MAX_VIEWPORT_COUNT)
+    if(view == nullptr 
+        || _view_count == MAX_VIEWPORT_COUNT
+    )
+        return;
+
+    _views[_view_count++] = view;
+}
+
+void MainWindow::SetView(int8 index, const Viewport& viewport)
+{
+    if(index >= _view_count)
     {
         return;
     }
 
-    _viewports[_viewport_count++] = viewport;
+    *(_views[index]) = viewport;
 }
 
-void MainWindow::SetViewport(int8 index, const Rect& rect, uint32 mask, const RGBA& color, float32 depth, float32 stencil)
+void MainWindow::SetView(int8 index, const Rect& rect, uint32 mask, const RGBA& color, float32 depth, float32 stencil)
 {
-    if(index >= MAX_VIEWPORT_COUNT)
+    if(index >= _view_count)
     {
         return;
     }
 
-    Viewport& viewport = _viewports[_viewport_count++];
+    Viewport& viewport =  _views[index]->GetViewport();
     viewport.rect = rect;
     viewport.clear_color = color;
     viewport.clear_depth = depth;
@@ -64,7 +83,23 @@ void GLFWMainWindow::Run()
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
-        Frame();
+        HandleEvents();
+
+        if(_view_count > 0)
+        {
+            for(int i = 0; i < _view_count; i++)
+            {
+                _views[i]->Run();
+            }
+        }
+        else
+        {
+            glViewport(0, 0, _width, _height);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            glClearColor(0.f, 0.0f, 0.0f, 1.0f);
+        }
+
+        glfwSwapBuffers(_window);
     }
 }
 
@@ -115,46 +150,6 @@ void GLFWMainWindow::Terminate()
 {
     glfwTerminate();
     _window = nullptr;
-}
-
-void GLFWMainWindow::Advance(float64 delta_time)
-{
-
-}
-
-void GLFWMainWindow::Render()
-{
-    if(_viewport_count > 0)
-    {
-        for (int i = 0; i < _viewport_count; i++)
-        {
-            const Viewport &viewport = _viewports[i];
-            glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
-            glClear(viewport.clear_mask);
-            if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
-            {
-                const RGBA &color = viewport.clear_color;
-                glClearColor(color.r, color.g, color.b, color.a);
-            }
-            if ((viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
-            {
-                glClearDepth(viewport.clear_depth);
-            }
-            if ((viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
-            {
-                glClearStencil(viewport.clear_stencil);
-            }
-        }
-    }
-    else
-    {
-        glViewport(0, 0, _width, _height);
-        glClear(GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    }
-
-    /* Swap front and back buffers */
-    glfwSwapBuffers(_window);
 }
 
 void GLFWMainWindow::HandleEvents()

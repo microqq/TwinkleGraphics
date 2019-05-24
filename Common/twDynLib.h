@@ -23,7 +23,7 @@
 #    define DYNLIB_LOAD( a ) dlopen( a, RTLD_LAZY | RTLD_GLOBAL)
 #    define DYNLIB_GETSYM( a, b ) dlsym( a, b )
 #    define DYNLIB_UNLOAD( a ) dlclose( a )
-#elif _WIN32 || _WIN64
+#elif defined _WIN32 || _WIN64
 struct HINSTANCE__;
 typedef struct HINSTANCE__* hInstance;
 #    define DYNLIB_HANDLE hInstance
@@ -45,7 +45,8 @@ public:
     DynLibManager();
     ~DynLibManager();
 
-    void Load(std::string& path);
+    DynLib* GetDynLib(std::string& path);
+    DynLib* Load(std::string& path);
     void Unload(std::string& path);
 
 private:
@@ -60,6 +61,7 @@ public:
 
     void Load();
     void Unload();
+    void* GetSymbol(std::string& symbol);
 
     inline const std::string& GetName() { return _name; }
     inline bool IsLoaded() { return _loaded; }
