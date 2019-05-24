@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <exception>
 
 #include "twCommon.h"
 #include "twPluginManager.h"
@@ -14,15 +15,25 @@ int main(int, char **)
 {
     PluginManagerInst pluginMgr;
 
+#ifdef __linux__
     PluginPaths.push_back("Output/libs/twShading/libtwFirstTriangle.so");
-
+#elif defined _WIN32 || _WIN64
+    PluginPaths.push_back("Output/libs/twShading/libtwFirstTriangle.dll");
+#endif
     //create opengl window
     GLFWMainWindow mainWindow;
 
-    GLPlugin* plugin = dynamic_cast<GLPlugin*>(pluginMgr->LoadPlugin(PluginPaths[0]));
-    if(plugin != nullptr && plugin->GetViewsCount() > 0)
+    try
     {
-        mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
+        GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(PluginPaths[0]));
+        if (plugin != nullptr && plugin->GetViewsCount() > 0)
+        {
+            mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
+        }
+    }
+    catch(std::exception e)
+    {
+        throw e;
     }
 
     //main loop

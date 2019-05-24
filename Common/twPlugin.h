@@ -14,7 +14,7 @@ public:
     Plugin(std::string& name)
         : _name(name)
     {}
-    ~Plugin() {}
+    virtual ~Plugin() {}
 
     inline std::string& GetName() { return _name; }
 
@@ -43,7 +43,7 @@ public:
 protected:
     void InstallDefaultView()
     {
-        Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(1.0f, 0.f, 0.f, 1.f));
+        Viewport viewport(Rect(0, 0, 512, 768), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
         _views[0] = new View(viewport);
 
         _views_count = 1;

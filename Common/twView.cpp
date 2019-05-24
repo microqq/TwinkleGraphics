@@ -5,6 +5,7 @@ namespace TwinkleGraphics
 {
 View::View(Viewport &viewport)
     : _viewport(viewport)
+    , _render_routine_func(nullptr)
     , _done(false)
 {
 }
@@ -20,7 +21,7 @@ void View::operator=(const Viewport &viewport)
 
 void View::Run()
 {
-    while(!_done)
+    // while(!_done)
     {
         Frame();
     }
@@ -42,6 +43,8 @@ void View::Render()
 {
     const Viewport &viewport = _viewport;
     glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
+    glScissor(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
+    glEnable(GL_SCISSOR_TEST);
     glClear(viewport.clear_mask);
     if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
     {
@@ -61,6 +64,8 @@ void View::Render()
     {
         _render_routine_func();
     }
+
+    glDisable(GL_SCISSOR_TEST);
 }
 
 void View::HandleEvents()

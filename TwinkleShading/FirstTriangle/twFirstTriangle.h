@@ -8,7 +8,7 @@
 
 namespace TwinkleGraphics
 {
-class FirstTriangle : public GLPlugin
+class __TWExport FirstTriangle : public GLPlugin
 {
 public:
     FirstTriangle(std::string& name);
