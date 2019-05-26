@@ -65,6 +65,8 @@ void View::Render()
         _render_routine_func();
     }
 
+    RenderImplement();
+
     glDisable(GL_SCISSOR_TEST);
 }
 

@@ -13,6 +13,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif()
 
 
+SET(GLEWDIR D:/YYStudio/glew-2.1.0/lib/Release/x64)
+SET(GLFWDIR D:/YYStudio/glfw-3.3.bin.WIN64/lib-mingw-w64)
+
 # # CTest
 # include(CTest)
 # enable_testing()

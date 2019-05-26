@@ -8,7 +8,9 @@
 
 namespace TwinkleGraphics
 {
-class __TWExport FirstTriangle : public GLPlugin
+class TriangleView;
+
+class FirstTriangle : public GLPlugin
 {
 public:
     FirstTriangle(std::string& name);
@@ -18,8 +20,28 @@ public:
     virtual void UnInstall() override;
 
 private:
-
+    void InitTriangleView();
 };
+
+class TriangleView : public View
+{
+public:
+    TriangleView(Viewport& viewport)
+        : View(viewport)
+    {}
+    virtual ~TriangleView()
+    {}
+
+protected:
+    virtual void RenderImplement() override;
+
+
+private:
+    void Initialize();
+    
+    friend class FirstTriangle;
+};
+
 } // namespace TwinkleGraphics
 
 #endif

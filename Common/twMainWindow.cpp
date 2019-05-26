@@ -1,5 +1,4 @@
 
-
 #include "twMainWindow.h"
 
 namespace TwinkleGraphics

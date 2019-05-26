@@ -21,6 +21,6 @@ endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twCommon OpenGL32.lib)
-    target_link_libraries(twCommon "E:/Codes/glew-2.1.0/lib/Release/x64/glew32.lib")
-    target_link_libraries(twCommon "E:/Codes/glfw-3.3.bin.WIN64/lib-mingw-w64/libglfw3dll.a")
+    target_link_libraries(twCommon ${GLEWDIR}/glew32.lib)
+    target_link_libraries(twCommon ${GLFWDIR}/libglfw3dll.a)
 endif()

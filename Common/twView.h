@@ -76,7 +76,15 @@ public:
     virtual void Render();
     virtual void HandleEvents();
 
-private:
+    inline void SetRenderRoutine(RENDER_ROUTINE routine)
+    {
+        _render_routine_func = routine;
+    }
+
+protected:
+    virtual void RenderImplement() {}
+
+protected:
     Viewport _viewport;
     RENDER_ROUTINE _render_routine_func;
 
