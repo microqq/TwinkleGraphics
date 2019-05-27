@@ -2,7 +2,13 @@
 #ifndef TW_VIEW_H
 #define TW_VIEW_H
 
+
+#include <glew/glew.h>
+//include gl after glew
+#include <GL/gl.h>
+
 #include "twCommon.h"
+
 
 namespace TwinkleGraphics
 {

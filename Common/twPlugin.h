@@ -40,20 +40,7 @@ public:
 
     int GetViewsCount() { return _views_count;  }
     View** GetViews() { return _views; }
-
-protected:
-    void InstallDefaultView()
-    {
-        Viewport viewport(Rect(0, 0, 512, 768), 17664U, RGBA(0.0f, 1.f, 1.f, 1.f));
-        _views[0] = new View(viewport);
-
-        // std::cout << viewport.clear_color.r << "\n"
-        //     << viewport.clear_color.g << "\n"
-        //     << viewport.clear_color.b << "\n"
-        //     << viewport.clear_color.a << "\n"; 
-
-        _views_count = 1;
-    }
+    void AddView(View* view) { _views[_views_count++] = view; }
 
 protected:
     View* _views[MAX_VIEWPORT_COUNT];

@@ -35,11 +35,16 @@ public:
 protected:
     virtual void RenderImplement() override;
 
-
 private:
     void Initialize();
+    void Destroy();
     
     friend class FirstTriangle;
+
+private:
+    uint32* _vaos;
+    uint32* _vbos;
+    uint32* _ebos;
 };
 
 } // namespace TwinkleGraphics

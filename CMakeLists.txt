@@ -13,8 +13,13 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif()
 
 
-SET(GLEWDIR D:/YYStudio/glew-2.1.0/lib/Release/x64)
-SET(GLFWDIR D:/YYStudio/glfw-3.3.bin.WIN64/lib-mingw-w64)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    SET(GLEWLIBDIR $ENV{GLEW_LIB_PATH})##D:/YYStudio/glew-2.1.0/lib/Release/x64)
+    SET(GLFWLIBDIR $ENV{GLFW_LIB_PATH})##D:/YYStudio/glfw-3.3.bin.WIN64/lib-mingw-w64)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    # SET(GLEWLIBDIR D:/YYStudio/glew-2.1.0/lib/Release/x64)
+    # SET(GLFWLIBDIR D:/YYStudio/glfw-3.3.bin.WIN64/lib-mingw-w64)
+endif()
 
 # # CTest
 # include(CTest)

@@ -1,4 +1,5 @@
 # Ubuntu 16.04
+# install glew & glfw
 # install clang(all key package)
 # mkdir build & cd build
 # cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../linux.toolchain.cmake ..

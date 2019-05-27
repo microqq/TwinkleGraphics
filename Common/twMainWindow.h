@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "twView.h"
+
 #include <glfw/glfw3.h>
 
 namespace TwinkleGraphics

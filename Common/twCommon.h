@@ -3,12 +3,9 @@
 #ifndef TW_COMMON_H
 #define TW_COMMON_H
 
-#include <glew/glew.h>
-//include gl after glew
-#include <GL/gl.h>
-
 #include <glm/glm.hpp>
 #include "twSingleton.hpp"
+#include "twObject.hpp"
 
 #ifndef MAX_VIEWPORT_COUNT
     #define MAX_VIEWPORT_COUNT 8
@@ -44,6 +41,27 @@ typedef void (*RENDER_ROUTINE)(void);
 
 typedef ivec4 Rect;
 typedef vec4 RGBA;
+
+struct RenderResType
+{
+    enum Type
+    {
+        
+    };
+};
+
+struct RenderResInstance
+{
+    union 
+    {
+        uint64 hash;
+        struct
+        {
+            uint32 id : 32;
+            uint32 type : 32;
+        };        
+    };    
+};
 
 } // namespace TwinkleGraphics
 
