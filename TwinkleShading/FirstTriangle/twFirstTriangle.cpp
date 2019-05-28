@@ -1,6 +1,8 @@
 
 #include <iostream>
 
+#include "twShader.h"
+
 #include "twFirstTriangle.h"
 
 namespace TwinkleGraphics
@@ -21,8 +23,17 @@ void FirstTriangle::Install()
     Viewport viewport(Rect(512, 0, 512, 768), 17664U, RGBA(1.0f, 1.f, 0.f, 1.f));
     TriangleView* view = new TriangleView(viewport);
     view->Initialize();
-
     this->AddView(view);
+
+    ShaderLoadInfo shaders_info[] = {
+        { ShaderType::VERTEX_SHADER, "Assets/Shaders/firstTriangle.vert" },
+        { ShaderType::FRAGMENT_SHADER, "Assets/Shaders/firstTriangle.frag" },
+    };
+
+    ShaderManagerInst shaderMgr;
+    ShaderProgram::Ptr shader_program = shaderMgr->ReadShaders(shaders_info, 2);
+
+    std::cout << "shader_program use count:" << shader_program.use_count() << std::endl;
 }
 
 void FirstTriangle::UnInstall()
@@ -34,7 +45,7 @@ void FirstTriangle::UnInstall()
 
 void TriangleView::RenderImplement()
 {
-    std::cout << "RenderImplement: FirstTriangle." << std::endl;
+    //std::cout << "RenderImplement: FirstTriangle." << std::endl;
 }
 
 void TriangleView::Initialize()

@@ -6,6 +6,8 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twPluginManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twView.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twResource.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twShader.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

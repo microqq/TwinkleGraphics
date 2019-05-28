@@ -6,85 +6,23 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <memory>
 
 #include "twCommon.h"
 
 namespace TwinkleGraphics
 {
 class Resource;
-class ResourceLoader;
+class ResourceReader;
 class ResourceManager;
 typedef Singleton<ResourceManager> ResourceManagerInst;
-
-class ResourceManager
-{
-public:
-    ResourceManager() {}
-    ~ResourceManager() {}
-
-    void RegisterLoader(const char* type, ResourceLoader* loader)
-    {
-        MapLoaders::iterator it = _loaders.find(type);
-        if(it != _loaders.end())
-        {
-            std::cout << "Error: Loader " << type << "already exist." << std::endl; 
-            return;
-        }
-
-        _loaders.insert(MapLoaders::value_type(type, loader));
-    }
-    void UnRegisterLoader(const char* type)
-    {
-        if(FindResourceLoader(type) != nullptr)
-        {
-            _loaders.erase(type);
-        }
-    }
-    void UnRegisterLoader(ResourceLoader* loader)
-    {
-        ResourceLoader* find = FindResourceLoader(loader);
-        if(find == nullptr)
-        {
-            std::cout << "Error: Loader " << loader->GetType() << "already unregistered." << std::endl; 
-            return;
-        }
-
-        _loaders.erase(loader->GetType());
-    }
-    ResourceLoader* FindResourceLoader(const char* type) 
-    {
-        MapLoaders::iterator it = _loaders.find(type);
-        if(it != _loaders.end())
-        {
-            return it->second;
-        }
-
-        std::cout << "Warning: can not find Loader " << type << "." << std::endl; 
-        return nullptr;
-    }
-    ResourceLoader* FindResourceLoader(ResourceLoader* loader)
-    {
-        for(auto l : _loaders)
-        {
-            if(l.second == loader)
-            {
-                return l.second;
-            }
-        }
-
-        std::cout << "Warning: can not find Loader " << loader->GetType() << "." << std::endl; 
-        return nullptr;
-    }
-
-private:
-    typedef std::map<std::string, ResourceLoader*> MapLoaders;
-
-    std::map<std::string, ResourceLoader*> _loaders;
-};
 
 class Resource : public Object
 {
 public:
+    typedef std::shared_ptr<Resource> Ptr;
+    typedef std::weak_ptr<Resource> WeakPtr;
+
     Resource()
         : Object()
     {}
@@ -94,26 +32,114 @@ protected:
     uint32 _hash;
 };
 
-class ResourceLoader
+
+class ReadResult
 {
 public:
-    ResourceLoader(const char* type)
-        : _type(type)
+    enum class Status
     {
-        ResourceManagerInst resMgr;
-        resMgr->RegisterLoader(type, this);
-    }
-    virtual ~ResourceLoader()
-    {
-        ResourceManagerInst resMgr;
-        resMgr->UnRegisterLoader(_type.c_str());
-    }
+        SUCCESS,
+        FAILED
+    };
+
+    ReadResult(Status status)
+    {}
+    ReadResult(Object* obj, Status status)
+    {}
+    ReadResult(Object::Ptr obj, Status status)
+    {}
+    ~ReadResult();
+
+private:
+    Object::Ptr _shared_object;
+    Object* _object;
+    Status _status;
+};
+
+class ResourceReader
+{
+public:
+    ResourceReader(const char* type);
+    virtual ~ResourceReader();
 
     const char* GetType() { return _type.c_str(); }
+    // ReadResult Read();
 
 private:
     std::string _type;
 };
+
+class ResourceManager
+{
+public:
+    ResourceManager() {}
+    ~ResourceManager() {}
+
+    void RegisterReader(const char* type, ResourceReader* reader)
+    {
+        MapLoaders::iterator it = _readers.find(type);
+        if(it != _readers.end())
+        {
+            std::cout << "Error: Loader " << type << "already exist." << std::endl; 
+            return;
+        }
+
+        _readers.insert(MapLoaders::value_type(type, reader));
+    }
+    void UnRegisterReader(const char* type)
+    {
+        ResourceReader* reader = FindResourceReader(type);
+        if(reader != nullptr)
+        {
+            SAFE_DEL(reader);
+            _readers.erase(type);
+        }
+    }
+    void UnRegisterReader(ResourceReader* reader)
+    {
+        ResourceReader* find = FindResourceReader(reader);
+        if(find == nullptr)
+        {
+            std::cout << "Error: Loader " << reader->GetType() << "already unregistered." << std::endl; 
+            return;
+        }
+
+        SAFE_DEL(reader);
+        _readers.erase(reader->GetType());
+    }
+    ResourceReader* FindResourceReader(const char* type) 
+    {
+        MapLoaders::iterator it = _readers.find(type);
+        if(it != _readers.end())
+        {
+            return it->second;
+        }
+
+        std::cout << "Warning: can not find Loader " << type << "." << std::endl; 
+        return nullptr;
+    }
+    ResourceReader* FindResourceReader(ResourceReader* reader)
+    {
+        for(auto l : _readers)
+        {
+            if(l.second == reader)
+            {
+                return l.second;
+            }
+        }
+
+        std::cout << "Warning: can not find Loader " << reader->GetType() << "." << std::endl; 
+        return nullptr;
+    }
+
+
+
+private:
+    typedef std::map<std::string, ResourceReader*> MapLoaders;
+
+    std::map<std::string, ResourceReader*> _readers;
+};
+
 
 } // namespace TwinkleGraphics
 

@@ -12,21 +12,12 @@
 
 namespace TwinkleGraphics
 {
+class Shader;
+class ShaderProgram;
+class ShaderResource;
+class ShaderReader;
 class ShaderManager;
 typedef Singleton<ShaderManager> ShaderManagerInst;
-
-class ShaderManager
-{
-public:
-    ShaderManager();
-    ~ShaderManager();
-
-    Shader* ReadShader(const char* filename);
-    ShaderProgram* ReadShaders(const char** files);
-
-private:
-    ShaderLoader* _shader_loader;
-};
 
 enum class ShaderType
 {
@@ -38,40 +29,91 @@ enum class ShaderType
     COMPUTE_SHADER = GL_COMPUTE_SHADER
 };
 
-class Shader : public Object
+struct ShaderLoadInfo
+{
+    ShaderType type;
+    std::string filename;
+};
+
+
+class Shader final : public Object
 {
 public:
-    Shader();
+    typedef std::shared_ptr<Shader> Ptr;
+    typedef std::weak_ptr<Shader> WeakPtr;
+
+    Shader(ShaderType type);
     virtual ~Shader();
+
+    const RenderResInstance& GetRes() { return _res; }
 
 private:
     RenderResInstance _res;
 };
 
 
-class ShaderProgram : public Object
+class ShaderProgram final : public Object
 {
 public:
+    typedef std::shared_ptr<ShaderProgram> Ptr;
+    typedef std::weak_ptr<ShaderProgram> WeakPtr;
+
     ShaderProgram();
     virtual ~ShaderProgram();
 
-private:
+    const RenderResInstance& GetRes() { return _res; }
 
+private:
     RenderResInstance _res;
 };
 
-class ShaderResource : public Resource
+class ShaderProgramUse
 {
 public:
+    ShaderProgramUse(ShaderProgram::Ptr program)
+    {
+        const RenderResInstance& res = program->GetRes();
+        glUseProgram(res.id);
+    }
+
+    ~ShaderProgramUse()
+    {
+        glUseProgram(0);
+    }
+};
+
+
+class ShaderResource final : public Resource
+{
+public:
+    typedef std::shared_ptr<ShaderResource> Ptr;
+    typedef std::weak_ptr<ShaderResource> WeakPtr;
+
     ShaderResource();
     virtual ~ShaderResource();
 };
 
-class ShaderLoader : public ResourceLoader
+class ShaderReader : public ResourceReader
 {
 public:
-    ShaderLoader(const char* type);
-    virtual ~ShaderLoader();
+    ShaderReader(const char* type);
+    virtual ~ShaderReader();
+
+};
+
+
+class ShaderManager
+{
+public:
+    ShaderManager();
+    ~ShaderManager();
+
+    Shader::Ptr ReadShader(ShaderLoadInfo& shader_info);
+    ShaderProgram::Ptr ReadShaders(ShaderLoadInfo shaders_info[], int num);
+
+private:
+    std::map<uint32, Shader::Ptr> _shaders;
+    std::map<uint32, ShaderProgram::Ptr> _shader_programs;
 };
 
 
