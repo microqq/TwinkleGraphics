@@ -88,6 +88,8 @@ public:
     }
 
 protected:
+    virtual void Initialize() {}
+    virtual void Destroy() {}
     virtual void RenderImplement() {}
 
 protected:

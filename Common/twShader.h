@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <stdio.h>
 
 #include "twCommon.h"
 #include <glew/glew.h>
@@ -31,8 +32,8 @@ enum class ShaderType
 
 struct ShaderReadInfo
 {
-    ShaderType type;
     std::string filename;
+    ShaderType type;
 };
 
 
@@ -45,6 +46,7 @@ public:
     Shader(ShaderType type);
     virtual ~Shader();
 
+    void SetRes(RenderResInstance& res)  {  _res = res; }
     const RenderResInstance& GetRes() { return _res; }
 
 private:
@@ -93,20 +95,90 @@ public:
     virtual ~ShaderResource();
 };
 
-class ShaderReader : public ResourceReader
+class ShaderReader
 {
 public:
     ShaderReader(ShaderReadInfo& read_info);
-    virtual ~ShaderReader();
+    ~ShaderReader();
 
-    virtual ReadResult Read(const char *filename, ReaderOption *option) override
+    template <typename TPtr>
+    ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
+
+    /**
+     * @brief 
+     * 
+     * @tparam  
+     * @param filename 
+     * @param option 
+     * @return ReadResult<Shader::Ptr> 
+     */
+    template<>
+    ReadResult<Shader::Ptr> Read<Shader::Ptr>(const char *filename, ReaderOption *option)
     {
-        
-        return ReadResult();
+        FILE* fp;
+        fp = fopen(filename, "rb");
+        if(fp)
+        {
+            std::cout << "Console Log: ShaderReader open shader file successed " << filename << std::endl;
+
+            Shader::Ptr shared_shader = std::make_shared<Shader>(_read_info.type);
+
+            //read source
+            fseek(fp, 0, SEEK_END);
+            int len = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+
+            GLchar *source = new GLchar[len + 1];
+            fread(source, 1, len, fp);
+            fclose(fp);
+
+            source[len] = 0;
+            const char* const_source = const_cast<const GLchar*>(source);
+
+            RenderResInstance res;
+            res.id = glCreateShader((GLenum)(_read_info.type));
+            // glShaderSource(uint, int, char* const*, int*)
+            glShaderSource(res.id, 1, &const_source, NULL);
+            glCompileShader(res.id);
+
+            //opengl programing guide 8th source code
+            GLint compiled;
+            glGetShaderiv(res.id, GL_COMPILE_STATUS, &compiled);
+            if (!compiled)
+            {
+#ifdef _DEBUG
+                GLsizei len;
+                glGetShaderiv(res.id, GL_INFO_LOG_LENGTH, &len);
+
+                GLchar *log = new GLchar[len + 1];
+                glGetShaderInfoLog(res.id, len, &len, log);
+                std::cerr << "Shader compilation failed: " << log << std::endl;
+                SAFE_DEL_ARR(log);
+#endif /* DEBUG */
+            }
+
+                res.type = (uint32)(_read_info.type);
+                shared_shader->SetRes(res);
+
+                SAFE_DEL_ARR(source);
+
+                return ReadResult<Shader::Ptr>(shared_shader, ReadResult<Shader::Ptr>::Status::SUCCESS);
+            }
+            else
+            {
+                std::cout << "Console Log: ShaderReader open shader file failed " << filename << std::endl;
+
+#ifdef _DEBUG
+            std::cerr << "Error: ShaderReader open shader file failed " << filename << std::endl;
+#endif
+            return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
+        }
+            
+        return ReadResult<Shader::Ptr>();
     }
 
 private:
-    ShaderReaderInfo _read_info;
+    ShaderReadInfo _read_info;
 };
 
 

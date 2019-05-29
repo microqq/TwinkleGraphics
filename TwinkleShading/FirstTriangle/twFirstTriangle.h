@@ -21,6 +21,9 @@ public:
 
 private:
     void InitTriangleView();
+
+private:
+    TriangleView* _view;
 };
 
 class TriangleView : public View
@@ -33,11 +36,9 @@ public:
     {}
 
 protected:
+    virtual void Initialize() override;
+    virtual void Destroy() override;
     virtual void RenderImplement() override;
-
-private:
-    void Initialize();
-    void Destroy();
     
     friend class FirstTriangle;
 

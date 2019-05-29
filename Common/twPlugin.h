@@ -19,8 +19,16 @@ public:
 
     inline std::string& GetName() { return _name; }
 
-    virtual void Install() {}
-    virtual void UnInstall() {}
+    virtual void Install() 
+    {
+        std::cout << "-------------------------------" << "Plugin Install:" 
+            << _name << "-------------------------------" << "\n";
+    }
+    virtual void UnInstall() 
+    {
+        std::cout << "------------------------------" << "Plugin UnInstall:"
+            << _name << "------------------------------" << "\n";
+    }
 protected:
     std::string _name;
 };
@@ -35,12 +43,8 @@ public:
     {}
     virtual ~GLPlugin() {}
 
-    virtual void Install() override {}
-    virtual void UnInstall() override {}
-
-    int GetViewsCount() { return _views_count;  }
+    int GetViewsCount() { return _views_count; }
     View** GetViews() { return _views; }
-    void AddView(View* view) { _views[_views_count++] = view; }
 
 protected:
     View* _views[MAX_VIEWPORT_COUNT];

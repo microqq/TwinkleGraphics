@@ -33,6 +33,12 @@ protected:
 };
 
 
+/**
+ * @brief 
+ * 
+ * @tparam TPtr 
+ */
+template<class TPtr>
 class ReadResult
 {
 public:
@@ -44,17 +50,32 @@ public:
     };
 
     ReadResult(Status status = Status::NONE)
+        : _shared_object(nullptr)
+        , _status(status)
     {}
-    ReadResult(Object *obj, Status status = Status::NONE)
+    ReadResult(TPtr shared_obj, Status status = Status::NONE)
+        : _shared_object(shared_obj)
+        , _status(status)
     {}
-    ReadResult(Object::Ptr obj, Status status = Status::NONE)
+    ReadResult(const ReadResult& copyop)
+        : _shared_object(copyop._shared_object)
+        , _status(copyop._status)
     {}
     ~ReadResult()
     {}
 
+    TPtr GetSharedObject() const { return _shared_object; }
+    Status GetStatus() const { return _status; }
+    ReadResult& operator =(const ReadResult& result) 
+    {
+        _shared_object = result._shared_object;
+        _status = result._status;
+
+        return *this;
+    }
+
 private:
-    Object::Ptr _shared_object;
-    Object* _object;
+    TPtr _shared_object;
     Status _status;
 };
 
@@ -63,21 +84,15 @@ class ReaderOption
 public:
     ReaderOption()
     {}
-    virtual ~ReaderOption()
+    ~ReaderOption()
     {}
 };
 
-class ResourceReader
+enum class ResourceCacheHint
+{      
+};
+class ResourceCache
 {
-public:
-    ResourceReader();
-    virtual ~ResourceReader();
-
-    virtual ReadResult Read(const char *filename, ReaderOption *option) 
-    {
-        return ReadResult();
-    }
-
 };
 
 class ResourceManager
@@ -86,13 +101,31 @@ public:
     ResourceManager() {}
     ~ResourceManager() {}
 
-    template<class R, class... Args>
-    ReadResult Read(const char* filename, ReaderOption* option, Args&&...args)
+    /**
+     * @brief 
+     * 
+     * @tparam R 
+     * @tparam TPtr 
+     * @tparam Args 
+     * @param filename 
+     * @param option 
+     * @param args 
+     * @return ReadResult<TPtr> 
+     */
+    template<class R, class TPtr, class... Args>
+    ReadResult<TPtr> Read(const char* filename, ReaderOption* option, Args&&...args)
     {
+        //get GUID with filename, read from cache
+
+
+        //if not found in cache
         //should get reader from pool. use placement new
         R* r = new R(std::forward<Args>(args)...);
 
-        return r->Read(filename, option);
+        //  http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
+        // error: use 'template' keyword to treat 'Read' as a dependent template name
+        // return r->Read<TPtr>(filename, option);
+        return r->template Read<TPtr>(filename, option);
     }
 
 private:
