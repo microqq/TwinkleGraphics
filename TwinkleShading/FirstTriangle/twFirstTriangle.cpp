@@ -25,7 +25,7 @@ void FirstTriangle::Install()
     view->Initialize();
     this->AddView(view);
 
-    ShaderLoadInfo shaders_info[] = {
+    ShaderReadInfo shaders_info[] = {
         { ShaderType::VERTEX_SHADER, "Assets/Shaders/firstTriangle.vert" },
         { ShaderType::FRAGMENT_SHADER, "Assets/Shaders/firstTriangle.frag" },
     };

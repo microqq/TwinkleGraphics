@@ -6,26 +6,23 @@ namespace TwinkleGraphics
 
 ShaderManager::ShaderManager()
 {
-    ResourceManagerInst resMgr;
-    resMgr->RegisterReader("Shader Loader", new ShaderReader("Shader Loader"));
 }
 
 ShaderManager::~ShaderManager()
 {
-    ResourceManagerInst resMgr;
-    resMgr->UnRegisterReader("Shader Loader");
 }
 
-Shader::Ptr ShaderManager::ReadShader(ShaderLoadInfo& shader_info)
+Shader::Ptr ShaderManager::ReadShader(ShaderReadInfo& shader_info)
 {
     Shader::Ptr shader = std::make_shared<Shader>(shader_info.type);
 
     ResourceManagerInst resMgr;
+    resMgr->Read<ShaderReader>("", new ReaderOption, shader_info);
 
     return shader;
 }
 
-ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderLoadInfo shaders_info[], int num)
+ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderReadInfo shaders_info[], int num)
 {
     //read shader source
     Shader::Ptr shaders[num];
@@ -35,6 +32,10 @@ ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderLoadInfo shaders_info[], int
     }
 
     //compile & link shader
+
+    ShaderProgram::Ptr program = std::make_shared<ShaderProgram>();
+
+    return program;
 }
 
 
@@ -76,8 +77,8 @@ ShaderResource::~ShaderResource()
 
 
 
-ShaderReader::ShaderReader(const char* type)
-    : ResourceReader(type)
+ShaderReader::ShaderReader(ShaderReadInfo& read_info)
+    : ResourceReader()
 {}
 
 ShaderReader::~ShaderReader()

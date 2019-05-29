@@ -38,17 +38,19 @@ class ReadResult
 public:
     enum class Status
     {
+        NONE,
         SUCCESS,
         FAILED
     };
 
-    ReadResult(Status status)
+    ReadResult(Status status = Status::NONE)
     {}
-    ReadResult(Object* obj, Status status)
+    ReadResult(Object *obj, Status status = Status::NONE)
     {}
-    ReadResult(Object::Ptr obj, Status status)
+    ReadResult(Object::Ptr obj, Status status = Status::NONE)
     {}
-    ~ReadResult();
+    ~ReadResult()
+    {}
 
 private:
     Object::Ptr _shared_object;
@@ -56,17 +58,26 @@ private:
     Status _status;
 };
 
+class ReaderOption
+{
+public:
+    ReaderOption()
+    {}
+    virtual ~ReaderOption()
+    {}
+};
+
 class ResourceReader
 {
 public:
-    ResourceReader(const char* type);
+    ResourceReader();
     virtual ~ResourceReader();
 
-    const char* GetType() { return _type.c_str(); }
-    // ReadResult Read();
+    virtual ReadResult Read(const char *filename, ReaderOption *option) 
+    {
+        return ReadResult();
+    }
 
-private:
-    std::string _type;
 };
 
 class ResourceManager
@@ -75,64 +86,14 @@ public:
     ResourceManager() {}
     ~ResourceManager() {}
 
-    void RegisterReader(const char* type, ResourceReader* reader)
+    template<class R, class... Args>
+    ReadResult Read(const char* filename, ReaderOption* option, Args&&...args)
     {
-        MapLoaders::iterator it = _readers.find(type);
-        if(it != _readers.end())
-        {
-            std::cout << "Error: Loader " << type << "already exist." << std::endl; 
-            return;
-        }
+        //should get reader from pool. use placement new
+        R* r = new R(std::forward<Args>(args)...);
 
-        _readers.insert(MapLoaders::value_type(type, reader));
+        return r->Read(filename, option);
     }
-    void UnRegisterReader(const char* type)
-    {
-        ResourceReader* reader = FindResourceReader(type);
-        if(reader != nullptr)
-        {
-            SAFE_DEL(reader);
-            _readers.erase(type);
-        }
-    }
-    void UnRegisterReader(ResourceReader* reader)
-    {
-        ResourceReader* find = FindResourceReader(reader);
-        if(find == nullptr)
-        {
-            std::cout << "Error: Loader " << reader->GetType() << "already unregistered." << std::endl; 
-            return;
-        }
-
-        SAFE_DEL(reader);
-        _readers.erase(reader->GetType());
-    }
-    ResourceReader* FindResourceReader(const char* type) 
-    {
-        MapLoaders::iterator it = _readers.find(type);
-        if(it != _readers.end())
-        {
-            return it->second;
-        }
-
-        std::cout << "Warning: can not find Loader " << type << "." << std::endl; 
-        return nullptr;
-    }
-    ResourceReader* FindResourceReader(ResourceReader* reader)
-    {
-        for(auto l : _readers)
-        {
-            if(l.second == reader)
-            {
-                return l.second;
-            }
-        }
-
-        std::cout << "Warning: can not find Loader " << reader->GetType() << "." << std::endl; 
-        return nullptr;
-    }
-
-
 
 private:
     typedef std::map<std::string, ResourceReader*> MapLoaders;

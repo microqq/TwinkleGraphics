@@ -29,7 +29,7 @@ enum class ShaderType
     COMPUTE_SHADER = GL_COMPUTE_SHADER
 };
 
-struct ShaderLoadInfo
+struct ShaderReadInfo
 {
     ShaderType type;
     std::string filename;
@@ -96,9 +96,17 @@ public:
 class ShaderReader : public ResourceReader
 {
 public:
-    ShaderReader(const char* type);
+    ShaderReader(ShaderReadInfo& read_info);
     virtual ~ShaderReader();
 
+    virtual ReadResult Read(const char *filename, ReaderOption *option) override
+    {
+        
+        return ReadResult();
+    }
+
+private:
+    ShaderReaderInfo _read_info;
 };
 
 
@@ -108,8 +116,8 @@ public:
     ShaderManager();
     ~ShaderManager();
 
-    Shader::Ptr ReadShader(ShaderLoadInfo& shader_info);
-    ShaderProgram::Ptr ReadShaders(ShaderLoadInfo shaders_info[], int num);
+    Shader::Ptr ReadShader(ShaderReadInfo& shader_info);
+    ShaderProgram::Ptr ReadShaders(ShaderReadInfo shaders_info[], int num);
 
 private:
     std::map<uint32, Shader::Ptr> _shaders;
