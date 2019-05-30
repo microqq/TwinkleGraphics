@@ -5,7 +5,6 @@ namespace TwinkleGraphics
 {
 View::View(Viewport &viewport)
     : _viewport(viewport)
-    , _render_routine_func(nullptr)
     , _done(false)
 {
 }
@@ -14,9 +13,18 @@ View::~View()
 {
 }
 
-void View::operator=(const Viewport &viewport)
+View& View::operator=(const Viewport &viewport)
 {
     _viewport = viewport;
+    return *this;
+}
+
+View &View::operator=(const View &view)
+{
+    _viewport = view._viewport;
+    _done = view._done;
+
+    return *this;
 }
 
 void View::Run()
@@ -60,12 +68,7 @@ void View::Render()
         glClearStencil(viewport.clear_stencil);
     }
 
-    if(_render_routine_func != nullptr)
-    {
-        _render_routine_func();
-    }
-
-    RenderImplement();
+    RenderImpl();
 
     glDisable(GL_SCISSOR_TEST);
 }

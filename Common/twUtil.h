@@ -8,9 +8,17 @@
 namespace TwinkleGraphics
 {
 
-uint32 LoadShader(const char* file);
-uint32 LoadShaders();
+float32* CreateTriangle()
+{
+    float32* vertices = new float32[3*3];
 
+    return vertices;
+}
+
+float32* CreateSphere()
+{
+    
+}
 
 } // namespace TwinkleGraphics
 

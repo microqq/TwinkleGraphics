@@ -4,6 +4,7 @@
 #define TW_COMMON_H
 
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include "twSingleton.hpp"
 #include "twObject.hpp"
 

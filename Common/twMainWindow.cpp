@@ -41,31 +41,6 @@ void MainWindow::AddView(View *view)
     _views[_view_count++] = view;
 }
 
-void MainWindow::SetView(int8 index, const Viewport& viewport)
-{
-    if(index >= _view_count)
-    {
-        return;
-    }
-
-    *(_views[index]) = viewport;
-}
-
-void MainWindow::SetView(int8 index, const Rect& rect, uint32 mask, const RGBA& color, float32 depth, float32 stencil)
-{
-    if(index >= _view_count)
-    {
-        return;
-    }
-
-    Viewport& viewport =  _views[index]->GetViewport();
-    viewport.rect = rect;
-    viewport.clear_color = color;
-    viewport.clear_depth = depth;
-    viewport.clear_stencil = stencil;
-    viewport.clear_mask = mask;
-}
-
 GLFWMainWindow::GLFWMainWindow(int32 width, int32 height)
     : MainWindow(width, height)
 {
@@ -111,7 +86,7 @@ void GLFWMainWindow::Initialise()
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     /* Create a windowed mode window and its OpenGL context */
     _window = glfwCreateWindow(1024, 768, "Twinkle Shading", NULL, NULL);

@@ -1,8 +1,6 @@
 
 #include <iostream>
 
-#include "twShader.h"
-
 #include "twFirstTriangle.h"
 
 namespace TwinkleGraphics
@@ -22,7 +20,7 @@ void FirstTriangle::Install()
     Plugin::Install();
 
     // Initilize view
-    Viewport viewport(Rect(512, 0, 512, 768), 17664U, RGBA(1.0f, 1.f, 0.f, 1.f));
+    Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
     _view = new TriangleView(viewport);
     _view->Initialize();
 
@@ -41,11 +39,6 @@ void FirstTriangle::UnInstall()
 
 void TriangleView::Initialize()
 {
-    //create vao
-    _vaos = new uint32[1];
-    glGenVertexArrays(1, _vaos);
-    glBindVertexArray(_vaos[0]);
-
     //create triangle vertices & elements(indices)
     float32 vertices[3][3] = {
         {-1.0f, -1.0f, 0.0f},
@@ -56,43 +49,91 @@ void TriangleView::Initialize()
         0, 1, 2
     };
 
-    //create vbo & ebo
+    //create vertex buffer object
     _vbos = new uint32[1];
     glGenBuffers(1, _vbos);
     _ebos = new uint32[1];
     glGenBuffers(1, _ebos);
 
-    //bind vertex array buffer, bind buffer data
-    glBindBuffer(GL_ARRAY_BUFFER, _vbos[0]);
-    glBufferData(GL_ARRAY_BUFFER, 36, vertices, GL_DYNAMIC_DRAW);
-
     //bind element array buffer, bind buffer data 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12, elements, GL_DYNAMIC_DRAW);    
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12, elements, GL_STATIC_DRAW);
 
-    //vertex attribute layout
+    //create vertex array object
+    _vaos = new uint32[1];
+    glGenVertexArrays(1, _vaos);
+    glBindVertexArray(_vaos[0]);
 
+    //bind vertex array buffer, bind buffer data
+    glBindBuffer(GL_ARRAY_BUFFER, _vbos[0]);
+    glBufferData(GL_ARRAY_BUFFER, 36, vertices, GL_STATIC_DRAW);
 
+    //vertex attribute layout setting
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(0);
+ 
     //create shader
     ShaderReadInfo shaders_info[] = {
         {std::string("Assets/Shaders/first_triangle.vert"), ShaderType::VERTEX_SHADER},
         {std::string("Assets/Shaders/first_triangle.frag"), ShaderType::FRAGMENT_SHADER}};
 
     ShaderManagerInst shaderMgr;
-    ShaderProgram::Ptr shader_program = shaderMgr->ReadShaders(shaders_info, 2);
+    _program = shaderMgr->ReadShaders(shaders_info, 2);
 
-    //initialize camera
+    //camera view setting: frustum and its position, orientation 
+    glm::vec3 eye(0.0f, 0.0f, 10.0f);
+    glm::vec3 up(0.0f, 1.0f, 0.0f);
+    glm::vec3 center(0.0f, 0.0f, 0.0f);
+    _view_mat = glm::lookAtRH(eye, center, up);
 
+    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 100.0f);
+
+    //model matrix setting
+    _model_mat = glm::mat4(1.0f);
+    //scale model
+    _model_mat = glm::scale(_model_mat, glm::vec3(0.5f, 0.5f, 0.5f));
+
+    //get shader uniform location
+    _model_mat_loc = glGetUniformLocation(_program->GetRes().id, "model");
+    _view_mat_loc = glGetUniformLocation(_program->GetRes().id, "view");
+    _projection_mat_loc = glGetUniformLocation(_program->GetRes().id, "projection");
 }
 
-void TriangleView::RenderImplement()
+void TriangleView::RenderImpl()
 {
-    //std::cout << "RenderImplement: FirstTriangle." << std::endl;
+    //render state setting
+    glDisable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_FRONT);
+    glDisable(GL_DEPTH_TEST);
+
+    //bind shader program
+    ShaderProgramUse useProgram(_program);
+
+    //shader uniform setting
+    glUniformMatrix4fv(_model_mat_loc, 1, GL_FALSE, glm::value_ptr(_model_mat));
+    glUniformMatrix4fv(_view_mat_loc, 1, GL_FALSE, glm::value_ptr(_view_mat));
+    glUniformMatrix4fv(_projection_mat_loc, 1, GL_FALSE, glm::value_ptr(_projection_mat));
+
+    //draw command use vertex array object
+    glBindVertexArray(_vaos[0]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[0]);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
 }
 
 void TriangleView::Destroy()
 {
+    //unbind program
+    glUseProgram(0);
+
+    //unbind vao/ebo
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     //Delete buffers
+    glDeleteVertexArrays(1, _vaos);
+    glDeleteBuffers(1, _vbos);
+    glDeleteBuffers(1, _ebos);
 }
 
 } // namespace TwinkleGraphics

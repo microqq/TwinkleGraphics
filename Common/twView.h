@@ -71,10 +71,11 @@ public:
     View(Viewport& viewport);
     ~View();
 
-    inline Viewport& GetViewport() 
+    const Viewport& GetViewport() 
     { return _viewport; }
 
-    void operator = (const Viewport& viewport);
+    View& operator = (const Viewport& viewport);
+    View& operator = (const View& view);
 
     virtual void Run();
     virtual void Frame();
@@ -82,19 +83,13 @@ public:
     virtual void Render();
     virtual void HandleEvents();
 
-    inline void SetRenderRoutine(RENDER_ROUTINE routine)
-    {
-        _render_routine_func = routine;
-    }
-
 protected:
     virtual void Initialize() {}
     virtual void Destroy() {}
-    virtual void RenderImplement() {}
+    virtual void RenderImpl() {}
 
 protected:
     Viewport _viewport;
-    RENDER_ROUTINE _render_routine_func;
 
     bool _done;
 };
