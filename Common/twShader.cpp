@@ -81,6 +81,7 @@ Shader::Shader(ShaderType type)
 
 Shader::~Shader()
 {
+    std::cout<< "Shader " << _res.id << " deconstruct.\n";
 }
 
 
@@ -98,6 +99,7 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
+    std::cout<< "Shader Program " << _res.id << " deconstruct.\n";
 }
 
 
@@ -167,6 +169,8 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
         glShaderSource(res.id, 1, &const_source, NULL);
         glCompileShader(res.id);
 
+        SAFE_DEL_ARR(source);
+
         //opengl programing guide 8th source code
         GLint compiled;
         glGetShaderiv(res.id, GL_COMPILE_STATUS, &compiled);
@@ -189,8 +193,6 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
 
         res.type = (uint32)(_read_info.type);
         shared_shader->SetRes(res);
-
-        SAFE_DEL_ARR(source);
 
         return ReadResult<Shader::Ptr>(shared_shader, ReadResult<Shader::Ptr>::Status::SUCCESS);
     }

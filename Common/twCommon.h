@@ -43,14 +43,6 @@ typedef void (*RENDER_ROUTINE)(void);
 typedef ivec4 Rect;
 typedef vec4 RGBA;
 
-struct RenderResType
-{
-    enum Type
-    {
-        
-    };
-};
-
 struct RenderResInstance
 {
     union 

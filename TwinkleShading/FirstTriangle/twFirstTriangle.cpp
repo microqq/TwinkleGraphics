@@ -103,8 +103,6 @@ void TriangleView::RenderImpl()
 {
     //render state setting
     glDisable(GL_CULL_FACE);
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_FRONT);
     glDisable(GL_DEPTH_TEST);
 
     //bind shader program
