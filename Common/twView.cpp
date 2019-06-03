@@ -29,14 +29,6 @@ View &View::operator=(const View &view)
 
 void View::Run()
 {
-    // while(!_done)
-    {
-        Frame();
-    }
-}
-
-void View::Frame()
-{
     Advance(0.0f);
     HandleEvents();
     Render();
@@ -53,6 +45,7 @@ void View::Render()
     glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
     glScissor(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
     glEnable(GL_SCISSOR_TEST);
+    
     glClear(viewport.clear_mask);
     if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
     {

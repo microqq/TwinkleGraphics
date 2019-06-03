@@ -40,6 +40,7 @@ include_directories([AFTER|BEFORE] [SYSTEM]
 add_subdirectory(Common)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
+add_subdirectory(ThirdParty/imgui)
 
 # # CPACK
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})

@@ -18,12 +18,26 @@ public:
     typedef std::shared_ptr<Mesh> Ptr;
     typedef std::weak_ptr<Mesh> WeakPtr;
 
-    static Ptr CreateQuadMesh(float32 x, float y);
+    static Ptr CreateQuadMesh(float32 x, float32 y);
     static Ptr CreateCubeMesh(float32 size);
-    static Ptr CreateShpereMesh();
+    static Ptr CreateSphereMesh();
 
     Mesh();
     virtual ~Mesh();
+
+private:
+
+};
+
+class SubMesh : public Object
+{
+public:
+    SubMesh();
+    virtual ~SubMesh();
+
+private:
+
+    friend class Mesh;
 };
 
 } // namespace TwinkleGraphics

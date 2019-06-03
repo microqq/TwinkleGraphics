@@ -43,9 +43,11 @@ public:
     typedef std::shared_ptr<Shader> Ptr;
     typedef std::weak_ptr<Shader> WeakPtr;
 
-    Shader(ShaderType type);
+    Shader(ShaderType type, const char* source);
+    Shader(const Shader&);
     virtual ~Shader();
 
+    bool Compile();
     void SetRes(RenderResInstance& res)  {  _res = res; }
     const RenderResInstance& GetRes() { return _res; }
 
@@ -65,6 +67,8 @@ public:
     ShaderProgram();
     virtual ~ShaderProgram();
 
+    bool Link(uint32 shaders[], int num);
+    void SetRes(RenderResInstance& res)  {  _res = res; }
     const RenderResInstance& GetRes() { return _res; }
 
 private:

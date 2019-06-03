@@ -4,6 +4,7 @@
 #define TW_MainWINDOW_H
 
 #include <iostream>
+#include <vector>
 
 #include "twView.h"
 
@@ -18,8 +19,10 @@ public:
     MainWindow(int32 width = 800, int32 height = 640);
     virtual ~MainWindow();
 
-    virtual void AddViews(View** views, int num);
-    virtual void AddView(View* view);
+    void AddViews(View** views, int num);
+    void AddView(View* view);
+    void RemoveView(View* view);
+
     virtual void Run() = 0;
 
 protected:
@@ -42,6 +45,7 @@ public:
     GLFWMainWindow(int32 width = 800, int32 height = 640);
     virtual ~GLFWMainWindow();
 
+    void AddGUIFunc(IMGUI_FUNC func);
     virtual void Run() override;
 
 protected:
@@ -49,7 +53,9 @@ protected:
     virtual void Terminate() override;
     virtual void HandleEvents() override;
 
+
 private:
+    std::vector<IMGUI_FUNC>  _imgui_funcs;
     GLFWwindow* _window;
 };
 } // namespace TwinkleGraphics

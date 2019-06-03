@@ -37,6 +37,7 @@ using namespace glm;
 class Plugin;
 typedef Plugin* (*INSTALL_PLUGIN_FUNC)(void);
 typedef void (*UNINSTALL_PLUGIN_FUNC)(void);
+typedef void (*IMGUI_FUNC)(void);
 
 typedef void (*RENDER_ROUTINE)(void);
 

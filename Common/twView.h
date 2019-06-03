@@ -77,16 +77,19 @@ public:
     View& operator = (const Viewport& viewport);
     View& operator = (const View& view);
 
-    virtual void Run();
-    virtual void Frame();
-    virtual void Advance(float64 delta_time);
-    virtual void Render();
-    virtual void HandleEvents();
+    void Run();
+    void OnViewGUI() { this->OnGUI(); }
 
 protected:
     virtual void Initialize() {}
-    virtual void Destroy() {}
+    virtual void Advance(float64 delta_time);
+    virtual void HandleEvents();
     virtual void RenderImpl() {}
+    virtual void Destroy() {}
+    virtual void OnGUI() {}
+
+private:
+    void Render();
 
 protected:
     Viewport _viewport;

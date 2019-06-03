@@ -1,4 +1,8 @@
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "twMainWindow.h"
 
 namespace TwinkleGraphics
@@ -38,7 +42,28 @@ void MainWindow::AddView(View *view)
     )
         return;
 
-    _views[_view_count++] = view;
+    for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+    {
+        if(_views[i] == nullptr)
+        {
+            _views[i] = view;
+            ++_view_count;
+            return;
+        }
+    }
+}
+
+void MainWindow::RemoveView(View* view)
+{
+    for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+    {
+        if (_views[i] != nullptr &&_views[i] == view)
+        {
+            _views[i] = nullptr;
+            --_view_count;
+            return;
+        }
+    }
 }
 
 GLFWMainWindow::GLFWMainWindow(int32 width, int32 height)
@@ -52,6 +77,11 @@ GLFWMainWindow::~GLFWMainWindow()
     Terminate();
 }
 
+void GLFWMainWindow::AddGUIFunc(IMGUI_FUNC func)
+{
+    _imgui_funcs.push_back(func);
+}
+
 void GLFWMainWindow::Run()
 {
     /* Loop until the user closes the window */
@@ -59,19 +89,41 @@ void GLFWMainWindow::Run()
     {
         HandleEvents();
 
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        for(int i = 0, n = _imgui_funcs.size(); i < n; i++)
+        {
+            if(_imgui_funcs[i] != nullptr)
+                _imgui_funcs[i]();
+        }
+
         if(_view_count > 0)
         {
+            for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+            {
+                if(_views[i] != nullptr)
+                    _views[i]->OnViewGUI();
+            }
+
+            ImGui::Render();
             for(int i = 0; i < _view_count; i++)
             {
-                _views[i]->Run();
+                if(_views[i] != nullptr)
+                    _views[i]->Run();
             }
         }
         else
         {
+            ImGui::Render();
             glViewport(0, 0, _width, _height);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glClearColor(0.f, 0.0f, 0.0f, 1.0f);
         }
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(_window);
     }
@@ -107,9 +159,25 @@ void GLFWMainWindow::Initialise()
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
-    char *vendor = (char *)glGetString( GL_VENDOR );
-	char *renderer = (char *)glGetString( GL_RENDERER );
-	char *version = (char *)glGetString( GL_VERSION );
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(_window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    char *vendor = (char *)glGetString(GL_VENDOR);
+    char *renderer = (char *)glGetString(GL_RENDERER);
+    char *version = (char *)glGetString(GL_VERSION);
 
     std::cout << "Vendor:" << vendor <<std::endl;
     std::cout << "Render:" << renderer <<std::endl;
@@ -122,6 +190,12 @@ void GLFWMainWindow::Initialise()
 
 void GLFWMainWindow::Terminate()
 {
+    // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(_window);
     glfwTerminate();
     _window = nullptr;
 }

@@ -3,6 +3,8 @@
 #include <vector>
 #include <exception>
 
+#include "imgui.h"
+
 #include "twCommon.h"
 #include "twPluginManager.h"
 #include "twMainWindow.h"
@@ -10,6 +12,8 @@
 using namespace TwinkleGraphics;
 
 static std::vector<std::string> PluginPaths;
+
+void LoadPluginsGUI();
 
 int main(int, char **)
 {
@@ -22,6 +26,9 @@ int main(int, char **)
 #endif
     //create opengl window
     GLFWMainWindow mainWindow;
+
+    IMGUI_FUNC load_plugin_gui_fun = (IMGUI_FUNC)LoadPluginsGUI;
+    mainWindow.AddGUIFunc(load_plugin_gui_fun);
 
     try
     {
@@ -43,4 +50,10 @@ int main(int, char **)
     pluginMgr->UnloadPlugin(PluginPaths[0]);
 
     return 0;
+}
+
+void LoadPluginsGUI(void)
+{
+    ImGui::Begin("Shading...");
+    ImGui::End();
 }

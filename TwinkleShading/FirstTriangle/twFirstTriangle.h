@@ -41,6 +41,7 @@ protected:
     virtual void Initialize() override;
     virtual void Destroy() override;
     virtual void RenderImpl() override;
+    virtual void OnGUI() override;
     
     friend class FirstTriangle;
 

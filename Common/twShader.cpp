@@ -26,40 +26,19 @@ ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderReadInfo shaders_info[], int
     //Todo: read program from cache first
 
 
-    //if cache not found, create new program
-    ShaderProgram::Ptr program = std::make_shared<ShaderProgram>();
-    program->_res.type = GL_PROGRAM;
-    program->_res.id = glCreateProgram();
-
     //read shader source
     Shader::Ptr shaders[num];
+    uint32 shader_ids[num];
     for(int i = 0; i < num; i++)
     {
         shaders[i] = ReadShader(shaders_info[i]);
-
-        glAttachShader(program->_res.id, shaders[i]->_res.id);
+        shader_ids[i] = shaders[i]->GetRes().id;
     }
 
-    //link program
-    glLinkProgram(program->_res.id);
-
-    //opengl programing guide 8th source code
-    GLint linked;
-    glGetProgramiv(program->_res.id, GL_LINK_STATUS, &linked);
-    if (!linked)
+    //if cache not found, create new program
+    ShaderProgram::Ptr program = std::make_shared<ShaderProgram>();
+    if(!(program->Link(shader_ids, num)))
     {
-#ifdef _DEBUG
-        GLsizei len;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
-
-        GLchar *log = new GLchar[len + 1];
-        glGetProgramInfoLog(program->_res.id, len, &len, log);
-        std::cerr << "Shader linking failed: " << log << std::endl;
-        SAFE_DEL_ARR(log);
-#endif /* DEBUG */
-
-        glDeleteProgram(program->_res.id);
-
         return nullptr;
     }
 
@@ -72,19 +51,50 @@ ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderReadInfo shaders_info[], int
  * 
  * @param type 
  */
-Shader::Shader(ShaderType type)
+Shader::Shader(ShaderType type, const char* source)
     : Object(), _res()
 {
-    _res.id = 0;
     _res.type = (uint32)type;
+    _res.id = glCreateShader(_res.type);
+    glShaderSource(_res.id, 1, &source, NULL);
+    glCompileShader(_res.id);
+}
+
+Shader::Shader(const Shader &copy)
+    : _res(copy._res)
+{
+
 }
 
 Shader::~Shader()
 {
-    std::cout<< "Shader " << _res.id << " deconstruct.\n";
+    std::cout<< "Shader " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
+
+    glDeleteShader(_res.id);
 }
 
+bool Shader::Compile()
+{
+    //opengl programing guide 8th source code
+    GLint compiled;
+    glGetShaderiv(_res.id, GL_COMPILE_STATUS, &compiled);
+    if (!compiled)
+    {
+#ifdef _DEBUG
+        GLsizei len;
+        glGetShaderiv(res.id, GL_INFO_LOG_LENGTH, &len);
 
+        GLchar *log = new GLchar[len + 1];
+        glGetShaderInfoLog(res.id, len, &len, log);
+        std::cerr << "Shader compilation failed: " << log << std::endl;
+        SAFE_DEL_ARR(log);
+#endif /* DEBUG */
+
+        glDeleteShader(_res.id);
+    }
+
+    return compiled;
+}
 
 /**
  * @brief Construct a new Shader Program:: Shader Program object
@@ -93,16 +103,59 @@ Shader::~Shader()
 ShaderProgram::ShaderProgram()
     : Object(), _res()
 {
-    _res.id = 0;
-    _res.type = 0;
+    _res.id = glCreateProgram();
+    _res.type = GL_PROGRAM;
 }
 
 ShaderProgram::~ShaderProgram()
 {
-    std::cout<< "Shader Program " << _res.id << " deconstruct.\n";
+    std::cout<< "Shader Program " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
+
+    glDeleteProgram(_res.id);
 }
 
+bool ShaderProgram::Link(uint32 shaders[], int num)
+{
+    for(int i = 0; i < num; i++)
+    {
+        glAttachShader(_res.id, shaders[i]);
+    }
 
+    //link program
+    glLinkProgram(_res.id);
+
+    //opengl programing guide 8th source code
+    GLint linked;
+    glGetProgramiv(_res.id, GL_LINK_STATUS, &linked);
+    if (!linked)
+    {
+#ifdef _DEBUG
+        GLsizei len;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
+
+        GLchar *log = new GLchar[len + 1];
+        glGetProgramInfoLog(_res.id, len, &len, log);
+        std::cerr << "Shader linking failed: " << log << std::endl;
+        SAFE_DEL_ARR(log);
+#endif /* DEBUG */
+
+        for (int i = 0; i < num; i++)
+        {
+            glDetachShader(_res.id, shaders[i]);
+        }
+
+        glDeleteProgram(_res.id);
+    }
+    else
+    {
+        for (int i = 0; i < num; i++)
+        {
+            glDetachShader(_res.id, shaders[i]);
+        }
+    }
+
+    return linked;
+}
 
 /**
  * @brief Construct a new Shader Resource:: Shader Resource object
@@ -149,8 +202,6 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
     {
         std::cout << "Console Log: ShaderReader open shader file successed " << filename << std::endl;
 
-        Shader::Ptr shared_shader = std::make_shared<Shader>(_read_info.type);
-
         //read source
         fseek(fp, 0, SEEK_END);
         int len = ftell(fp);
@@ -162,37 +213,13 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
 
         source[len] = 0;
         const char *const_source = const_cast<const GLchar *>(source);
-
-        RenderResInstance res;
-        res.id = glCreateShader((GLenum)(_read_info.type));
-        // glShaderSource(uint, int, char* const*, int*)
-        glShaderSource(res.id, 1, &const_source, NULL);
-        glCompileShader(res.id);
-
+        Shader::Ptr shared_shader = std::make_shared<Shader>(_read_info.type, const_source);
         SAFE_DEL_ARR(source);
 
-        //opengl programing guide 8th source code
-        GLint compiled;
-        glGetShaderiv(res.id, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
+        if(!(shared_shader->Compile()))
         {
-#ifdef _DEBUG
-            GLsizei len;
-            glGetShaderiv(res.id, GL_INFO_LOG_LENGTH, &len);
-
-            GLchar *log = new GLchar[len + 1];
-            glGetShaderInfoLog(res.id, len, &len, log);
-            std::cerr << "Shader compilation failed: " << log << std::endl;
-            SAFE_DEL_ARR(log);
-#endif /* DEBUG */
-
-            glDeleteShader(res.id);
-
             return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
         }
-
-        res.type = (uint32)(_read_info.type);
-        shared_shader->SetRes(res);
 
         return ReadResult<Shader::Ptr>(shared_shader, ReadResult<Shader::Ptr>::Status::SUCCESS);
     }
