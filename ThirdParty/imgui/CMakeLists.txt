@@ -13,9 +13,13 @@ set(IMGUI_SRCs
 add_library(imgui SHARED
     ${IMGUI_SRCs}
 )
-
 target_include_directories(imgui PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}
 )
-
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    target_link_libraries(imgui OpenGL32.lib)
+    target_link_libraries(imgui ${GLEWLIBDIR}/glew32.lib)
+    target_link_libraries(imgui ${GLFWLIBDIR}/libglfw3dll.a)
+endif()
