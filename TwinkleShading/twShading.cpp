@@ -21,8 +21,10 @@ int main(int, char **)
 
 #ifdef __linux__
     PluginPaths.push_back("Output/libs/twShading/libtwFirstTriangle.so");
+    PluginPaths.push_back("Output/libs/twShading/libtwBasicGeometry.so");
 #elif defined _WIN32 || _WIN64
     PluginPaths.push_back("Output/libs/twShading/libtwFirstTriangle.dll");
+    PluginPaths.push_back("Output/libs/twShading/libtwBasicGeometry.dll");
 #endif
     //create opengl window
     GLFWMainWindow mainWindow;

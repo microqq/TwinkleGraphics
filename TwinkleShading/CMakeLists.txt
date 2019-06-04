@@ -4,6 +4,7 @@ set(TwinkleShading_SRCs
 )
 
 add_subdirectory(FirstTriangle)
+add_subdirectory(BasicGeometry)
 
 ## add executeable 
 add_executable(twShading ${CMAKE_CURRENT_LIST_DIR}/twShading.cpp)
