@@ -34,7 +34,7 @@ int main(int, char **)
 
     try
     {
-        GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(PluginPaths[0]));
+        GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(PluginPaths[1]));
         if (plugin != nullptr && plugin->GetViewsCount() > 0)
         {
             mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
@@ -49,7 +49,7 @@ int main(int, char **)
     mainWindow.Run();
 
     //unload plugins
-    pluginMgr->UnloadPlugin(PluginPaths[0]);
+    pluginMgr->UnloadPlugin(PluginPaths[1]);
 
     return 0;
 }

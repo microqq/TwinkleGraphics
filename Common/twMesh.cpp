@@ -73,7 +73,7 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longtitude_count,
 
     int32 row_count = lantitude_count - 1;
     int32 col_count = longtitude_count;
-    int32 num = longtitude_count * (lantitude_count - 1) + 2;
+    int32 num = col_count * row_count + 2;
     
     submesh->Initialize(num, MeshDataFlag::DEFAULT);
 
@@ -90,21 +90,31 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longtitude_count,
     submesh->_vertice_pos[num - 1].z = 0.0f;
 
     float32 x, y, z;
-    for(int32 i = 0; i < row_count; i++)
+    for(int32 i = 0, k = 1; i < row_count; i++)
     {
-        y = radius * cos(v_step * i);
+        y = radius * cos(v_step * (i + 1));
         for(int32 j = 0; j < col_count; j++)
         {
-            x = radius * sin(v_step * i) * cos(u_step * j);
-            z = radius * sin(v_step * i) * sin(u_step * j);
- 
-            int32 index = 1 + i * col_count + j;
-            submesh->_vertice_pos[index] = glm::vec3(x, y, z);
+            x = radius * sin(v_step * (i + 1)) * cos(u_step * j);
+            z = radius * sin(v_step * (i + 1)) * sin(u_step * j);
+
+            //int32 index = 1 + i * col_count + j;
+            // submesh->_vertice_pos[k++] = glm::vec3(x, y, z);
+            submesh->_vertice_pos[k].x = x;
+            submesh->_vertice_pos[k].y = y;
+            submesh->_vertice_pos[k++].z = z;
         }
     }
 
+    // submesh->_indice_num = num;
+    // submesh->_indice = new uint32[num];
+    // for(int i = 0; i < num; i++)
+    // {
+    //     submesh->_indice[i] = i;
+    // }
+
     int indice_num = 6 * col_count + (row_count - 1) * col_count * 6;
-    submesh->_indice_count = indice_num;
+    submesh->_indice_num = indice_num;
     submesh->_indice = new uint32[indice_num];
 
     for(int32 i = 1, j = 0; i < num - 1; i++)
@@ -163,6 +173,8 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longtitude_count,
                     submesh->_indice[j] = row * col_count + col;
                     submesh->_indice[j + 1] = num - 1;
                     submesh->_indice[j + 2] = row * col_count;
+
+                    j += 3;
                 }
                 else
                 {

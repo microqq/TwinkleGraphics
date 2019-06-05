@@ -21,9 +21,6 @@ public:
     virtual void UnInstall() override;
 
 private:
-    void InitTriangleView();
-
-private:
     TriangleView* _view;
 };
 

@@ -6,6 +6,7 @@
 
 #include "twPlugin.h"
 #include "twShader.h"
+#include "twMesh.h"
 
 namespace TwinkleGraphics
 {
@@ -19,9 +20,6 @@ public:
 
     virtual void Install() override;
     virtual void UnInstall() override;
-
-private:
-    void InitTriangleView();
 
 private:
     BasicGeometryView* _view;
@@ -51,6 +49,7 @@ private:
     uint32* _ebos;
 
     ShaderProgram::Ptr _program;
+    Mesh::Ptr _uvsphere;
 
     uint32 _model_mat_loc;
     uint32 _view_mat_loc;

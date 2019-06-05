@@ -32,8 +32,9 @@ public:
         , _vertice_normal(nullptr)
         , _vertice_uv(nullptr)
         , _indice(nullptr)
-        , _vertice_num(0)
         , _data_flag(MeshDataFlag::DEFAULT)
+        , _vertice_num(0)
+        , _indice_num(0)
         , _index(-1)
     {}
     SubMesh(const SubMesh& copy) {}
@@ -49,10 +50,13 @@ public:
 
     void Initialize(int32 num, MeshDataFlag flag);
     glm::vec3* GetVerticePos() { return _vertice_pos; }
+    int32 GetVerticeNum() { return _vertice_num; }
     glm::vec4* GetVerticeColor() { return _vertice_color; }
     glm::vec4* GetVerticeUV() { return _vertice_uv; }
     glm::vec3* GetVerticeBiNormal() { return _vertice_binormal; }
     glm::vec3* GetVerticeNormal() { return _vertice_normal; }
+    uint32* GetIndice() { return _indice; }
+    int32 GetIndiceNum() { return _indice_num; }
 
 private:
     glm::vec3* _vertice_pos;
@@ -64,7 +68,7 @@ private:
 
     MeshDataFlag _data_flag;
     int32 _vertice_num;
-    int32 _indice_count;
+    int32 _indice_num;
     int32 _index;
 
     friend class Mesh;
@@ -90,7 +94,7 @@ public:
         submesh->_index = _submeshes.size();
         _submeshes.push_back(submesh);  
     }
-    void RemoveSubMesh(int index)
+    void RemoveSubMesh(int32 index)
     {
         if(index < _submeshes.size())
             _submeshes.erase(_submeshes.begin() + index);
