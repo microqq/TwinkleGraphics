@@ -30,6 +30,8 @@ class BasicGeometryView : public View
 public:
     BasicGeometryView(Viewport& viewport)
         : View(viewport)
+        , _uvsphere(nullptr)
+        , _norcubesphere(nullptr)
         , _program(nullptr)
     {}
     virtual ~BasicGeometryView()
@@ -40,8 +42,21 @@ protected:
     virtual void Destroy() override;
     virtual void RenderImpl() override;
     virtual void OnGUI() override;
-    
-    friend class BasicGeometry;
+
+private:
+    void CreateUVSphere();
+    void CreateNorCubeSphere();
+    void CreateIcoSphere();
+    void CreateCube();
+    void CreateQuad();
+    void CreateLine();
+    void CreateInfinitePlane();
+
+    void RenderUVSphere();
+    void RenderNorCubeSphere();
+
+    void CreateSphere(SubMesh::Ptr submesh, uint32 index);
+    void RenderSphere(Mesh::Ptr mesh, int32 index, GLenum front_face = GL_CCW);
 
 private:
     uint32* _vaos;
@@ -50,6 +65,12 @@ private:
 
     ShaderProgram::Ptr _program;
     Mesh::Ptr _uvsphere;
+    Mesh::Ptr _norcubesphere;
+    Mesh::Ptr _icosphere;
+    Mesh::Ptr _cube;
+    Mesh::Ptr _quad;
+    Mesh::Ptr _line;
+    Mesh::Ptr _infinite_plane;
 
     uint32 _model_mat_loc;
     uint32 _view_mat_loc;
@@ -58,6 +79,8 @@ private:
     glm::mat4 _model_mat;
     glm::mat4 _view_mat;
     glm::mat4 _projection_mat;
+
+    friend class BasicGeometry;
 };
 
 } // namespace TwinkleGraphics

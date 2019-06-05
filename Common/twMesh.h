@@ -82,9 +82,10 @@ public:
 
     static Ptr CreateQuadMesh(float32 x, float32 y);
     static Ptr CreateCubeMesh(float32 size);
-    static Ptr CreateSphereMeshStandard(float32 radius, int32 longtitude_count, int32 lantitude_count);
+    static Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count);
     static Ptr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide);
     static Ptr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide);
+    static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice);
 
     Mesh() {}
     virtual ~Mesh() { _submeshes.clear(); }

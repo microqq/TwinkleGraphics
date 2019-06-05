@@ -41,31 +41,19 @@ void BasicGeometry::UnInstall()
 
 void BasicGeometryView::Initialize()
 {
-    _uvsphere = Mesh::CreateSphereMeshStandard(5.0f, 20, 10);
-    SubMesh::Ptr submesh = _uvsphere->GetSubMesh(0);
-
     //create vertex buffer object
-    _vbos = new uint32[1];
-    glGenBuffers(1, _vbos);
-    _ebos = new uint32[1];
-    glGenBuffers(1, _ebos);
-
-    //bind element array buffer, bind buffer data
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_STATIC_DRAW);
+    _vbos = new uint32[7];
+    glGenBuffers(7, _vbos);
+    _ebos = new uint32[7];
+    glGenBuffers(7, _ebos);
 
     //create vertex array object
-    _vaos = new uint32[1];
-    glGenVertexArrays(1, _vaos);
-    glBindVertexArray(_vaos[0]);
+    _vaos = new uint32[7];
+    glGenVertexArrays(7, _vaos);
 
-    //bind vertex array buffer, bind buffer data
-    glBindBuffer(GL_ARRAY_BUFFER, _vbos[0]);
-
-    glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_STATIC_DRAW);
-    //vertex attribute layout setting
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(0);
+    //create sphere
+    CreateUVSphere();
+    CreateNorCubeSphere();
 
     //create shader
     ShaderReadInfo shaders_info[] = {
@@ -96,26 +84,9 @@ void BasicGeometryView::Initialize()
 
 void BasicGeometryView::RenderImpl()
 {
-    //render state setting
-    // glDisable(GL_CULL_FACE);
-    // glDisable(GL_DEPTH_TEST);
+    //RenderUVSphere();
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    //bind shader program
-    ShaderProgramUse useProgram(_program);
-
-    //shader uniform setting
-    glUniformMatrix4fv(_model_mat_loc, 1, GL_FALSE, glm::value_ptr(_model_mat));
-    glUniformMatrix4fv(_view_mat_loc, 1, GL_FALSE, glm::value_ptr(_view_mat));
-    glUniformMatrix4fv(_projection_mat_loc, 1, GL_FALSE, glm::value_ptr(_projection_mat));
-
-    SubMesh::Ptr submesh = _uvsphere->GetSubMesh(0);
-
-    //draw command use vertex array object
-    glBindVertexArray(_vaos[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[0]);
-    glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
+    RenderNorCubeSphere();
 }
 
 void BasicGeometryView::OnGUI()
@@ -132,9 +103,100 @@ void BasicGeometryView::Destroy()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     //Delete buffers
-    glDeleteVertexArrays(1, _vaos);
-    glDeleteBuffers(1, _vbos);
-    glDeleteBuffers(1, _ebos);
+    glDeleteVertexArrays(7, _vaos);
+    glDeleteBuffers(7, _vbos);
+    glDeleteBuffers(7, _ebos);
+}
+
+void BasicGeometryView::CreateSphere(SubMesh::Ptr submesh, uint32 index)
+{
+    //bind element array buffer, bind buffer data
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_STATIC_DRAW);
+
+    //bind vertex array object
+    glBindVertexArray(_vaos[index]);
+
+    //bind vertex array buffer, bind buffer data
+    glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
+
+    glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_STATIC_DRAW);
+    //vertex attribute layout setting
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(0);
+}
+
+void BasicGeometryView::RenderSphere(Mesh::Ptr mesh, int32 index, GLenum front_face)
+{
+    //render state setting
+    glDisable(GL_DEPTH_TEST);
+    // glDisable(GL_CULL_FACE);
+
+    glFrontFace(front_face);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    //bind shader program
+    ShaderProgramUse useProgram(_program);
+
+    //shader uniform setting
+    glUniformMatrix4fv(_model_mat_loc, 1, GL_FALSE, glm::value_ptr(_model_mat));
+    glUniformMatrix4fv(_view_mat_loc, 1, GL_FALSE, glm::value_ptr(_view_mat));
+    glUniformMatrix4fv(_projection_mat_loc, 1, GL_FALSE, glm::value_ptr(_projection_mat));
+
+    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+
+    //draw command use vertex array object
+    glBindVertexArray(_vaos[index]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
+    glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
+    // glDrawElements(GL_POINTS, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
+}
+
+/**
+ * @brief Render UV Sphere
+ * 
+ */
+void BasicGeometryView::RenderUVSphere()
+{
+    RenderSphere(_uvsphere, 0, GL_CW);
+}
+
+void BasicGeometryView::CreateUVSphere() 
+{
+    _uvsphere = Mesh::CreateSphereMeshStandard(5.0f, 50, 25);
+    SubMesh::Ptr submesh = _uvsphere->GetSubMesh(0);
+
+    CreateSphere(submesh, 0);
+}
+
+
+/**
+ * @brief Render Normalized Cube Subdivide Sphere
+ * 
+ */
+void BasicGeometryView::RenderNorCubeSphere()
+{
+    RenderSphere(_norcubesphere, 1, GL_CCW);
+}
+
+void BasicGeometryView::CreateNorCubeSphere() 
+{
+    _norcubesphere = Mesh::CreateSphereMeshNormalizedCube(5.0f, 10);
+    SubMesh::Ptr submesh = _norcubesphere->GetSubMesh(0);
+
+    CreateSphere(submesh, 1);
+}
+
+void BasicGeometryView::CreateIcoSphere() {}
+void BasicGeometryView::CreateCube() {}
+void BasicGeometryView::CreateQuad() {}
+void BasicGeometryView::CreateLine()
+{
+}
+void BasicGeometryView::CreateInfinitePlane()
+{
 }
 
 } // namespace TwinkleGraphics
