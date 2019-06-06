@@ -54,6 +54,7 @@ private:
 
     void RenderUVSphere();
     void RenderNorCubeSphere();
+    void RenderIcoSphere();
 
     void CreateSphere(SubMesh::Ptr submesh, uint32 index);
     void RenderSphere(Mesh::Ptr mesh, int32 index, GLenum front_face = GL_CCW);

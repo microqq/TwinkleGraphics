@@ -54,6 +54,7 @@ void BasicGeometryView::Initialize()
     //create sphere
     CreateUVSphere();
     CreateNorCubeSphere();
+    CreateIcoSphere();
 
     //create shader
     ShaderReadInfo shaders_info[] = {
@@ -84,9 +85,11 @@ void BasicGeometryView::Initialize()
 
 void BasicGeometryView::RenderImpl()
 {
-    //RenderUVSphere();
+    // RenderUVSphere();
 
-    RenderNorCubeSphere();
+    // RenderNorCubeSphere();
+
+    RenderIcoSphere();
 }
 
 void BasicGeometryView::OnGUI()
@@ -189,7 +192,19 @@ void BasicGeometryView::CreateNorCubeSphere()
     CreateSphere(submesh, 1);
 }
 
-void BasicGeometryView::CreateIcoSphere() {}
+void BasicGeometryView::CreateIcoSphere() 
+{
+    _icosphere = Mesh::CreateSphereMeshIcosahedron(5.0f, 10);
+    SubMesh::Ptr submesh = _icosphere->GetSubMesh(0);
+
+    CreateSphere(submesh, 2);
+}
+
+void BasicGeometryView::RenderIcoSphere()
+{
+    RenderSphere(_icosphere, 2, GL_CCW);
+}
+
 void BasicGeometryView::CreateCube() {}
 void BasicGeometryView::CreateQuad() {}
 void BasicGeometryView::CreateLine()
