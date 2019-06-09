@@ -331,10 +331,10 @@ Mesh::Ptr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
 {
     SubMesh::Ptr submesh = std::make_shared<SubMesh>();
 
-    int num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide ) / 2);
+    int32 num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide ) / 2);
     submesh->Initialize(num, MeshDataFlag::DEFAULT);
 
-    int indice_num = 60 * (subdivide + subdivide * (subdivide - 1));
+    int32 indice_num = 60 * subdivide * subdivide;
     submesh->_indice_num = indice_num;
     submesh->_indice = new uint32[indice_num];
 
@@ -348,57 +348,64 @@ Mesh::Ptr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
 
     int32 vertice_index = 0;
     int32 indice_index = 0;
-    uint32 triangle_indice[3];
     glm::vec3 p0, p1, p2, p, p_helper1, p_helper2;
-    glm::vec3 edge_0, edge_1, edge_2;
+    glm::vec3 edge_0, edge_1;
     for(int32 i = 0; i < 60; i += 3)
     {
-        triangle_indice[0] = submesh->_indice[i];
-        triangle_indice[1] = submesh->_indice[i + 1];
-        triangle_indice[2] = submesh->_indice[i + 2];
-
-        p0 = submesh->_vertice_pos[triangle_indice[0]];
-        p1 = submesh->_vertice_pos[triangle_indice[1]];
-        p2 = submesh->_vertice_pos[triangle_indice[2]];
+        p0 = ico_vertice[icotriangle_indice[i]];
+        p1 = ico_vertice[icotriangle_indice[i + 1]];
+        p2 = ico_vertice[icotriangle_indice[i + 2]];
 
         edge_0 = p1 - p0;
         edge_1 = p2 - p0;
 
         for (int32 row = 0, row_count = subdivide + 1; row < row_count; row++)
         {
-            p_helper1 = p0 + edge_0 * (float32)row;
-            p_helper2 = p0 + edge_1 * (float32)row;
+            p_helper1 = p0 + edge_0 * (float32)row / (float32)subdivide;
+            p_helper2 = p0 + edge_1 * (float32)row / (float32)subdivide;
 
-            int32 current_vetice_num = vertice_index + 1; 
-
-            for (int32 col = 0, col_count = row + 1; col < col_count; col++)
+            int32 col = 0;
+            int32 col_count = row + 1;
+            for (; col < col_count; col++)
             {
-                p = p_helper1 + (p_helper2 - p_helper1) * (float32)col;
-
-                bool continued = false;
+                if(row == 0)
+                {
+                    p = p_helper1;
+                }
+                else
+                {
+                    p = p_helper1 + (p_helper2 - p_helper1) * (float32)col / (float32)row;
+                }
+                p = glm::normalize(p);
+                p *= radius;
 
                 if(row != 0)
                 {
-                    if (col >= col_count - 2)
+                    if(col != 0)
                     {
-                        submesh->_indice[indice_index] = vertice_index;
-                        submesh->_indice[indice_index + 1] = vertice_index + 1;
-                        submesh->_indice[indice_index + 2] = current_vetice_num - 1;
+                        submesh->_indice[indice_index] = vertice_index + col;
+                        submesh->_indice[indice_index + 1] = vertice_index + col - row - 1;
+                        submesh->_indice[indice_index + 2] = vertice_index + col - 1;
 
                         indice_index += 3;
 
-                        continued = true;;
-                    }
-                    else
-                    {
+                        if (col != col_count - 1)
+                        {
+                            submesh->_indice[indice_index] = vertice_index + col;
+                            submesh->_indice[indice_index + 1] = vertice_index + col - row;
+                            submesh->_indice[indice_index + 2] = vertice_index + col - row - 1;
+
+                            indice_index += 3;
+                        }
                     }
                 }
 
-                submesh->_vertice_pos[vertice_index++] = p;
+                // submesh->_indice[indice_index] = indice_index++;
 
-                if(continued)
-                    continue;
+                submesh->_vertice_pos[vertice_index + col] = p;
             }
+
+            vertice_index += col_count;
         }
     }
 
@@ -408,7 +415,7 @@ Mesh::Ptr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
     return mesh;
 }
 
-void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float radius)
+void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius)
 {
     vertice[0] = glm::vec3(0.0f, radius, 0.0f);
     vertice[11] = glm::vec3(0.0f, -radius, 0.0f);
@@ -421,30 +428,34 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float radius)
     float32 cos_pole_angle = cos(pole_angle);
     float32 sin_pole_angle = sin(pole_angle);
 
-    float32 cos_half_azimuth = cos(azimuth_step * 0.5f);
-    float32 sin_half_azimuth = sin(azimuth_step * 0.5f);
+    float32 cos_half_azimuth = cos(-azimuth_step * 0.5f);
+    float32 sin_half_azimuth = sin(-azimuth_step * 0.5f);
 
     float32 x = radius * sin_pole_angle;
     float32 y = radius * cos_pole_angle;
-    float32 z = 0.0f;
+    float32 z = x;
     for(int32 i = 0, j = 5; i < 5, j < 10; i++, j++)
     {
         float32 cos_azimuth = cos(azimuth_step * i);
         float32 sin_azimuth = sin(azimuth_step * i);
 
-        float32 new_x = x * cos_azimuth + z * sin_azimuth;
-        float32 new_z = -x * sin_azimuth + z * cos_azimuth;
+        float32 new_x = x * cos_azimuth;
+        float32 new_z = z * sin_azimuth;
+
+        // float32 new_x = x * cos_azimuth + z * sin_azimuth;
+        // float32 new_z = -x * sin_azimuth + z * cos_azimuth;
 
         vertice[i + 1] = glm::vec3(new_x, y, new_z);
 
         float32 new_x1 = new_x * cos_half_azimuth + new_z * sin_half_azimuth;
         float32 new_z1 = -new_x * sin_half_azimuth + new_z * cos_half_azimuth;
-        
-        int32 index = j + 1;
-        if(j == 5)
-            vertice[j + 1] = glm::vec3(new_x1, -y, new_z1);
-        else
-            vertice[16 - j] = glm::vec3(new_x1, -y, new_z1);
+
+        vertice[j + 1] = glm::vec3(new_x1, -y, new_z1);
+
+        // if(j == 5)
+        //     vertice[j + 1] = glm::vec3(new_x1, -y, new_z1);
+        // else
+        //     vertice[16 - j] = glm::vec3(new_x1, -y, new_z1);
     }
 
     for(int32 i = 0, j = 0; i < 10; i++)
@@ -475,34 +486,25 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float radius)
 
     for(int32 i = 0, j = 30; i < 5; i++)
     {
-        if (i == 0)
+        if(i != 0)
         {
-            indice[j] = 1;
-            indice[j + 1] = 6;
-            indice[j + 2] = 5;
+            indice[j] = i + 1;
+            indice[j + 1] = i;
+            indice[j + 2] = i + 5;
 
-            indice[j + 3] = 1;
-            indice[j + 4] = 7;
-            indice[j + 5] = 6;
+            indice[j + 3] = i + 1;
+            indice[j + 4] = i + 5;
+            indice[j + 5] = i + 6;
         }
         else
         {
-            indice[j] = i + 1;
-            indice[j + 1] = i + 6;
-            indice[j + 2] = i;
+            indice[j] = 1;
+            indice[j + 1] = 5;
+            indice[j + 2] = 10;
 
-            if(i == 4)
-            {
-                indice[j + 3] = 5;
-                indice[j + 4] = 6;
-                indice[j + 5] = 10;
-            }
-            else
-            {
-                indice[j + 3] = i + 1;
-                indice[j + 4] = i + 7;
-                indice[j + 5] = i + 6;
-            }            
+            indice[j + 3] = 1;
+            indice[j + 4] = 10;
+            indice[j + 5] = 6;
         }
 
         j += 6;

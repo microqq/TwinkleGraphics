@@ -8,6 +8,8 @@
 #include "twSingleton.hpp"
 #include "twObject.hpp"
 
+#define GLM_IF_CONSTEXPR
+
 #ifndef MAX_VIEWPORT_COUNT
     #define MAX_VIEWPORT_COUNT 8
 #endif

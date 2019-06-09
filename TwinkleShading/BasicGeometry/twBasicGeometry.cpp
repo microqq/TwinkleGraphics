@@ -52,8 +52,8 @@ void BasicGeometryView::Initialize()
     glGenVertexArrays(7, _vaos);
 
     //create sphere
-    CreateUVSphere();
-    CreateNorCubeSphere();
+    // CreateUVSphere();
+    // CreateNorCubeSphere();
     CreateIcoSphere();
 
     //create shader
@@ -75,6 +75,7 @@ void BasicGeometryView::Initialize()
     //model matrix setting
     _model_mat = glm::mat4(1.0f);
     //scale model
+    _model_mat = glm::rotate(_model_mat, glm::radians<float32>(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     _model_mat = glm::scale(_model_mat, glm::vec3(0.5f, 0.5f, 0.5f));
 
     //get shader uniform location
@@ -133,12 +134,12 @@ void BasicGeometryView::RenderSphere(Mesh::Ptr mesh, int32 index, GLenum front_f
 {
     //render state setting
     glDisable(GL_DEPTH_TEST);
-    // glDisable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
 
     glFrontFace(front_face);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
 
     //bind shader program
     ShaderProgramUse useProgram(_program);
