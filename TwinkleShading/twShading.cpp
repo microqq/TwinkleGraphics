@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include <vector>
+#include <map>
 #include <exception>
 
 #include "imgui.h"
@@ -9,53 +9,77 @@
 #include "twPluginManager.h"
 #include "twMainWindow.h"
 
+#define _DEBUG 1
+
 using namespace TwinkleGraphics;
 
-static std::vector<std::string> PluginPaths;
+using MapPlugins = std::map<std::string, std::string>;
+static MapPlugins PluginPaths;
+static std::string CurrentPlugin = std::string();
+//create opengl window
+static GLFWMainWindow mainWindow;
 
 void LoadPluginsGUI();
 
 int main(int, char **)
 {
-    PluginManagerInst pluginMgr;
 
 #ifdef __linux__
-    PluginPaths.push_back("Output/libs/twShading/libtwFirstTriangle.so");
-    PluginPaths.push_back("Output/libs/twShading/libtwBasicGeometry.so");
+    PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.so"));
+    PluginPaths.insert(MapPlugins::value_type("1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.so"));
 #elif defined _WIN32 || _WIN64
-    PluginPaths.push_back("Output/libs/twShading/libtwFirstTriangle.dll");
-    PluginPaths.push_back("Output/libs/twShading/libtwBasicGeometry.dll");
+    PluginPaths.insert(MapPlugins::value_type("1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.dll"));
+    PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.dll"));
 #endif
-    //create opengl window
-    GLFWMainWindow mainWindow;
 
     IMGUI_FUNC load_plugin_gui_fun = (IMGUI_FUNC)LoadPluginsGUI;
     mainWindow.AddGUIFunc(load_plugin_gui_fun);
 
-    try
-    {
-        GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(PluginPaths[1]));
-        if (plugin != nullptr && plugin->GetViewsCount() > 0)
-        {
-            mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
-        }
-    }
-    catch(std::exception e)
-    {
-        throw e;
-    }
-
     //main loop
     mainWindow.Run();
 
-    //unload plugins
-    pluginMgr->UnloadPlugin(PluginPaths[1]);
 
     return 0;
 }
 
 void LoadPluginsGUI(void)
 {
-    ImGui::Begin("Shading...");
+    PluginManagerInst pluginMgr;
+
+    int32 plugin_num = PluginPaths.size();
+    MapPlugins::iterator it = PluginPaths.begin();
+    
+    ImGui::Begin(u8"Shading(OpenGL)");
+    for(int32 i = 0; i < plugin_num; i++)
+    {
+        if(ImGui::Button((it->first).c_str()))
+        {
+            if(CurrentPlugin.compare(it->first.c_str()) != 0)
+            {
+                if(!(CurrentPlugin.empty()))
+                {
+                    //unload last plugin
+                    std::string last_plugin_name = CurrentPlugin;
+                    GLPlugin *last_plugin = dynamic_cast<GLPlugin *>(pluginMgr->GetPlugin(last_plugin_name));
+                    TwinkleGraphics::View** views = last_plugin->GetViews();
+                    mainWindow.RemoveViews(views, last_plugin->GetViewsCount());
+
+                    MapPlugins::iterator last_plugin_path = PluginPaths.find(it->first);
+                    pluginMgr->UnloadPlugin(last_plugin_path->second);
+                }
+
+                //load plugin
+                GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(it->second));
+                if (plugin != nullptr && plugin->GetViewsCount() > 0)
+                {
+                    mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
+                }
+            }
+            CurrentPlugin = it->first;
+        }
+
+
+        it++;
+    }
     ImGui::End();
 }

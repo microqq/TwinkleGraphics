@@ -44,27 +44,13 @@ void SubMesh::Initialize(int32 num, MeshDataFlag flag)
 
 
 
-Mesh::Ptr Mesh::CreateQuadMesh(float32 x, float32 y)
-{
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
-
-    return mesh;
-}
-
-Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
-{
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
-
-    return mesh;
-}
-
 /**
  * @brief 创建球面网格的基础算法（https://zh.wikipedia.org/wiki/%E7%90%83%E5%BA%A7%E6%A8%99%E7%B3%BB）
  * 球坐标系由点 p 到原点 o 的距离 r，极角（pole angle）和方位角（azimuth angle）构成，若已知这三个变量，
  * 可通过球坐标系转直角坐标系求得其直角坐标（x,y,z）
  * @param radius
- * @param longtitude_step
- * @param lantitude_step
+ * @param longitude_count
+ * @param latitude_count
  * @return Mesh::Ptr
  */
 Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count)
@@ -344,7 +330,7 @@ Mesh::Ptr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
     glm::vec3 ico_vertice[12] = {};
     uint32 icotriangle_indice[60] = {};
     CreateIconsahedron(ico_vertice, icotriangle_indice, 1.0f);
-    //CreateIconsahedron(submesh->GetVerticePos(), submesh->GetIndice(), radius);
+    // CreateIconsahedron(submesh->GetVerticePos(), submesh->GetIndice(), radius);
 
     int32 vertice_index = 0;
     int32 indice_index = 0;
@@ -447,8 +433,8 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius
 
         vertice[i + 1] = glm::vec3(new_x, y, new_z);
 
-        float32 new_x1 = new_x * cos_half_azimuth + new_z * sin_half_azimuth;
-        float32 new_z1 = -new_x * sin_half_azimuth + new_z * cos_half_azimuth;
+        float32 new_x1 = new_x * cos_half_azimuth - new_z * sin_half_azimuth;
+        float32 new_z1 = new_x * sin_half_azimuth + new_z * cos_half_azimuth;
 
         vertice[j + 1] = glm::vec3(new_x1, -y, new_z1);
 
@@ -489,26 +475,141 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius
         if(i != 0)
         {
             indice[j] = i + 1;
-            indice[j + 1] = i;
-            indice[j + 2] = i + 5;
+            indice[j + 1] = i + 6;
+            indice[j + 2] = i;
 
             indice[j + 3] = i + 1;
-            indice[j + 4] = i + 5;
+            if(i != 4)
+                indice[j + 4] = i + 7;
+            else
+                indice[j + 4] = 6;
             indice[j + 5] = i + 6;
         }
         else
         {
             indice[j] = 1;
-            indice[j + 1] = 5;
-            indice[j + 2] = 10;
+            indice[j + 1] = 6;
+            indice[j + 2] = 5;
 
             indice[j + 3] = 1;
-            indice[j + 4] = 10;
+            indice[j + 4] = 7;
             indice[j + 5] = 6;
         }
 
         j += 6;
     }
+}
+
+Mesh::Ptr Mesh::CreateQuadMesh(float32 x_size, float32 y_size)
+{
+    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    submesh->Initialize(4, MeshDataFlag::DEFAULT);
+
+    float32 half_x_size = x_size * 0.5f;
+    float32 half_y_size = y_size * 0.5f;
+
+    int32 indice_num = 6;
+    submesh->_indice_num = indice_num;
+    submesh->_indice = new uint32[indice_num]{};
+    submesh->_indice[0] = 0;
+    submesh->_indice[1] = 1;
+    submesh->_indice[2] = 2;
+
+    submesh->_indice[3] = 0;
+    submesh->_indice[4] = 2;
+    submesh->_indice[5] = 3;
+
+    submesh->_vertice_pos[0] = glm::vec3(-half_x_size, half_y_size, 0.0f);
+    submesh->_vertice_pos[1] = glm::vec3(-half_x_size, -half_y_size, 0.0f);
+    submesh->_vertice_pos[2] = glm::vec3(half_x_size, -half_y_size, 0.0f);
+    submesh->_vertice_pos[3] = glm::vec3(half_x_size, half_y_size, 0.0f);
+
+    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    mesh->AddSubMesh(submesh);
+    return mesh;
+}
+
+Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
+{
+    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    submesh->Initialize(8, MeshDataFlag::DEFAULT);
+    
+    int32 indice_num = 36;
+    submesh->_indice_num = indice_num;
+    submesh->_indice = new uint32[indice_num];
+
+    int32 index = 0;
+    //front
+    submesh->_indice[index++] = 0;
+    submesh->_indice[index++] = 1;
+    submesh->_indice[index++] = 2;
+
+    submesh->_indice[index++] = 0;
+    submesh->_indice[index++] = 2;
+    submesh->_indice[index++] = 3;
+
+    //left
+    submesh->_indice[index++] = 4;
+    submesh->_indice[index++] = 5;
+    submesh->_indice[index++] = 1;
+
+    submesh->_indice[index++] = 4;
+    submesh->_indice[index++] = 1;
+    submesh->_indice[index++] = 0;
+
+    //right
+    submesh->_indice[index++] = 3;
+    submesh->_indice[index++] = 2;
+    submesh->_indice[index++] = 6;
+
+    submesh->_indice[index++] = 3;
+    submesh->_indice[index++] = 6;
+    submesh->_indice[index++] = 7;
+
+    //back
+    submesh->_indice[index++] = 7;
+    submesh->_indice[index++] = 6;
+    submesh->_indice[index++] = 5;
+
+    submesh->_indice[index++] = 7;
+    submesh->_indice[index++] = 5;
+    submesh->_indice[index++] = 4;
+
+    //top
+    submesh->_indice[index++] = 4;
+    submesh->_indice[index++] = 0;
+    submesh->_indice[index++] = 3;
+
+    submesh->_indice[index++] = 4;
+    submesh->_indice[index++] = 3;
+    submesh->_indice[index++] = 7;
+
+    //bottom
+    submesh->_indice[index++] = 1;
+    submesh->_indice[index++] = 5;
+    submesh->_indice[index++] = 6;
+
+    submesh->_indice[index++] = 1;
+    submesh->_indice[index++] = 6;
+    submesh->_indice[index++] = 2;
+
+    float32 half_x_size = size * 0.5f;
+    float32 half_y_size = size * 0.5f;
+    float32 half_z_size = size * 0.5f;
+
+    submesh->_vertice_pos[0] = glm::vec3(-half_x_size, half_y_size, half_z_size);
+    submesh->_vertice_pos[1] = glm::vec3(-half_x_size, -half_y_size, half_z_size);
+    submesh->_vertice_pos[2] = glm::vec3(half_x_size, -half_y_size, half_z_size);
+    submesh->_vertice_pos[3] = glm::vec3(half_x_size, half_y_size, half_z_size);
+
+    submesh->_vertice_pos[4] = glm::vec3(-half_x_size, half_y_size, -half_z_size);
+    submesh->_vertice_pos[5] = glm::vec3(-half_x_size, -half_y_size, -half_z_size);
+    submesh->_vertice_pos[6] = glm::vec3(half_x_size, -half_y_size, -half_z_size);
+    submesh->_vertice_pos[7] = glm::vec3(half_x_size, half_y_size, -half_z_size);
+
+    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    mesh->AddSubMesh(submesh);
+    return mesh;
 }
 
 } // namespace TwinkleGraphics

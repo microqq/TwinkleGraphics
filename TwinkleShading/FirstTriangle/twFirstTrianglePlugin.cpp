@@ -13,7 +13,7 @@ namespace TwinkleGraphics
 
     extern "C" __TWExport Plugin* InstallPlugin()
     {
-        std::string name = "FirstTriangle";
+        std::string name = "1.FirstTriangle";
         plugin = new FirstTriangle(name);
 
         PluginManagerInst pluginMgr;

@@ -21,6 +21,7 @@ public:
 
     void AddViews(View** views, int num);
     void AddView(View* view);
+    void RemoveViews(View** view, int num);
     void RemoveView(View* view);
 
     virtual void Run() = 0;

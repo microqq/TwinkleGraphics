@@ -13,7 +13,7 @@ namespace TwinkleGraphics
 
     extern "C" __TWExport Plugin* InstallPlugin()
     {
-        std::string name = "BasicGeometry";
+        std::string name = "2.BasicGeometry";
         plugin = new BasicGeometry(name);
 
         PluginManagerInst pluginMgr;

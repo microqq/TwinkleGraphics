@@ -53,6 +53,20 @@ void MainWindow::AddView(View *view)
     }
 }
 
+void MainWindow::RemoveViews(View **views, int num)
+{
+    if(views != nullptr)
+    {
+        for(int i = 0; i < num; i++)
+        {
+            if(views[i] != nullptr)
+            {
+                RemoveView(views[i]);
+            }
+        }
+    }
+}
+
 void MainWindow::RemoveView(View* view)
 {
     for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
@@ -74,6 +88,8 @@ GLFWMainWindow::GLFWMainWindow(int32 width, int32 height)
 
 GLFWMainWindow::~GLFWMainWindow()
 {
+    _imgui_funcs.clear();
+
     Terminate();
 }
 
@@ -166,6 +182,15 @@ void GLFWMainWindow::Initialise()
     (void)io;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+    io.Fonts->AddFontDefault();
+    // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Medium.ttf", 16.0f);
+    // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Cousine-Regular.ttf", 15.0f);
+    // io.Fonts->AddFontFromFileTTF("Assets/Fonts/DroidSans.ttf", 16.0f);
+    // io.Fonts->AddFontFromFileTTF("Assets/Fonts/ProggyTiny.ttf", 10.0f);
+    ImFont* font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/simhei.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+    IM_ASSERT(font != NULL);
+    ImGui::GetIO().FontDefault = font;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
