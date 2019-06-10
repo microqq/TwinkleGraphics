@@ -9,11 +9,11 @@
 #include "twPluginManager.h"
 #include "twMainWindow.h"
 
-#define _DEBUG 1
-
 using namespace TwinkleGraphics;
-
 using MapPlugins = std::map<std::string, std::string>;
+
+PluginManagerInst pluginMgr;
+
 static MapPlugins PluginPaths;
 static std::string CurrentPlugin = std::string();
 //create opengl window
@@ -25,8 +25,8 @@ int main(int, char **)
 {
 
 #ifdef __linux__
-    PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.so"));
     PluginPaths.insert(MapPlugins::value_type("1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.so"));
+    PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.so"));
 #elif defined _WIN32 || _WIN64
     PluginPaths.insert(MapPlugins::value_type("1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.dll"));
     PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.dll"));
@@ -44,8 +44,6 @@ int main(int, char **)
 
 void LoadPluginsGUI(void)
 {
-    PluginManagerInst pluginMgr;
-
     int32 plugin_num = PluginPaths.size();
     MapPlugins::iterator it = PluginPaths.begin();
     
@@ -64,7 +62,7 @@ void LoadPluginsGUI(void)
                     TwinkleGraphics::View** views = last_plugin->GetViews();
                     mainWindow.RemoveViews(views, last_plugin->GetViewsCount());
 
-                    MapPlugins::iterator last_plugin_path = PluginPaths.find(it->first);
+                    MapPlugins::iterator last_plugin_path = PluginPaths.find(last_plugin_name);
                     pluginMgr->UnloadPlugin(last_plugin_path->second);
                 }
 

@@ -37,8 +37,9 @@ namespace TwinkleGraphics
 using namespace glm;
 
 class Plugin;
-typedef Plugin* (*INSTALL_PLUGIN_FUNC)(void);
-typedef void (*UNINSTALL_PLUGIN_FUNC)(void);
+class PluginManager;
+typedef Plugin* (*INSTALL_PLUGIN_FUNC)(PluginManager*);
+typedef void (*UNINSTALL_PLUGIN_FUNC)(PluginManager*);
 typedef void (*IMGUI_FUNC)(void);
 
 typedef void (*RENDER_ROUTINE)(void);

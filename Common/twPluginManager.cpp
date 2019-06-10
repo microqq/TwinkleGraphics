@@ -39,7 +39,7 @@ Plugin* PluginManager::LoadPlugin(std::string &path)
 
         if(install_func != nullptr)
         {
-            return install_func();
+            return install_func(this);
         }
     }
 
@@ -58,7 +58,7 @@ void PluginManager::UnloadPlugin(std::string &path)
 
         if(uninstall_func != nullptr)
         {
-            uninstall_func();
+            uninstall_func(this);
         }        
 
         dynlibMgr->Unload(path);
