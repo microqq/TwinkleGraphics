@@ -92,7 +92,7 @@ void BasicGeometryView::Initialize()
 
 
     _plane_param = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-    //create basic-geometry shader
+    //create infinite-plane shader
     ShaderReadInfo infplane_shaders_info[] = {
         {std::string("Assets/Shaders/infinite_plane.vert"), ShaderType::VERTEX_SHADER},
         {std::string("Assets/Shaders/infinite_plane.frag"), ShaderType::FRAGMENT_SHADER}};
@@ -102,6 +102,25 @@ void BasicGeometryView::Initialize()
         ShaderProgramUse use_program(_infinite_plane_program);
         _mvp_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "mvp");
         _planeparam_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "plane_param");
+    }
+
+
+    _line_points = new glm::vec3[3]{
+        glm::vec3(-5.0f, 5.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(5.0f, 5.0f, 0.0f)
+    };
+    CreateLine();
+    
+    ShaderReadInfo line_shader_info[] = {
+        {std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
+        {std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}
+    };
+    _line_program = shaderMgr->ReadShaders(line_shader_info, 3);
+    {
+        ShaderProgramUse use_program(_line_program);
+
     }
 }
 
@@ -120,13 +139,18 @@ void BasicGeometryView::RenderImpl()
     if(_current_mesh != nullptr)
     {
         if( _current_mesh_index != -1 &&
-            _current_mesh_index != 6)
+            _current_mesh_index != 6 &&
+            _current_mesh_index != 5)
         {
             RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
         }
         else if(_current_mesh_index == 6)
         {
             RenderInfinitePlane();
+        }
+        else if(_current_mesh_index == 5)
+        {
+            RenderLine();
         }
     }
 }
@@ -286,6 +310,22 @@ void BasicGeometryView::RenderInfinitePlane()
     }
 }
 
+void BasicGeometryView::RenderLine()
+{
+    glDisable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    ShaderProgramUse use_program(_line_program);
+    {
+        SubMesh::Ptr submesh = _line->GetSubMesh(0);
+
+        //draw command use vertex array object
+        glBindVertexArray(_vaos[5]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[5]);
+        glDrawElements(GL_LINES_ADJACENCY, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
+    }
+}
+
 
 /**
  * @brief Render UV Sphere
@@ -361,6 +401,9 @@ void BasicGeometryView::CreateQuad()
 
 void BasicGeometryView::CreateLine()
 {
+    _line = Mesh::CreateLineMesh(_line_points, 3);
+    SubMesh::Ptr SubMesh = _line->GetSubMesh(0);
+    CreateGeometry(SubMesh, 5);
 }
 
 void BasicGeometryView::CreateInfinitePlane()

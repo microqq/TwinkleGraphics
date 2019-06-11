@@ -612,4 +612,50 @@ Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
     return mesh;
 }
 
+
+/**
+ * @brief use geometry shader render line mesh
+ * 
+ * @param points 
+ * @param num 
+ * @return Mesh::Ptr 
+ */
+Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
+{
+    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+
+    //use line_adjency
+    int32 indice_num = (num - 1) * 4;
+    submesh->_indice_num = indice_num;
+    submesh->_indice = new uint32[indice_num];
+
+    int32 indice_index = 0;
+    for(int32 i = 1; i < num; i++)
+    {
+        submesh->_indice[indice_index++] = i - 1;
+        submesh->_indice[indice_index++] = i;
+        submesh->_indice[indice_index++] = i;
+
+        if(i == num -1)
+        {
+            submesh->_indice[indice_index++] = i;
+        }
+        else
+        {
+            submesh->_indice[indice_index++] = i + 1;
+        }
+    }
+
+    for(int32 i = 0; i < num; i++)
+    {
+        submesh->_vertice_pos[i] = points[i];
+    }
+
+    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    mesh->AddSubMesh(submesh);
+
+    return mesh;
+}
+
 } // namespace TwinkleGraphics

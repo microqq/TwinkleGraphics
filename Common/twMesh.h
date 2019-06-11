@@ -18,6 +18,22 @@ enum MeshDataFlag
     HAS_UV = 8
 };
 
+enum class LineJointFlag
+{
+    MITER,
+    BEVEL,
+    ROUND
+};
+
+enum class LineEndCapFlag
+{
+    BUTT,
+    ROUND,
+    SQUARE
+};
+
+
+
 class Mesh;
 class SubMesh : public Object
 {
@@ -80,6 +96,7 @@ public:
     typedef std::shared_ptr<Mesh> Ptr;
     typedef std::weak_ptr<Mesh> WeakPtr;
 
+    static Ptr CreateLineMesh(glm::vec3* points, int32 num);
     static Ptr CreateQuadMesh(float32 x, float32 y);
     static Ptr CreateCubeMesh(float32 size);
     static Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count);

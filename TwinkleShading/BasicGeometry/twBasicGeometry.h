@@ -30,8 +30,10 @@ class BasicGeometryView : public View
 public:
     BasicGeometryView(Viewport& viewport)
         : View(viewport)
+        , _line_points(nullptr)
         , _program(nullptr)
         , _infinite_plane_program(nullptr)
+        , _line_program(nullptr)
         , _uvsphere(nullptr)
         , _norcubesphere(nullptr)
         , _icosphere(nullptr)
@@ -71,12 +73,9 @@ private:
 
     void RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front_face = GL_CCW);
     void RenderInfinitePlane();
+    void RenderLine();
 
 private:
-    uint32* _vaos;
-    uint32* _vbos;
-    uint32* _ebos;
-
     glm::mat4 _model_mat;
     glm::mat4 _view_mat;
     glm::mat4 _projection_mat;    
@@ -84,8 +83,15 @@ private:
 
     glm::vec4 _plane_param;
 
+    uint32* _vaos;
+    uint32* _vbos;
+    uint32* _ebos;
+
+    glm::vec3* _line_points;
+
     ShaderProgram::Ptr _program;
     ShaderProgram::Ptr _infinite_plane_program;
+    ShaderProgram::Ptr _line_program;
 
     Mesh::Ptr _uvsphere;
     Mesh::Ptr _norcubesphere;
