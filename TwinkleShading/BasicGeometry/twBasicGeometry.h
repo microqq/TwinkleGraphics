@@ -82,6 +82,7 @@ private:
     glm::mat4 _mvp_mat;
 
     glm::vec4 _plane_param;
+    glm::vec4 _line_params;
 
     uint32* _vaos;
     uint32* _vbos;
@@ -106,8 +107,14 @@ private:
     uint32 _view_mat_loc;
     uint32 _projection_mat_loc;
 
-    uint32 _mvp_loc;
+    uint32 _infplane_mvp_loc;
     uint32 _planeparam_loc;
+
+    uint32 _line_mvp_loc;
+    uint32 _line_parameters_loc; //x:thickness, y:feather, z:miterlimit, w:aspect
+    // uint32 _line_thickness_loc;
+    // uint32 _line_feather_loc;
+    // uint32 _line_miterlimit_loc;
     
     GLenum _front_face;
     int32 _current_mesh_index;

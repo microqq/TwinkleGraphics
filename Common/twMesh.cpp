@@ -631,20 +631,28 @@ Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
     submesh->_indice = new uint32[indice_num];
 
     int32 indice_index = 0;
-    for(int32 i = 1; i < num; i++)
+    for(int32 i = 0; i < num - 1; i++)
     {
-        submesh->_indice[indice_index++] = i - 1;
-        submesh->_indice[indice_index++] = i;
-        submesh->_indice[indice_index++] = i;
-
-        if(i == num -1)
+        if(i == 0)
         {
-            submesh->_indice[indice_index++] = i;
+            submesh->_indice[indice_index++] = 0;
         }
         else
         {
-            submesh->_indice[indice_index++] = i + 1;
+            submesh->_indice[indice_index++] = i - 1;
         }
+
+        submesh->_indice[indice_index++] = i;
+        submesh->_indice[indice_index++] = i + 1;
+
+        if(i == num - 2)
+        {
+            submesh->_indice[indice_index++] = num - 1;
+        }
+        else
+        {
+            submesh->_indice[indice_index++] = i + 2;
+        }        
     }
 
     for(int32 i = 0; i < num; i++)

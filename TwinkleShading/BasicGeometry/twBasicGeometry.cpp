@@ -100,18 +100,21 @@ void BasicGeometryView::Initialize()
     _infinite_plane_program = shaderMgr->ReadShaders(infplane_shaders_info, 2);
     {
         ShaderProgramUse use_program(_infinite_plane_program);
-        _mvp_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "mvp");
+        _infplane_mvp_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "mvp");
         _planeparam_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "plane_param");
     }
 
 
-    _line_points = new glm::vec3[3]{
-        glm::vec3(-5.0f, 5.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(5.0f, 5.0f, 0.0f)
+    _line_params = glm::vec4(0.05f, 0.05f, 1.0f, _viewport.AspectRatio());
+    _line_points = new glm::vec3[5]{
+        glm::vec3(-5.f, 2.5f, 0.0f),
+        glm::vec3(0.0f, -5.0f, -2.0f),
+        glm::vec3(5.f, 2.5f, -40.0f),
+        glm::vec3(5.f, 2.5f, 0.0f),
+        glm::vec3(-5.f, -2.5f, -5.0f)  
     };
     CreateLine();
-    
+
     ShaderReadInfo line_shader_info[] = {
         {std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
         {std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
@@ -120,7 +123,8 @@ void BasicGeometryView::Initialize()
     _line_program = shaderMgr->ReadShaders(line_shader_info, 3);
     {
         ShaderProgramUse use_program(_line_program);
-
+        _line_mvp_loc = glGetUniformLocation(_line_program->GetRes().id, "mvp");
+        _line_parameters_loc = glGetUniformLocation(_line_program->GetRes().id, "line_params");
     }
 }
 
@@ -150,6 +154,7 @@ void BasicGeometryView::RenderImpl()
         }
         else if(_current_mesh_index == 5)
         {
+            RenderInfinitePlane();
             RenderLine();
         }
     }
@@ -291,14 +296,20 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+/**
+ * @brief 
+ * 
+ */
 void BasicGeometryView::RenderInfinitePlane()
 {
+    glEnable(GL_DEPTH_TEST);
+
     glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     ShaderProgramUse use_program(_infinite_plane_program);
     {
-        glUniformMatrix4fv(_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
+        glUniformMatrix4fv(_infplane_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
         glUniform4fv(_planeparam_loc, 1, glm::value_ptr(_plane_param));
 
         SubMesh::Ptr submesh = _infinite_plane->GetSubMesh(0);
@@ -310,13 +321,23 @@ void BasicGeometryView::RenderInfinitePlane()
     }
 }
 
+/**
+ * @brief 直线绘制参考（感谢文章作者）：https://zhuanlan.zhihu.com/p/59541559，文中引文值得仔细阅读。
+ * 另外，GPU gems 3（chapter 25：https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch25.html）有一篇关于 gpu 绘制向量图的方法介绍。
+ */
 void BasicGeometryView::RenderLine()
 {
+    glEnable(GL_DEPTH_TEST);
+
     glDisable(GL_CULL_FACE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     ShaderProgramUse use_program(_line_program);
     {
+        glUniformMatrix4fv(_line_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
+        glUniform4fv(_line_parameters_loc, 1, glm::value_ptr(_line_params));
+
         SubMesh::Ptr submesh = _line->GetSubMesh(0);
 
         //draw command use vertex array object
@@ -401,7 +422,7 @@ void BasicGeometryView::CreateQuad()
 
 void BasicGeometryView::CreateLine()
 {
-    _line = Mesh::CreateLineMesh(_line_points, 3);
+    _line = Mesh::CreateLineMesh(_line_points, 5);
     SubMesh::Ptr SubMesh = _line->GetSubMesh(0);
     CreateGeometry(SubMesh, 5);
 }
