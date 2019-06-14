@@ -244,6 +244,8 @@ void BasicGeometryView::Destroy()
     glDeleteVertexArrays(7, _vaos);
     glDeleteBuffers(7, _vbos);
     glDeleteBuffers(7, _ebos);
+
+    SAFE_DEL_ARR(_line_points);
 }
 
 void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
