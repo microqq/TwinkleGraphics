@@ -111,7 +111,7 @@ void BasicGeometryView::Initialize()
         glm::vec3(0.0f, -5.0f, -2.0f),
         glm::vec3(5.f, 2.5f, -40.0f),
         glm::vec3(5.f, 2.5f, 0.0f),
-        glm::vec3(-5.f, -2.5f, -5.0f)  
+        glm::vec3(-5.f, -2.5f, -5.0f)
     };
     CreateLine();
 
@@ -328,6 +328,7 @@ void BasicGeometryView::RenderInfinitePlane()
 void BasicGeometryView::RenderLine()
 {
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
     glDisable(GL_CULL_FACE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
