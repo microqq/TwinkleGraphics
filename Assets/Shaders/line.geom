@@ -8,6 +8,8 @@ uniform vec4 line_params;   //x:thickness, y:feather, z:miterlimit, w:aspect
 
 vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
 {
+    float var_line_width = 0.0f;
+
     float thickness = line_params.x;
     float feather = line_params.y;
     float miterlimit = line_params.z;
@@ -30,15 +32,17 @@ vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
     vec2 n1 = normalize(vec2(-tangent1.y, tangent1.x));
     vec2 n2 = normalize(vec2(-tangent2.y, tangent2.x));
 
+    float line_width = thickness * var_line_width / p_cvv.w + (1.0f - var_line_width) * thickness;
+
     vec4 result = p_cvv;
     vec2 miter;
     if(p == p1)
     {
-        miter = p_screen + n2 * orientation * thickness;
+        miter = p_screen + n2 * orientation * line_width;
     }
     else if(p2 == p)
     {
-        miter = p_screen + n1 * orientation * thickness;
+        miter = p_screen + n1 * orientation * line_width;
     }
     else
     {
@@ -46,10 +50,10 @@ vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
         float k2 = tangent2.y / tangent2.x;
 
         //line1:
-        vec2 l1_start = p1_screen + n1 * orientation * thickness;
+        vec2 l1_start = p1_screen + n1 * orientation * line_width;
 
         //line2:
-        vec2 l2_start = p2_screen + n2 * orientation * thickness;
+        vec2 l2_start = p2_screen + n2 * orientation * line_width;
 
         miter.x = (k1 * l1_start.x - k2 * l2_start.x + l2_start.y - l1_start.y) / (k1 - k2);
         miter.y = k1 * (miter.x - l1_start.x) + l1_start.y;
