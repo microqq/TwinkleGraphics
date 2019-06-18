@@ -105,7 +105,8 @@ void BasicGeometryView::Initialize()
     }
 
 
-    _line_params = glm::vec4(0.05f, 0.05f, 1.0f, _viewport.AspectRatio());
+    _viewport_params = glm::vec4((float32)(_viewport.Width()), (float32)(_viewport.Height()), _viewport.AspectRatio(), 1.0f);
+    _line_params = glm::vec4(0.05f, 0.01f, 1.0f, 1.0f);
     _line_points = new glm::vec3[5]{
         glm::vec3(-5.f, 2.5f, 0.0f),
         glm::vec3(0.0f, -5.0f, -2.0f),
@@ -125,6 +126,7 @@ void BasicGeometryView::Initialize()
         ShaderProgramUse use_program(_line_program);
         _line_mvp_loc = glGetUniformLocation(_line_program->GetRes().id, "mvp");
         _line_parameters_loc = glGetUniformLocation(_line_program->GetRes().id, "line_params");
+        _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
     }
 }
 
@@ -146,6 +148,11 @@ void BasicGeometryView::RenderImpl()
             _current_mesh_index != 6 &&
             _current_mesh_index != 5)
         {
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
+
             RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
         }
         else if(_current_mesh_index == 6)
@@ -154,7 +161,10 @@ void BasicGeometryView::RenderImpl()
         }
         else if(_current_mesh_index == 5)
         {
-            RenderInfinitePlane();
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
             RenderLine();
         }
     }
@@ -229,6 +239,77 @@ void BasicGeometryView::OnGUI()
         }
     }
     ImGui::End();
+
+    OnParametersGUI();
+}
+
+void BasicGeometryView::OnParametersGUI()
+{
+    if(_current_mesh_index != -1)
+    {
+        ImGui::Begin(u8"参数设置");
+        ImGui::Checkbox(u8"剔除背面", &_cull_face);
+        ImGui::Checkbox(u8"线框模式", &_polygon_linemode);
+        ImGui::Checkbox(u8"显示平面", &_display_infplane);
+
+        if(_current_mesh_index == 5)
+        {
+            if(_current_mesh == _line)
+            {
+                ImGui::InputFloat(u8"线宽", &(_line_params.x), 0.01f);
+                ImGui::Checkbox(u8"抗锯齿", &_line_antialiasing);
+                {
+                    if(_line_antialiasing)
+                    {
+                        ImGui::InputFloat(u8"羽化", &(_line_params.y), 0.001f);
+                    }
+                }
+                ImGui::Checkbox(u8"虚线", &_line_isdashed);
+                {
+
+                }
+                ImGui::Checkbox(u8"圆角直线", &_line_type);
+                {
+
+                }
+            }
+        }
+        else if(_current_mesh_index == 0)
+        {
+            bool recreate = false;
+            recreate = ImGui::InputFloat(u8"球半径", &_sphere_radius, 0.5f, 0.0f);
+            recreate |= ImGui::InputInt(u8"经线数", &_uvsphere_longitude, 1, 0);
+            recreate |= ImGui::InputInt(u8"纬线数", &_uvsphere_latitude, 1, 0);
+
+            if(recreate)
+            {
+                CreateUVSphere();
+                _current_mesh = _uvsphere;
+            }
+        }
+        else if(_current_mesh_index == 1 ||
+            _current_mesh_index == 2)
+        {
+            bool recreate = false;
+            recreate = ImGui::InputFloat(u8"球半径", &_sphere_radius, 0.5f, 0.0f);
+            recreate |= ImGui::InputInt(u8"细分次数", &_sphere_subdivide, 1, 0);
+
+            if(recreate)
+            {
+                if(_current_mesh_index == 1)
+                {
+                    CreateNorCubeSphere();
+                    _current_mesh = _norcubesphere;
+                }
+                else if(_current_mesh_index == 2)
+                {
+                    CreateIcoSphere();
+                    _current_mesh = _icosphere;
+                }
+            }
+        }
+        ImGui::End();
+    }
 }
 
 void BasicGeometryView::Destroy()
@@ -252,7 +333,7 @@ void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
 {
     //bind element array buffer, bind buffer data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_DYNAMIC_DRAW);
 
     //bind vertex array object
     glBindVertexArray(_vaos[index]);
@@ -260,7 +341,7 @@ void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
 
-    glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_DYNAMIC_DRAW);
     //vertex attribute layout setting
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(0);
@@ -268,14 +349,29 @@ void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
 
 void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front_face)
 {
-    //render state setting
-    // glDisable(GL_DEPTH_TEST);
-    // glDisable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
     glFrontFace(front_face);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    if(_polygon_linemode)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    if(_cull_face)
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
+    }
+    
 
     //bind shader program
     ShaderProgramUse use_program(_program);
@@ -332,14 +428,24 @@ void BasicGeometryView::RenderLine()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glDisable(GL_CULL_FACE);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // if(_polygon_linemode)
+    // {
+    //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // }
+    // else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     ShaderProgramUse use_program(_line_program);
     {
         glUniformMatrix4fv(_line_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
         glUniform4fv(_line_parameters_loc, 1, glm::value_ptr(_line_params));
+        glUniform4fv(_viewport_loc, 1, glm::value_ptr(_viewport_params));
 
         SubMesh::Ptr submesh = _line->GetSubMesh(0);
 
@@ -362,7 +468,7 @@ void BasicGeometryView::RenderUVSphere()
 
 void BasicGeometryView::CreateUVSphere() 
 {
-    _uvsphere = Mesh::CreateSphereMeshStandard(5.0f, 50, 25);
+    _uvsphere = Mesh::CreateSphereMeshStandard(_sphere_radius, _uvsphere_longitude, _uvsphere_latitude);
     SubMesh::Ptr submesh = _uvsphere->GetSubMesh(0);
 
     CreateGeometry(submesh, 0);
@@ -380,7 +486,7 @@ void BasicGeometryView::RenderNorCubeSphere()
 
 void BasicGeometryView::CreateNorCubeSphere() 
 {
-    _norcubesphere = Mesh::CreateSphereMeshNormalizedCube(5.0f, 20);
+    _norcubesphere = Mesh::CreateSphereMeshNormalizedCube(_sphere_radius, _sphere_subdivide);
     SubMesh::Ptr submesh = _norcubesphere->GetSubMesh(0);
 
     CreateGeometry(submesh, 1);
@@ -393,7 +499,7 @@ void BasicGeometryView::RenderIcoSphere()
 
 void BasicGeometryView::CreateIcoSphere() 
 {
-    _icosphere = Mesh::CreateSphereMeshIcosahedron(5.0f, 10);
+    _icosphere = Mesh::CreateSphereMeshIcosahedron(_sphere_radius, _sphere_subdivide);
     SubMesh::Ptr submesh = _icosphere->GetSubMesh(0);
 
     CreateGeometry(submesh, 2);

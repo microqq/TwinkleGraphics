@@ -4,6 +4,7 @@
 #define TW_MESH_H
 
 #include <vector>
+#include <iostream>
 
 #include "twCommon.h"
 
@@ -105,7 +106,11 @@ public:
     static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius);
 
     Mesh() {}
-    virtual ~Mesh() { _submeshes.clear(); }
+    virtual ~Mesh() 
+    { 
+        std::cout << "Mesh Deconstruct.\n";
+        _submeshes.clear();
+    }
 
     void AddSubMesh(SubMesh::Ptr submesh) 
     { 

@@ -10,6 +10,8 @@ void SubMesh::Initialize(int32 num, MeshDataFlag flag)
     if(num <= 0) return;
 
     _data_flag = flag;
+
+    SAFE_DEL_ARR(_vertice_pos);
     _vertice_pos = new glm::vec3[num];
     _vertice_num = num;
 
@@ -17,21 +19,25 @@ void SubMesh::Initialize(int32 num, MeshDataFlag flag)
 
     if((flag & MeshDataFlag::HAS_COLOR) != 0)
     {
+        SAFE_DEL_ARR(_vertice_color);
         _vertice_color = new glm::vec4[num];
     }
 
     if((flag & MeshDataFlag::HAS_BINORMAL) != 0)
     {
+        SAFE_DEL_ARR(_vertice_binormal);
         _vertice_binormal = new glm::vec3[num];
     }
 
     if((flag & MeshDataFlag::HAS_NORMAL) != 0)
     {
+        SAFE_DEL_ARR(_vertice_normal);
         _vertice_normal = new glm::vec3[num];
     }
 
     if((flag & MeshDataFlag::HAS_UV) != 0)
     {
+        SAFE_DEL_ARR(_vertice_uv);
         _vertice_uv = new glm::vec4[num];
     }
 }
@@ -100,6 +106,7 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, 
     // }
 
     //compute indice
+    SAFE_DEL_ARR(submesh->_indice);
     int indice_num = 6 * col_count + (row_count - 1) * col_count * 6;
     submesh->_indice_num = indice_num;
     submesh->_indice = new uint32[indice_num];
