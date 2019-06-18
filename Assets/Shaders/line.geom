@@ -3,18 +3,25 @@
 layout (lines_adjacency) in;
 layout (triangle_strip, max_vertices = 4) out;
 
+//flat: 中心直线不需要插值运算
+flat out vec2 l_start;
+flat out vec2 l_end;
+
 uniform mat4 mvp;
 uniform vec4 line_params;   //x:thickness, y:feather, z:miterlimit, w:aspect
+uniform vec4 viewport_params;
 
 vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
 {
+    //控制透视投影线的宽度是否固定（后面再将该变量提出去）
     float var_line_width = 0.0f;
 
     float thickness = line_params.x;
     float feather = line_params.y;
     float miterlimit = line_params.z;
-    float aspect = line_params.w;
+    float aspect = viewport_params.z;
 
+    //计算投影后点的坐标：透视修正，并根据屏幕宽高比拉伸
     vec4 p_cvv = mvp * p;
     vec2 p_screen = (p_cvv.xy / p_cvv.w) * vec2(aspect, 1.0f);
 
@@ -29,26 +36,39 @@ vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
     vec2 tangent1 = p_screen - p1_screen;
     vec2 tangent2 = p2_screen - p_screen;
 
+    //计算投影后二维平面直线的法向量并归一化
     vec2 n1 = normalize(vec2(-tangent1.y, tangent1.x));
     vec2 n2 = normalize(vec2(-tangent2.y, tangent2.x));
 
     float line_width = thickness * var_line_width / p_cvv.w + (1.0f - var_line_width) * thickness;
+    line_width *= 0.5f;
 
-    vec4 result = p_cvv;
     vec2 miter;
-    if(p == p1)
+    if(p == p1) //直线端点(cap)
     {
         miter = p_screen + n2 * orientation * line_width;
     }
-    else if(p2 == p)
+    else if(p2 == p) //直线端点(cap)
     {
         miter = p_screen + n1 * orientation * line_width;
     }
-    else
+    else //直线连接点(joint)
     {
+        /**
+          p0___________________p1
+          l0________________l1/
+          p2_____________p3/ /
+                        / / /
+                       / / /
+                      / / /
+                   p4/ / /p5
+                      l2
+        **/
+
         float k1 = tangent1.y / tangent1.x;
         float k2 = tangent2.y / tangent2.x;
 
+        //计算直线 (p0, p1)或（p2, p3） 和 (p1, p5) 或（p3, p4）的交点，该交点作为直线连接点（joint）
         //line1:
         vec2 l1_start = p1_screen + n1 * orientation * line_width;
 
@@ -72,15 +92,34 @@ void main()
     vec4 p2 = gl_in[2].gl_Position;
     vec4 p3 = gl_in[3].gl_Position;
 
+    float aspect = viewport_params.z;
+    vec4 p1_cvv = mvp * p1;
+    vec2 p1_screen = (p1_cvv.xy / p1_cvv.w) * 0.5f + 0.5f;
+    p1_screen.x *= aspect;
+
+    vec4 p2_cvv = mvp * p2;
+    vec2 p2_screen = (p2_cvv.xy / p2_cvv.w) * 0.5f + 0.5f;
+    p2_screen.x *= aspect;
+
+    //计算中心直线
+    l_start = p1_screen;
+    l_end = p2_screen;
+    //计算直线三角化的新顶点
     gl_Position = generate_vertex(p0, p2, p1, 1.0f);
     EmitVertex();
 
+    l_start = p1_screen;
+    l_end = p2_screen;
     gl_Position = generate_vertex(p1, p3, p2, 1.0f);
     EmitVertex();
 
+    l_start = p1_screen;
+    l_end = p2_screen;
     gl_Position = generate_vertex(p0, p2, p1, -1.0f);
     EmitVertex();
 
+    l_start = p1_screen;
+    l_end = p2_screen;
     gl_Position = generate_vertex(p1, p3, p2, -1.0f);
     EmitVertex();
 
