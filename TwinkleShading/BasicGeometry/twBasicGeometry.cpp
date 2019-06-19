@@ -454,6 +454,8 @@ void BasicGeometryView::RenderLine()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[5]);
         glDrawElements(GL_LINES_ADJACENCY, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
     }
+
+    glDisable(GL_BLEND);
 }
 
 

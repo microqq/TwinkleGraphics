@@ -49,7 +49,7 @@ Twinkle Shading 的内容基于 OpenGL 开发（或许后续还会考虑OpenGL E
 ### 1.4 **抗锯齿**
 
 #### 1.4.1 **硬件抗锯齿**
-MSAA、FXAA等。
+MSAA、SSAA等。
 
 #### 1.4.2 **软件抗锯齿**（全屏或局部）
 一些已知比较实用的 PostAA 方法以及虚幻引擎和 Unity 等使用的抗锯齿方法。
