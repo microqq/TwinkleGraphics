@@ -61,10 +61,10 @@ void BasicGeometryView::Initialize()
 
     //camera view setting: frustum and its position, orientation
     // glm::vec3 eye(0.0f, 10.0f, 0.0f);
-    glm::vec3 eye(0.0f, 5.0f, 15.0f);
-    glm::vec3 up(0.0f, 1.0f, 0.0f);
-    glm::vec3 center(0.0f, 0.0f, 0.0f);
-    _view_mat = glm::lookAtRH(eye, center, up);
+    _eye = glm::vec3(0.0f, 5.0f, 50.0f);
+    _up = glm::vec3(0.0f, 1.0f, 0.0f);
+    _center = glm::vec3(0.0f, 0.0f, 0.0f);
+    _view_mat = glm::lookAtRH(_eye, _center, _up);
     _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 1000.0f);
     _model_mat = glm::mat4(1.0f);
 
@@ -106,11 +106,11 @@ void BasicGeometryView::Initialize()
 
 
     _viewport_params = glm::vec4((float32)(_viewport.Width()), (float32)(_viewport.Height()), _viewport.AspectRatio(), 1.0f);
-    _line_params = glm::vec4(0.05f, 0.01f, 1.0f, 1.0f);
+    _line_params = glm::vec4(0.05f, 0.01f, 0.99f, 1.0f);
     _line_points = new glm::vec3[5]{
         glm::vec3(-5.f, 2.5f, 0.0f),
-        glm::vec3(0.0f, -5.0f, -2.0f),
-        glm::vec3(5.f, 2.5f, -40.0f),
+        glm::vec3(0.0f, -5.0f, 0.0f),
+        glm::vec3(-3.f, 2.0f, 0.0f),
         glm::vec3(5.f, 2.5f, 0.0f),
         glm::vec3(-5.f, -2.5f, -5.0f)
     };
@@ -172,6 +172,20 @@ void BasicGeometryView::RenderImpl()
 
 void BasicGeometryView::OnGUI()
 {
+    ImGui::Begin(u8"相机参数");
+    {
+        bool changed = ImGui::InputFloat3(u8"相机位置", glm::value_ptr(_eye));
+        changed |= ImGui::InputFloat3(u8"视线中心", glm::value_ptr(_center));
+        changed |= ImGui::InputFloat3(u8"向上向量", glm::value_ptr(_up));
+
+        if(changed)
+        {
+            _view_mat = glm::lookAtRH(_eye, _center, _up);
+            _mvp_mat = _projection_mat * _view_mat;
+        }
+    }
+    ImGui::End();
+
     ImGui::Begin(u8"创建几何形体");
     {
         if(ImGui::RadioButton(u8"球体(UV Sphere)", &_current_mesh_index, 0))
@@ -262,8 +276,14 @@ void BasicGeometryView::OnParametersGUI()
                     if(_line_antialiasing)
                     {
                         ImGui::InputFloat(u8"羽化", &(_line_params.y), 0.001f);
+                        _line_params.w = 1.0f;
+                    }
+                    else
+                    {
+                        _line_params.w = 0.0f;
                     }
                 }
+                ImGui::InputFloat(u8"连接点限制参数", &(_line_params.z), 0.001f);
                 ImGui::Checkbox(u8"虚线", &_line_isdashed);
                 {
 

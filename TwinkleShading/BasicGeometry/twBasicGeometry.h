@@ -111,6 +111,10 @@ private:
     glm::vec4 _line_params;
     glm::vec4 _viewport_params;
 
+    glm::vec3 _eye;
+    glm::vec3 _center;
+    glm::vec3 _up;
+
     uint32* _vaos;
     uint32* _vbos;
     uint32* _ebos;
