@@ -67,16 +67,32 @@ vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
 
         float k1 = tangent1.y / tangent1.x;
         float k2 = tangent2.y / tangent2.x;
+        float epsilon = 0.01f;
+        
+        if(abs(k1 - k2) < epsilon)
+        {
+            vec2 n = normalize(n1 + n2);
+            miter = p_screen + n * orientation * line_width;
+        }
+        else
+        {
 
-        //计算直线 (p0, p1)或（p2, p3） 和 (p1, p5) 或（p3, p4）的交点，该交点作为直线连接点（joint）
-        //line1:
-        vec2 l1_start = p1_screen + n1 * orientation * line_width;
+            //计算直线 (p0, p1)或（p2, p3） 和 (p1, p5) 或（p3, p4）的交点，该交点作为直线连接点（joint）
+            //line1:
+            vec2 l1_start = p1_screen + n1 * orientation * line_width;
 
-        //line2:
-        vec2 l2_start = p2_screen + n2 * orientation * line_width;
+            tangent1 = normalize(tangent1);
+            tangent2 = normalize(tangent2);
+            float inter_angle = dot(tangent1, tangent2);
+            if(inter_angle <= -miterlimit)
+                orientation *= -1.0f;
 
-        miter.x = (k1 * l1_start.x - k2 * l2_start.x + l2_start.y - l1_start.y) / (k1 - k2);
-        miter.y = k1 * (miter.x - l1_start.x) + l1_start.y;
+            //line2:
+            vec2 l2_start = p2_screen + n2 * orientation * line_width;
+
+            miter.x = (k1 * l1_start.x - k2 * l2_start.x + l2_start.y - l1_start.y) / (k1 - k2);
+            miter.y = k1 * (miter.x - l1_start.x) + l1_start.y;
+        }
     }
 
     miter.x /= aspect;
