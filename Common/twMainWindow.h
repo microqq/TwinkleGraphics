@@ -24,6 +24,7 @@ public:
     void RemoveViews(View** view, int num);
     void RemoveView(View* view);
 
+    virtual void Reset() = 0;
     virtual void Run() = 0;
 
 protected:
@@ -47,6 +48,7 @@ public:
     virtual ~GLFWMainWindow();
 
     void AddGUIFunc(IMGUI_FUNC func);
+    virtual void Reset() override;
     virtual void Run() override;
 
 protected:

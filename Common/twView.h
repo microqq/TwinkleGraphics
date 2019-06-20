@@ -74,6 +74,19 @@ public:
     const Viewport& GetViewport() 
     { return _viewport; }
 
+    void Resize(float32 scale_x, float32 scale_y)
+    {
+        _viewport.rect.x *= scale_x;
+        _viewport.rect.z *= scale_x;
+        _viewport.rect.y *= scale_y;
+        _viewport.rect.w *= scale_y;
+    }
+
+    void Reset(Rect rect)
+    {
+        _viewport.rect = rect;
+    }
+
     View& operator = (const Viewport& viewport);
     View& operator = (const View& view);
 

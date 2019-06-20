@@ -71,6 +71,7 @@ void LoadPluginsGUI(void)
                 if (plugin != nullptr && plugin->GetViewsCount() > 0)
                 {
                     mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
+                    mainWindow.Reset();
                 }
             }
             CurrentPlugin = it->first;

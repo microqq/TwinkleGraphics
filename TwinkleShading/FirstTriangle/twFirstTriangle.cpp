@@ -15,6 +15,7 @@ FirstTriangle::FirstTriangle(std::string& name)
 
 FirstTriangle::~FirstTriangle()
 {
+    SAFE_DEL(_view);
 }
 
 void FirstTriangle::Install()
@@ -22,7 +23,7 @@ void FirstTriangle::Install()
     Plugin::Install();
 
     // Initilize view
-    Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
     _view = new TriangleView(viewport);
     _view->Initialize();
 
@@ -101,6 +102,13 @@ void TriangleView::Initialize()
     _projection_mat_loc = glGetUniformLocation(_program->GetRes().id, "projection");
 }
 
+void TriangleView::Advance(float64 delta_time)
+{
+    View::Advance(delta_time);
+
+    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 100.0f);
+}
+
 void TriangleView::RenderImpl()
 {
     //render state setting
@@ -169,6 +177,9 @@ void TriangleView::Destroy()
     glDeleteVertexArrays(1, _vaos);
     glDeleteBuffers(1, _vbos);
     glDeleteBuffers(1, _ebos);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 } // namespace TwinkleGraphics

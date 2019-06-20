@@ -15,6 +15,7 @@ BasicGeometry::BasicGeometry(std::string& name)
 
 BasicGeometry::~BasicGeometry()
 {
+    SAFE_DEL(_view);
 }
 
 void BasicGeometry::Install()
@@ -22,7 +23,7 @@ void BasicGeometry::Install()
     Plugin::Install();
 
     // Initilize view
-    Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
     _view = new BasicGeometryView(viewport);
     _view->Initialize();
 
@@ -128,6 +129,14 @@ void BasicGeometryView::Initialize()
         _line_parameters_loc = glGetUniformLocation(_line_program->GetRes().id, "line_params");
         _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
     }
+}
+
+void BasicGeometryView::Advance(float64 delta_time)
+{
+    View::Advance(delta_time);
+
+    _viewport_params = glm::vec4((float32)(_viewport.Width()), (float32)(_viewport.Height()), _viewport.AspectRatio(), 1.0f);
+    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 1000.0f);
 }
 
 void BasicGeometryView::RenderImpl()
@@ -347,6 +356,9 @@ void BasicGeometryView::Destroy()
     glDeleteBuffers(7, _ebos);
 
     SAFE_DEL_ARR(_line_points);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
@@ -449,6 +461,7 @@ void BasicGeometryView::RenderLine()
     glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_BLEND);
+    // glBlendFunc(GL_ONE, GL_ONE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDisable(GL_CULL_FACE);

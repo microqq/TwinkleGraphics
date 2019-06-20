@@ -29,8 +29,8 @@ View &View::operator=(const View &view)
 
 void View::Run()
 {
-    Advance(0.0f);
     HandleEvents();
+    Advance(0.0f);
     Render();
 }
 
@@ -41,24 +41,23 @@ void View::Advance(float64 delta_time)
 
 void View::Render()
 {
-    const Viewport &viewport = _viewport;
-    glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
-    glScissor(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
+    glViewport(_viewport.X(), _viewport.Y(), _viewport.Width(), _viewport.Height());
+    glScissor(_viewport.X(), _viewport.Y(), _viewport.Width(), _viewport.Height());
     glEnable(GL_SCISSOR_TEST);
-    
-    glClear(viewport.clear_mask);
-    if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
+
+    glClear(_viewport.clear_mask);
+    if ((_viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
     {
-        const RGBA &color = viewport.clear_color;
+        const RGBA &color = _viewport.clear_color;
         glClearColor(color.r, color.g, color.b, color.a);
     }
-    if ((viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
+    if ((_viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
     {
-        glClearDepth(viewport.clear_depth);
+        glClearDepth(_viewport.clear_depth);
     }
-    if ((viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
+    if ((_viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
     {
-        glClearStencil(viewport.clear_stencil);
+        glClearStencil(_viewport.clear_stencil);
     }
 
     RenderImpl();

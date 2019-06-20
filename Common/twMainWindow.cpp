@@ -71,7 +71,7 @@ void MainWindow::RemoveView(View* view)
 {
     for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
     {
-        if (_views[i] != nullptr &&_views[i] == view)
+        if (_views[i] != nullptr && _views[i] == view)
         {
             _views[i] = nullptr;
             --_view_count;
@@ -96,6 +96,22 @@ GLFWMainWindow::~GLFWMainWindow()
 void GLFWMainWindow::AddGUIFunc(IMGUI_FUNC func)
 {
     _imgui_funcs.push_back(func);
+}
+
+void GLFWMainWindow::Reset()
+{
+    glfwGetFramebufferSize(_window, &_width, &_height);
+
+    if (_view_count > 0)
+    {
+        for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+        {
+            if (_views[i] != nullptr)
+            {
+                _views[i]->Reset(Rect(0, 0, _width, _height));
+            }
+        }
+    }
 }
 
 void GLFWMainWindow::Run()
@@ -154,10 +170,10 @@ void GLFWMainWindow::Initialise()
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
     /* Create a windowed mode window and its OpenGL context */
-    _window = glfwCreateWindow(1024, 768, "Twinkle Shading", NULL, NULL);
+    _window = glfwCreateWindow(_width, _height, "Twinkle Shading", NULL, NULL);
     if (!_window)
     {
         glfwTerminate();
@@ -229,6 +245,30 @@ void GLFWMainWindow::HandleEvents()
 {
     /* Poll for and process events */
     glfwPollEvents();
+
+    int32 old_width = _width;
+    int32 old_height = _height;
+    glfwGetFramebufferSize(_window, &_width, &_height);
+    if(old_width != _width || old_height != _height)
+    {
+        if (old_width == 0 || _width == 0 ||
+            old_height == 0 || _height == 0)
+            return;
+
+        float32 scale_x = (float32)_width / (float32)old_width;
+        float32 scale_y = (float32)_height / (float32)old_height;
+
+        if (_view_count > 0)
+        {
+            for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+            {
+                if (_views[i] != nullptr)
+                {
+                    _views[i]->Resize(scale_x, scale_y);
+                }
+            }
+        }
+    }
 }
 
 } // namespace TwinkleGraphics

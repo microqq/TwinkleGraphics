@@ -37,6 +37,7 @@ public:
 protected:
     virtual void Initialize() override;
     virtual void Destroy() override;
+    virtual void Advance(float64 delta_time) override;
     virtual void RenderImpl() override;
     virtual void OnGUI() override;
     
