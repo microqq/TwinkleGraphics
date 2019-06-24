@@ -111,6 +111,7 @@ private:
     glm::vec4 _plane_param;
     glm::vec4 _line_params;
     glm::vec4 _viewport_params;
+    glm::vec3 _line_color;
 
     glm::vec3 _eye;
     glm::vec3 _center;
@@ -144,6 +145,7 @@ private:
 
     uint32 _line_mvp_loc;
     uint32 _line_parameters_loc; //x:thickness, y:feather, z:miterlimit, w:aspect
+    uint32 _line_color_loc;
     uint32 _viewport_loc;
     
     GLenum _front_face;

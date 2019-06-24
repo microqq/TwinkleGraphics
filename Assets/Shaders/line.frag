@@ -10,6 +10,7 @@ flat in vec2 l_end;
 uniform mat4 mvp;
 uniform vec4 line_params;
 uniform vec4 viewport_params;
+uniform vec3 line_color;
 
 void main()
 {
@@ -30,5 +31,5 @@ void main()
     //(thickness - feather, thickness) smooth hermit interpolation between 0 and 1
     float a = 1.0f - smoothstep(thickness - feather, thickness, d);
 
-    fragcolor = vec4(1.0f, 1.0f, 1.0f, a * line_params.w + (1.0f - line_params.w));
+    fragcolor = vec4(line_color, a * line_params.w + (1.0f - line_params.w));
 }

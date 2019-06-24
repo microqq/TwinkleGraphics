@@ -94,7 +94,7 @@ void TriangleView::Initialize()
     //model matrix setting
     _model_mat = glm::mat4(1.0f);
     //scale model
-    _model_mat = glm::scale(_model_mat, glm::vec3(0.5f, 0.5f, 0.5f));
+    _model_mat = glm::scale(_model_mat, glm::vec3(2.f, 2.f, 2.f));
 
     //get shader uniform location
     _model_mat_loc = glGetUniformLocation(_program->GetRes().id, "model");

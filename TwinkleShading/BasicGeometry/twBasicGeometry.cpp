@@ -108,6 +108,7 @@ void BasicGeometryView::Initialize()
 
     _viewport_params = glm::vec4((float32)(_viewport.Width()), (float32)(_viewport.Height()), _viewport.AspectRatio(), 1.0f);
     _line_params = glm::vec4(0.05f, 0.01f, 0.99f, 1.0f);
+    _line_color = glm::vec3(1.0f, 1.0f, 1.0f);
     _line_points = new glm::vec3[5]{
         glm::vec3(-5.f, 2.5f, 0.0f),
         glm::vec3(0.0f, -5.0f, 0.0f),
@@ -128,6 +129,7 @@ void BasicGeometryView::Initialize()
         _line_mvp_loc = glGetUniformLocation(_line_program->GetRes().id, "mvp");
         _line_parameters_loc = glGetUniformLocation(_line_program->GetRes().id, "line_params");
         _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
+        _line_color_loc = glGetUniformLocation(_line_program->GetRes().id, "line_color");
     }
 }
 
@@ -301,6 +303,8 @@ void BasicGeometryView::OnParametersGUI()
                 {
 
                 }
+
+                ImGui::InputFloat3(u8"颜色", glm::value_ptr(_line_color));
             }
         }
         else if(_current_mesh_index == 0)
@@ -479,6 +483,7 @@ void BasicGeometryView::RenderLine()
         glUniformMatrix4fv(_line_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
         glUniform4fv(_line_parameters_loc, 1, glm::value_ptr(_line_params));
         glUniform4fv(_viewport_loc, 1, glm::value_ptr(_viewport_params));
+        glUniform3fv(_line_color_loc, 1, glm::value_ptr(_line_color));
 
         SubMesh::Ptr submesh = _line->GetSubMesh(0);
 
