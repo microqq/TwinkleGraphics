@@ -9,6 +9,7 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twResource.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twShader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twTransform.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twCamera.cpp
 )
 

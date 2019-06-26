@@ -7,7 +7,6 @@
 //include gl after glew
 #include <GL/gl.h>
 
-
 #include "twCommon.h"
 
 namespace TwinkleGraphics
@@ -73,22 +72,8 @@ public:
         ORTHOGRAPHIC
     };
 
-    Frustum(float32 fov, float32 aspect, float32 near, float32 far, FrustumType type = FrustumType::PERSPECTIVE)
-    {
-        _projection_matrix = glm::perspective(fov, aspect, near, far);
-    }
-    Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, FrustumType type = FrustumType::ORTHOGRAPHIC)
-    {
-        if(type == FrustumType::PERSPECTIVE)
-        {
-            _projection_matrix = glm::frustum(left, right, bottom, top, near, far);
-        }
-        else
-        {
-            _projection_matrix = glm::ortho(left, right, bottom, top, near, far);
-        }
-    }
-
+    Frustum(float32 fov, float32 aspect, float32 near, float32 far, FrustumType type = FrustumType::PERSPECTIVE);
+    Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, FrustumType type = FrustumType::ORTHOGRAPHIC);
     ~Frustum()
     {}
 

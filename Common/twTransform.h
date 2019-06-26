@@ -18,7 +18,7 @@ public:
         , _local_dirty(false)
         , _world_dirty(false)
     {}
-    ~Transform();
+    ~Transform() {}
 
     inline glm::vec3 GetPosition() { return _position; }
     inline glm::quat GetOrientation() { return _orientation; }
@@ -31,32 +31,20 @@ public:
 
     inline void SetPosition(glm::vec3 position) { _position = position; _local_dirty = _world_dirty = true; }
     inline void SetOrientation(glm::quat orientation) { _orientation = orientation; _local_dirty = _world_dirty = true; }
-    inline void SetRotation(glm::vec3 euler);
+    void SetRotation(glm::vec3 euler);
     inline void SetScale(glm::vec3 scale) { _scale = scale; _local_dirty = _world_dirty = true; }
 
     const glm::mat4& GetLocalMatrix();
     const glm::mat4& GetWorldMatrix();
 
-    inline void SetParent(Ptr parent) { _parent = parent; }
+    inline void SetParent(Ptr parent) { _parent = parent; _world_dirty = true; }
+    inline void RemoveFromParent() { _parent = nullptr; _world_dirty = true; }
     inline bool LocalDirty() { return _local_dirty; }
     inline bool WorldDirty() { return _world_dirty; }
 
 private:
-    bool ComputeLocalMatrix()
-    {
-        if(_local_dirty)
-        {
-            _local_matrix = glm::mat4();
-            glm::scale(_local_matrix, _scale);
-
-            _local_dirty = false;
-        }
-    }
-
-    bool ComputeWorldMatrix()
-    {
-
-    }
+    bool ComputeLocalMatrix();
+    bool ComputeWorldMatrix();
 
 private:
     glm::mat4 _local_matrix;
