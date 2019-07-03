@@ -120,7 +120,7 @@ public:
     void SetViewport(const Viewport& viewport) { _viewport = viewport; _viewport_dirty = true; }
     const Viewport& GetViewport() { return _viewport; }
 
-    const glm::mat4& GetViewMatrix() { return _transform->GetWorldToLocalMatrix(); }
+    glm::mat4 GetViewMatrix() { return _transform->GetWorldToLocalMatrix(); }
     const glm::mat4& GetProjectionMatrix() 
     { 
         if(_viewport_dirty)

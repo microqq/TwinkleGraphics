@@ -64,8 +64,8 @@ void BasicGeometryView::Initialize()
 
     //camera view setting: frustum and its position, orientation
     _camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
-    _view_mat = _camera->GetViewMatrix();
-    _projection_mat = _camera->GetProjectionMatrix();
+    _view_mat = glm::mat4(_camera->GetViewMatrix());
+    _projection_mat = glm::mat4(_camera->GetProjectionMatrix());
 
     _model_mat = glm::mat4(1.0f);
 
