@@ -27,8 +27,8 @@ private:
 class TriangleView : public View
 {
 public:
-    TriangleView(Viewport& viewport)
-        : View(viewport)
+    TriangleView()
+        : View()
         , _program(nullptr)
     {}
     virtual ~TriangleView()

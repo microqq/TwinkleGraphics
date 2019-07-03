@@ -17,23 +17,22 @@ namespace TwinkleGraphics
 class View
 {
 public:
-    View(Viewport& viewport);
+    View();
     ~View();
 
+    void SetViewCamera(Camera::Ptr camera) { _camera = camera; }
+
     const Viewport& GetViewport() 
-    { return _viewport; }
+    { return _camera->GetViewport(); }
 
     void Resize(float32 scale_x, float32 scale_y)
     {
-        _viewport.rect.x *= scale_x;
-        _viewport.rect.z *= scale_x;
-        _viewport.rect.y *= scale_y;
-        _viewport.rect.w *= scale_y;
+        _camera->ResizeViewport(scale_x, scale_y);
     }
 
     void Reset(Rect rect)
     {
-        _viewport.rect = rect;
+        _camera->SetViewportRect(rect);
     }
 
     View& operator = (const Viewport& viewport);
@@ -54,7 +53,7 @@ private:
     void Render();
 
 protected:
-    Viewport _viewport;
+    Camera::Ptr _camera;
 
     bool _done;
 };

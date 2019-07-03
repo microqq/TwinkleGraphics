@@ -8,6 +8,7 @@
 #include <GL/gl.h>
 
 #include "twCommon.h"
+#include "twTransform.h"
 
 namespace TwinkleGraphics
 {
@@ -63,15 +64,15 @@ struct Viewport
     }
 };
 
+enum class FrustumType
+{
+    PERSPECTIVE,
+    ORTHOGRAPHIC
+};
+
 class Frustum
 {
 public:
-    enum class FrustumType
-    {
-        PERSPECTIVE,
-        ORTHOGRAPHIC
-    };
-
     Frustum(float32 fov, float32 aspect, float32 near, float32 far, FrustumType type = FrustumType::PERSPECTIVE);
     Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, FrustumType type = FrustumType::ORTHOGRAPHIC);
     ~Frustum()
@@ -79,25 +80,70 @@ public:
 
 protected:
     glm::mat4 _projection_matrix;
+    float32 _fov;
+    float32 _aspect;
+    float32 _near;
+    float32 _far;
+
+    FrustumType _frustum_type;
 };
 
 class Camera final : public Object, public Frustum
 {
 public:
+    typedef std::shared_ptr<Camera> Ptr;
+
     Camera(Viewport viewport, float32 fov, float32 near, float32 far, FrustumType type = FrustumType::PERSPECTIVE);
     ~Camera();
 
-    void SetViewport(const Viewport& viewport) { _viewport = viewport; }
+    void LookAt(glm::vec3 center, glm::vec3 up) { _transform->LookAt(center, up); }
+    void SetPosition(glm::vec3 position) { _transform->SetPosition(position); }
+    void SetOrientation(glm::quat orientation) { _transform->SetOrientation(orientation); }
+    void Translate(glm::vec3 trans) { _transform->Translate(trans); }
+    void Rotate(glm::vec3 euler) { _transform->Rotate(euler); }
+    void Rotate(float32 angle, glm::vec3 axis) { _transform->Rotate(angle, axis); }
+
+    void ResizeViewport(float32 scale_x, float32 scale_y)
+    {
+        _viewport.rect.x *= scale_x;
+        _viewport.rect.z *= scale_x;
+        _viewport.rect.y *= scale_y;
+        _viewport.rect.w *= scale_y;
+
+        _viewport_dirty = true;
+    }
+    void SetViewportRect(Rect rect)
+    {
+        _viewport.rect = rect;
+        _viewport_dirty = true;
+    }
+    void SetViewport(const Viewport& viewport) { _viewport = viewport; _viewport_dirty = true; }
     const Viewport& GetViewport() { return _viewport; }
 
-    const glm::mat4& GetViewMatrix() { return _view_matrix; }
-    const glm::mat4& GetProjectionMatrix() { return _projection_matrix; }
+    const glm::mat4& GetViewMatrix() { return _transform->GetWorldToLocalMatrix(); }
+    const glm::mat4& GetProjectionMatrix() 
+    { 
+        if(_viewport_dirty)
+        {
+            _aspect = _viewport.AspectRatio();
+            if (_frustum_type == FrustumType::PERSPECTIVE)
+            {
+                _projection_matrix = glm::perspective(_fov, _aspect, _near, _far);
+            }
+            else
+            {
+                //compute frustum left\right\bottom...
+                //_projection_matrix = glm::ortho(left, right, bottom, top, near, far);
+            }            
+        }
+        return _projection_matrix; 
+    }
 
 private:
-    glm::mat4 _view_matrix;
     Viewport _viewport;
+    Transform::Ptr _transform;
 
-
+    bool _viewport_dirty;
 };
 } // namespace TwinkleGraphics
 

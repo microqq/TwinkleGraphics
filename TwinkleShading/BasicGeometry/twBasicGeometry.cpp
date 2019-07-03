@@ -24,7 +24,9 @@ void BasicGeometry::Install()
 
     // Initilize view
     Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    _view = new BasicGeometryView(viewport);
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    _view = new BasicGeometryView();
+    _view->SetViewCamera(camera);
     _view->Initialize();
 
     _views[_views_count++] = _view;
@@ -61,12 +63,10 @@ void BasicGeometryView::Initialize()
     CreateInfinitePlane();
 
     //camera view setting: frustum and its position, orientation
-    // glm::vec3 eye(0.0f, 10.0f, 0.0f);
-    _eye = glm::vec3(0.0f, 5.0f, 50.0f);
-    _up = glm::vec3(0.0f, 1.0f, 0.0f);
-    _center = glm::vec3(0.0f, 0.0f, 0.0f);
-    _view_mat = glm::lookAtRH(_eye, _center, _up);
-    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 1000.0f);
+    _camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
+    _view_mat = _camera->GetViewMatrix();
+    _projection_mat = _camera->GetProjectionMatrix();
+
     _model_mat = glm::mat4(1.0f);
 
     _mvp_mat = _projection_mat * _view_mat;
@@ -106,7 +106,8 @@ void BasicGeometryView::Initialize()
     }
 
 
-    _viewport_params = glm::vec4((float32)(_viewport.Width()), (float32)(_viewport.Height()), _viewport.AspectRatio(), 1.0f);
+    const Viewport& viewport = _camera->GetViewport();
+    _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
     _line_params = glm::vec4(0.05f, 0.01f, 0.99f, 1.0f);
     _line_color = glm::vec3(1.0f, 1.0f, 1.0f);
     _line_points = new glm::vec3[5]{
@@ -137,8 +138,10 @@ void BasicGeometryView::Advance(float64 delta_time)
 {
     View::Advance(delta_time);
 
-    _viewport_params = glm::vec4((float32)(_viewport.Width()), (float32)(_viewport.Height()), _viewport.AspectRatio(), 1.0f);
-    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 1000.0f);
+    const Viewport& viewport = _camera->GetViewport();
+    _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
+    _projection_mat = _camera->GetProjectionMatrix();
+    //_projection_mat = glm::perspective(glm::radians(45.0f), viewport.AspectRatio(), 0.1f, 1000.0f);
 }
 
 void BasicGeometryView::RenderImpl()
@@ -183,19 +186,19 @@ void BasicGeometryView::RenderImpl()
 
 void BasicGeometryView::OnGUI()
 {
-    ImGui::Begin(u8"相机参数");
-    {
-        bool changed = ImGui::InputFloat3(u8"相机位置", glm::value_ptr(_eye));
-        changed |= ImGui::InputFloat3(u8"视线中心", glm::value_ptr(_center));
-        changed |= ImGui::InputFloat3(u8"向上向量", glm::value_ptr(_up));
+    // ImGui::Begin(u8"相机参数");
+    // {
+    //     bool changed = ImGui::InputFloat3(u8"相机位置", glm::value_ptr(_eye));
+    //     changed |= ImGui::InputFloat3(u8"视线中心", glm::value_ptr(_center));
+    //     changed |= ImGui::InputFloat3(u8"向上向量", glm::value_ptr(_up));
 
-        if(changed)
-        {
-            _view_mat = glm::lookAtRH(_eye, _center, _up);
-            _mvp_mat = _projection_mat * _view_mat;
-        }
-    }
-    ImGui::End();
+    //     if(changed)
+    //     {
+    //         _view_mat = glm::lookAtRH(_eye, _center, _up);
+    //         _mvp_mat = _projection_mat * _view_mat;
+    //     }
+    // }
+    // ImGui::End();
 
     ImGui::Begin(u8"创建几何形体");
     {

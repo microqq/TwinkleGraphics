@@ -24,7 +24,9 @@ void FirstTriangle::Install()
 
     // Initilize view
     Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    _view = new TriangleView(viewport);
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    _view = new TriangleView();
+    _view->SetViewCamera(camera);
     _view->Initialize();
 
     _views[_views_count++] = _view;
@@ -84,12 +86,9 @@ void TriangleView::Initialize()
     _program = shaderMgr->ReadShaders(shaders_info, 2);
 
     //camera view setting: frustum and its position, orientation 
-    glm::vec3 eye(0.0f, 0.0f, 10.0f);
-    glm::vec3 up(0.0f, 1.0f, 0.0f);
-    glm::vec3 center(0.0f, 0.0f, 0.0f);
-    _view_mat = glm::lookAtRH(eye, center, up);
-
-    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 100.0f);
+    _camera->Translate(glm::vec3(0.0f, 0.0f, 10.0f));
+    _view_mat = _camera->GetViewMatrix();
+    _projection_mat = _camera->GetProjectionMatrix();
 
     //model matrix setting
     _model_mat = glm::mat4(1.0f);
@@ -106,7 +105,9 @@ void TriangleView::Advance(float64 delta_time)
 {
     View::Advance(delta_time);
 
-    _projection_mat = glm::perspective(glm::radians(45.0f), _viewport.AspectRatio(), 0.1f, 100.0f);
+    const Viewport& viewport = _camera->GetViewport();
+    _projection_mat = _camera->GetProjectionMatrix();
+    _projection_mat = glm::perspective(glm::radians(45.0f), viewport.AspectRatio(), 0.1f, 1000.0f);
 }
 
 void TriangleView::RenderImpl()

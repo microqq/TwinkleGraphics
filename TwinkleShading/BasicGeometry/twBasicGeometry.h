@@ -7,6 +7,7 @@
 #include "twPlugin.h"
 #include "twShader.h"
 #include "twMesh.h"
+#include "twCamera.h"
 
 namespace TwinkleGraphics
 {
@@ -28,8 +29,8 @@ private:
 class BasicGeometryView : public View
 {
 public:
-    BasicGeometryView(Viewport& viewport)
-        : View(viewport)
+    BasicGeometryView()
+        : View()
         , _line_points(nullptr)
         , _program(nullptr)
         , _infinite_plane_program(nullptr)
@@ -112,10 +113,6 @@ private:
     glm::vec4 _line_params;
     glm::vec4 _viewport_params;
     glm::vec3 _line_color;
-
-    glm::vec3 _eye;
-    glm::vec3 _center;
-    glm::vec3 _up;
 
     uint32* _vaos;
     uint32* _vbos;
