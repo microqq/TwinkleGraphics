@@ -40,6 +40,7 @@ public:
     void Scale(glm::vec3 scale);
     void Scale(float scale, glm::vec3 axis);
     void LookAt(glm::vec3 center, glm::vec3 up);
+    void Reset();
 
     inline glm::vec3 GetPosition() { return _position; }
     inline glm::quat GetOrientation() { return _orientation; }

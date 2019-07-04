@@ -102,6 +102,7 @@ public:
     void Translate(glm::vec3 trans) { _transform->Translate(trans); }
     void Rotate(glm::vec3 euler) { _transform->Rotate(euler); }
     void Rotate(float32 angle, glm::vec3 axis) { _transform->Rotate(angle, axis); }
+    void ResetTransform();
 
     void ResizeViewport(float32 scale_x, float32 scale_y)
     {

@@ -56,6 +56,15 @@ void Transform::LookAt(glm::vec3 center, glm::vec3 up)
 
 }
 
+void Transform::Reset()
+{
+    _position = glm::vec3();
+    _orientation = glm::identity<glm::quat>();
+    _scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    _local_dirty = _world_dirty = true;
+}
+
 glm::mat4 Transform::GetWorldToLocalMatrix()
 {
     ComputeLocalMatrix();
