@@ -23,8 +23,9 @@ public:
     void UpdateCamera();
 
     void Zoom(float32 factor);
-    void Pan(float32 x, float32 y, float32 z);
-    void Trackball(float32 x, float32 y);
+    void Pan(glm::vec3 move);
+    void Trackball(glm::vec2 p1, glm::vec2 p2);
+    void Trackball(glm::vec2 p);
 
 private:
     void Initialize();

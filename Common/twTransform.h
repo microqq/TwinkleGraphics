@@ -47,6 +47,10 @@ public:
     inline glm::vec3 GetEuler() { return glm::eulerAngles(_orientation); }
     inline glm::vec3 GetScale() { return _scale; }
 
+    glm::vec3 GetWorldPosition();
+    glm::quat GetWorldOrientation();
+    glm::vec3 GetWorldScale();
+
     inline void SetPosition(glm::vec3 position) { _position = position; _local_dirty = _world_dirty = true; }
     inline void SetOrientation(glm::quat orientation) { _orientation = orientation; _local_dirty = _world_dirty = true; }
     inline void SetScale(glm::vec3 scale) { _scale = scale; _local_dirty = _world_dirty = true; }

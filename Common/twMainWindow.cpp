@@ -98,6 +98,7 @@ void GLFWMainWindow::AddGUIFunc(IMGUI_FUNC func)
     _imgui_funcs.push_back(func);
 }
 
+
 void GLFWMainWindow::Reset()
 {
     glfwGetFramebufferSize(_window, &_width, &_height);
@@ -226,7 +227,12 @@ void GLFWMainWindow::Initialise()
 
     int attrib_counts;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attrib_counts);
-    std::cout << "GL_MAX_VERTEX_ATTRIBS:" << attrib_counts << std::endl;    
+    std::cout << "GL_MAX_VERTEX_ATTRIBS:" << attrib_counts << std::endl;
+
+    // glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int32 button, int32 action, int32 mods)
+    // {
+    // });
+    // glfwSetMouseButtonCallback(_window, MouseButtonInput);
 }
 
 void GLFWMainWindow::Terminate()

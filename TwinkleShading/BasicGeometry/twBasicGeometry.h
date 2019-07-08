@@ -8,6 +8,7 @@
 #include "twShader.h"
 #include "twMesh.h"
 #include "twCamera.h"
+#include "twOrbitControl.h"
 
 namespace TwinkleGraphics
 {
@@ -43,6 +44,7 @@ public:
         , _line(nullptr)
         , _infinite_plane(nullptr)
         , _current_mesh(nullptr)
+        , _orbitcontrol(nullptr)
         , _current_mesh_index(-1)
         , _sphere_radius(5.0f)
         , _uvsphere_longitude(50)
@@ -58,6 +60,17 @@ public:
     }
     virtual ~BasicGeometryView()
     {}
+
+    virtual void HandlerMouseLeftButtonDrag(glm::dvec2 move) override 
+    {
+        if(_orbitcontrol != nullptr)
+        {
+            // _orbitcontrol->Trackball(move);
+
+            // _view_mat = _camera->GetViewMatrix();
+            // _mvp_mat = _projection_mat * _view_mat;
+        }
+    }
 
 protected:
     virtual void Initialize() override;
@@ -132,6 +145,8 @@ private:
     Mesh::Ptr _line;
     Mesh::Ptr _infinite_plane;
     Mesh::Ptr _current_mesh;
+
+    OrbitControl* _orbitcontrol;
 
     uint32 _model_mat_loc;
     uint32 _view_mat_loc;

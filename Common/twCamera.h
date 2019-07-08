@@ -102,7 +102,13 @@ public:
     void Translate(glm::vec3 trans) { _transform->Translate(trans); }
     void Rotate(glm::vec3 euler) { _transform->Rotate(euler); }
     void Rotate(float32 angle, glm::vec3 axis) { _transform->Rotate(angle, axis); }
-    void ResetTransform();
+    void ResetTransform() { _transform->Reset(); }
+
+    glm::vec3 GetPosition() { return _transform->GetPosition(); }
+    glm::quat GetOrientation() { return _transform->GetOrientation(); }
+
+    glm::quat GetWorldOrientation() { return _transform->GetWorldOrientation(); }
+    glm::vec3 GetWorldPosition() { return _transform->GetWorldPosition(); }
 
     void ResizeViewport(float32 scale_x, float32 scale_y)
     {

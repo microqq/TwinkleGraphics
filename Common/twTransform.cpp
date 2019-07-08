@@ -65,6 +65,43 @@ void Transform::Reset()
     _local_dirty = _world_dirty = true;
 }
 
+glm::vec3 Transform::GetWorldPosition()
+{
+    if(_parent == nullptr)
+    {
+        return GetPosition();
+    }
+    else
+    {
+        return _parent->GetWorldPosition() + _position;
+    }
+}
+
+glm::quat Transform::GetWorldOrientation()
+{
+    if(_parent == nullptr)
+    {
+        return GetOrientation();
+    }
+    else
+    {
+        return _parent->GetWorldOrientation() * _orientation;
+    }
+}
+
+glm::vec3 Transform::GetWorldScale()
+{
+    if(_parent == nullptr)
+    {
+        return GetScale();
+    }
+    else
+    {
+        return _parent->GetWorldScale() * _scale;
+    }
+    
+}
+
 glm::mat4 Transform::GetWorldToLocalMatrix()
 {
     ComputeLocalMatrix();

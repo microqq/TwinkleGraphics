@@ -38,6 +38,9 @@ public:
     View& operator = (const Viewport& viewport);
     View& operator = (const View& view);
 
+    virtual void HandleMouseMove(glm::dvec2 move) {}
+    virtual void HandlerMouseLeftButtonDrag(glm::dvec2 move) {}
+
     void Run();
     void OnViewGUI() { this->OnGUI(); }
 

@@ -20,6 +20,9 @@ static std::string CurrentPlugin = std::string();
 static GLFWMainWindow mainWindow;
 
 void LoadPluginsGUI();
+void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods);
+void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
+void CursorEnterPosCallback(GLFWwindow* window, int32 entered);
 
 int main(int, char **)
 {
@@ -34,6 +37,9 @@ int main(int, char **)
 
     IMGUI_FUNC load_plugin_gui_fun = (IMGUI_FUNC)LoadPluginsGUI;
     mainWindow.AddGUIFunc(load_plugin_gui_fun);
+    mainWindow.SetMouseButtonInputCallback(MouseButtonInput);
+    mainWindow.SetCursorPosCallback(CursorPosCallback);
+    mainWindow.SetCursorPosEnterCallback(CursorEnterPosCallback);
 
     //main loop
     mainWindow.Run();
@@ -81,4 +87,21 @@ void LoadPluginsGUI(void)
         it++;
     }
     ImGui::End();
+}
+
+
+void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods)
+{
+    mainWindow.MouseButtonInput(button, action, mods);
+}
+
+
+void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos)
+{
+    mainWindow.CursorPosCallback(xpos, ypos);
+}
+
+void CursorEnterPosCallback(GLFWwindow* window, int32 entered)
+{
+    mainWindow.CursorEnterPosCallback(entered);
 }

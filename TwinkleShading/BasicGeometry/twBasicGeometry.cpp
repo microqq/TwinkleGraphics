@@ -62,6 +62,8 @@ void BasicGeometryView::Initialize()
     CreateCube();
     CreateInfinitePlane();
 
+    _orbitcontrol = new OrbitControl(_camera);
+
     //camera view setting: frustum and its position, orientation
     _camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
     _view_mat = glm::mat4(_camera->GetViewMatrix());
