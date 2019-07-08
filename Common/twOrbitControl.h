@@ -32,8 +32,10 @@ private:
 
 private:
     Camera::Ptr _camera;
+    Transform::Ptr _transform;
+    Transform::Ptr _target;
 
-    glm::vec3 _center;
+        glm::vec3 _center;
     float32 _max_distance;
     float32 _min_distance;
     float32 _distance;

@@ -65,7 +65,8 @@ void BasicGeometryView::Initialize()
     _orbitcontrol = new OrbitControl(_camera);
 
     //camera view setting: frustum and its position, orientation
-    _camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
+    //_camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
+    //_camera->Rotate(glm::radians<float32>(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     _view_mat = glm::mat4(_camera->GetViewMatrix());
     _projection_mat = glm::mat4(_camera->GetProjectionMatrix());
 
@@ -142,7 +143,9 @@ void BasicGeometryView::Advance(float64 delta_time)
 
     const Viewport& viewport = _camera->GetViewport();
     _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
+    _view_mat = _camera->GetViewMatrix();
     _projection_mat = _camera->GetProjectionMatrix();
+    _mvp_mat = _projection_mat * _view_mat;
     //_projection_mat = glm::perspective(glm::radians(45.0f), viewport.AspectRatio(), 0.1f, 1000.0f);
 }
 

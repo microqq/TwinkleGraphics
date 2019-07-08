@@ -42,9 +42,9 @@ protected:
     virtual void MouseRightButtonRelease(glm::dvec2 pos) = 0;
     virtual void MouseMiddleButtonClick(glm::dvec2 pos) = 0;
     virtual void MouseMiddleButtonRelease(glm::dvec2 pos) = 0;
-    virtual void MouseMove(glm::dvec2 move) = 0;
-    virtual void MouseLeftButtonDragMove(glm::dvec2 move) = 0;
-    virtual void MouseScroll(glm::dvec2 scroll) = 0;
+    virtual void MouseMove(glm::dvec2 pos) = 0;
+    virtual void MouseLeftButtonDragMove(glm::dvec2 pos) = 0;
+    virtual void MouseScroll(glm::dvec2 pos) = 0;
     virtual void MouseDoubleClick() = 0;
 
 protected:
@@ -86,8 +86,6 @@ public:
     {
         glfwGetCursorPos(_window, &(_cursor_pos.x), &(_cursor_pos.y));
 
-        std::cout << "mouse event x pos:" << _cursor_pos.x << "mouse event y pos:" << _cursor_pos.y << std::endl;
-
         if(button == GLFW_MOUSE_BUTTON_LEFT)
         {
             if(action == GLFW_PRESS)
@@ -124,8 +122,6 @@ public:
     }
     virtual void CursorPosCallback(float64 xpos, float64 ypos) override
     {
-        std::cout << "x pos:" << xpos << " y pos:" << ypos << std::endl;
-
         if(_left_button_down)
         {
             MouseLeftButtonDragMove(glm::dvec2(xpos, ypos));
@@ -186,21 +182,19 @@ protected:
     }
 
 
-    virtual void MouseMove(glm::dvec2 move) override {}
-    virtual void MouseLeftButtonDragMove(glm::dvec2 move) override 
+    virtual void MouseMove(glm::dvec2 pos) override {}
+    virtual void MouseLeftButtonDragMove(glm::dvec2 pos) override 
     {
-        move = move - _cursor_pos;
-
         for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
         {
             if(_views[i] == nullptr) continue;
 
-            _views[i]->HandlerMouseLeftButtonDrag(move);
+            _views[i]->HandlerMouseLeftButtonDrag(_cursor_pos, pos);
         }
 
         _left_button_dragmove = true;
     }
-    virtual void MouseScroll(glm::dvec2 scroll) override {}
+    virtual void MouseScroll(glm::dvec2 pos) override {}
     virtual void MouseDoubleClick() override {}
 
 

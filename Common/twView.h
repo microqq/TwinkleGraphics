@@ -39,6 +39,7 @@ public:
     View& operator = (const View& view);
 
     virtual void HandleMouseMove(glm::dvec2 move) {}
+    virtual void HandlerMouseLeftButtonDrag(glm::dvec2 p1, glm::dvec2 p2) {}
     virtual void HandlerMouseLeftButtonDrag(glm::dvec2 move) {}
 
     void Run();

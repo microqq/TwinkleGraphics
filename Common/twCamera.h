@@ -104,6 +104,7 @@ public:
     void Rotate(float32 angle, glm::vec3 axis) { _transform->Rotate(angle, axis); }
     void ResetTransform() { _transform->Reset(); }
 
+    Transform::Ptr GetTransform() { return _transform; }
     glm::vec3 GetPosition() { return _transform->GetPosition(); }
     glm::quat GetOrientation() { return _transform->GetOrientation(); }
 

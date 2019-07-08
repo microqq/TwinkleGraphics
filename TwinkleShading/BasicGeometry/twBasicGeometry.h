@@ -61,14 +61,14 @@ public:
     virtual ~BasicGeometryView()
     {}
 
-    virtual void HandlerMouseLeftButtonDrag(glm::dvec2 move) override 
+    virtual void HandlerMouseLeftButtonDrag(glm::dvec2 p1, glm::dvec2 p2) 
     {
-        if(_orbitcontrol != nullptr)
+        if (_orbitcontrol != nullptr)
         {
-            // _orbitcontrol->Trackball(move);
+            _orbitcontrol->Trackball(p1, p2);
 
-            // _view_mat = _camera->GetViewMatrix();
-            // _mvp_mat = _projection_mat * _view_mat;
+            _view_mat = _camera->GetViewMatrix();
+            _mvp_mat = _projection_mat * _view_mat;
         }
     }
 
