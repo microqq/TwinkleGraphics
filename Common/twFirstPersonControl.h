@@ -5,16 +5,20 @@
 
 #include "twCamera.h"
 
+#include "twCameraControl.h"
+
 namespace TwinkleGraphics
 {
-class FirstPersonControl
+class FirstPersonControl : public CameraControl
 {
 public:
-    FirstPersonControl(Camera::Ptr camera);
-    ~FirstPersonControl();
+    FirstPersonControl(Camera::Ptr camera) : CameraControl(camera) 
+    {}
+    virtual ~FirstPersonControl() {}
+
+    virtual void UpdateCamera() override {}
 
 private:
-    Camera::Ptr _camera;
 }; 
 } // namespace TwinkleGraphics
 

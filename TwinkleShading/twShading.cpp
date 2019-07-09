@@ -23,6 +23,7 @@ void LoadPluginsGUI();
 void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods);
 void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
 void CursorEnterPosCallback(GLFWwindow* window, int32 entered);
+void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy);
 
 int main(int, char **)
 {
@@ -40,6 +41,7 @@ int main(int, char **)
     mainWindow.SetMouseButtonInputCallback(MouseButtonInput);
     mainWindow.SetCursorPosCallback(CursorPosCallback);
     mainWindow.SetCursorPosEnterCallback(CursorEnterPosCallback);
+    mainWindow.SetScrollCallback(ScrollCallback);
 
     //main loop
     mainWindow.Run();
@@ -95,7 +97,6 @@ void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods
     mainWindow.MouseButtonInput(button, action, mods);
 }
 
-
 void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos)
 {
     mainWindow.CursorPosCallback(xpos, ypos);
@@ -104,4 +105,9 @@ void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos)
 void CursorEnterPosCallback(GLFWwindow* window, int32 entered)
 {
     mainWindow.CursorEnterPosCallback(entered);
+}
+
+void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy)
+{
+    mainWindow.ScrollCallback(dx, dy);
 }

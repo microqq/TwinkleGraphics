@@ -73,7 +73,8 @@ glm::vec3 Transform::GetWorldPosition()
     }
     else
     {
-        return _parent->GetWorldPosition() + _position;
+        glm::vec4 world_position =_parent->GetLocalToWorldMatrix() * glm::vec4(_position, 1.0f);
+        return glm::vec3(world_position);
     }
 }
 
@@ -99,7 +100,6 @@ glm::vec3 Transform::GetWorldScale()
     {
         return _parent->GetWorldScale() * _scale;
     }
-    
 }
 
 glm::mat4 Transform::GetWorldToLocalMatrix()
@@ -136,7 +136,7 @@ void Transform::ComputeLocalMatrix()
         scale_matrix = glm::scale(scale_matrix, 1.0f / _scale);
         
         glm::mat4 rotate_matrix = glm::mat4_cast(glm::inverse(_orientation));
-        _local_matrix = rotate_matrix * scale_matrix * translate_matrix;
+        _local_matrix = scale_matrix * rotate_matrix * translate_matrix;
 
         _local_dirty = false;
     }

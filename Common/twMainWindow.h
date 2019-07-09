@@ -30,6 +30,7 @@ public:
     virtual void MouseButtonInput(int32 button, int32 action, int32 mods) {}
     virtual void CursorPosCallback(float64 xpos, float64 ypos) {}
     virtual void CursorEnterPosCallback(int32 entered) {}
+    virtual void ScrollCallback(float64 dx, float64 dy) {}
 
 protected:
     virtual void Initialise() = 0;
@@ -44,7 +45,9 @@ protected:
     virtual void MouseMiddleButtonRelease(glm::dvec2 pos) = 0;
     virtual void MouseMove(glm::dvec2 pos) = 0;
     virtual void MouseLeftButtonDragMove(glm::dvec2 pos) = 0;
-    virtual void MouseScroll(glm::dvec2 pos) = 0;
+    virtual void MouseRightButtonDragMove(glm::dvec2 pos) = 0;
+    virtual void MouseMiddleButtonDragMove(glm::dvec2 pos) = 0;
+    virtual void MouseScroll(glm::dvec2 scroll) = 0;
     virtual void MouseDoubleClick() = 0;
 
 protected:
@@ -78,6 +81,7 @@ public:
     void SetMouseButtonInputCallback(GLFWmousebuttonfun func) { glfwSetMouseButtonCallback(_window, func); }
     void SetCursorPosCallback(GLFWcursorposfun func) { glfwSetCursorPosCallback(_window, func); }
     void SetCursorPosEnterCallback(GLFWcursorenterfun func) { glfwSetCursorEnterCallback(_window, func); }
+    void SetScrollCallback(GLFWscrollfun func) { glfwSetScrollCallback(_window, func); }
 
     virtual void Reset() override;
     virtual void Run() override;
@@ -128,7 +132,7 @@ public:
         }
         else if(_right_button_down)
         {
-            _right_button_dragmove = true;
+            MouseRightButtonDragMove(glm::dvec2(xpos, ypos));
         }
         else if(_middle_button_down)
         {
@@ -151,6 +155,12 @@ public:
         }
     }
 
+    virtual void ScrollCallback(float64 dx, float64 dy) override
+    {
+        MouseScroll(glm::dvec2(dx, dy));
+        return;
+    }
+
 protected:
     virtual void Initialise() override;
     virtual void Terminate() override;
@@ -163,6 +173,7 @@ protected:
     virtual void MouseLeftButtonRelease(glm::dvec2 pos) override
     {
         _left_button_down = false;
+        _left_button_dragmove = false;
     }
     virtual void MouseRightButtonClick(glm::dvec2 pos) override
     {
@@ -171,6 +182,7 @@ protected:
     virtual void MouseRightButtonRelease(glm::dvec2 pos) override
     {
         _right_button_down = false;
+        _right_button_dragmove = false;
     }
     virtual void MouseMiddleButtonClick(glm::dvec2 pos) override
     {
@@ -179,6 +191,7 @@ protected:
     virtual void MouseMiddleButtonRelease(glm::dvec2 pos) override
     {
         _middle_button_down = false;
+        _middle_button_dragmove = false;
     }
 
 
@@ -194,7 +207,33 @@ protected:
 
         _left_button_dragmove = true;
     }
-    virtual void MouseScroll(glm::dvec2 pos) override {}
+    virtual void MouseRightButtonDragMove(glm::dvec2 pos) override 
+    {
+        for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+        {
+            if(_views[i] == nullptr) continue;
+
+            _views[i]->HandlerMouseRightButtonDrag(_cursor_pos, pos);
+        }
+
+        _right_button_dragmove = true;
+    }
+    virtual void MouseMiddleButtonDragMove(glm::dvec2 pos) override
+    {
+
+
+        _middle_button_dragmove = true;        
+    }
+
+    virtual void MouseScroll(glm::dvec2 scroll) override 
+    {
+        for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+        {
+            if(_views[i] == nullptr) continue;
+
+            _views[i]->HandlerMouseScroll(scroll);
+        }
+    }
     virtual void MouseDoubleClick() override {}
 
 

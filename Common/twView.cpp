@@ -5,12 +5,14 @@ namespace TwinkleGraphics
 {
 View::View()
     : _camera(nullptr)
+    , _camera_control(nullptr)
     , _done(false)
 {
 }
 
 View::~View()
 {
+    _camera_control = nullptr;
 }
 
 View& View::operator=(const Viewport &viewport)

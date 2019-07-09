@@ -16,6 +16,7 @@ BasicGeometry::BasicGeometry(std::string& name)
 BasicGeometry::~BasicGeometry()
 {
     SAFE_DEL(_view);
+    SAFE_DEL(_camera_control);
 }
 
 void BasicGeometry::Install()
@@ -27,6 +28,8 @@ void BasicGeometry::Install()
     Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
     _view = new BasicGeometryView();
     _view->SetViewCamera(camera);
+    _camera_control = new OrbitControl(camera);
+    _view->SetCameraControl(_camera_control);
     _view->Initialize();
 
     _views[_views_count++] = _view;
@@ -61,8 +64,6 @@ void BasicGeometryView::Initialize()
     CreateQuad();
     CreateCube();
     CreateInfinitePlane();
-
-    _orbitcontrol = new OrbitControl(_camera);
 
     //camera view setting: frustum and its position, orientation
     //_camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
@@ -146,7 +147,6 @@ void BasicGeometryView::Advance(float64 delta_time)
     _view_mat = _camera->GetViewMatrix();
     _projection_mat = _camera->GetProjectionMatrix();
     _mvp_mat = _projection_mat * _view_mat;
-    //_projection_mat = glm::perspective(glm::radians(45.0f), viewport.AspectRatio(), 0.1f, 1000.0f);
 }
 
 void BasicGeometryView::RenderImpl()
