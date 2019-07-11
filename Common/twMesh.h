@@ -104,6 +104,12 @@ public:
     static Ptr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide);
     static Ptr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide);
     static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius);
+    static Ptr CreateQuadraticBezierLine(glm::vec3* points, int32 num);
+    static Ptr CreateCubicBezierLine(glm::vec3* points, int32 num);
+    static Ptr CreateNURBS(glm::vec3* points, int32 num, float32* konts, int32 knots_num);
+    static Ptr CreateBezierSurface(glm::vec3* ps, int32 ps_num, glm::vec3* qs, int32 qs_num);
+    static Ptr CreateNURBSSurface(glm::vec3* ps, int32 ps_num, glm::vec3* qs, int32 qs_num);
+
 
     Mesh() {}
     virtual ~Mesh() 

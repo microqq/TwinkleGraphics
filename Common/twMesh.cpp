@@ -673,4 +673,27 @@ Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
     return mesh;
 }
 
+Mesh::Ptr Mesh::CreateQuadraticBezierLine(glm::vec3 *points, int32 num)
+{
+    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+
+
+    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    mesh->AddSubMesh(submesh);
+
+    return mesh;
+}
+
+Mesh::Ptr Mesh::CreateCubicBezierLine(glm::vec3 *points, int32 num)
+{
+    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+
+    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    mesh->AddSubMesh(submesh);
+
+    return mesh;
+}
+
 } // namespace TwinkleGraphics
