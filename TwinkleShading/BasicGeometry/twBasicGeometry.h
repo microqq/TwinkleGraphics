@@ -45,6 +45,8 @@ public:
         , _line(nullptr)
         , _infinite_plane(nullptr)
         , _current_mesh(nullptr)
+        , _quadbezierline(nullptr)
+        , _cubicbezierline(nullptr)
         , _current_mesh_index(-1)
         , _sphere_radius(5.0f)
         , _uvsphere_longitude(50)
@@ -59,7 +61,8 @@ public:
     {
     }
     virtual ~BasicGeometryView()
-    {}
+    {
+    }
 
 protected:
     virtual void Initialize() override;
@@ -90,6 +93,11 @@ private:
     void CreateQuad();
     void CreateLine();
     void CreateInfinitePlane();
+    void CreateQuadBezierLine();
+    void CreateCubicBezierLine();
+    void CreateNURBS();
+    void CreateBezierSuface();
+    void CreateNuRBSSurface();
 
     void RenderUVSphere();
     void RenderNorCubeSphere();
@@ -101,7 +109,7 @@ private:
 
     void RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front_face = GL_CCW);
     void RenderInfinitePlane();
-    void RenderLine();
+    void RenderLine(Mesh::Ptr mesh, int32 index = 5);
 
     void OnParametersGUI();
 
@@ -134,6 +142,8 @@ private:
     Mesh::Ptr _line;
     Mesh::Ptr _infinite_plane;
     Mesh::Ptr _current_mesh;
+    Mesh::Ptr _quadbezierline;
+    Mesh::Ptr _cubicbezierline;
 
     uint32 _model_mat_loc;
     uint32 _view_mat_loc;

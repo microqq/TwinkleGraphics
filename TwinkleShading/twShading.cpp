@@ -20,6 +20,7 @@ static std::string CurrentPlugin = std::string();
 static GLFWMainWindow mainWindow;
 
 void LoadPluginsGUI();
+void UnLoadCurrentPlugin();
 void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods);
 void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
 void CursorEnterPosCallback(GLFWwindow* window, int32 entered);
@@ -46,6 +47,7 @@ int main(int, char **)
     //main loop
     mainWindow.Run();
 
+    UnLoadCurrentPlugin();
 
     return 0;
 }
@@ -65,13 +67,7 @@ void LoadPluginsGUI(void)
                 if(!(CurrentPlugin.empty()))
                 {
                     //unload last plugin
-                    std::string last_plugin_name = CurrentPlugin;
-                    GLPlugin *last_plugin = dynamic_cast<GLPlugin *>(pluginMgr->GetPlugin(last_plugin_name));
-                    TwinkleGraphics::View** views = last_plugin->GetViews();
-                    mainWindow.RemoveViews(views, last_plugin->GetViewsCount());
-
-                    MapPlugins::iterator last_plugin_path = PluginPaths.find(last_plugin_name);
-                    pluginMgr->UnloadPlugin(last_plugin_path->second);
+                    UnLoadCurrentPlugin();
                 }
 
                 //load plugin
@@ -89,6 +85,20 @@ void LoadPluginsGUI(void)
         it++;
     }
     ImGui::End();
+}
+
+void UnLoadCurrentPlugin()
+{
+    std::string last_plugin_name = CurrentPlugin;
+    GLPlugin *last_plugin = dynamic_cast<GLPlugin *>(pluginMgr->GetPlugin(last_plugin_name));
+    if(last_plugin != nullptr)
+    {
+        TwinkleGraphics::View **views = last_plugin->GetViews();
+        mainWindow.RemoveViews(views, last_plugin->GetViewsCount());
+
+        MapPlugins::iterator last_plugin_path = PluginPaths.find(last_plugin_name);
+        pluginMgr->UnloadPlugin(last_plugin_path->second);
+    }
 }
 
 

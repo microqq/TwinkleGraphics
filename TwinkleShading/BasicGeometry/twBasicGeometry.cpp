@@ -48,14 +48,14 @@ void BasicGeometry::UnInstall()
 void BasicGeometryView::Initialize()
 {
     //create vertex buffer object
-    _vbos = new uint32[7];
-    glGenBuffers(7, _vbos);
-    _ebos = new uint32[7];
-    glGenBuffers(7, _ebos);
+    _vbos = new uint32[12];
+    glGenBuffers(12, _vbos);
+    _ebos = new uint32[12];
+    glGenBuffers(12, _ebos);
 
     //create vertex array object
-    _vaos = new uint32[7];
-    glGenVertexArrays(7, _vaos);
+    _vaos = new uint32[12];
+    glGenVertexArrays(12, _vaos);
 
     //create sphere
     CreateUVSphere();
@@ -66,11 +66,8 @@ void BasicGeometryView::Initialize()
     CreateInfinitePlane();
 
     //camera view setting: frustum and its position, orientation
-    //_camera->Translate(glm::vec3(0.0f, 5.0f, 50.0f));
-    //_camera->Rotate(glm::radians<float32>(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     _view_mat = glm::mat4(_camera->GetViewMatrix());
     _projection_mat = glm::mat4(_camera->GetProjectionMatrix());
-
     _model_mat = glm::mat4(1.0f);
 
     _mvp_mat = _projection_mat * _view_mat;
@@ -136,6 +133,7 @@ void BasicGeometryView::Initialize()
         _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
         _line_color_loc = glGetUniformLocation(_line_program->GetRes().id, "line_color");
     }
+        
 }
 
 void BasicGeometryView::Advance(float64 delta_time)
@@ -163,18 +161,7 @@ void BasicGeometryView::RenderImpl()
 
     if(_current_mesh != nullptr)
     {
-        if( _current_mesh_index != -1 &&
-            _current_mesh_index != 6 &&
-            _current_mesh_index != 5)
-        {
-            if(_display_infplane)
-            {
-                RenderInfinitePlane();
-            }
-
-            RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
-        }
-        else if(_current_mesh_index == 6)
+        if(_current_mesh_index == 6)
         {
             RenderInfinitePlane();
         }
@@ -184,7 +171,34 @@ void BasicGeometryView::RenderImpl()
             {
                 RenderInfinitePlane();
             }
-            RenderLine();
+            RenderLine(_line);
+        }
+        else if(_current_mesh_index == 7)
+        {
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
+            RenderLine(_quadbezierline, 7);
+        }
+        else if(_current_mesh_index == 8)
+        {
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
+            RenderLine(_cubicbezierline, 8);
+        }
+        else if( _current_mesh_index != -1 &&
+            _current_mesh_index != 6 &&
+            _current_mesh_index != 5)
+        {
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
+
+            RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
         }
     }
 }
@@ -270,6 +284,24 @@ void BasicGeometryView::OnGUI()
             _front_face = GL_CCW;
             _current_mesh = _infinite_plane;
         }
+        if(ImGui::RadioButton(u8"二阶贝塞尔曲线", &_current_mesh_index, 7))
+        {
+            if(_quadbezierline == nullptr)
+            {
+                CreateQuadBezierLine();
+            }
+            _front_face = GL_CCW;
+            _current_mesh = _quadbezierline;
+        }
+        if(ImGui::RadioButton(u8"三阶贝塞尔曲线", &_current_mesh_index, 8))
+        {
+            if(_cubicbezierline == nullptr)
+            {
+                CreateCubicBezierLine();
+            }
+            _front_face = GL_CCW;
+            _current_mesh = _cubicbezierline;
+        }
     }
     ImGui::End();
 
@@ -285,9 +317,12 @@ void BasicGeometryView::OnParametersGUI()
         ImGui::Checkbox(u8"线框模式", &_polygon_linemode);
         ImGui::Checkbox(u8"显示平面", &_display_infplane);
 
-        if(_current_mesh_index == 5)
+        if(_current_mesh_index == 5 ||
+            _current_mesh_index == 7 ||
+            _current_mesh_index == 8 ||
+            _current_mesh_index == 9)
         {
-            if(_current_mesh == _line)
+            //if(_current_mesh == _line)
             {
                 ImGui::InputFloat(u8"线宽", &(_line_params.x), 0.01f);
                 ImGui::Checkbox(u8"抗锯齿", &_line_antialiasing);
@@ -363,9 +398,9 @@ void BasicGeometryView::Destroy()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     //Delete buffers
-    glDeleteVertexArrays(7, _vaos);
-    glDeleteBuffers(7, _vbos);
-    glDeleteBuffers(7, _ebos);
+    glDeleteVertexArrays(12, _vaos);
+    glDeleteBuffers(12, _vbos);
+    glDeleteBuffers(12, _ebos);
 
     SAFE_DEL_ARR(_line_points);
 
@@ -467,7 +502,7 @@ void BasicGeometryView::RenderInfinitePlane()
  * @brief 直线绘制参考（感谢文章作者）：https://zhuanlan.zhihu.com/p/59541559，文中引文值得仔细阅读。
  * 另外，GPU gems 3（chapter 25：https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch25.html）有一篇关于 gpu 绘制向量图的方法介绍。
  */
-void BasicGeometryView::RenderLine()
+void BasicGeometryView::RenderLine(Mesh::Ptr mesh, int32 index)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -477,11 +512,11 @@ void BasicGeometryView::RenderLine()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDisable(GL_CULL_FACE);
-    // if(_polygon_linemode)
-    // {
-    //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // }
-    // else
+    if(_polygon_linemode)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
@@ -493,11 +528,11 @@ void BasicGeometryView::RenderLine()
         glUniform4fv(_viewport_loc, 1, glm::value_ptr(_viewport_params));
         glUniform3fv(_line_color_loc, 1, glm::value_ptr(_line_color));
 
-        SubMesh::Ptr submesh = _line->GetSubMesh(0);
+        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 
         //draw command use vertex array object
-        glBindVertexArray(_vaos[5]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[5]);
+        glBindVertexArray(_vaos[index]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
         glDrawElements(GL_LINES_ADJACENCY, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
     }
 
@@ -589,6 +624,39 @@ void BasicGeometryView::CreateInfinitePlane()
     _infinite_plane = Mesh::CreateQuadMesh(2.0f, 2.0f);
     SubMesh::Ptr submesh = _infinite_plane->GetSubMesh(0);
     CreateGeometry(submesh, 6);
+}
+
+void BasicGeometryView::CreateQuadBezierLine()
+{
+    glm::vec3* control_points = new glm::vec3[3];
+    control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
+    control_points[1] = glm::vec3(0.f, 4.0f, 0.0f);
+    control_points[2] = glm::vec3(5.f, 0.5f, 0.0f);
+
+    _quadbezierline = Mesh::CreateQuadraticBezierLine(control_points);
+    SubMesh::Ptr submesh = _quadbezierline->GetSubMesh(0);
+    CreateGeometry(submesh, 7);
+
+    SAFE_DEL_ARR(control_points);
+}
+void BasicGeometryView::CreateCubicBezierLine()
+{
+    glm::vec3 *control_points = new glm::vec3[4];
+    control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
+    control_points[1] = glm::vec3(-2.5f, 4.0f, 0.0f);
+    control_points[2] = glm::vec3(2.5f, 0.5f, 0.0f);
+    control_points[3] = glm::vec3(5.f, 4.0f, 0.0f);
+
+    _cubicbezierline = Mesh::CreateCubicBezierLine(control_points);
+    SubMesh::Ptr submesh = _cubicbezierline->GetSubMesh(0);
+    CreateGeometry(submesh, 8);
+
+    SAFE_DEL_ARR(control_points);
+}
+void BasicGeometryView::CreateNURBS() {}
+void BasicGeometryView::CreateBezierSuface() {}
+void BasicGeometryView::CreateNuRBSSurface()
+{
 }
 
 } // namespace TwinkleGraphics
