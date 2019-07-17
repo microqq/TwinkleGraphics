@@ -34,7 +34,6 @@ enum class LineEndCapFlag
 };
 
 
-
 class Mesh;
 class SubMesh : public Object
 {
@@ -103,16 +102,19 @@ public:
     static Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count);
     static Ptr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide);
     static Ptr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide);
-    static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius);
     static Ptr CreateBezierLine(glm::vec3* points, int32 num, int32 segments = 128);
     static Ptr CreateQuadraticBezierLine(glm::vec3* points, int32 segments = 128);
     static Ptr CreateCubicBezierLine(glm::vec3* points, int32 segments = 128);
     static Ptr CreateNURBS(glm::vec3* points, int32 num, float32* konts, int32 knots_num, int32 segments = 128);
     static Ptr CreateBezierSurface(glm::vec3* ps, int32 ps_num, glm::vec3* qs, int32 qs_num);
     static Ptr CreateNURBSSurface(glm::vec3* ps, int32 ps_num, glm::vec3* qs, int32 qs_num);
+
+private:
+    static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius);
     static glm::vec3 DeCasteljau(glm::vec3* points, glm::vec3* helper, int32 num, float32 u);
     static glm::vec3 DeBoor(glm::vec3* points, int32 num, float32 u);
 
+public:
     Mesh() {}
     virtual ~Mesh() 
     { 
@@ -141,6 +143,49 @@ public:
     
 private:
     std::vector<SubMesh::Ptr> _submeshes;
+};
+
+struct BezierCurve
+{
+    glm::vec3* points;
+
+    int32 n; //points count: n + 1;
+
+    void TranslatePoint(int32 index, glm::vec3 v);
+};
+
+struct Knot
+{
+    float32 u;
+    int8 multiplity;
+};
+
+struct BSplineCurve
+{
+    glm::vec3* points;
+    Knot* knots;
+
+    int32 n; //points count: n + 1;
+    int32 m; //knots count: m + 1;
+    int32 p; //degree of curve
+
+    void TranslatePoint(int32 index, glm::vec3 v);
+    void InsertKnot(float32 u, int32 multiple = 1);
+};
+
+struct NURBSCurve
+{
+
+};
+
+struct BezierSurface
+{
+
+};
+
+struct NURBSSurface
+{
+
 };
 
 } // namespace TwinkleGraphics
