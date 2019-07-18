@@ -69,7 +69,7 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, 
 
     submesh->Initialize(num, MeshDataFlag::DEFAULT);
 
-    float32 u_step = glm::two_pi<float32>() / (float32)longitude_count;
+    float32 u_step = glm::two_pi<float32>() / (float32)(longitude_count - 1);
     float32 v_step = glm::pi<float32>() / (float32)latitude_count;
 
     //pole points
@@ -726,36 +726,6 @@ Mesh::Ptr Mesh::CreateCubicBezierLine(glm::vec3 *points, int32 segments)
 }
 
 /**
- * @brief (refer http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/, https://blog.csdn.net/tuqu/article/details/5177405)
- * 
- * @param points 
- * @param num 
- * @param konts 
- * @param knots_num 
- * @param segments 
- * @return Mesh::Ptr 
- */
-Mesh::Ptr Mesh::CreateNURBS(glm::vec3 *points, int32 num, float32 *konts, int32 knots_num, int32 segments)
-{
-    Mesh::Ptr mesh = CreateLineMesh(nullptr, segments + 1);
-
-    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
-    glm::vec3* results = submesh->GetVerticePos();
-
-    // results[0] = points[0];
-    // results[segments] = points[num - 1];
-
-    // glm::vec3* points_helper = new glm::vec3[num];
-    // for(int32 i = 1; i < segments; i++)
-    // {
-    // }
-
-    // SAFE_DEL_ARR(points_helper);
-
-    return mesh;
-}
-
-/**
  * @brief (refer http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/)
  * 
  * @param points 
@@ -781,21 +751,6 @@ glm::vec3 Mesh::DeCasteljau(glm::vec3 *points, glm::vec3* helper, int32 num, flo
     }
 
     return helper[0];
-}
-
-/**
- * @brief (refer http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/)
- * 
- * @param points 
- * @param num 
- * @param u 
- * @return glm::vec3 
- */
-glm::vec3 Mesh::DeBoor(glm::vec3 *points, int32 num, float32 u)
-{
-    glm::vec3 result;
-
-    return result;
 }
 
 } // namespace TwinkleGraphics

@@ -189,9 +189,7 @@ void BasicGeometryView::RenderImpl()
             }
             RenderLine(_cubicbezierline, 8);
         }
-        else if( _current_mesh_index != -1 &&
-            _current_mesh_index != 6 &&
-            _current_mesh_index != 5)
+        else if( _current_mesh_index != -1)
         {
             if(_display_infplane)
             {
@@ -480,6 +478,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
 void BasicGeometryView::RenderInfinitePlane()
 {
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

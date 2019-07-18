@@ -105,14 +105,10 @@ public:
     static Ptr CreateBezierLine(glm::vec3* points, int32 num, int32 segments = 128);
     static Ptr CreateQuadraticBezierLine(glm::vec3* points, int32 segments = 128);
     static Ptr CreateCubicBezierLine(glm::vec3* points, int32 segments = 128);
-    static Ptr CreateNURBS(glm::vec3* points, int32 num, float32* konts, int32 knots_num, int32 segments = 128);
-    static Ptr CreateBezierSurface(glm::vec3* ps, int32 ps_num, glm::vec3* qs, int32 qs_num);
-    static Ptr CreateNURBSSurface(glm::vec3* ps, int32 ps_num, glm::vec3* qs, int32 qs_num);
 
 private:
     static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius);
     static glm::vec3 DeCasteljau(glm::vec3* points, glm::vec3* helper, int32 num, float32 u);
-    static glm::vec3 DeBoor(glm::vec3* points, int32 num, float32 u);
 
 public:
     Mesh() {}
@@ -145,13 +141,34 @@ private:
     std::vector<SubMesh::Ptr> _submeshes;
 };
 
-struct BezierCurve
+/**
+ * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
+ */
+class BezierCurve
 {
-    glm::vec3* points;
 
-    int32 n; //points count: n + 1;
+public:
+    BezierCurve(int32 degree)
+    : _control_points(nullptr)
+    , _points_count(degree + 1)
+    {}
 
+    ~BezierCurve()
+    {
+        SAFE_DEL_ARR(_control_points);        
+    }
+
+    void SetControlPoints(glm::vec3* points, int32 count);
     void TranslatePoint(int32 index, glm::vec3 v);
+    void GenerateCurve()
+    {}
+
+private:
+    void DeCasteljau();
+
+private:
+    glm::vec3* _control_points;
+    int32 _points_count; //points count: n + 1;
 };
 
 struct Knot
@@ -160,30 +177,110 @@ struct Knot
     int8 multiplity;
 };
 
-struct BSplineCurve
+/**
+ * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
+ */
+class BSplineCurve
 {
-    glm::vec3* points;
-    Knot* knots;
+    BSplineCurve(int32 n, int32 m, int32 p)
+    : _control_points(nullptr)
+    , _knots(nullptr)
+    , _mesh(nullptr)
+    , _points_count(n + 1)
+    , _knots_count(m + 1)
+    , _degree(p)
+    {
+        _control_points = new glm::vec3[_points_count];
+        _knots = new Knot[_knots_count];
+    }
 
-    int32 n; //points count: n + 1;
-    int32 m; //knots count: m + 1;
-    int32 p; //degree of curve
+    ~BSplineCurve() 
+    {
+        SAFE_DEL_ARR(_control_points);
+        SAFE_DEL_ARR(_knots);
 
-    void TranslatePoint(int32 index, glm::vec3 v);
-    void InsertKnot(float32 u, int32 multiple = 1);
+        _mesh = nullptr;
+    }
+
+    void TranslatePoint(int32 index, glm::vec3 v)
+    {}
+    void InsertKnot(float32 u, int32 multiple = 1)
+    {}
+    void SetControlPoints(glm::vec3 *points, int32 count)
+    {
+        if(_control_points != nullptr && points != nullptr)
+        {            
+            int32 n = _points_count > count ? count : _points_count;
+            memcpy(_control_points, points, sizeof(glm::vec3) * n);
+        }
+    }
+    void SetKnots(Knot* knots, int32 count)
+    {
+        if(_knots != nullptr && knots != nullptr)
+        {
+            int m = _knots_count > count ? count : _knots_count;
+            memcpy(_knots, knots, sizeof(Knot) * m);
+        }
+    }
+    void GenerateKnots()
+    {
+        
+    }
+    void GenerateCurve(int32 segments)
+    {
+        _mesh = std::make_shared<Mesh>();
+
+        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        submesh->Initialize(_points_count, 
+            (MeshDataFlag)((int32)(MeshDataFlag::DEFAULT) | (int32)(MeshDataFlag::HAS_NORMAL))
+        );
+
+        _mesh->AddSubMesh(submesh);
+    }
+
+    Mesh::Ptr GetMesh() { return _mesh; }
+
+private:
+    /**
+     * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/single-insertion.html
+     * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/multiple-time.html
+     * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html
+     */
+    void DeBoor()
+    {
+
+    }
+
+private:
+    glm::vec3 *_control_points;
+    Knot *_knots;
+    Mesh::Ptr _mesh;
+
+    int32 _points_count; //points count: n + 1;
+    int32 _knots_count; //knots count: m + 1;
+    int32 _degree; //degree of curve
 };
 
-struct NURBSCurve
+/**
+ * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
+ */
+class NURBSCurve
 {
 
 };
 
-struct BezierSurface
+/**
+ * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
+ */
+class BezierSurface
 {
 
 };
 
-struct NURBSSurface
+/**
+ * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
+ */
+class NURBSSurface
 {
 
 };
