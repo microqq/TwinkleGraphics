@@ -174,33 +174,40 @@ private:
 struct Knot
 {
     float32 u;
-    int8 multiplity;
+    int8 multiplity = 1;
 };
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
-class BSplineCurve
+class BSplineCurve : public Object
 {
-    BSplineCurve(int32 n, int32 m, int32 p)
+public:
+    typedef std::shared_ptr<BSplineCurve> Ptr;
+
+    BSplineCurve(int32 n, int32 p)
     : _control_points(nullptr)
     , _knots(nullptr)
     , _mesh(nullptr)
     , _points_count(n + 1)
-    , _knots_count(m + 1)
+    , _knots_count(n + p + 2)
     , _degree(p)
     {
         _control_points = new glm::vec3[_points_count];
         _knots = new Knot[_knots_count];
     }
 
-    ~BSplineCurve() 
+    virtual ~BSplineCurve() 
     {
         SAFE_DEL_ARR(_control_points);
         SAFE_DEL_ARR(_knots);
 
         _mesh = nullptr;
     }
+
+    int32 GetControlPointCount() { return _points_count; }
+    int32 GetKnotsCount() { return _knots_count; }
+    int32 GetDegree() { return _degree; }
 
     void TranslatePoint(int32 index, glm::vec3 v)
     {}
@@ -218,7 +225,7 @@ class BSplineCurve
     {
         if(_knots != nullptr && knots != nullptr)
         {
-            int m = _knots_count > count ? count : _knots_count;
+            int32 m = _knots_count > count ? count : _knots_count;
             memcpy(_knots, knots, sizeof(Knot) * m);
         }
     }
@@ -226,16 +233,31 @@ class BSplineCurve
     {
         
     }
-    void GenerateCurve(int32 segments)
+    void GenerateCurve(int32 segments = 64)
     {
-        _mesh = std::make_shared<Mesh>();
+        if(_mesh == nullptr)
+        {
+            _mesh = Mesh::CreateLineMesh(nullptr, (_knots_count - 1 - 2 * _degree) * segments);
+        }
 
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-        submesh->Initialize(_points_count, 
-            (MeshDataFlag)((int32)(MeshDataFlag::DEFAULT) | (int32)(MeshDataFlag::HAS_NORMAL))
-        );
+        SubMesh::Ptr submesh = _mesh->GetSubMesh(0);
+        glm::vec3* vertices = submesh->GetVerticePos();
+        int32 n = 0;
 
-        _mesh->AddSubMesh(submesh);
+        glm::vec3* points_helper = new glm::vec3[_degree];
+
+        for(int32 i = _degree, span_count = _knots_count - 1 - _degree; i < span_count; i++)
+        {
+            float32 u_step = (_knots[i+1].u - _knots[i].u) / segments;
+            for(int32 j = 0; j < segments; j++)
+            {
+                float32 u = _knots[i].u + u_step * j;
+
+                vertices[n++] = DeBoor(u, i);
+            }
+        }
+
+        int32 a = 10;
     }
 
     Mesh::Ptr GetMesh() { return _mesh; }
@@ -246,9 +268,44 @@ private:
      * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/multiple-time.html
      * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html
      */
-    void DeBoor()
+    glm::vec3 DeBoor(float32 u, int32 span_index)
     {
+        int32 s = 0;
+        if(u == _knots[span_index].u)
+        {
+            s = _knots[span_index].multiplity;
+        }
 
+        int32 h = _degree - s; //u insert to [U_k, U_k+1) times;
+        glm::vec3 helper[h];
+        glm::vec3* last = &(_control_points[span_index - s]);
+        
+        // for(int32 i = 0; i < h; i++)
+        // {
+        //     for(int32 j = 0, count = h - i; j < count; j++)
+        //     {
+        //         float32 a = (u - _knots[span_index - s - j].u) /
+        //                     (_knots[span_index - s - j + _degree].u - _knots[span_index - s - j].u);
+
+        //         glm::vec3 p0, p1;
+        //         if (i == 0)
+        //         {
+        //             p1 = *(last - sizeof(glm::vec3) * j);
+        //             p0 = *(last - sizeof(glm::vec3) * (j + 1));
+
+        //             helper[h - j - 1] = (1 - a) * p0 + a * p1;
+        //         }
+        //         else
+        //         {
+        //             p1 = helper[h - j];
+        //             p0 = helper[h - j - 1];
+
+        //             helper[h - j] = (1 - a) * p0 + a * p1;
+        //         }
+        //     }
+        // }
+
+        return helper[0];
     }
 
 private:

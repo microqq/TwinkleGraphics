@@ -48,14 +48,14 @@ void BasicGeometry::UnInstall()
 void BasicGeometryView::Initialize()
 {
     //create vertex buffer object
-    _vbos = new uint32[12];
-    glGenBuffers(12, _vbos);
-    _ebos = new uint32[12];
-    glGenBuffers(12, _ebos);
+    _vbos = new uint32[13];
+    glGenBuffers(13, _vbos);
+    _ebos = new uint32[13];
+    glGenBuffers(13, _ebos);
 
     //create vertex array object
-    _vaos = new uint32[12];
-    glGenVertexArrays(12, _vaos);
+    _vaos = new uint32[13];
+    glGenVertexArrays(13, _vaos);
 
     //create sphere
     CreateUVSphere();
@@ -189,6 +189,14 @@ void BasicGeometryView::RenderImpl()
             }
             RenderLine(_cubicbezierline, 8);
         }
+        else if(_current_mesh_index == 9)
+        {
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
+            RenderLine(_bspline->GetMesh(), 9);
+        }
         else if( _current_mesh_index != -1)
         {
             if(_display_infplane)
@@ -300,6 +308,15 @@ void BasicGeometryView::OnGUI()
             _front_face = GL_CCW;
             _current_mesh = _cubicbezierline;
         }
+        if(ImGui::RadioButton(u8"B-样条曲线", &_current_mesh_index, 9))
+        {
+            if(_bspline == nullptr)
+            {
+                CreateBSpline();
+            }
+            _front_face = GL_CCW;
+            _current_mesh = _bspline->GetMesh();
+        }
     }
     ImGui::End();
 
@@ -396,9 +413,9 @@ void BasicGeometryView::Destroy()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     //Delete buffers
-    glDeleteVertexArrays(12, _vaos);
-    glDeleteBuffers(12, _vbos);
-    glDeleteBuffers(12, _ebos);
+    glDeleteVertexArrays(13, _vaos);
+    glDeleteBuffers(13, _vbos);
+    glDeleteBuffers(13, _ebos);
 
     SAFE_DEL_ARR(_line_points);
 
@@ -652,6 +669,42 @@ void BasicGeometryView::CreateCubicBezierLine()
 
     SAFE_DEL_ARR(control_points);
 }
+
+void BasicGeometryView::CreateBSpline()
+{
+    if(_bspline == nullptr)
+    {
+        _bspline = std::make_shared<BSplineCurve>(4, 3);
+
+        glm::vec3 *control_points = new glm::vec3[5];
+        control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
+        control_points[1] = glm::vec3(-2.5f, 4.0f, 0.0f);
+        control_points[2] = glm::vec3(2.5f, 0.5f, 0.0f);
+        control_points[3] = glm::vec3(5.f, 4.0f, 0.0f);
+        control_points[4] = glm::vec3(3.f, 8.0f, 0.0f);
+
+        _bspline->SetControlPoints(control_points, 5);
+
+        Knot* knots = new Knot[9];
+        knots[0].u = 0.0f;
+        knots[8].u = 1.0f;
+        knots[1].u = 0.1f;
+        knots[2].u = 0.2f;
+        knots[3].u = 0.3f;
+        knots[4].u = 0.4f;
+        knots[5].u = 0.5f;
+        knots[6].u = 0.6f;
+        knots[7].u = 0.8f;
+        _bspline->SetKnots(knots, 9);
+
+        _bspline->GenerateCurve();
+
+        Mesh::Ptr mesh = _bspline->GetMesh();
+        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+        CreateGeometry(submesh, 9);
+    }
+}
+
 void BasicGeometryView::CreateNURBS() {}
 void BasicGeometryView::CreateBezierSuface() {}
 void BasicGeometryView::CreateNuRBSSurface()

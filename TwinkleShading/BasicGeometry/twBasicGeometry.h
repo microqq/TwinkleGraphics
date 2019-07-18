@@ -47,6 +47,7 @@ public:
         , _current_mesh(nullptr)
         , _quadbezierline(nullptr)
         , _cubicbezierline(nullptr)
+        , _bspline(nullptr)
         , _current_mesh_index(-1)
         , _sphere_radius(5.0f)
         , _uvsphere_longitude(50)
@@ -95,6 +96,7 @@ private:
     void CreateInfinitePlane();
     void CreateQuadBezierLine();
     void CreateCubicBezierLine();
+    void CreateBSpline();
     void CreateNURBS();
     void CreateBezierSuface();
     void CreateNuRBSSurface();
@@ -144,6 +146,7 @@ private:
     Mesh::Ptr _current_mesh;
     Mesh::Ptr _quadbezierline;
     Mesh::Ptr _cubicbezierline;
+    BSplineCurve::Ptr _bspline;
 
     uint32 _model_mat_loc;
     uint32 _view_mat_loc;
