@@ -158,16 +158,16 @@ public:
         SAFE_DEL_ARR(_control_points);        
     }
 
-    void SetControlPoints(glm::vec3* points, int32 count);
-    void TranslatePoint(int32 index, glm::vec3 v);
-    void GenerateCurve()
+    virtual void SetControlPoints(glm::vec4* points, int32 count);
+    virtual void TranslatePoint(int32 index, glm::vec3 v);
+    virtual void GenerateCurve()
     {}
 
 private:
     void DeCasteljau();
 
 private:
-    glm::vec3* _control_points;
+    glm::vec4* _control_points;
     int32 _points_count; //points count: n + 1;
 };
 
@@ -189,11 +189,11 @@ public:
     : _control_points(nullptr)
     , _knots(nullptr)
     , _mesh(nullptr)
-    , _points_count(n + 1)
-    , _knots_count(n + p + 2)
+    , _points_count(n)
+    , _knots_count(n + p + 1)
     , _degree(p)
     {
-        _control_points = new glm::vec3[_points_count];
+        _control_points = new glm::vec4[_points_count];
         _knots = new Knot[_knots_count];
     }
 
@@ -209,31 +209,45 @@ public:
     int32 GetKnotsCount() { return _knots_count; }
     int32 GetDegree() { return _degree; }
 
-    void TranslatePoint(int32 index, glm::vec3 v)
-    {}
-    void InsertKnot(float32 u, int32 multiple = 1)
-    {}
-    void SetControlPoints(glm::vec3 *points, int32 count)
+    virtual void SetControlPoints(glm::vec3* points, int32 count)
     {
-        if(_control_points != nullptr && points != nullptr)
-        {            
+        if (_control_points != nullptr && points != nullptr)
+        {
             int32 n = _points_count > count ? count : _points_count;
-            memcpy(_control_points, points, sizeof(glm::vec3) * n);
+            for(int32 i =0; i < n; i++)
+            {
+                _control_points[i] = glm::vec4(points[i], 1.0f);
+            }
         }
     }
-    void SetKnots(Knot* knots, int32 count)
+    virtual void SetControlPoints(glm::vec4 *points, int32 count)
     {
-        if(_knots != nullptr && knots != nullptr)
+        if (_control_points != nullptr && points != nullptr)
+        {
+            int32 n = _points_count > count ? count : _points_count;
+            memcpy(_control_points, points, sizeof(glm::vec4) * n);
+        }
+    }
+    virtual void SetKnots(Knot *knots, int32 count)
+    {
+        if (_knots != nullptr && knots != nullptr)
         {
             int32 m = _knots_count > count ? count : _knots_count;
             memcpy(_knots, knots, sizeof(Knot) * m);
         }
     }
-    void GenerateKnots()
+    virtual void GenerateKnots()
     {
-        
     }
-    void GenerateCurve(int32 segments = 64)
+    virtual void Clamp()
+    {}
+    virtual void Close()
+    {}
+    virtual void TranslatePoint(int32 index, glm::vec3 v)
+    {}
+    virtual void InsertKnot(float32 u, int32 multiple = 1)
+    {}
+    virtual void GenerateCurve(int32 segments = 64)
     {
         if(_mesh == nullptr)
         {
@@ -243,8 +257,6 @@ public:
         SubMesh::Ptr submesh = _mesh->GetSubMesh(0);
         glm::vec3* vertices = submesh->GetVerticePos();
         int32 n = 0;
-
-        glm::vec3* points_helper = new glm::vec3[_degree];
 
         for(int32 i = _degree, span_count = _knots_count - 1 - _degree; i < span_count; i++)
         {
@@ -256,60 +268,52 @@ public:
                 vertices[n++] = DeBoor(u, i);
             }
         }
-
-        int32 a = 10;
     }
 
     Mesh::Ptr GetMesh() { return _mesh; }
 
-private:
+protected:
     /**
      * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/single-insertion.html
      * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/multiple-time.html
      * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html
      */
-    glm::vec3 DeBoor(float32 u, int32 span_index)
+    glm::vec3 DeBoor(float32 u, int32 k)
     {
         int32 s = 0;
-        if(u == _knots[span_index].u)
+        if(u == _knots[k].u)
         {
-            s = _knots[span_index].multiplity;
+            s = _knots[k].multiplity;
         }
 
         int32 h = _degree - s; //u insert to [U_k, U_k+1) times;
-        glm::vec3 helper[h];
-        glm::vec3* last = &(_control_points[span_index - s]);
-        
-        // for(int32 i = 0; i < h; i++)
-        // {
-        //     for(int32 j = 0, count = h - i; j < count; j++)
-        //     {
-        //         float32 a = (u - _knots[span_index - s - j].u) /
-        //                     (_knots[span_index - s - j + _degree].u - _knots[span_index - s - j].u);
+        glm::vec4 helper[h];
 
-        //         glm::vec3 p0, p1;
-        //         if (i == 0)
-        //         {
-        //             p1 = *(last - sizeof(glm::vec3) * j);
-        //             p0 = *(last - sizeof(glm::vec3) * (j + 1));
+        for(int32 r = 1; r <= h; r++)
+        {
+            for(int32 j = k - _degree + r, n = k - s, g = 1; j <= n; j++)
+            {
+                float32 a = (u - _knots[j].u) / (_knots[j + _degree - r + 1].u - _knots[j].u);
+                if(r == 1)
+                {
+                    helper[g - 1] = (1.0f - a) * _control_points[j - 1] + a * _control_points[j];
+                }
+                else
+                {
+                    helper[g - 1] = (1.0f - a) * helper[g - 1] + a * helper[g];
+                }
 
-        //             helper[h - j - 1] = (1 - a) * p0 + a * p1;
-        //         }
-        //         else
-        //         {
-        //             p1 = helper[h - j];
-        //             p0 = helper[h - j - 1];
+                g++;
+            }
+        }
 
-        //             helper[h - j] = (1 - a) * p0 + a * p1;
-        //         }
-        //     }
-        // }
+        glm::vec3 result = glm::vec3(helper[0].x, helper[0].y, helper[0].z) / helper[0].w;
 
-        return helper[0];
+        return result;
     }
 
-private:
-    glm::vec3 *_control_points;
+protected:
+    glm::vec4 *_control_points;
     Knot *_knots;
     Mesh::Ptr _mesh;
 
@@ -321,25 +325,101 @@ private:
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
-class NURBSCurve
+class NURBSCurve : public BSplineCurve
 {
+public:
+    typedef std::shared_ptr<BSplineCurve> Ptr;
+
+    NURBSCurve(int32 n, int32 p)
+    : BSplineCurve(n, p)
+    {}
+
+    virtual ~NURBSCurve()
+    {}
+
+    void ModifyWeight(int32 index, float32 new_weight)
+    {}
+
+private:
 
 };
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
-class BezierSurface
+class BezierSurface : public Object
 {
+public:
+    BezierSurface(int32 n1, int32 n2)
+    : _control_points(nullptr)
+    , _knots(nullptr)
+    , _u_points_count(n1)
+    , _v_points_count(n2)
+    , _u_degree(n1 - 1)
+    , _v_degree(n2 - 1)
+    {}
 
+private:
+    glm::vec3* _control_points;
+    Knot* _knots;
+
+    int32 _u_points_count;
+    int32 _v_points_count;
+    int32 _u_degree;
+    int32 _v_degree;
 };
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
-class NURBSSurface
+class NURBSSurface : public Object
 {
+public:
+    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2)
+    : _control_points(nullptr)
+    , _knots(nullptr)
+    , _mesh(nullptr)
+    , _u_points_count(n1), _v_points_count(n2)
+    , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
+    , _u_degree(p1), _v_degree(p2)
+    {}
 
+    virtual ~NURBSSurface()
+    {
+        SAFE_DEL_ARR(_control_points);
+        SAFE_DEL_ARR(_knots);
+    }
+
+    void Clamp()
+    {}
+    void Close()
+    {}
+    void TranslatePoint(int32 index, glm::vec3 direction)
+    {}
+    void InsertKnot(float32 u, int32 multiplie = 1)
+    {}
+
+    void GenerateSurface()
+    {}
+
+private:
+    glm::vec3 DeBoor(float32 u, float32 v, int32 k_u, int32 k_v)
+    {
+        return glm::vec3();        
+    }
+    
+private:
+    //row control points first
+    glm::vec3 *_control_points;
+    Knot *_knots;
+    Mesh::Ptr _mesh;
+
+    int32 _u_points_count;
+    int32 _v_points_count;
+    int32 _u_knots_count;
+    int32 _v_knots_count;
+    int32 _u_degree;
+    int32 _v_degree;
 };
 
 } // namespace TwinkleGraphics

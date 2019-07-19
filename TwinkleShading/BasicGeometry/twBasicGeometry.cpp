@@ -674,7 +674,7 @@ void BasicGeometryView::CreateBSpline()
 {
     if(_bspline == nullptr)
     {
-        _bspline = std::make_shared<BSplineCurve>(4, 3);
+        _bspline = std::make_shared<BSplineCurve>(5, 3);
 
         glm::vec3 *control_points = new glm::vec3[5];
         control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
