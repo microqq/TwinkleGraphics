@@ -5,7 +5,7 @@ namespace TwinkleGraphics
 {
 
 
-void SubMesh::Initialize(int32 num, MeshDataFlag flag)
+void SubMesh::Initialize(int32 num, int32 indice_num, MeshDataFlag flag)
 {
     if(num <= 0) return;
 
@@ -14,6 +14,12 @@ void SubMesh::Initialize(int32 num, MeshDataFlag flag)
     SAFE_DEL_ARR(_vertice_pos);
     _vertice_pos = new glm::vec3[num];
     _vertice_num = num;
+
+    if(indice_num != 0 && _indice == nullptr)
+    {
+        _indice_num = indice_num;
+        _indice = new glm::uint32[indice_num];
+    }
 
     if(flag == MeshDataFlag::DEFAULT) return;
 
@@ -67,7 +73,7 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, 
     int32 col_count = longitude_count;
     int32 num = col_count * row_count + 2;
 
-    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+    submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
 
     float32 u_step = glm::two_pi<float32>() / (float32)(longitude_count - 1);
     float32 v_step = glm::pi<float32>() / (float32)latitude_count;
@@ -200,7 +206,7 @@ Mesh::Ptr Mesh::CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide)
     row_count = col_count = subdivide + 1;
     int32 num = row_count * col_count * 6;
 
-    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+    submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
 
     submesh->_indice_num = subdivide * subdivide * 36;
     submesh->_indice = new uint32[submesh->_indice_num];
@@ -325,7 +331,7 @@ Mesh::Ptr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
     SubMesh::Ptr submesh = std::make_shared<SubMesh>();
 
     int32 num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide ) / 2);
-    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+    submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
 
     int32 indice_num = 60 * subdivide * subdivide;
     submesh->_indice_num = indice_num;
@@ -510,7 +516,7 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius
 Mesh::Ptr Mesh::CreateQuadMesh(float32 x_size, float32 y_size)
 {
     SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-    submesh->Initialize(4, MeshDataFlag::DEFAULT);
+    submesh->Initialize(4, 0, MeshDataFlag::DEFAULT);
 
     float32 half_x_size = x_size * 0.5f;
     float32 half_y_size = y_size * 0.5f;
@@ -539,7 +545,7 @@ Mesh::Ptr Mesh::CreateQuadMesh(float32 x_size, float32 y_size)
 Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
 {
     SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-    submesh->Initialize(8, MeshDataFlag::DEFAULT);
+    submesh->Initialize(8, 0, MeshDataFlag::DEFAULT);
     
     int32 indice_num = 36;
     submesh->_indice_num = indice_num;
@@ -630,7 +636,7 @@ Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
 Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
 {
     SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-    submesh->Initialize(num, MeshDataFlag::DEFAULT);
+    submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
 
     //use line_adjency
     int32 indice_num = (num - 1) * 4;

@@ -317,6 +317,15 @@ void BasicGeometryView::OnGUI()
             _front_face = GL_CCW;
             _current_mesh = _bspline->GetMesh();
         }
+        if(ImGui::RadioButton(u8"NURBS-曲面", &_current_mesh_index, 10))
+        {
+            if(_nurbs_surface == nullptr)
+            {
+                CreateNURBSSurface();
+            }
+            _front_face = GL_CCW;
+            _current_mesh = _nurbs_surface->GetMesh();
+        }
     }
     ImGui::End();
 
@@ -702,13 +711,80 @@ void BasicGeometryView::CreateBSpline()
         Mesh::Ptr mesh = _bspline->GetMesh();
         SubMesh::Ptr submesh = mesh->GetSubMesh(0);
         CreateGeometry(submesh, 9);
+
+        SAFE_DEL_ARR(control_points);
+        SAFE_DEL_ARR(knots);
     }
 }
 
 void BasicGeometryView::CreateNURBS() {}
 void BasicGeometryView::CreateBezierSuface() {}
-void BasicGeometryView::CreateNuRBSSurface()
+
+void BasicGeometryView::CreateNURBSSurface()
 {
+    if(_nurbs_surface == nullptr)
+    {
+        _nurbs_surface = std::make_shared<NURBSSurface>(4, 3, 4, 3);
+
+        int32 n = 0;
+
+        glm::vec4* control_points = new glm::vec4[16];
+        control_points[0] = glm::vec4(-5.f, 0.5f, 0.0f, 1.0f);
+        control_points[1] = glm::vec4(-4.5f, -1.5f, -1.0f, 1.0f);
+        control_points[2] = glm::vec4(-4.f, 1.5f, -3.0f, 1.0f);
+        control_points[3] = glm::vec4(-6.5f, 0.5f, -5.0f, 1.0f);
+
+        n = 4;
+        control_points[0 + n] = glm::vec4(-5.f + n * 0.6f, 0.5f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-4.5f + n * 0.6f, -1.5f, -1.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-4.f + n * 0.6f, 1.5f, -3.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-6.5f + n * 0.6f, 0.5f, -5.0f, 1.0f);
+
+        n = 8;
+        control_points[0 + n] = glm::vec4(-5.f + n * 0.6f, 0.5f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-4.5f + n * 0.6f, -1.5f, -1.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-4.f + n * 0.6f, 1.5f, -3.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-6.5f + n * 0.6f, 0.5f, -5.0f, 1.0f);
+
+        n = 12;
+        control_points[0 + n] = glm::vec4(-5.f + n * 0.6f, 0.5f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-4.5f + n * 0.6f, -1.5f, -1.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-4.f + n * 0.6f, 1.5f, -3.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-6.5f + n * 0.6f, 0.5f, -5.0f, 1.0f);
+        _nurbs_surface->SetControlPoints(control_points, 16);
+
+        Knot* u_knots = new Knot[8];
+        u_knots[0].u = 0.0f;
+        u_knots[7].u = 1.0f;
+        u_knots[1].u = 0.1f;
+        u_knots[2].u = 0.2f;
+        u_knots[3].u = 0.3f;
+        u_knots[4].u = 0.4f;
+        u_knots[5].u = 0.5f;
+        u_knots[6].u = 0.6f;
+        _nurbs_surface->SetUKnots(u_knots, 8);
+
+        Knot* v_knots = new Knot[8];
+        v_knots[0].u = 0.0f;
+        v_knots[7].u = 1.0f;
+        v_knots[1].u = 0.1f;
+        v_knots[2].u = 0.2f;
+        v_knots[3].u = 0.3f;
+        v_knots[4].u = 0.4f;
+        v_knots[5].u = 0.5f;
+        v_knots[6].u = 0.6f;
+        _nurbs_surface->SetVKnots(v_knots, 8);
+
+        _nurbs_surface->GenerateSurface();
+        Mesh::Ptr mesh = _nurbs_surface->GetMesh();
+        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+
+        CreateGeometry(submesh, 10);
+
+        SAFE_DEL_ARR(control_points);
+        SAFE_DEL_ARR(u_knots);
+        SAFE_DEL_ARR(v_knots);
+    }
 }
 
 } // namespace TwinkleGraphics

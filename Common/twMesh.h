@@ -64,7 +64,7 @@ public:
         SAFE_DEL(_indice);
     }
 
-    void Initialize(int32 num, MeshDataFlag flag);
+    void Initialize(int32 num, int32 indice_num = 0, MeshDataFlag flag = MeshDataFlag::DEFAULT);
     glm::vec3* GetVerticePos() { return _vertice_pos; }
     int32 GetVerticeNum() { return _vertice_num; }
     glm::vec4* GetVerticeColor() { return _vertice_color; }
@@ -155,13 +155,15 @@ public:
 
     ~BezierCurve()
     {
-        SAFE_DEL_ARR(_control_points);        
+        SAFE_DEL_ARR(_control_points);
     }
 
     virtual void SetControlPoints(glm::vec4* points, int32 count);
     virtual void TranslatePoint(int32 index, glm::vec3 v);
     virtual void GenerateCurve()
-    {}
+    {
+
+    }
 
 private:
     void DeCasteljau();
@@ -251,7 +253,7 @@ public:
     {
         if(_mesh == nullptr)
         {
-            _mesh = Mesh::CreateLineMesh(nullptr, (_knots_count - 1 - 2 * _degree) * segments);
+            _mesh = Mesh::CreateLineMesh(nullptr, (_knots_count - 1 - 2 * _degree) * segments + 1);
         }
 
         SubMesh::Ptr submesh = _mesh->GetSubMesh(0);
@@ -261,7 +263,13 @@ public:
         for(int32 i = _degree, span_count = _knots_count - 1 - _degree; i < span_count; i++)
         {
             float32 u_step = (_knots[i+1].u - _knots[i].u) / segments;
-            for(int32 j = 0; j < segments; j++)
+
+            int32 gen_points_count = segments;
+            if(i == span_count - 1)
+            {
+                gen_points_count = segments + 1;;
+            }
+            for(int32 j = 0; j < gen_points_count; j++)
             {
                 float32 u = _knots[i].u + u_step * j;
 
@@ -352,16 +360,32 @@ class BezierSurface : public Object
 public:
     BezierSurface(int32 n1, int32 n2)
     : _control_points(nullptr)
-    , _knots(nullptr)
+    , _v_knots(nullptr)
+    , _u_knots(nullptr)
+    , _mesh(nullptr)
     , _u_points_count(n1)
     , _v_points_count(n2)
     , _u_degree(n1 - 1)
     , _v_degree(n2 - 1)
     {}
 
+    void  Generate()
+    {
+        if(_mesh == nullptr)
+        {
+
+        }
+    }
+
 private:
-    glm::vec3* _control_points;
-    Knot* _knots;
+    glm::vec3 DeCasteljau(float32 u, glm::vec3* points, int32 n)
+    {}
+
+private:
+    glm::vec4* _control_points;
+    Knot* _v_knots;
+    Knot* _u_knots;
+    Mesh::Ptr _mesh;
 
     int32 _u_points_count;
     int32 _v_points_count;
@@ -375,19 +399,28 @@ private:
 class NURBSSurface : public Object
 {
 public:
-    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2)
+    typedef std::shared_ptr<NURBSSurface> Ptr;
+
+    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2, int32 subdivide = 16)
     : _control_points(nullptr)
-    , _knots(nullptr)
+    , _v_knots(nullptr)
+    , _u_knots(nullptr)
     , _mesh(nullptr)
     , _u_points_count(n1), _v_points_count(n2)
     , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
     , _u_degree(p1), _v_degree(p2)
-    {}
+    , _subdivide(subdivide)
+    {
+        _control_points = new glm::vec4[_u_points_count * _v_points_count];
+        _u_knots = new Knot[_u_knots_count];
+        _v_knots = new Knot[_v_knots_count];
+    }
 
     virtual ~NURBSSurface()
     {
         SAFE_DEL_ARR(_control_points);
-        SAFE_DEL_ARR(_knots);
+        SAFE_DEL_ARR(_v_knots);
+        SAFE_DEL_ARR(_u_knots);
     }
 
     void Clamp()
@@ -399,19 +432,178 @@ public:
     void InsertKnot(float32 u, int32 multiplie = 1)
     {}
 
+    void SetControlPoints(glm::vec4* points, int32 n)
+    {
+        int32 count = _u_points_count * _v_points_count;
+        if(n < count) count = n;
+
+        memcpy(_control_points, points, sizeof(glm::vec4) * count);
+    }
+
+    void SetUKnots(Knot* knots, int32 n)
+    {
+        if (_u_knots != nullptr && knots != nullptr)
+        {
+            int32 m = _u_knots_count > n ? n : _u_knots_count;
+            memcpy(_u_knots, knots, sizeof(Knot) * m);
+        }
+    }
+
+    void SetVKnots(Knot* knots, int32 n)
+    {
+        if (_v_knots != nullptr && knots != nullptr)
+        {
+            int32 m = _v_knots_count > n ? n : _v_knots_count;
+            memcpy(_v_knots, knots, sizeof(Knot) * m);
+        }
+    }
+
     void GenerateSurface()
-    {}
+    {
+        int32 v_count = (_v_knots_count - 1 - 2 * _v_degree) * _subdivide + 1;
+        int32 u_count = (_u_knots_count - 1 - 2 * _u_degree) * _subdivide + 1;
+
+        if(_mesh == nullptr)
+        {
+            SubMesh::Ptr subMesh = std::make_shared<SubMesh>();
+            subMesh->Initialize(v_count * u_count,
+                (v_count - 1) * (u_count - 1) * 6,
+                (MeshDataFlag)((int32)HAS_NORMAL | (int32)HAS_COLOR | (int32)HAS_UV)
+            );
+
+            _mesh = std::make_shared<Mesh>();
+            _mesh->AddSubMesh(subMesh);
+        }
+
+        SubMesh::Ptr subMesh = _mesh->GetSubMesh(0);
+        glm::vec3* vertices = subMesh->GetVerticePos();
+        glm::vec3* normals = subMesh->GetVerticeNormal();
+        glm::vec4* colos = subMesh->GetVerticeColor();
+        glm::vec4* uvs = subMesh->GetVerticeUV();
+        glm::uint32* indices = subMesh->GetIndice();
+        int32 gen_point_index = 0;
+        int32 gen_indice_index = 0;
+
+        int32 v_span = _v_knots_count - 1 - _v_degree;
+        int32 u_span = _u_knots_count - 1 - _u_degree;
+
+        float32 u_step = 0.0f;
+        float32 v_step = 0.0f;            
+
+        glm::vec4* v_points = new glm::vec4[v_count * _u_points_count];
+        int32 v_index = 0;
+
+        //http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/surface/bspline-de-boor.html
+        //稍微改了下计算顺序，这里按列优先计算（控制点按列优先顺序排列）
+        for(int32 col = 0; col < _u_points_count; col++)
+        {
+            for (int32 i = _v_degree; i < v_span; i++)
+            {
+                v_step = (_v_knots[i + 1].u - _v_knots[i].u) / _subdivide;
+
+                int32 gen_points_count = _subdivide;
+                if(i == v_span - 1)
+                {
+                    gen_points_count = _subdivide + 1;
+                }
+
+                glm::vec4* points = _control_points + sizeof(glm::vec4) * _v_points_count * col;
+                for (int32 j = 0; j < gen_points_count; j++)
+                {
+                    float32 v = _v_knots[i].u + v_step * j;
+
+                    v_points[v_index++] = DeBoor(v, i, _v_degree, _v_knots, points);
+                }
+            }
+        }
+
+        glm::vec4* points = new glm::vec4[_u_points_count];
+        //接下来按行序——也就是 u 方向来计算表面f(u,v)上的点
+        for(int32 row = 0; row < v_count; row++)
+        {
+            //copy control points
+            for(int32 i = 0; i < _u_points_count; i++)
+            {
+                points[i] = v_points[row + i * v_count];
+            }
+
+            for (int32 i = _u_degree; i < u_span; i++)
+            {
+                u_step = (_u_knots[i + 1].u - _u_knots[i].u) / _subdivide;
+
+                int32 gen_points_count = _subdivide;
+                if (i == u_span - 1)
+                {
+                    gen_points_count = _subdivide + 1;
+                }
+
+                for (int32 j = 0; j < gen_points_count; j++)
+                {
+                    float32 u = _u_knots[i].u + u_step * j;
+
+                    glm::vec4 result = DeBoor(u, i, _u_degree, _u_knots, points); 
+                    vertices[gen_point_index++] = glm::vec3(result.x, result.y, result.z) / result.w;
+                }
+            }
+
+            if(row != v_count -1)
+            {
+                for (int32 k = 0, g = u_count - 1; k < g; k++)
+                {
+                    indices[gen_indice_index++] = row * u_count + k;
+                    indices[gen_indice_index++] = row * u_count + k + 1;
+                    indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
+
+                    indices[gen_indice_index++] = row * u_count + k;
+                    indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
+                    indices[gen_indice_index++] = (row + 1) * u_count + k;
+                }
+            }
+        }
+
+        SAFE_DEL(v_points);
+    }
+
+    Mesh::Ptr GetMesh() { return _mesh; }
 
 private:
-    glm::vec3 DeBoor(float32 u, float32 v, int32 k_u, int32 k_v)
+    glm::vec4 DeBoor(float32 u, int32 k, int32 p, Knot* knots, glm::vec4* points)
     {
-        return glm::vec3();        
+        int32 s = 0;
+        if(u == knots[k].u)
+        {
+            s = knots[k].multiplity;
+        }
+
+        int32 h = p - s; //u insert to [U_k, U_k+1) times;
+        glm::vec4 helper[h];
+
+        for(int32 r = 1; r <= h; r++)
+        {
+            for(int32 j = k - p + r, n = k - s, g = 1; j <= n; j++)
+            {
+                float32 a = (u - knots[j].u) / (knots[j + p - r + 1].u - knots[j].u);
+                if(r == 1)
+                {
+                    helper[g - 1] = (1.0f - a) * points[j - 1] + a * points[j];
+                }
+                else
+                {
+                    helper[g - 1] = (1.0f - a) * helper[g - 1] + a * helper[g];
+                }
+
+                g++;
+            }
+        }
+
+        return helper[0];
     }
     
 private:
-    //row control points first
-    glm::vec3 *_control_points;
-    Knot *_knots;
+    //控制点列优先排列
+    glm::vec4 *_control_points;
+    Knot* _v_knots;
+    Knot* _u_knots;
     Mesh::Ptr _mesh;
 
     int32 _u_points_count;
@@ -420,6 +612,8 @@ private:
     int32 _v_knots_count;
     int32 _u_degree;
     int32 _v_degree;
+
+    int32 _subdivide;
 };
 
 } // namespace TwinkleGraphics
