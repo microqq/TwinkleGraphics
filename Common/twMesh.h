@@ -507,12 +507,16 @@ public:
                     gen_points_count = _subdivide + 1;
                 }
 
-                glm::vec4* points = _control_points + sizeof(glm::vec4) * _v_points_count * col;
                 for (int32 j = 0; j < gen_points_count; j++)
                 {
                     float32 v = _v_knots[i].u + v_step * j;
 
-                    v_points[v_index++] = DeBoor(v, i, _v_degree, _v_knots, points);
+                    v_points[v_index++] = DeBoor(v, 
+                        i, 
+                        _v_degree, 
+                        _v_knots, 
+                        &(_control_points[_v_points_count * col])
+                    );
                 }
             }
         }

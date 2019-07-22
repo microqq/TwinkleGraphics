@@ -29,6 +29,7 @@ void BasicGeometry::Install()
     _view = new BasicGeometryView();
     _view->SetViewCamera(camera);
     _camera_control = new OrbitControl(camera);
+    (dynamic_cast<OrbitControl*>(_camera_control))->SetMinDistance(1.0f);
     _view->SetCameraControl(_camera_control);
     _view->Initialize();
 
@@ -729,28 +730,28 @@ void BasicGeometryView::CreateNURBSSurface()
         int32 n = 0;
 
         glm::vec4* control_points = new glm::vec4[16];
-        control_points[0] = glm::vec4(-5.f, 0.5f, 0.0f, 1.0f);
-        control_points[1] = glm::vec4(-4.5f, -1.5f, -1.0f, 1.0f);
-        control_points[2] = glm::vec4(-4.f, 1.5f, -3.0f, 1.0f);
-        control_points[3] = glm::vec4(-6.5f, 0.5f, -5.0f, 1.0f);
+        control_points[0] = glm::vec4(-10.f, 0.5f, 0.0f, 1.0f);
+        control_points[1] = glm::vec4(-8.5f, 3.5f, -3.0f, 1.0f);
+        control_points[2] = glm::vec4(-8.f, 4.5f, -6.0f, 1.0f);
+        control_points[3] = glm::vec4(-10.5f, 0.5f, -9.0f, 1.0f);
 
         n = 4;
-        control_points[0 + n] = glm::vec4(-5.f + n * 0.6f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-4.5f + n * 0.6f, -1.5f, -1.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-4.f + n * 0.6f, 1.5f, -3.0f, 1.0f);
-        control_points[3 + n] = glm::vec4(-6.5f + n * 0.6f, 0.5f, -5.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
 
         n = 8;
-        control_points[0 + n] = glm::vec4(-5.f + n * 0.6f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-4.5f + n * 0.6f, -1.5f, -1.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-4.f + n * 0.6f, 1.5f, -3.0f, 1.0f);
-        control_points[3 + n] = glm::vec4(-6.5f + n * 0.6f, 0.5f, -5.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
 
         n = 12;
-        control_points[0 + n] = glm::vec4(-5.f + n * 0.6f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-4.5f + n * 0.6f, -1.5f, -1.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-4.f + n * 0.6f, 1.5f, -3.0f, 1.0f);
-        control_points[3 + n] = glm::vec4(-6.5f + n * 0.6f, 0.5f, -5.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
         _nurbs_surface->SetControlPoints(control_points, 16);
 
         Knot* u_knots = new Knot[8];
