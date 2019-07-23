@@ -5,6 +5,8 @@ set(TwinkleShading_SRCs
 
 add_subdirectory(FirstTriangle)
 add_subdirectory(BasicGeometry)
+add_subdirectory(TextureExplore)
+add_subdirectory(AntiAliasing)
 
 ## add executeable 
 add_executable(twShading ${CMAKE_CURRENT_LIST_DIR}/twShading.cpp)

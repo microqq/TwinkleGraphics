@@ -521,14 +521,14 @@ public:
             }
         }
 
-        glm::vec4* points = new glm::vec4[_u_points_count];
+        glm::vec4* u_points = new glm::vec4[_u_points_count];
         //接下来按行序——也就是 u 方向来计算表面f(u,v)上的点
         for(int32 row = 0; row < v_count; row++)
         {
             //copy control points
             for(int32 i = 0; i < _u_points_count; i++)
             {
-                points[i] = v_points[row + i * v_count];
+                u_points[i] = v_points[row + i * v_count];
             }
 
             for (int32 i = _u_degree; i < u_span; i++)
@@ -545,7 +545,7 @@ public:
                 {
                     float32 u = _u_knots[i].u + u_step * j;
 
-                    glm::vec4 result = DeBoor(u, i, _u_degree, _u_knots, points); 
+                    glm::vec4 result = DeBoor(u, i, _u_degree, _u_knots, u_points); 
                     vertices[gen_point_index++] = glm::vec3(result.x, result.y, result.z) / result.w;
                 }
             }
@@ -565,7 +565,8 @@ public:
             }
         }
 
-        SAFE_DEL(v_points);
+        SAFE_DEL_ARR(v_points);
+        SAFE_DEL_ARR(u_points);
     }
 
     Mesh::Ptr GetMesh() { return _mesh; }
