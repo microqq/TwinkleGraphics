@@ -41,7 +41,7 @@ void OrbitControl::Initialize()
     _camera->Translate(glm::vec3(0.0f, 0.0f, _distance));
 
     _transform->Translate(_center);
-    _transform->Rotate(glm::radians<float32>(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // _transform->Rotate(glm::radians<float32>(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void OrbitControl::UpdateCamera()
@@ -98,7 +98,7 @@ void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2)
     spherical_p1 = (spherical_p1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
     spherical_p2 = (spherical_p2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
     glm::vec2 p = spherical_p2 - spherical_p1;
-    glm::vec3 d = glm::vec3(p, 0.0f);
+    glm::vec3 d = glm::vec3(-p.x, p.y, 0.0f);
 
     glm::mat3 rot_mat = glm::mat3_cast(_transform->GetOrientation());
     d = rot_mat * d;

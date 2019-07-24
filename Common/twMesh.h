@@ -97,6 +97,7 @@ public:
     typedef std::weak_ptr<Mesh> WeakPtr;
 
     static Ptr CreateLineMesh(glm::vec3* points, int32 num);
+    static Ptr CreateLineMeshEx(glm::vec4* points, int32 num);
     static Ptr CreateQuadMesh(float32 x, float32 y);
     static Ptr CreateCubeMesh(float32 size);
     static Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count);
@@ -274,6 +275,11 @@ public:
                 float32 u = _knots[i].u + u_step * j;
 
                 vertices[n++] = DeBoor(u, i);
+
+                // std::cout << "------------------------" << std::endl;
+                // std::cout << "x:" << vertices[n - 1].x << std::endl;
+                // std::cout << "y:" << vertices[n - 1].y << std::endl;
+                // std::cout << "z:" << vertices[n - 1].z << std::endl;
             }
         }
     }
@@ -522,6 +528,11 @@ public:
                         _v_knots, 
                         &(_control_points[_v_points_count * col])
                     );
+
+                    // std::cout << "------------------------" << std::endl;
+                    // std::cout << "x:" << v_points[v_index - 1].x << std::endl;
+                    // std::cout << "y:" << v_points[v_index - 1].y << std::endl;
+                    // std::cout << "z:" << v_points[v_index - 1].z << std::endl;
                 }
             }
         }
@@ -552,6 +563,11 @@ public:
 
                     glm::vec4 result = DeBoor(u, i, _u_degree, _u_knots, u_points); 
                     vertices[gen_point_index++] = glm::vec3(result.x, result.y, result.z) / result.w;
+
+                    // std::cout << "------------------------" << std::endl;
+                    // std::cout << "x:" << vertices[gen_point_index - 1].x << std::endl;
+                    // std::cout << "y:" << vertices[gen_point_index - 1].y << std::endl;
+                    // std::cout << "z:" << vertices[gen_point_index - 1].z << std::endl;
                 }
             }
 
@@ -572,6 +588,20 @@ public:
 
         SAFE_DEL_ARR(v_points);
         SAFE_DEL_ARR(u_points);
+    }
+
+    glm::vec3 ComputePartialDerivativeOfU(float32 u, int32 i)
+    {
+        glm::vec3 u_derivative;
+
+        return u_derivative;
+    }
+
+    glm::vec3 ComputePartialDerivativeOfV(float32 v, int32 i)
+    {
+        glm::vec3 v_derivative;
+
+        return v_derivative;
     }
 
     Mesh::Ptr GetMesh() { return _mesh; }

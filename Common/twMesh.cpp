@@ -682,6 +682,55 @@ Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
     return mesh;
 }
 
+Mesh::Ptr Mesh::CreateLineMeshEx(glm::vec4 *points, int32 num)
+{
+    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
+
+    //use line_adjency
+    int32 indice_num = (num - 1) * 4;
+    submesh->_indice_num = indice_num;
+    submesh->_indice = new uint32[indice_num];
+
+    int32 indice_index = 0;
+    for(int32 i = 0; i < num - 1; i++)
+    {
+        if(i == 0)
+        {
+            submesh->_indice[indice_index++] = 0;
+        }
+        else
+        {
+            submesh->_indice[indice_index++] = i - 1;
+        }
+
+        submesh->_indice[indice_index++] = i;
+        submesh->_indice[indice_index++] = i + 1;
+
+        if(i == num - 2)
+        {
+            submesh->_indice[indice_index++] = num - 1;
+        }
+        else
+        {
+            submesh->_indice[indice_index++] = i + 2;
+        }
+    }
+
+    if(points != nullptr)
+    {
+        for (int32 i = 0; i < num; i++)
+        {
+            submesh->_vertice_pos[i] = glm::vec3(points[i]);
+        }
+    }
+
+    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    mesh->AddSubMesh(submesh);
+
+    return mesh;
+}
+
 Mesh::Ptr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments)
 {
     Mesh::Ptr mesh = CreateLineMesh(nullptr, segments + 1);
@@ -698,6 +747,11 @@ Mesh::Ptr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments)
     {
         // memcpy((void *)points_helper, (void *)points, sizeof(glm::vec3) * num);
         results[i] = DeCasteljau(points, points_helper, num, u_step * i);
+
+        // std::cout << "------------------------" << std::endl;
+        // std::cout << "x:" << results[i].x << std::endl;
+        // std::cout << "y:" << results[i].y << std::endl;
+        // std::cout << "z:" << results[i].z << std::endl;
     }
 
     SAFE_DEL_ARR(points_helper);
