@@ -764,8 +764,8 @@ void BasicGeometryView::CreateNURBSSurface()
         u_knots[5].u = 1.f;
         u_knots[6].u = 1.f;
 
-        // u_knots[3].multiplity = 4;
-        // u_knots[7].multiplity = 4;
+        // u_knots[3].multiplity = 3;
+        // u_knots[7].multiplity = 3;
         _nurbs_surface->SetUKnots(u_knots, 8);
 
         Knot* v_knots = new Knot[8];

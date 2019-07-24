@@ -295,6 +295,11 @@ protected:
         }
 
         int32 h = _degree - s; //u insert to [U_k, U_k+1) times;
+        if (h == 0)
+        {
+            return _control_points[k - _degree];
+        }
+
         glm::vec4 helper[h];
 
         for(int32 r = 1; r <= h; r++)
@@ -581,6 +586,11 @@ private:
         }
 
         int32 h = p - s; //u insert to [U_k, U_k+1) times;
+        if(h == 0)
+        {
+            return points[k - p];
+        }
+
         glm::vec4 helper[h];
 
         for(int32 r = 1; r <= h; r++)
