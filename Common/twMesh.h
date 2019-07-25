@@ -590,18 +590,32 @@ public:
         SAFE_DEL_ARR(u_points);
     }
 
-    glm::vec3 ComputePartialDerivativeOfU(float32 u, int32 i)
+    glm::vec3 ComputeNormal(float32 u, float32 v, int32 i, int32 j)
     {
-        glm::vec3 u_derivative;
+        glm::vec3 normal;
 
-        return u_derivative;
+        return normal;
     }
 
-    glm::vec3 ComputePartialDerivativeOfV(float32 v, int32 i)
+    glm::vec3 ComputeDUV(float32 u, float32 v, int32 i, int32 j)
     {
-        glm::vec3 v_derivative;
+        glm::vec3 duv;
 
-        return v_derivative;
+        return duv;
+    }
+
+    glm::vec3 ComputePDU(float32 u, float32 v, int32 i, int32 j)
+    {
+        glm::vec3 du;
+
+        return du;
+    }
+
+    glm::vec3 ComputePDV(float32 u, float32 v, int32 i, int32 j)
+    {
+        glm::vec3 dv;
+
+        return dv;
     }
 
     Mesh::Ptr GetMesh() { return _mesh; }
