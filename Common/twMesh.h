@@ -228,12 +228,12 @@ public:
     typedef std::shared_ptr<BSplineCurve> Ptr;
 
     BSplineCurve(int32 n, int32 p)
-    : _control_points(nullptr)
-    , _knots(nullptr)
-    , _mesh(nullptr)
-    , _points_count(n)
-    , _knots_count(n + p + 1)
-    , _degree(p)
+        : _control_points(nullptr)
+        , _knots(nullptr)
+        , _mesh(nullptr)
+        , _points_count(n)
+        , _knots_count(n + p + 1)
+        , _degree(p)
     {
         _control_points = new glm::vec4[_points_count];
         _knots = new Knot[_knots_count];
@@ -452,16 +452,16 @@ public:
     typedef std::shared_ptr<NURBSSurface> Ptr;
 
     NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2, int32 subdivide = 16)
-    : _control_points(nullptr)
-    , _v_knots(nullptr)
-    , _u_knots(nullptr)
-    , _mesh(nullptr)
-    , _pdu_surface(nullptr)
-    , _pdv_surface(nullptr)
-    , _u_points_count(n1), _v_points_count(n2)
-    , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
-    , _u_degree(p1), _v_degree(p2)
-    , _subdivide(subdivide)
+        : _control_points(nullptr)
+        , _v_knots(nullptr)
+        , _u_knots(nullptr)
+        , _mesh(nullptr)
+        , _pdu_surface(nullptr)
+        , _pdv_surface(nullptr)
+        , _u_points_count(n1), _v_points_count(n2)
+        , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
+        , _u_degree(p1), _v_degree(p2)
+        , _subdivide(subdivide)
     {
         _control_points = new glm::vec4[_u_points_count * _v_points_count];
         _u_knots = new Knot[_u_knots_count];
@@ -473,6 +473,8 @@ public:
         SAFE_DEL_ARR(_control_points);
         SAFE_DEL_ARR(_v_knots);
         SAFE_DEL_ARR(_u_knots);
+
+        _mesh = nullptr;
     }
 
     void Clamp()
@@ -525,6 +527,9 @@ public:
 
             _mesh = std::make_shared<Mesh>();
             _mesh->AddSubMesh(subMesh);
+
+            InitializePDUSurface();
+            InitializePDVSurface();
         }
 
         SubMesh::Ptr subMesh = _mesh->GetSubMesh(0);
@@ -541,9 +546,6 @@ public:
 
         float32 u_step = 0.0f;
         float32 v_step = 0.0f;            
-
-        glm::vec4* v_points = new glm::vec4[v_count * _u_points_count];
-        int32 v_index = 0;
 
         for (int32 i = _v_degree; i < v_span; i++)
         {
@@ -572,49 +574,65 @@ public:
                     for (int32 l = 0; l < u_points_count; l++)
                     {
                         float32 u = _u_knots[k].u + u_step * l;
-                        vertices[gen_point_index++] = GetPoint(u, v, k, i);
+                        glm::vec3 suv = vertices[gen_point_index] = GetPoint(u, v, k, i);
+                        normals[gen_point_index++] = ComputeNormal(u, v, k, i, suv);
                     }
                 }
             }
         }
 
-        //http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/surface/bspline-de-boor.html
-        //稍微改了下计算顺序，这里按列优先计算（控制点按列优先顺序排列）
-        for(int32 col = 0; col < _u_points_count; col++)
-        {
-            for (int32 i = _v_degree; i < v_span; i++)
-            {
-                v_step = (_v_knots[i + 1].u - _v_knots[i].u) / _subdivide;
+        // glm::vec4 *v_points = new glm::vec4[v_count * _u_points_count];
+        // int32 v_index = 0;
+        // //http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/surface/bspline-de-boor.html
+        // //稍微改了下计算顺序，这里按列优先计算（控制点按列优先顺序排列）
+        // for(int32 col = 0; col < _u_points_count; col++)
+        // {
+        //     for (int32 i = _v_degree; i < v_span; i++)
+        //     {
+        //         v_step = (_v_knots[i + 1].u - _v_knots[i].u) / _subdivide;
 
-                int32 gen_points_count = _subdivide;
-                if(i == v_span - 1)
-                {
-                    gen_points_count = _subdivide + 1;
-                }
+        //         int32 gen_points_count = _subdivide;
+        //         if(i == v_span - 1)
+        //         {
+        //             gen_points_count = _subdivide + 1;
+        //         }
 
-                for (int32 j = 0; j < gen_points_count; j++)
-                {
-                    float32 v = _v_knots[i].u + v_step * j;
+        //         for (int32 j = 0; j < gen_points_count; j++)
+        //         {
+        //             float32 v = _v_knots[i].u + v_step * j;
 
-                    v_points[v_index++] = DeBoor(v, 
-                        i, 
-                        _v_degree, 
-                        _v_knots, 
-                        &(_control_points[_v_points_count * col])
-                    );
+        //             v_points[v_index++] = DeBoor(v, 
+        //                 i, 
+        //                 _v_degree, 
+        //                 _v_knots, 
+        //                 &(_control_points[_v_points_count * col])
+        //             );
 
-                    // std::cout << "------------------------" << std::endl;
-                    // std::cout << "x:" << v_points[v_index - 1].x << std::endl;
-                    // std::cout << "y:" << v_points[v_index - 1].y << std::endl;
-                    // std::cout << "z:" << v_points[v_index - 1].z << std::endl;
-                }
-            }
-        }
+        //             // std::cout << "------------------------" << std::endl;
+        //             // std::cout << "x:" << v_points[v_index - 1].x << std::endl;
+        //             // std::cout << "y:" << v_points[v_index - 1].y << std::endl;
+        //             // std::cout << "z:" << v_points[v_index - 1].z << std::endl;
+        //         }
+        //     }
+        // }
 
-        glm::vec4* u_points = new glm::vec4[_u_points_count];
-        //接下来按行序——也就是 u 方向来计算表面f(u,v)上的点
+        // glm::vec4* u_points = new glm::vec4[_u_points_count];
+        // //接下来按行序——也就是 u 方向来计算表面f(u,v)上的点
         for(int32 row = 0; row < v_count; row++)
         {
+            if (row != v_count - 1)
+            {
+                for (int32 k = 0, g = u_count - 1; k < g; k++)
+                {
+                    indices[gen_indice_index++] = row * u_count + k;
+                    indices[gen_indice_index++] = row * u_count + k + 1;
+                    indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
+
+                    indices[gen_indice_index++] = row * u_count + k;
+                    indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
+                    indices[gen_indice_index++] = (row + 1) * u_count + k;
+                }
+            }
             // //copy control points
             // for(int32 i = 0; i < _u_points_count; i++)
             // {
@@ -644,24 +662,10 @@ public:
             //         // std::cout << "z:" << vertices[gen_point_index - 1].z << std::endl;
             //     }
             // }
-
-            if(row != v_count -1)
-            {
-                for (int32 k = 0, g = u_count - 1; k < g; k++)
-                {
-                    indices[gen_indice_index++] = row * u_count + k;
-                    indices[gen_indice_index++] = row * u_count + k + 1;
-                    indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
-
-                    indices[gen_indice_index++] = row * u_count + k;
-                    indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
-                    indices[gen_indice_index++] = (row + 1) * u_count + k;
-                }
-            }
         }
 
-        SAFE_DEL_ARR(v_points);
-        SAFE_DEL_ARR(u_points);
+        // SAFE_DEL_ARR(v_points);
+        // SAFE_DEL_ARR(u_points);
     }
 
     glm::vec3 GetPoint(float32 u, float32 v)
@@ -837,6 +841,15 @@ private:
     {
         glm::vec3 pdu = _pdu_surface->GetPoint(u, v) - suv;
         glm::vec3 pdv = _pdv_surface->GetPoint(u, v) - suv;
+
+        glm::vec3 normal = glm::normalize(glm::cross(pdu, pdv));
+        return normal;
+    }
+
+    glm::vec3 ComputeNormal(float32 u, float32 v, int32 uspan, int32 vspan, glm::vec3 suv)
+    {
+        glm::vec3 pdu = _pdu_surface->GetPoint(u, v, uspan - 1, vspan) - suv;
+        glm::vec3 pdv = _pdv_surface->GetPoint(u, v, uspan, vspan - 1) - suv;
 
         glm::vec3 normal = glm::normalize(glm::cross(pdu, pdv));
         return normal;
