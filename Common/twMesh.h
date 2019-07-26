@@ -456,8 +456,8 @@ public:
         , _v_knots(nullptr)
         , _u_knots(nullptr)
         , _mesh(nullptr)
-        , _pdu_surface(nullptr)
-        , _pdv_surface(nullptr)
+        , _apdu_surface(nullptr)
+        , _apdv_surface(nullptr)
         , _u_points_count(n1), _v_points_count(n2)
         , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
         , _u_degree(p1), _v_degree(p2)
@@ -528,8 +528,8 @@ public:
             _mesh = std::make_shared<Mesh>();
             _mesh->AddSubMesh(subMesh);
 
-            InitializePDUSurface();
-            InitializePDVSurface();
+            InitializeAPDUSurface();
+            InitializeAPDVSurface();
         }
 
         SubMesh::Ptr subMesh = _mesh->GetSubMesh(0);
@@ -574,8 +574,16 @@ public:
                     for (int32 l = 0; l < u_points_count; l++)
                     {
                         float32 u = _u_knots[k].u + u_step * l;
-                        glm::vec3 suv = vertices[gen_point_index] = GetPoint(u, v, k, i);
+                        glm::vec4 suv = GetPoint(u, v, k, i);
+                        vertices[gen_point_index] = glm::vec3(suv.x, suv.y, suv.z) / suv.w;
                         normals[gen_point_index++] = ComputeNormal(u, v, k, i, suv);
+
+                        // vertices[gen_point_index - 1] += normals[gen_point_index - 1] * 1.0f;
+
+                        // std::cout << "-----------normal-------------" << std::endl;
+                        // std::cout << "x:" << normals[gen_point_index - 1].x << std::endl;
+                        // std::cout << "y:" << normals[gen_point_index - 1].y << std::endl;
+                        // std::cout << "z:" << normals[gen_point_index - 1].z << std::endl;
                     }
                 }
             }
@@ -668,7 +676,7 @@ public:
         // SAFE_DEL_ARR(u_points);
     }
 
-    glm::vec3 GetPoint(float32 u, float32 v)
+    glm::vec4 GetPoint(float32 u, float32 v)
     {
         int32 v_span = FindKnotSpanOfV(v);
         int32 u_span = FindKnotSpanOfU(u);
@@ -676,7 +684,7 @@ public:
         return GetPoint(u, v, u_span, v_span);
     }
 
-    glm::vec3 GetPoint(float32 u, float32 v, int32 uspan, int32 vspan)
+    glm::vec4 GetPoint(float32 u, float32 v, int32 uspan, int32 vspan)
     {
         glm::vec4 u_points[_u_points_count];
         for(int32 col = 0; col < _u_points_count; col++)
@@ -730,12 +738,12 @@ public:
     Mesh::Ptr GetMesh() { return _mesh; }
 
 private:
-    void InitializePDUSurface()
+    void InitializeAPDUSurface()
     {
-        if(_pdu_surface == nullptr)
+        if(_apdu_surface == nullptr)
         {
-            _pdu_surface = std::make_shared<NURBSSurface>(_u_points_count - 1, _u_degree - 1, _v_points_count, _v_degree);
-            glm::vec4* points = _pdu_surface->GetControlPoints();
+            _apdu_surface = std::make_shared<NURBSSurface>(_u_points_count - 1, _u_degree - 1, _v_points_count, _v_degree);
+            glm::vec4* points = _apdu_surface->GetControlPoints();
 
             for(int32 col = 0, col_count = _u_points_count - 1; col < col_count; col++)
             {
@@ -747,46 +755,89 @@ private:
 
                     points[index] = ((_control_points[index_p1] - _control_points[index_p0]) * (float32)_u_degree)
                         / (_u_knots[col + 1 + _u_degree].u - _u_knots[col + 1].u);
+
+                    float32 w = points[index].w;
+                    if(w == 0.0f)
+                    {
+                        points[index].w = 1.0f;
+                        w = _control_points[index_p1].w;
+                    }
+
+                    points[index] *= w;
+
                 }
             }
 
-            Knot* knots = _pdu_surface->GetUKnots();
-            memcpy(knots, _u_knots + sizeof(Knot), _u_knots_count - 2);
+            Knot* uknots = _apdu_surface->GetUKnots();
+            memcpy(uknots, _u_knots + 1, (_u_knots_count - 2) * sizeof(Knot));
 
-            if (_u_knots[0].u == _u_knots[_v_degree].u)
+            Knot* vknots = _apdu_surface->GetVKnots();
+            memcpy(vknots, _v_knots, _v_knots_count * sizeof(Knot));
+
+            if (_u_knots[0].u == _u_knots[_u_degree].u)
             {
-                knots[_u_degree - 1].multiplity--;
+                uknots[_u_degree - 1].multiplity--;
             }
+            if(_u_knots[_u_knots_count - 1].multiplity > 1)
+            {
+                uknots[_u_knots_count - 3].multiplity = _u_knots[_u_knots_count - 1].multiplity - 1;
+            }
+
+            // for(int32 i = 0; i < _u_knots_count - 2; i++)
+            // {
+            //     std::cout << uknots[i].u << std::endl;
+            // }
         }
     }
 
-    void InitializePDVSurface()
+    void InitializeAPDVSurface()
     {
-        if(_pdv_surface == nullptr)
+        if(_apdv_surface == nullptr)
         {
-            _pdv_surface = std::make_shared<NURBSSurface>(_u_points_count, _u_degree, _v_points_count - 1, _v_degree - 1);
-            glm::vec4* points = _pdv_surface->GetControlPoints();
+            _apdv_surface = std::make_shared<NURBSSurface>(_u_points_count, _u_degree, _v_points_count - 1, _v_degree - 1);
+            glm::vec4* points = _apdv_surface->GetControlPoints();
 
             for(int32 col = 0; col < _u_points_count; col++)
             {
                 for(int32 row = 0, row_count = _v_points_count - 1; row < row_count; row++)
                 {
-                    int32 index = col * _v_points_count + row;
+                    int32 index = col * row_count + row;
                     int32 index_p1 = index + 1;
                     int32 index_p0 = index;
 
                     points[index] = ((_control_points[index_p1] - _control_points[index_p0]) * (float32)_v_degree)
-                        / (_v_knots[col + 1 + _v_degree].u - _v_knots[col + 1].u);
+                        / (_v_knots[row + 1 + _v_degree].u - _v_knots[row + 1].u);
+
+                    float32 w = points[index].w;
+                    if(w == 0.0f)
+                    {
+                        points[index].w = 1.0f;
+                        w = _control_points[index_p1].w;
+                    }
+
+                    points[index] *= w;
                 }
             }
 
-            Knot* knots = _pdv_surface->GetUKnots();
-            memcpy(knots, _v_knots + sizeof(Knot), _v_knots_count - 2);
+            Knot* vknots = _apdv_surface->GetVKnots();
+            memcpy(vknots, _v_knots + 1, (_v_knots_count - 2) * sizeof(Knot));
+
+            Knot* uknots = _apdv_surface->GetUKnots();
+            memcpy(uknots, _u_knots, _u_knots_count * sizeof(Knot));
 
             if(_v_knots[0].u == _v_knots[_v_degree].u)
             {
-                knots[_v_degree - 1].multiplity--;
+                vknots[_v_degree - 1].multiplity--;
             }
+            if (_v_knots[_v_knots_count - 1].multiplity > 1)
+            {
+                vknots[_v_knots_count - 3].multiplity = _v_knots[_v_knots_count - 1].multiplity - 1;
+            }
+
+            // for(int32 i = 0; i < _v_knots_count - 2; i++)
+            // {
+            //     std::cout << vknots[i].u << std::endl;
+            // }
         }
     }
 
@@ -839,17 +890,26 @@ private:
      */
     glm::vec3 ComputeNormal(float32 u, float32 v, glm::vec3 suv)
     {
-        glm::vec3 pdu = _pdu_surface->GetPoint(u, v) - suv;
-        glm::vec3 pdv = _pdv_surface->GetPoint(u, v) - suv;
+        int32 uspan = FindKnotSpanOfU(u);
+        int32 vspan = FindKnotSpanOfV(v);
 
-        glm::vec3 normal = glm::normalize(glm::cross(pdu, pdv));
-        return normal;
+        return ComputeNormal(u, v, uspan, vspan, suv);
     }
 
     glm::vec3 ComputeNormal(float32 u, float32 v, int32 uspan, int32 vspan, glm::vec3 suv)
     {
-        glm::vec3 pdu = _pdu_surface->GetPoint(u, v, uspan - 1, vspan) - suv;
-        glm::vec3 pdv = _pdv_surface->GetPoint(u, v, uspan, vspan - 1) - suv;
+        float32 w = _control_points[uspan * _v_points_count + vspan].w;
+
+        glm::vec4 apdu_point = _apdu_surface->GetPoint(u, v, uspan - 1, vspan);
+        glm::vec3 apdu = glm::vec3(apdu_point.x, apdu_point.y, apdu_point.z) / apdu_point.w;
+        float32 wpdu = 0.0f; //apdu_point.w;
+
+        glm::vec4 apdv_point = _apdv_surface->GetPoint(u, v, uspan, vspan - 1);
+        glm::vec3 apdv = glm::vec3(apdv_point.x, apdv_point.y, apdv_point.z) / apdv_point.w;
+        float32 wpdv = 0.0f; //apdv_point.w;
+
+        glm::vec3 pdu = (apdu - wpdu * suv) / w;
+        glm::vec3 pdv = (apdv - wpdv * suv) / w;
 
         glm::vec3 normal = glm::normalize(glm::cross(pdu, pdv));
         return normal;
@@ -872,14 +932,11 @@ private:
      * @param j
      * @return glm::vec3 
      */
-    glm::vec3 ComputePDU(float32 u, float32 v)
+    glm::vec4 ComputeAPDU(float32 u, float32 v)
     {
-        InitializePDUSurface();
+        InitializeAPDUSurface();
 
-        glm::vec3 a_uv = _pdu_surface->GetPoint(u, v);
-        glm::vec3 s_uv = this->GetPoint(u, v);
-
-        return a_uv - s_uv;
+        return _apdu_surface->GetPoint(u, v);
     }
 
     /**
@@ -892,14 +949,11 @@ private:
      * @param j 
      * @return glm::vec3 
      */
-    glm::vec3 ComputePDV(float32 u, float32 v)
+    glm::vec4 ComputeAPDV(float32 u, float32 v)
     {
-        InitializePDVSurface();
+        InitializeAPDVSurface();
 
-        glm::vec3 a_uv = _pdv_surface->GetPoint(u, v);
-        glm::vec3 s_uv = this->GetPoint(u, v);
-
-        return a_uv - s_uv;    
+        return _apdv_surface->GetPoint(u, v);
     }
 
 private:
@@ -908,8 +962,8 @@ private:
     Knot* _v_knots;
     Knot* _u_knots;
     Mesh::Ptr _mesh;
-    NURBSSurface::Ptr _pdu_surface;
-    NURBSSurface::Ptr _pdv_surface;
+    NURBSSurface::Ptr _apdu_surface;
+    NURBSSurface::Ptr _apdv_surface;
 
     int32 _u_points_count;
     int32 _v_points_count;
