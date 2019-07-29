@@ -451,7 +451,7 @@ class NURBSSurface : public Object
 public:
     typedef std::shared_ptr<NURBSSurface> Ptr;
 
-    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2, int32 subdivide = 16)
+    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2, int32 subdivide = 16, bool rational = false)
         : _control_points(nullptr)
         , _v_knots(nullptr)
         , _u_knots(nullptr)
@@ -462,6 +462,7 @@ public:
         , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
         , _u_degree(p1), _v_degree(p2)
         , _subdivide(subdivide)
+        , _rational(rational)
     {
         _control_points = new glm::vec4[_u_points_count * _v_points_count];
         _u_knots = new Knot[_u_knots_count];
@@ -576,9 +577,14 @@ public:
                         float32 u = _u_knots[k].u + u_step * l;
                         glm::vec4 suv = GetPoint(u, v, k, i);
                         vertices[gen_point_index] = glm::vec3(suv.x, suv.y, suv.z) / suv.w;
-                        normals[gen_point_index++] = ComputeNormal(u, v, k, i, suv);
+                        normals[gen_point_index++] = ComputeNormal(u, 
+                            v, 
+                            k, 
+                            i, 
+                            glm::vec3(suv.x, suv.y, suv.z) / suv.w
+                        );
 
-                        // vertices[gen_point_index - 1] += normals[gen_point_index - 1] * 1.0f;
+                        vertices[gen_point_index - 1] += normals[gen_point_index - 1] * 1.0f;
 
                         // std::cout << "-----------normal-------------" << std::endl;
                         // std::cout << "x:" << normals[gen_point_index - 1].x << std::endl;
@@ -756,15 +762,21 @@ private:
                     points[index] = ((_control_points[index_p1] - _control_points[index_p0]) * (float32)_u_degree)
                         / (_u_knots[col + 1 + _u_degree].u - _u_knots[col + 1].u);
 
-                    float32 w = points[index].w;
-                    if(w == 0.0f)
+                    if(!_rational)
                     {
                         points[index].w = 1.0f;
-                        w = _control_points[index_p1].w;
                     }
+                    else
+                    {
+                        float32 w = points[index].w;
+                        if (w == 0.0f)
+                        {
+                            points[index].w = 1.0f;
+                            w = _control_points[index_p1].w;
+                        }
 
-                    points[index] *= w;
-
+                        points[index] *= w;
+                    }
                 }
             }
 
@@ -808,14 +820,21 @@ private:
                     points[index] = ((_control_points[index_p1] - _control_points[index_p0]) * (float32)_v_degree)
                         / (_v_knots[row + 1 + _v_degree].u - _v_knots[row + 1].u);
 
-                    float32 w = points[index].w;
-                    if(w == 0.0f)
+                    if (!_rational)
                     {
                         points[index].w = 1.0f;
-                        w = _control_points[index_p1].w;
                     }
+                    else
+                    {
+                        float32 w = points[index].w;
+                        if (w == 0.0f)
+                        {
+                            points[index].w = 1.0f;
+                            w = _control_points[index_p1].w;
+                        }
 
-                    points[index] *= w;
+                        points[index] *= w;
+                    }
                 }
             }
 
@@ -898,18 +917,18 @@ private:
 
     glm::vec3 ComputeNormal(float32 u, float32 v, int32 uspan, int32 vspan, glm::vec3 suv)
     {
-        float32 w = _control_points[uspan * _v_points_count + vspan].w;
+        float32 w = _rational ? _control_points[uspan * _v_points_count + vspan].w : 1.0f;
 
         glm::vec4 apdu_point = _apdu_surface->GetPoint(u, v, uspan - 1, vspan);
         glm::vec3 apdu = glm::vec3(apdu_point.x, apdu_point.y, apdu_point.z) / apdu_point.w;
-        float32 wpdu = 0.0f; //apdu_point.w;
+        float32 wpdu = _rational ? apdu_point.w : 0.0f;
 
         glm::vec4 apdv_point = _apdv_surface->GetPoint(u, v, uspan, vspan - 1);
         glm::vec3 apdv = glm::vec3(apdv_point.x, apdv_point.y, apdv_point.z) / apdv_point.w;
-        float32 wpdv = 0.0f; //apdv_point.w;
+        float32 wpdv = _rational ? apdv_point.w : 0.0f;
 
-        glm::vec3 pdu = (apdu - wpdu * suv) / w;
-        glm::vec3 pdv = (apdv - wpdv * suv) / w;
+        glm::vec3 pdu = glm::normalize((apdu - wpdu * suv) / w);
+        glm::vec3 pdv = glm::normalize((apdv - wpdv * suv) / w);
 
         glm::vec3 normal = glm::normalize(glm::cross(pdu, pdv));
         return normal;
@@ -973,6 +992,8 @@ private:
     int32 _v_degree;
 
     int32 _subdivide;
+
+    bool _rational;
 };
 
 } // namespace TwinkleGraphics
