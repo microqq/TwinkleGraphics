@@ -802,8 +802,8 @@ private:
                 for(int32 row = 0, row_count = _v_points_count - 1; row < row_count; row++)
                 {
                     int32 index = col * row_count + row;
-                    int32 index_p1 = index + 1;
-                    int32 index_p0 = index;
+                    int32 index_p0 = col * _v_points_count + row;
+                    int32 index_p1 = index_p0 + 1;
 
                     points[index] = ((_control_points[index_p1] - _control_points[index_p0]) * (float32)_v_degree)
                         / (_v_knots[row + 1 + _v_degree].u - _v_knots[row + 1].u);
