@@ -792,7 +792,7 @@ private:
             }
             if(_u_knots[_u_knots_count - 1].multiplity > 1)
             {
-                uknots[_u_knots_count - 3].multiplity = _u_knots[_u_knots_count - 1].multiplity - 1;
+                uknots[_u_knots_count - 3].multiplity = _u_knots[_u_knots_count - 1].multiplity;
             }
 
             // for(int32 i = 0; i < _u_knots_count - 2; i++)
@@ -850,7 +850,7 @@ private:
             }
             if (_v_knots[_v_knots_count - 1].multiplity > 1)
             {
-                vknots[_v_knots_count - 3].multiplity = _v_knots[_v_knots_count - 1].multiplity - 1;
+                vknots[_v_knots_count - 3].multiplity = _v_knots[_v_knots_count - 1].multiplity;
             }
 
             // for(int32 i = 0; i < _v_knots_count - 2; i++)
