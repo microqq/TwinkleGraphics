@@ -760,32 +760,32 @@ void BasicGeometryView::CreateNURBSSurface()
         // CreateGeometry(_nurbs_control_line->GetSubMesh(0), 19);
 
         n = 5;
-        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
         control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, -1.5f, -12.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
         n = 10;
-        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
         control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, -1.5f, -12.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
         n = 15;
-        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
         control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, -1.5f, -12.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
         n = 20;
-        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.5f, 0.0f, 1.0f);
-        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -3.0f, 1.0f);
-        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 4.5f, -6.0f, 1.0f);
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
         control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, -1.5f, -12.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
         _nurbs_surface->SetControlPoints(control_points, 25);
 

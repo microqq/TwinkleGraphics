@@ -89,7 +89,7 @@ public:
 };
 
 enum class ResourceCacheHint
-{      
+{
 };
 class ResourceCache
 {
