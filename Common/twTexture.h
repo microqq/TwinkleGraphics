@@ -19,6 +19,16 @@ private:
 
 };
 
+enum class WrapMode
+{
+
+};
+
+enum class SamplerMode
+{
+    
+};
+
 class Texture : public Object
 {
 public:
