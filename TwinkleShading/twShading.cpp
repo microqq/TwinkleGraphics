@@ -74,8 +74,6 @@ void LoadPluginsGUI(void)
                     UnLoadCurrentPlugin();
                 }
 
-                std::cout << it->second << std::endl;
-
                 //load plugin
                 GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(it->second));
                 if (plugin != nullptr && plugin->GetViewsCount() > 0)

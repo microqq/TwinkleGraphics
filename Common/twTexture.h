@@ -21,7 +21,6 @@ private:
 
 enum class WrapMode
 {
-
 };
 
 enum class SamplerMode

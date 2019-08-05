@@ -15,7 +15,7 @@ ShaderManager::~ShaderManager()
 Shader::Ptr ShaderManager::ReadShader(ShaderReadInfo& shader_info)
 {
     ResourceManagerInst resMgr;
-    ReadResult<Shader::Ptr> result = resMgr->Read<ShaderReader, Shader::Ptr>(shader_info.filename.c_str(), new ReaderOption, shader_info);
+    ReadResult<Shader::Ptr> result = resMgr->Read<ShaderReader, Shader::Ptr>(shader_info.filename.c_str(), nullptr, shader_info);
     Shader::Ptr shared_shader = result.GetSharedObject();
 
     return shared_shader;

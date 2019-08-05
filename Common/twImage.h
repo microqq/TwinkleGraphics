@@ -14,7 +14,7 @@ namespace TwinkleGraphics
 class Image;
 class ImageReader;
 class ImageManager;
-typedef Singleton<Image> ImageManagerInst;
+typedef Singleton<ImageManager> ImageManagerInst;
 
 struct ImageReadInfo
 {
@@ -41,15 +41,24 @@ public:
     typedef std::shared_ptr<Image> Ptr;
 
     Image();
+    Image(BYTE* bytes, int32 width, int32 height, FREE_IMAGE_FORMAT fif = FREE_IMAGE_FORMAT::FIF_UNKNOWN);
     virtual ~Image();
 
-    void SetHeight(int32 height) {}
-    void SetWidth(int32 width) {}
+    void SetWidth(int32 width) { _width = width; }
+    void SetHeight(int32 height) { _height = height; }
+    void SetRawData(BYTE* data) { _raw_data = data; }
+
+    int32 GetWidth() { return _width; }
+    int32 GetHeight() { return _height; }
+    BYTE* GetRawDatqa() { return _raw_data; }
+    FREE_IMAGE_FORMAT GetFormart() { return _fif; }
 
 private:
-    int32 _height;
-    int32 _width;
+    BYTE* _raw_data;
 
+    FREE_IMAGE_FORMAT _fif;
+    int32 _width;
+    int32 _height;
 };
 
 class ImageManager

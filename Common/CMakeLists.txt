@@ -1,6 +1,12 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+OPTION(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
+IF(DEFINE_FREEIMAGE_LIB)
+    add_definitions(FREEIMAGE_LIB)
+ENDIF(DEFINE_FREEIMAGE_LIB)
+
+
 SET(Common_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
@@ -24,7 +30,8 @@ target_include_directories(twCommon PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)
+
+# target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)
 
 # #CMake Error: Cannot determine link language for target "twCommon"
 # set_target_properties(twCommon PROPERTIES LINKER_LANGUAGE CXX)
