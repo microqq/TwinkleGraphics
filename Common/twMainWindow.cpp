@@ -220,9 +220,11 @@ void GLFWMainWindow::Initialise()
     char *vendor = (char *)glGetString(GL_VENDOR);
     char *renderer = (char *)glGetString(GL_RENDERER);
     char *version = (char *)glGetString(GL_VERSION);
+    std::string extensions = (char*)glGetString(GL_EXTENSIONS);
 
     std::cout << "Vendor:" << vendor <<std::endl;
     std::cout << "Render:" << renderer <<std::endl;
+    // std::cout << "Extensions:" << extensions <<std::endl;
     std::cout << "OGL Version:" << version <<std::endl;
 
     int attrib_counts;

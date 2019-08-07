@@ -36,13 +36,10 @@ public:
     Texture();
     virtual ~Texture();
 
-    void SetHeight(int32 height);
-    void SetWidth(int32 width);
 
 protected:
     RenderResInstance _res;
 
-    int32 _height, _width;
     int32 _num_mipmap_levels;
 };
 
