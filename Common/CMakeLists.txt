@@ -27,6 +27,7 @@ target_include_directories(twCommon PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage
+    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/vermilion
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
@@ -36,7 +37,7 @@ target_include_directories(twCommon PUBLIC
 # #CMake Error: Cannot determine link language for target "twCommon"
 # set_target_properties(twCommon PROPERTIES LINKER_LANGUAGE CXX)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(twCommon -lglfw -lGL -lGLEW imgui)
+    target_link_libraries(twCommon -lglfw -lGL -lGLEW imgui vermilion)
     target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/linux/libfreeimage.a)
 endif()
 
@@ -46,4 +47,5 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twCommon ${GLFWLIBDIR}/libglfw3dll.a)
     target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/win/FreeImage.lib)
     target_link_libraries(twCommon imgui)
+    target_link_libraries(twCommon vermilion)
 endif()

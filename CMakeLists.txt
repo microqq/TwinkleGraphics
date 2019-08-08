@@ -38,6 +38,7 @@ include_directories([AFTER|BEFORE] [SYSTEM]
 
 # add subdirectory
 add_subdirectory(ThirdParty/imgui)
+add_subdirectory(ThirdParty/vermilion)
 add_subdirectory(Common)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)

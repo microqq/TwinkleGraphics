@@ -4,7 +4,6 @@
 #define TW_TEXTURE_H
 
 #include "twCommon.h"
-#include <glew/glew.h>
 
 
 namespace TwinkleGraphics

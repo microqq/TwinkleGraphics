@@ -1,8 +1,22 @@
+#include "FreeImage.h"
 
 #include "twImage.h"
 
+
+extern "C" bool vglLoadDDS(const char* filename, vglImageData* image);
+
 namespace TwinkleGraphics
 {
+
+Image::Image()
+	: Object()
+{}
+Image::~Image()
+{}
+
+
+
+
 ImageReader::ImageReader(ImageReadInfo &info)
 	:_info(info)
 {
@@ -13,6 +27,42 @@ ImageReader::~ImageReader()
 
 template <>
 ReadResult<Image::Ptr> ImageReader::Read<Image::Ptr>(const char *filename, ReaderOption *option)
+{
+	//image format
+	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	//check the file signature and deduce its format
+	fif = FreeImage_GetFileType(filename, 0);
+	//if still unknown, try to guess the file format from the file extension
+	if(fif == FIF_UNKNOWN) 
+		fif = FreeImage_GetFIFFromFilename(filename);
+	//if still unkown, return failure
+	if(fif == FIF_UNKNOWN)
+        return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+
+	if(fif == FIF_DDS)
+	{
+		return ReadDDS(filename, option);
+	}
+	else
+	{
+		return ReadOthers(filename, option);
+	}
+}
+
+ReadResult<Image::Ptr> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
+{
+	vglImageData image_data;
+	if(vglLoadDDS(filename, &image_data))
+	{
+		Image::Ptr image = std::make_shared<Image>();
+		image->SetData(image_data);
+
+		return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::FAILED);
+	}
+        
+	return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+}
+ReadResult<Image::Ptr> ImageReader::ReadOthers(const char *filename, ReaderOption *option)
 {
 	//image format
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -51,34 +101,11 @@ ReadResult<Image::Ptr> ImageReader::Read<Image::Ptr>(const char *filename, Reade
 	//Free FreeImage's copy of the data
 	FreeImage_Unload(dib);
 
-	Image::Ptr image = std::make_shared<Image>(bits, width, height, fif);
+	Image::Ptr image = std::make_shared<Image>();
 
 	//return success
     return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::SUCCESS);
 }
-
-
-
-
-
-
-Image::Image()
-	: _raw_data(nullptr)
-	, _width(0)
-	, _height(0)
-	, _fif(FREE_IMAGE_FORMAT::FIF_UNKNOWN)
-{}
-Image::Image(BYTE* bytes, int32 width, int32 height, FREE_IMAGE_FORMAT fif)
-	: _raw_data(bytes)
-	, _fif(fif)
-	, _width(width)
-	, _height(height)
-{
-
-}
-Image::~Image()
-{}
-
 
 
 
