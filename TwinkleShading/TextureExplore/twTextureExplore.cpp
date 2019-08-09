@@ -52,7 +52,7 @@ void TextureExploreView::Initialize()
     ImageManagerInst imageMgr;
     ImageReadInfo images_info[] =
     {
-        "Assets/Textures/apollo/change-lane-left.png"
+        "Assets/Textures/test.dds"
     };
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 }

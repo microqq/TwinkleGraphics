@@ -8,8 +8,10 @@ extern "C" bool vglLoadDDS(const char* filename, vglImageData* image);
 namespace TwinkleGraphics
 {
 
-Image::Image()
+Image::Image(const char* filename, const ImageData& data)
 	: Object()
+	, _data(data)
+	, _filename(filename)
 {}
 Image::~Image()
 {}
@@ -51,17 +53,16 @@ ReadResult<Image::Ptr> ImageReader::Read<Image::Ptr>(const char *filename, Reade
 
 ReadResult<Image::Ptr> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
 {
-	vglImageData image_data;
-	if(vglLoadDDS(filename, &image_data))
+	vglImageData data;
+	if(vglLoadDDS(filename, &data))
 	{
-		Image::Ptr image = std::make_shared<Image>();
-		image->SetData(image_data);
-
+		Image::Ptr image = std::make_shared<Image>(filename, data);		
 		return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::FAILED);
 	}
         
 	return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
 }
+
 ReadResult<Image::Ptr> ImageReader::ReadOthers(const char *filename, ReaderOption *option)
 {
 	//image format
@@ -101,7 +102,8 @@ ReadResult<Image::Ptr> ImageReader::ReadOthers(const char *filename, ReaderOptio
 	//Free FreeImage's copy of the data
 	FreeImage_Unload(dib);
 
-	Image::Ptr image = std::make_shared<Image>();
+	ImageData data;
+	Image::Ptr image = std::make_shared<Image>(filename, data);
 
 	//return success
     return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::SUCCESS);

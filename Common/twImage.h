@@ -41,19 +41,36 @@ typedef Singleton<ImageManager> ImageManagerInst;
 //     SubImageData _data;
 // };
 
+class ImageResource : public Resource
+{
+public:
+    ImageResource()
+        : Resource()
+    {}
+    virtual ~ImageResource()
+    {}
+
+private:
+
+};
+
 class Image : public Object
 {
 public:
     typedef std::shared_ptr<Image> Ptr;
 
-    Image();
+    Image(const char* filename, const ImageData& data);
     virtual ~Image();
 
-    void SetData(ImageData &data) { _data = data; }
-    const ImageData& GetSubImageData() { return _data; }
+    void SetImageSource(ImageData &data) { _data = data; }
+    const ImageData& GetImageSource() { return _data; }
+
+    void SetFilename(const char* filename) { _filename = filename; }
+    const std::string& GetFilename() { return _filename; }
 
 private:
     ImageData _data;
+    std::string _filename;
 };
 
 struct ImageReadInfo

@@ -5,6 +5,9 @@ namespace TwinkleGraphics
 {
 Texture::Texture()
     : Object()
+    , _res()
+    , _image(nullptr)
+    , _immutable(true)
 {}
 
 Texture::~Texture()

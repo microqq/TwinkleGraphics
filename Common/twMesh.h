@@ -885,10 +885,12 @@ class Line : public Object
 public:
     typedef std::shared_ptr<Line> Ptr;
 
-    Line()
+    Line(glm::vec3 *points, int32 num)
         : Object()
         , _mesh(nullptr)
-    {}
+    {
+        Generate(points, num);
+    }
     virtual ~Line()
     {}
 
