@@ -81,7 +81,7 @@ public:
         SAFE_DEL(_indice);
     }
 
-    void Initialize(int32 num, int32 indice_num = 0, MeshDataFlag flag = MeshDataFlag::DEFAULT);
+    void Initialize(int32 num, int32 indice_num = 0, MeshDataFlag flag = MeshDataFlag(13));
     glm::vec3* GetVerticePos() { return _vertice_pos; }
     int32 GetVerticeNum() { return _vertice_num; }
     glm::vec4* GetVerticeColor() { return _vertice_color; }
@@ -210,7 +210,7 @@ private:
         int32 col_count = longitude_count;
         int32 num = col_count * row_count + 2;
 
-        submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
+        submesh->Initialize(num, 0);
 
         float32 u_step = glm::two_pi<float32>() / (float32)(longitude_count - 1);
         float32 v_step = glm::pi<float32>() / (float32)latitude_count;
@@ -372,7 +372,7 @@ private:
         row_count = col_count = subdivide + 1;
         int32 num = row_count * col_count * 6;
 
-        submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
+        submesh->Initialize(num, 0);
 
         submesh->_indice_num = subdivide * subdivide * 36;
         submesh->_indice = new uint32[submesh->_indice_num];
@@ -524,7 +524,7 @@ private:
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
 
         int32 num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide) / 2);
-        submesh->Initialize(num, 0, MeshDataFlag::DEFAULT);
+        submesh->Initialize(num, 0);
 
         int32 indice_num = 60 * subdivide * subdivide;
         submesh->_indice_num = indice_num;
@@ -739,7 +739,7 @@ private:
     Mesh::Ptr CreateCubeMesh(float32 size)
     {
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-        submesh->Initialize(8, 0, MeshDataFlag::DEFAULT);
+        submesh->Initialize(8, 0);
 
         int32 indice_num = 36;
         submesh->_indice_num = indice_num;
@@ -849,7 +849,7 @@ private:
     Mesh::Ptr CreateQuadMesh(float32 x_size, float32 y_size)
     {
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-        submesh->Initialize(4, 0, MeshDataFlag::DEFAULT);
+        submesh->Initialize(4, 0);
 
         float32 half_x_size = x_size * 0.5f;
         float32 half_y_size = y_size * 0.5f;

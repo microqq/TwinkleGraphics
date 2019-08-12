@@ -11,6 +11,7 @@
 #include "twMesh.h"
 #include "twCamera.h"
 #include "twOrbitControl.h"
+#include "twTexture.h"
 
 namespace TwinkleGraphics
 {
@@ -51,6 +52,12 @@ private:
     
 
 private:
+    Texture1D::Ptr _texture1D;
+    Texture2D::Ptr _texture2D;
+    Texture3D::Ptr _texture3D;
+    TextureCube::Ptr _textureCube;
+    Texture1DArray::Ptr _texture1DArray;
+
     int32 _current_tex_option;
 
     friend class TextureExplore;

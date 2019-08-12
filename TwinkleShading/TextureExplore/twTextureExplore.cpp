@@ -55,6 +55,12 @@ void TextureExploreView::Initialize()
         "Assets/Textures/test.dds"
     };
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
+
+    if(image != nullptr)
+    {
+        Texture2D::Ptr texture = std::make_shared<Texture2D>(true);
+        texture->SetImage(image);
+    }
 }
 void TextureExploreView::Destroy()
 {

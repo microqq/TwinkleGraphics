@@ -80,7 +80,7 @@ bool Shader::Compile()
     glGetShaderiv(_res.id, GL_COMPILE_STATUS, &compiled);
     if (!compiled)
     {
-// #ifdef _DEBUG
+#ifdef _DEBUG
         GLsizei len;
         glGetShaderiv(_res.id, GL_INFO_LOG_LENGTH, &len);
 
@@ -88,7 +88,7 @@ bool Shader::Compile()
         glGetShaderInfoLog(_res.id, len, &len, log);
         std::cerr << "Shader compilation failed: " << log << std::endl;
         SAFE_DEL_ARR(log);
-// #endif /* DEBUG */
+#endif /* DEBUG */
 
         glDeleteShader(_res.id);
     }
@@ -129,7 +129,7 @@ bool ShaderProgram::Link(uint32 shaders[], int num)
     glGetProgramiv(_res.id, GL_LINK_STATUS, &linked);
     if (!linked)
     {
-// #ifdef _DEBUG
+#ifdef _DEBUG
         GLsizei len;
         glGetProgramiv(_res.id, GL_INFO_LOG_LENGTH, &len);
 
@@ -137,7 +137,7 @@ bool ShaderProgram::Link(uint32 shaders[], int num)
         glGetProgramInfoLog(_res.id, len, &len, log);
         std::cerr << "Shader linking failed: " << log << std::endl;
         SAFE_DEL_ARR(log);
-// #endif /* DEBUG */
+#endif /* DEBUG */
 
         for (int i = 0; i < num; i++)
         {
