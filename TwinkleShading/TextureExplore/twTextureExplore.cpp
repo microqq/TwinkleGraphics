@@ -56,10 +56,17 @@ void TextureExploreView::Initialize()
     };
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 
+    Texture2D::Ptr texture = nullptr;
     if(image != nullptr)
     {
-        Texture2D::Ptr texture = std::make_shared<Texture2D>(true);
+        texture = std::make_shared<Texture2D>(true);
         texture->SetImage(image);
+    }
+
+    // initialise sprite
+    if(texture != nullptr)
+    {
+        _sprite = std::make_shared<Sprite>(texture);
     }
 }
 void TextureExploreView::Destroy()
@@ -103,8 +110,20 @@ void TextureExploreView::OnGUI()
         {
 
         }
+        if(ImGui::RadioButton(u8"纹理视图", &_current_tex_option, 7))
+        {
+
+        }
     }
     ImGui::End();
+}
+
+void TextureExploreView::RenderSprite()
+{
+    if(_sprite != nullptr)
+    {
+        
+    }
 }
 
 } // namespace TwinkleGraphics

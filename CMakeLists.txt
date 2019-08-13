@@ -21,6 +21,10 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     # SET(GLFWLIBDIR D:/YYStudio/glfw-3.3.bin.WIN64/lib-mingw-w64)
 endif()
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+endif()
+
+
 # # CTest
 # include(CTest)
 # enable_testing()
@@ -42,6 +46,7 @@ add_subdirectory(ThirdParty/vermilion)
 add_subdirectory(Common)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
+
 
 # # CPACK
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})

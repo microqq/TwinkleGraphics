@@ -143,7 +143,9 @@ public:
     Mesh() {}
     virtual ~Mesh() 
     { 
+#ifdef _DEBUG
         std::cout << "Mesh Deconstruct.\n";
+#endif
         _submeshes.clear();
     }
 
@@ -157,7 +159,7 @@ public:
         if(index < _submeshes.size())
             _submeshes.erase(_submeshes.begin() + index);
     }
-    inline uint32 GetSubMeshNum() { return _submeshes.size(); }
+    inline uint32 GetSubMeshCount() { return _submeshes.size(); }
 
     SubMesh::Ptr GetSubMesh(int32 index)
     {
@@ -173,11 +175,12 @@ private:
 class UVSphere : public Object
 {
 public: 
-    UVSphere(float32 radius = 1.0f, int32 subdivision = 20)
+    UVSphere(float32 radius = 1.0f, int32 subdivision = 20, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
         , _radius(radius)
         , _subdivision(subdivision)
+        , _flag(flag)
     {
         Generate();
     }
@@ -210,7 +213,7 @@ private:
         int32 col_count = longitude_count;
         int32 num = col_count * row_count + 2;
 
-        submesh->Initialize(num, 0);
+        submesh->Initialize(num, 0, _flag);
 
         float32 u_step = glm::two_pi<float32>() / (float32)(longitude_count - 1);
         float32 v_step = glm::pi<float32>() / (float32)latitude_count;
@@ -331,16 +334,19 @@ private:
     Mesh::Ptr _mesh;
     float32 _radius;
     int32 _subdivision;
+
+    MeshDataFlag _flag;
 };
 
 class NormalizedCubeSphere : public Object
 {
 public:
-    NormalizedCubeSphere(float32 radius = 1.0f, int32 subdivision = 20)
+    NormalizedCubeSphere(float32 radius = 1.0f, int32 subdivision = 20, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
         , _radius(radius)
         , _subdivision(subdivision)
+        , _flag(flag)
     {
         Generate();
     }
@@ -372,7 +378,7 @@ private:
         row_count = col_count = subdivide + 1;
         int32 num = row_count * col_count * 6;
 
-        submesh->Initialize(num, 0);
+        submesh->Initialize(num, 0, _flag);
 
         submesh->_indice_num = subdivide * subdivide * 36;
         submesh->_indice = new uint32[submesh->_indice_num];
@@ -478,16 +484,19 @@ private:
     Mesh::Ptr _mesh;
     float32 _radius;
     int32 _subdivision;
+
+    MeshDataFlag _flag;
 };
 
 class IcosahedronSphere : public Object
 {
 public:
-    IcosahedronSphere(float32 radius = 1.0f, int32 subdivision = 20)
+    IcosahedronSphere(float32 radius = 1.0f, int32 subdivision = 20, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
         , _radius(radius)
         , _subdivision(subdivision)
+        , _flag(flag)
     {
         Generate();
     }
@@ -524,7 +533,7 @@ private:
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
 
         int32 num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide) / 2);
-        submesh->Initialize(num, 0);
+        submesh->Initialize(num, 0, _flag);
 
         int32 indice_num = 60 * subdivide * subdivide;
         submesh->_indice_num = indice_num;
@@ -710,6 +719,8 @@ private:
     Mesh::Ptr _mesh;
     float32 _radius;
     int32 _subdivision;
+
+    MeshDataFlag _flag;
 };
 
 class Cube : public Object
@@ -717,10 +728,11 @@ class Cube : public Object
 public:
     typedef std::shared_ptr<Cube> Ptr;
 
-    Cube(float32 size = 1.0f)
+    Cube(float32 size = 1.0f, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
         , _size(size)
+        , _flag(flag)
     {
         Generate();
     }
@@ -734,12 +746,13 @@ public:
             _mesh = CreateCubeMesh(_size);
         }
     }
+    Mesh::Ptr GetMesh() { return _mesh; }
 
 private:
     Mesh::Ptr CreateCubeMesh(float32 size)
     {
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-        submesh->Initialize(8, 0);
+        submesh->Initialize(8, 0, _flag);
 
         int32 indice_num = 36;
         submesh->_indice_num = indice_num;
@@ -822,12 +835,19 @@ private:
 private:
     Mesh::Ptr _mesh;
     float32 _size;
+
+    MeshDataFlag _flag;
 };
 
 class Quad : public Object
 {
 public:
-    Quad(glm::vec2 size = glm::vec2(1.0f, 1.0f), MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    Quad(MeshDataFlag flag = MeshDataFlag::DEFAULT)
+        : Object()
+        , _mesh(nullptr)
+        , _flag(flag)
+    {}
+    Quad(glm::vec2 size, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
         , _size(size)
@@ -838,7 +858,8 @@ public:
     virtual ~Quad()
     {}
 
-    virtual void Generate()
+    void SetSize(glm::vec2 size) { _size = size; }
+    void Generate()
     {
         if(_mesh == nullptr)
         {
@@ -847,7 +868,7 @@ public:
     }
     Mesh::Ptr GetMesh() { return _mesh; }
 
-private:
+protected:
     Mesh::Ptr CreateQuadMesh(float32 x_size, float32 y_size)
     {
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
@@ -867,6 +888,15 @@ private:
         submesh->_indice[4] = 2;
         submesh->_indice[5] = 3;
 
+        /**
+         * @brief
+         * 0 __ __ __ 3
+         *  |        |
+         *  |        |
+         *  |__ __ __|
+         * 1          2
+         */
+
         submesh->_vertice_pos[0] = glm::vec3(-half_x_size, half_y_size, 0.0f);
         submesh->_vertice_pos[1] = glm::vec3(-half_x_size, -half_y_size, 0.0f);
         submesh->_vertice_pos[2] = glm::vec3(half_x_size, -half_y_size, 0.0f);
@@ -877,7 +907,7 @@ private:
         return mesh;
     }
 
-private:
+protected:
     Mesh::Ptr _mesh;
     glm::vec2 _size;
 
@@ -1256,7 +1286,7 @@ class NURBSSurface : public Object
 public:
     typedef std::shared_ptr<NURBSSurface> Ptr;
 
-    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2, int32 subdivide = 16, bool rational = false)
+    NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2, int32 subdivide = 16, bool rational = false, MeshDataFlag flag = MeshDataFlag(13))
         : _control_points(nullptr)
         , _v_knots(nullptr)
         , _u_knots(nullptr)
@@ -1268,6 +1298,7 @@ public:
         , _u_degree(p1), _v_degree(p2)
         , _subdivide(subdivide)
         , _rational(rational)
+        , _flag(flag)
     {
         _control_points = new glm::vec4[_u_points_count * _v_points_count];
         _u_knots = new Knot[_u_knots_count];
@@ -1328,7 +1359,7 @@ public:
             SubMesh::Ptr subMesh = std::make_shared<SubMesh>();
             subMesh->Initialize(v_count * u_count,
                 (v_count - 1) * (u_count - 1) * 6,
-                (MeshDataFlag)((int32)HAS_NORMAL | (int32)HAS_COLOR | (int32)HAS_UV)
+                _flag
             );
 
             _mesh = std::make_shared<Mesh>();
@@ -1797,6 +1828,7 @@ private:
     int32 _v_degree;
 
     int32 _subdivide;
+    MeshDataFlag _flag;
 
     bool _rational;
 };

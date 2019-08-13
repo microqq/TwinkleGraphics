@@ -12,6 +12,8 @@
 #include "twCamera.h"
 #include "twOrbitControl.h"
 #include "twTexture.h"
+#include "twSprite.h"
+
 
 namespace TwinkleGraphics
 {
@@ -35,6 +37,7 @@ class TextureExploreView : public View
 public:
     TextureExploreView()
         : View()
+        , _sprite(nullptr)
         , _current_tex_option(-1)
         {}
 
@@ -49,6 +52,7 @@ protected:
     virtual void OnGUI() override;
 
 private:
+    void RenderSprite();
     
 
 private:
@@ -57,6 +61,8 @@ private:
     Texture3D::Ptr _texture3D;
     TextureCube::Ptr _textureCube;
     Texture1DArray::Ptr _texture1DArray;
+
+    Sprite::Ptr _sprite;
 
     int32 _current_tex_option;
 

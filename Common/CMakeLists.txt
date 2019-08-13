@@ -7,6 +7,8 @@ IF(DEFINE_FREEIMAGE_LIB)
 ENDIF(DEFINE_FREEIMAGE_LIB)
 
 
+
+
 SET(Common_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
@@ -21,6 +23,9 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twImage.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twMeshRenderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twRenderContext.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

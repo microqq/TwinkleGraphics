@@ -82,8 +82,11 @@ class ShaderProgramUse
 public:
     ShaderProgramUse(ShaderProgram::Ptr program)
     {
-        const RenderResInstance& res = program->GetRes();
-        glUseProgram(res.id);
+        if(program != nullptr)
+        {
+            const RenderResInstance& res = program->GetRes();
+            glUseProgram(res.id);
+        }
     }
 
     ~ShaderProgramUse()

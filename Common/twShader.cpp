@@ -58,6 +58,11 @@ Shader::Shader(ShaderType type, const char* source)
     _res.id = glCreateShader(_res.type);
     glShaderSource(_res.id, 1, &source, NULL);
     glCompileShader(_res.id);
+
+#ifdef _DEBUG
+    GLenum error = glGetError();
+    const GLubyte* error_str = glGetString(error);
+#endif    
 }
 
 Shader::Shader(const Shader &copy)
@@ -68,9 +73,14 @@ Shader::Shader(const Shader &copy)
 
 Shader::~Shader()
 {
+#ifdef _DEBUG    
     std::cout<< "Shader " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
+#endif
 
-    glDeleteShader(_res.id);
+    if(_res.id != GL_NONE)
+    {
+        glDeleteShader(_res.id);
+    }
 }
 
 bool Shader::Compile()
@@ -105,11 +115,18 @@ ShaderProgram::ShaderProgram()
 {
     _res.id = glCreateProgram();
     _res.type = GL_PROGRAM;
+
+#ifdef _DEBUG
+    GLenum error = glGetError();
+    const GLubyte* error_str = glGetString(error);
+#endif    
 }
 
 ShaderProgram::~ShaderProgram()
 {
+#ifdef _DEBUG
     std::cout<< "Shader Program " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
+#endif
 
     glDeleteProgram(_res.id);
 }
@@ -200,8 +217,9 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
     fp = fopen(filename, "rb");
     if (fp)
     {
+#ifdef _DEBUG
         std::cout << "Console Log: ShaderReader open shader file successed " << filename << std::endl;
-
+#endif
         //read source
         fseek(fp, 0, SEEK_END);
         int len = ftell(fp);
@@ -225,8 +243,6 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
     }
     else
     {
-        std::cout << "Console Log: ShaderReader open shader file failed " << filename << std::endl;
-
 #ifdef _DEBUG
         std::cerr << "Error: ShaderReader open shader file failed " << filename << std::endl;
 #endif
