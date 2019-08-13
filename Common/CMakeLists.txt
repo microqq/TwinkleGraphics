@@ -20,6 +20,7 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twOrbitControl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twImage.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

@@ -827,29 +827,31 @@ private:
 class Quad : public Object
 {
 public:
-    Quad(glm::vec2 size = glm::vec2(1.0f, 1.0f))
+    Quad(glm::vec2 size = glm::vec2(1.0f, 1.0f), MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
         , _size(size)
+        , _flag(flag)
     {
         Generate();
     }
     virtual ~Quad()
     {}
 
-    void Generate()
+    virtual void Generate()
     {
         if(_mesh == nullptr)
         {
             _mesh = CreateQuadMesh(_size.x, _size.y);
         }
     }
+    Mesh::Ptr GetMesh() { return _mesh; }
 
 private:
     Mesh::Ptr CreateQuadMesh(float32 x_size, float32 y_size)
     {
         SubMesh::Ptr submesh = std::make_shared<SubMesh>();
-        submesh->Initialize(4, 0);
+        submesh->Initialize(4, 0, _flag);
 
         float32 half_x_size = x_size * 0.5f;
         float32 half_y_size = y_size * 0.5f;
@@ -878,6 +880,8 @@ private:
 private:
     Mesh::Ptr _mesh;
     glm::vec2 _size;
+
+    MeshDataFlag _flag;
 };
 
 class Line : public Object
