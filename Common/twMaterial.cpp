@@ -2,16 +2,7 @@
 
 namespace TwinkleGraphics
 {
-Material::Material()
-    : Object()
-{
-
-}
-
-Material::~Material()
-{
-    
-}
+/*------------------------------RenderPass--------------------------*/
 
 RenderPass::RenderPass()
     : Object()
@@ -21,6 +12,19 @@ RenderPass::RenderPass()
 
 RenderPass::~RenderPass()
 {
+}
+
+/*------------------------------Material--------------------------*/
+
+Material::Material()
+    : Object()
+{
+
+}
+
+Material::~Material()
+{
+    
 }
 
 } // namespace TwinkleGraphics

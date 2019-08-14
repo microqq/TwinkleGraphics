@@ -69,7 +69,10 @@ public:
 
     bool Link(uint32 shaders[], int num);
     void SetRes(RenderResInstance& res)  {  _res = res; }
+
     const RenderResInstance& GetRes() { return _res; }
+    uint32 GetUniformLocation(const char* name) { return glGetUniformLocation(_res.id, name); }
+
 
 private:
     RenderResInstance _res;

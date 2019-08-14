@@ -11,32 +11,6 @@
 namespace TwinkleGraphics
 {
 
-class RenderPass;
-
-/**
- * @brief 
- * 
- */
-class Material : public Object
-{
-public:
-    typedef std::shared_ptr<Material> Ptr;
-
-    Material();
-    virtual ~Material();
-
-    void SetCullMode(CullMode cull) {}
-    void SetPolygonMode(PolygonMode polygonmode) {}
-
-    const RenderState& GetRenderState() { return _state; }
-
-    void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
-
-private:
-    std::vector<RenderPass::Ptr> _passes;
-    RenderState _state;
-};
-
 class RenderPass : public Object
 {
 public:
@@ -57,6 +31,32 @@ private:
     RenderState _state;
     ShaderProgram::Ptr _shader;
 };
+/**
+ * @brief 
+ * 
+ */
+class Material : public Object
+{
+public:
+    typedef std::shared_ptr<Material> Ptr;
+
+    Material();
+    virtual ~Material();
+
+    void SetCullMode(CullMode cull) {}
+    void SetPolygonMode(PolygonMode polygonmode) {}
+
+    void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
+    void AddUniform(const char* name);
+    void RemoveUniform(const char* name);
+
+    const RenderState& GetRenderState() { return _state; }
+
+private:
+    std::vector<RenderPass::Ptr> _passes;
+    RenderState _state;
+};
+
 
 } // namespace TwinkleGraphics
 

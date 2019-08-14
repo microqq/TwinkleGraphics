@@ -1,6 +1,6 @@
 
-#ifndef TW_RENDERMANAGER_H
-#define TW_RENDERMANAGER_H
+#ifndef TW_RENDERCONTEXT_H
+#define TW_RENDERCONTEXT_H
 
 #include <glew/glew.h>
 #include "twCommon.h"
@@ -18,22 +18,26 @@ struct RenderState
 };
 
 
-struct RasterState
-{
-
-};
-
-struct FragmentOperation
-{
-
-};
+/*------------------------------Raster State--------------------------*/
 
 enum class CullMode
 {
 
 };
-
 enum class PolygonMode
+{
+    
+};
+struct RasterState
+{
+
+};
+
+
+
+/*------------------------------Per Fragment Operation--------------------------*/
+
+struct PerFragmentOperation
 {
 
 };
@@ -64,6 +68,9 @@ enum class FilterParam
     MIN_FILTER = GL_TEXTURE_MIN_FILTER,
     MAG_FILTER = GL_TEXTURE_MAG_FILTER
 };
+
+
+/*------------------------------Sampler--------------------------*/
 
 /**
  * @brief 
@@ -136,6 +143,9 @@ struct Swizzle<4>
 
 
 
+
+/*------------------------------Vertex Attribute--------------------------*/
+
 struct VertexLayout
 {
 
@@ -145,6 +155,95 @@ struct VertexLayoutAttrib
 {
 
 };
+
+
+
+/*------------------------------Uniform--------------------------*/
+
+enum UniformType
+{
+    UNI_FLOAT,
+    UNI_DOUBLE,
+    UNI_UINT,
+    UNI_INT,
+    UNI_BOOL,
+    UNI_FVEC1,
+    UNI_FVEC2,
+    UNI_FVEC3,
+    UNI_FVEC4,
+    UNI_DVEC1,
+    UNI_DVEC2,
+    UNI_DVEC3,
+    UNI_DVEC4,
+    UNI_IVEC1,
+    UNI_IVEC2,
+    UNI_IVEC3,
+    UNI_IVEC4,
+    UNI_UIVEC1,
+    UNI_UIVEC2,
+    UNI_UIVEC3,
+    UNI_UIVEC4,
+    UNI_FMAT2,
+    UNI_FMAT23,
+    UNI_FMAT24,
+    UNI_FMAT3,
+    UNI_FMAT32,
+    UNI_FMAT34,
+    UNI_FMAT4,
+    UNI_FMAT42,
+    UNI_FMAT43,
+    UNI_DMAT2,
+    UNI_DMAT23,
+    UNI_DMAT24,
+    UNI_DMAT3,
+    UNI_DMAT32,
+    UNI_DMAT34,
+    UNI_DMAT4,
+    UNI_DMAT42,
+    UNI_DMAT43
+};
+
+struct Uniform
+{
+
+};
+
+template<class T, uint32 N>
+struct SimpleUniform;
+
+template<class T, uint32 N>
+struct VecUniform
+{
+    vec<N, T, defaultp> vector;
+};
+
+template<class T, uint32 Row, uint32 Column>
+struct MatUniform
+{
+    mat<Row, Column, T, defaultp> matrix;
+};
+
+template<class T>
+struct SimpleUniform<T, 1> : public Uniform
+{
+    T u0;
+};
+template<class T>
+struct SimpleUniform<T, 2>
+{
+    T u0, u1;
+};
+template<class T>
+struct SimpleUniform<T, 3>
+{
+    T u0, u1, u2;
+};
+template<class T>
+struct SimpleUniform<T, 4>
+{
+    T u0, u1, u2, u3;
+};
+
 
 
 } // namespace TwinkleGraphics
