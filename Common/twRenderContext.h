@@ -205,46 +205,109 @@ enum UniformType
 
 struct Uniform
 {
+    UniformType uni_type;
+    std::string name;
 
+    Uniform(UniformType unitype, const char* nchars)
+        : uni_type(unitype)
+        , name(nchars)
+    {}
 };
+
 
 template<class T, uint32 N>
 struct SimpleUniform;
-
-template<class T, uint32 N>
-struct VecUniform
-{
-    vec<N, T, defaultp> vector;
-};
-
-template<class T, uint32 Row, uint32 Column>
-struct MatUniform
-{
-    mat<Row, Column, T, defaultp> matrix;
-};
 
 template<class T>
 struct SimpleUniform<T, 1> : public Uniform
 {
     T u0;
+
+    SimpleUniform(UniformType unitype, const char* nchars)
+        : Uniform(unitype, nchars)
+    {}
+
+    void Set(T v) { u0 = v; }
+    void BindLocation(uint32 location);
 };
 template<class T>
-struct SimpleUniform<T, 2>
+struct SimpleUniform<T, 2> : public Uniform
 {
     T u0, u1;
+
+    SimpleUniform(UniformType unitype, const char* nchars)
+        : Uniform(unitype, nchars)
+    {}
+
+    void Set(T v0, T v1) { u0 = v0; u0 = v1; }
+    void BindLocation(uint32 location);
 };
 template<class T>
-struct SimpleUniform<T, 3>
+struct SimpleUniform<T, 3> : public Uniform
 {
     T u0, u1, u2;
+
+    SimpleUniform(UniformType unitype, const char* nchars)
+        : Uniform(unitype, nchars)
+    {}
+
+    void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
+    void BindLocation(uint32 location);
 };
 template<class T>
-struct SimpleUniform<T, 4>
+struct SimpleUniform<T, 4> : public Uniform
 {
     T u0, u1, u2, u3;
+
+    SimpleUniform(UniformType unitype, const char* nchars)
+        : Uniform(unitype, nchars)
+    {}
+
+    void Set(T v0, T v1, T v2, T v3) { u0 = v0; u0 = v1; u2 = v2, u3 = v3; }
+    void BindLocation(uint32 location);
 };
 
 
+
+
+template<class T, uint32 N>
+struct VecUniform : public Uniform
+{
+    vec<N, T, defaultp> vector;
+
+    VecUniform(UniformType unitype, const char* nchars)
+        : Uniform(unitype, nchars)
+    {}
+
+
+    void Set(vec<N, T, defaultp> vec) { vector = vec; }
+    void BindLocation(uint32 location);
+};
+
+
+
+
+template<class T, uint32 Row, uint32 Column>
+struct MatUniform : public Uniform
+{
+    mat<Row, Column, T, defaultp> matrix;
+
+    MatUniform(UniformType unitype, const char* nchars)
+        : Uniform(unitype, nchars)
+    {}
+
+    void Set(mat<Row, Column, T, defaultp> mat) { matrix = mat; }
+    void BindLocation(uint32 location, bool transpose);
+};
+
+
+class UniformBind
+{
+public:
+    UniformBind();
+    ~UniformBind();
+
+};
 
 } // namespace TwinkleGraphics
 
