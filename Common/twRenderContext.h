@@ -48,101 +48,6 @@ enum class DepthFunc
 enum class BlendFunc
 {};
 
-/**
- * @brief 
- * 
- */
-enum class WrapParam
-{
-    WRAP_S = GL_TEXTURE_WRAP_S,
-    WRAP_T = GL_TEXTURE_WRAP_T,
-    WRAP_R = GL_TEXTURE_WRAP_R
-};
-
-/**
- * @brief 
- * 
- */
-enum class FilterParam
-{
-    MIN_FILTER = GL_TEXTURE_MIN_FILTER,
-    MAG_FILTER = GL_TEXTURE_MAG_FILTER
-};
-
-
-/*------------------------------Sampler--------------------------*/
-
-/**
- * @brief 
- * 
- */
-enum class SwizzleParam
-{
-    NONE = GL_NONE,
-    SWIZZLE_R = GL_TEXTURE_SWIZZLE_R,
-    SWIZZLE_G = GL_TEXTURE_SWIZZLE_G,
-    SWIZZLE_B = GL_TEXTURE_SWIZZLE_B,
-    SWIZZLE_A = GL_TEXTURE_SWIZZLE_A,
-    SWIZZLE_RGBA = GL_TEXTURE_SWIZZLE_RGBA
-};
-
-/**
- * @brief 
- * 
- */
-enum class LodBiasParam
-{
-    NONE = GL_NONE,
-    LOD_BIAS = GL_TEXTURE_LOD_BIAS
-};
-
-enum class WrapMode
-{
-    NONE = GL_NONE,
-    CLAMP = GL_CLAMP,
-    CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
-    CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
-    REPEAT = GL_REPEAT
-};
-
-enum class FilterMode
-{
-    NONE = GL_NONE,
-    NEAREST = GL_NEAREST,
-    NEAREST_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_LINEAR,
-    NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
-    LINEAR = GL_LINEAR,
-    LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST,
-    LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR
-};
-
-enum class SwizzleMask
-{
-    RED = GL_RED,
-    GREEN = GL_GREEN,
-    BLUE = GL_BLUE,
-    ALPHA = GL_ALPHA,
-    ZERO = GL_ZERO,
-    ONE = GL_ONE
-};
-
-template<int32 L>
-struct Swizzle;
-
-template<>
-struct Swizzle<1>
-{
-    SwizzleMask mask;
-};
-
-template<>
-struct Swizzle<4>
-{
-    SwizzleMask mask[4];
-};
-
-
-
 
 /*------------------------------Vertex Attribute--------------------------*/
 
@@ -212,6 +117,9 @@ struct Uniform
         : uni_type(unitype)
         , name(nchars)
     {}
+
+    virtual void BindLocation(uint32 location) {}
+    virtual void BindLocation(uint32 location, bool transpose) {}
 };
 
 
@@ -228,7 +136,7 @@ struct SimpleUniform<T, 1> : public Uniform
     {}
 
     void Set(T v) { u0 = v; }
-    void BindLocation(uint32 location);
+    virtual void BindLocation(uint32 location) override;
 };
 template<class T>
 struct SimpleUniform<T, 2> : public Uniform
@@ -240,7 +148,7 @@ struct SimpleUniform<T, 2> : public Uniform
     {}
 
     void Set(T v0, T v1) { u0 = v0; u0 = v1; }
-    void BindLocation(uint32 location);
+    virtual void BindLocation(uint32 location) override;
 };
 template<class T>
 struct SimpleUniform<T, 3> : public Uniform
@@ -252,7 +160,7 @@ struct SimpleUniform<T, 3> : public Uniform
     {}
 
     void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
-    void BindLocation(uint32 location);
+    virtual void BindLocation(uint32 location) override;
 };
 template<class T>
 struct SimpleUniform<T, 4> : public Uniform
@@ -264,9 +172,8 @@ struct SimpleUniform<T, 4> : public Uniform
     {}
 
     void Set(T v0, T v1, T v2, T v3) { u0 = v0; u0 = v1; u2 = v2, u3 = v3; }
-    void BindLocation(uint32 location);
+    virtual void BindLocation(uint32 location) override;
 };
-
 
 
 
@@ -281,9 +188,8 @@ struct VecUniform : public Uniform
 
 
     void Set(vec<N, T, defaultp> vec) { vector = vec; }
-    void BindLocation(uint32 location);
+    virtual void BindLocation(uint32 location) override;
 };
-
 
 
 
@@ -297,7 +203,7 @@ struct MatUniform : public Uniform
     {}
 
     void Set(mat<Row, Column, T, defaultp> mat) { matrix = mat; }
-    void BindLocation(uint32 location, bool transpose);
+    virtual void BindLocation(uint32 location, bool transpose) override;
 };
 
 

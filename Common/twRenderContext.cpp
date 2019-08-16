@@ -100,26 +100,26 @@ void SimpleUniform<float64, 4>::BindLocation(uint32 location)
 
 /*------------------------------Vector Uniform--------------------------*/
 
-template<>
-void VecUniform<float32, 1>::BindLocation(uint32 location)
-{
-    glUniform1fv(location, 1, glm::value_ptr(vector));
-}
-template<>
-void VecUniform<int32, 1>::BindLocation(uint32 location)
-{
-    glUniform1iv(location, 1, glm::value_ptr(vector));
-}
-template<>
-void VecUniform<uint32, 1>::BindLocation(uint32 location)
-{
-    glUniform1uiv(location, 1, glm::value_ptr(vector));
-}
-template<>
-void VecUniform<float64, 1>::BindLocation(uint32 location)
-{
-    glUniform1dv(location, 1, glm::value_ptr(vector));
-}
+// template<>
+// void VecUniform<float32, 1>::BindLocation(uint32 location)
+// {
+//     glUniform1fv(location, 1, glm::value_ptr(vector));
+// }
+// template<>
+// void VecUniform<int32, 1>::BindLocation(uint32 location)
+// {
+//     glUniform1iv(location, 1, glm::value_ptr(vector));
+// }
+// template<>
+// void VecUniform<uint32, 1>::BindLocation(uint32 location)
+// {
+//     glUniform1uiv(location, 1, glm::value_ptr(vector));
+// }
+// template<>
+// void VecUniform<float64, 1>::BindLocation(uint32 location)
+// {
+//     glUniform1dv(location, 1, glm::value_ptr(vector));
+// }
 
 
 template<>

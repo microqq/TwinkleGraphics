@@ -3,6 +3,7 @@
 #define TW_MATERIAL_H
 
 #include <vector>
+#include <map>
 
 #include "twCommon.h"
 #include "twShader.h"
@@ -47,13 +48,15 @@ public:
     void SetPolygonMode(PolygonMode polygonmode) {}
 
     void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
-    void AddUniform(const char* name);
+    void AddUniform(const char* name, Uniform* uniform);
     void RemoveUniform(const char* name);
 
     const RenderState& GetRenderState() { return _state; }
 
 private:
     std::vector<RenderPass::Ptr> _passes;
+    std::map<std::string, Uniform*> _uniforms;
+
     RenderState _state;
 };
 

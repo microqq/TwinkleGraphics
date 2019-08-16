@@ -845,6 +845,7 @@ public:
     Quad(MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Object()
         , _mesh(nullptr)
+        , _size()
         , _flag(flag)
     {}
     Quad(glm::vec2 size, MeshDataFlag flag = MeshDataFlag::DEFAULT)

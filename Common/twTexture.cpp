@@ -203,4 +203,35 @@ void Texture2D::InitStorage()
     }
 }
 
+void Texture2DMultiSample::InitStorage()
+{}
+
+void Texture3D::InitStorage()
+{
+}
+
+void TextureRectangle::InitStorage()
+{
+}
+
+void TextureBuffer::InitStorage()
+{
+}
+
+void TextureCube::InitStorage()
+{
+}
+
+void Texture1DArray::InitStorage()
+{
+}
+
+void TextureCubeArray::InitStorage()
+{
+}
+
+void Texture2DMultiSampleArray::InitStorage()
+{
+}
+
 } // namespace TwinkleGraphics

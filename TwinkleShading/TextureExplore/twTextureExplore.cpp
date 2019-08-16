@@ -5,6 +5,8 @@
 #include "twTextureExplore.h"
 #include "twImage.h"
 
+#include "twRenderContext.h"
+
 namespace TwinkleGraphics
 {
 TextureExplore::TextureExplore(std::string& name)
