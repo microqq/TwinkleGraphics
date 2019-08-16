@@ -174,6 +174,59 @@ bool ShaderProgram::Link(uint32 shaders[], int num)
     return linked;
 }
 
+int32 ShaderProgram::GetActiveAtrtribsCount()
+{
+    int32 count;
+    glGetProgramiv(_res.id, GL_ACTIVE_ATTRIBUTES, &count);
+
+    return count;
+}
+
+int32 ShaderProgram::GetActiveUniformBlocksCount()
+{
+    int32 count;
+    glGetProgramiv(_res.id, GL_ACTIVE_UNIFORM_BLOCKS, &count);
+
+    return count;
+}
+
+int32 ShaderProgram::GetActiveUniformsCount()
+{
+    int32 count;
+    glGetProgramiv(_res.id, GL_ACTIVE_UNIFORMS, &count);
+
+    return count;
+}
+
+const char *ShaderProgram::GetActiveAttribute(uint32 index)
+{
+    int32 length;
+    int32 size;
+    GLenum type;
+    char name[256] = {0};
+    glGetActiveAttrib(_res.id, index, 256, &length, &size, &type, name);
+
+    return name;
+}
+
+const char *ShaderProgram::GetActiveUniform(uint32 index)
+{
+    int32 length;
+    int32 size;
+    GLenum type;
+    char name[256] = {0};
+    glGetActiveUniform(_res.id, index, 256, &length, &size, &type, name);
+
+    return name;
+}
+
+int32 ShaderProgram::GetActiveUniformBlock(uint32 index)
+{
+    int32 block;
+
+    return block;
+}
+
 /**
  * @brief Construct a new Shader Resource:: Shader Resource object
  * 

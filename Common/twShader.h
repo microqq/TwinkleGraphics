@@ -70,9 +70,16 @@ public:
     bool Link(uint32 shaders[], int num);
     void SetRes(RenderResInstance& res)  {  _res = res; }
 
+    int32 GetActiveAtrtribsCount();
+    int32 GetActiveUniformsCount();
+    int32 GetActiveUniformBlocksCount();
+
+    const char* GetActiveAttribute(uint32 index);
+    const char* GetActiveUniform(uint32 index);
+    int32 GetActiveUniformBlock(uint32 index);
+
     const RenderResInstance& GetRes() { return _res; }
     uint32 GetUniformLocation(const char* name) { return glGetUniformLocation(_res.id, name); }
-
 
 private:
     RenderResInstance _res;
@@ -96,6 +103,7 @@ public:
     {
         glUseProgram(0);
     }
+
 };
 
 

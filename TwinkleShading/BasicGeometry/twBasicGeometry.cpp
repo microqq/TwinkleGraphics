@@ -135,7 +135,6 @@ void BasicGeometryView::Initialize()
         _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
         _line_color_loc = glGetUniformLocation(_line_program->GetRes().id, "line_color");
     }
-        
 }
 
 void BasicGeometryView::Advance(float64 delta_time)

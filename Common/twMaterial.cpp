@@ -24,7 +24,11 @@ Material::Material()
 
 Material::~Material()
 {
-    
+    for(auto u : _uniforms)
+    {
+        SAFE_DEL(u.second);
+    }
+    _uniforms.clear();
 }
 
 void Material::AddUniform(const char *name, Uniform *uniform)
@@ -44,6 +48,13 @@ void Material::AddUniform(const char *name, Uniform *uniform)
 }
 
 void Material::RemoveUniform(const char *name)
-{}
+{
+    std::map<std::string, Uniform *>::iterator it = _uniforms.find(name);
+    if(it != _uniforms.end())
+    {
+        SAFE_DEL(it->second);
+        _uniforms.erase(name);
+    }
+}
 
 } // namespace TwinkleGraphics
