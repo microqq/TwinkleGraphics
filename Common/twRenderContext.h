@@ -126,6 +126,17 @@ struct Uniform
     bool IsMatrix() { return ismatrix; }
 
     virtual int32 GetElementsCount() { return 0; }
+    void Bind(uint32 location, bool transpose = false)
+    {
+        if(!ismatrix)
+        {
+            BindLocation(location);
+        }
+        else
+        {
+            BindLocation(location, transpose);
+        }
+    }
     virtual void BindLocation(uint32 location) {}
     virtual void BindLocation(uint32 location, bool transpose) {}
 };
