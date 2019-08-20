@@ -1421,7 +1421,7 @@ public:
                             glm::vec3(suv.x, suv.y, suv.z) / suv.w
                         );
 
-                        vertices[gen_point_index - 1] += normals[gen_point_index - 1] * 1.0f;
+                        // vertices[gen_point_index - 1] += normals[gen_point_index - 1] * 1.0f;
 
                         // std::cout << "-----------normal-------------" << std::endl;
                         // std::cout << "x:" << normals[gen_point_index - 1].x << std::endl;

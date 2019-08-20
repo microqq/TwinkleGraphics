@@ -22,16 +22,14 @@ public:
     void SetMaterial(int32 index, Material::Ptr material);
 
     const Mesh::Ptr GetMesh() { return _mesh; }
-    const Material::Ptr GetMaterial(int32 index) 
+    const Material::Ptr GetMaterial(int32 index)
     { 
         if(index >= _materials.size())
             return nullptr; 
-        return _materials[index]; 
+        return _materials[index];
     }
 
-protected:
-    void GetDrawCommand();
-    void GetRenderState();
+    void PushDrawCommands();
 
 protected:
     std::vector<Material::Ptr> _materials;

@@ -1,5 +1,6 @@
 #version 330 core
 
+
 layout (lines_adjacency) in;
 layout (triangle_strip, max_vertices = 4) out;
 
@@ -64,6 +65,8 @@ vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
                    p4/ / /p5
                       l2
         **/
+
+        //Todo: 夹角极小时采用bevel接头
 
         float k1 = tangent1.y / tangent1.x;
         float k2 = tangent2.y / tangent2.x;

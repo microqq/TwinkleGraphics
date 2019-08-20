@@ -6,7 +6,6 @@ namespace TwinkleGraphics
 {
 Sprite::Sprite(Texture2D::Ptr texture)
     : Quad()
-    , _texture(texture)
     , _perpixelunit(100)
 {
 #ifdef _DEBUG
@@ -22,6 +21,22 @@ Sprite::Sprite(Texture2D::Ptr texture)
 }
 
 Sprite::~Sprite()
+{
+}
+
+
+
+/*-------------------------------Sprite Renderer-------------------------------*/
+
+
+SpriteRenderer::SpriteRenderer()
+    : MeshRenderer()
+    , _tintcolor(vec4(1.0f, 1.0f, 1.0f, 1.0f))
+    , _flip(false)
+{
+}
+
+SpriteRenderer::~SpriteRenderer()
 {
 }
 

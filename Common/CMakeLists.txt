@@ -26,6 +26,9 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMeshRenderer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRenderContext.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twRenderPipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twForwardPipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twDeferredPipeline.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

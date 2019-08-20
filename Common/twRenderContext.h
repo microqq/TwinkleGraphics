@@ -7,10 +7,33 @@
 
 namespace TwinkleGraphics
 {
+/*------------------------------Drew Command--------------------------*/
+
 struct DrawCommand
 {
 
 };
+
+enum class PrimitiveType
+{
+    POINTS = GL_POINTS,
+
+    LINES =  GL_LINES,
+    LINE_STRIP = GL_LINE_STRIP,
+    LINES_ADJACENCY = GL_LINES_ADJACENCY,
+    LINE_STRIP_ADJACENCY = GL_LINE_STRIP_ADJACENCY,
+
+    TRIANGLES = GL_TRIANGLES,
+    TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+    TRIANGLES_ADJACENCY = GL_TRIANGLES_ADJACENCY,
+    TRIANGLE_STRIP_ADJACENCY = GL_TRIANGLE_STRIP_ADJACENCY,
+
+    QUADS = GL_QUADS,
+    QUAD_STRIP = GL_QUAD_STRIP
+};
+
+
+/*------------------------------Render State--------------------------*/
 
 struct RenderState
 {
@@ -234,6 +257,27 @@ struct MatUniform : public Uniform
     virtual int32 GetElementsCount() override { return 1; }
     virtual void BindLocation(uint32 location, bool transpose) override;
 };
+
+
+
+
+
+
+/*------------------------------Render Context--------------------------*/
+
+/**
+ * @brief Manage render resource.
+ * 
+ */
+class RenderContext
+{
+public:
+    RenderContext();
+    ~RenderContext();
+
+
+};
+
 
 } // namespace TwinkleGraphics
 
