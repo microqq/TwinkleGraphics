@@ -494,6 +494,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[index]);
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
     // glDrawElements(GL_POINTS, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
@@ -818,7 +819,7 @@ void BasicGeometryView::CreateNURBSSurface()
         v_knots[8].multiplity = 3;
         _nurbs_surface->SetVKnots(v_knots, 9);
 
-        _nurbs_surface->GenerateSurface();
+        _nurbs_surface->GenerateMesh();
         Mesh::Ptr mesh = _nurbs_surface->GetMesh();
         SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 

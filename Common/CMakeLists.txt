@@ -15,8 +15,14 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twPluginManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twView.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twResource.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twMeshRenderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twRenderContext.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twRenderPipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twForwardPipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twDeferredPipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twShader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twGeometry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTransform.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twCamera.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twOrbitControl.cpp
@@ -24,11 +30,6 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twMeshRenderer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twRenderContext.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twRenderPipeline.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twForwardPipeline.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twDeferredPipeline.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

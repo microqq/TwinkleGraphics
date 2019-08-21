@@ -6,7 +6,7 @@
 
 #include "twPlugin.h"
 #include "twShader.h"
-#include "twMesh.h"
+#include "twGeometry.h"
 #include "twCamera.h"
 #include "twOrbitControl.h"
 

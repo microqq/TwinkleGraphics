@@ -164,6 +164,12 @@ struct Uniform
     virtual void BindLocation(uint32 location, bool transpose) {}
 };
 
+struct UniformBinding
+{
+    Uniform* uniform;
+    int32 location = -1;
+};
+
 
 template<class T, uint32 N>
 struct SimpleUniform;
@@ -260,6 +266,31 @@ struct MatUniform : public Uniform
 
 
 
+
+
+/*------------------------------Vertex Array Object--------------------------*/
+
+struct VertexArrayObject
+{
+
+};
+
+
+
+/*------------------------------Vertex Buffer--------------------------*/
+
+struct VertexBuffer
+{
+
+};
+
+
+/*------------------------------Index Buffer--------------------------*/
+
+struct IndexBuffer
+{
+
+};
 
 
 

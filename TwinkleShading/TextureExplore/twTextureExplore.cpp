@@ -65,11 +65,31 @@ void TextureExploreView::Initialize()
         texture->SetImage(image);
     }
 
+    // Texture::Ptr tex_ptr(new Texture2D());
+
     // initialise sprite
     if(texture != nullptr)
     {
         _sprite = std::make_shared<Sprite>(texture);
     }
+
+    ShaderManagerInst shaderMgr;
+
+    ShaderReadInfo sprite_shader_info[] = {
+        {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
+    ShaderProgram::Ptr sprite_shader = shaderMgr->ReadShaders(sprite_shader_info, 2);
+    {
+        ShaderProgramUse use_program(sprite_shader);
+        uint32 main_tex_loc = sprite_shader->GetUniformLocation("main_tex");
+
+        // const char* index0_name = sprite_shader->GetActiveUniform(0);
+        // std::cout << index0_name << std::endl;
+    }
+
+    Material::Ptr material = std::make_shared<Material>();
+
+    // std::cout << sizeof(TextureSlot) << "\n";
 }
 void TextureExploreView::Destroy()
 {

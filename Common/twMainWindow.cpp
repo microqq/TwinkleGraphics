@@ -225,12 +225,13 @@ void GLFWMainWindow::Initialise()
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(_window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
+    ImGui_ImplOpenGL3_Init("#version 330");
 
+#ifdef _DEBUG
     char *vendor = (char *)glGetString(GL_VENDOR);
     char *renderer = (char *)glGetString(GL_RENDERER);
     char *version = (char *)glGetString(GL_VERSION);
-    std::string extensions = (char*)glGetString(GL_EXTENSIONS);
+    // std::string extensions = (char*)glGetString(GL_EXTENSIONS);
 
     std::cout << "Vendor:" << vendor <<std::endl;
     std::cout << "Render:" << renderer <<std::endl;
@@ -240,6 +241,17 @@ void GLFWMainWindow::Initialise()
     int attrib_counts;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attrib_counts);
     std::cout << "GL_MAX_VERTEX_ATTRIBS:" << attrib_counts << std::endl;
+
+    int32 texunit_count;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texunit_count);
+    std::cout << "GL_MAX_TEXTURE_IMAGE_UNITS:" << texunit_count << std::endl;
+
+    int32 combinedtexunit_count;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedtexunit_count);
+    std::cout << "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:" << combinedtexunit_count << std::endl;
+
+#endif
+    
 
     // glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int32 button, int32 action, int32 mods)
     // {

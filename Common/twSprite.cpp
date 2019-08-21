@@ -12,11 +12,14 @@ Sprite::Sprite(Texture2D::Ptr texture)
     assert(texture != nullptr);
 #endif
 
+    MeshRenderer::Ptr renderer(new SpriteRenderer());
+    SetMeshRenderer(renderer);
+
     _flag = MeshDataFlag(9);
 
     glm::vec2 size = glm::vec2(texture->GetWidth(0), texture->GetHeight(0)) / (float32)_perpixelunit * 2.0f;
     Quad::SetSize(size);
-    Quad::Generate();
+    Quad::GenerateMesh();
     GenerateUVs();
 }
 

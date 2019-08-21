@@ -8,6 +8,10 @@
 namespace TwinkleGraphics
 {
 
+/**
+ * @brief 
+ * 
+ */
 class DeferredPipeline : public RenderPipeline
 {
 public:

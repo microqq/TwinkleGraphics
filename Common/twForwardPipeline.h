@@ -7,6 +7,10 @@
 namespace TwinkleGraphics
 {
 
+/**
+ * @brief 
+ * 
+ */
 class ForwardPipeline : public RenderPipeline
 {
 public:

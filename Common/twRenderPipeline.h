@@ -5,13 +5,23 @@
 
 namespace TwinkleGraphics
 {
+
+enum class PipelineType
+{
+    FORWARD = 0,
+    DEFERRED = 1
+};
+
 struct RenderQueue
 {
         
 };
 
 
-
+/**
+ * @brief 
+ * 
+ */
 class RenderPipeline
 {
 public:
