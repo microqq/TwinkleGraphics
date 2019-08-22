@@ -134,15 +134,14 @@ enum UniformType
 struct Uniform
 {
     std::string name;
-    UniformType uni_type;
+    // UniformType uni_type;
     bool ismatrix;
     bool isvector;
 
-    Uniform(UniformType unitype, const char* namestr, bool isvec = false, bool ismat = false)
+    Uniform(/*UniformType unitype,*/ const char *namestr, bool isvec = false, bool ismat = false)
         : name(namestr)
-        , uni_type(unitype)
-        , ismatrix(ismat)
-        , isvector(isvec)
+        // , uni_type(unitype)
+        , ismatrix(ismat), isvector(isvec)
     {}
 
     bool IsVector() { return isvector; }
@@ -179,8 +178,8 @@ struct SimpleUniform<T, 1> : public Uniform
 {
     T u0;
 
-    SimpleUniform(UniformType unitype, const char* namestr)
-        : Uniform(unitype, namestr)
+    SimpleUniform(/*UniformType unitype,*/ const char *namestr)
+        : Uniform(/*unitype,*/ namestr)
     {}
 
     void Set(T v) { u0 = v; }
@@ -192,8 +191,8 @@ struct SimpleUniform<T, 2> : public Uniform
 {
     T u0, u1;
 
-    SimpleUniform(UniformType unitype, const char* namestr)
-        : Uniform(unitype, namestr)
+    SimpleUniform(/*UniformType unitype,*/ const char *namestr)
+        : Uniform(/*unitype,*/ namestr)
     {}
 
     void Set(T v0, T v1) { u0 = v0; u0 = v1; }
@@ -205,8 +204,8 @@ struct SimpleUniform<T, 3> : public Uniform
 {
     T u0, u1, u2;
 
-    SimpleUniform(UniformType unitype, const char* namestr)
-        : Uniform(unitype, namestr)
+    SimpleUniform(/*UniformType unitype,*/ const char *namestr)
+        : Uniform(/*unitype,*/ namestr)
     {}
 
     void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
@@ -219,8 +218,8 @@ struct SimpleUniform<T, 4> : public Uniform
 {
     T u0, u1, u2, u3;
 
-    SimpleUniform(UniformType unitype, const char* namestr)
-        : Uniform(unitype, namestr)
+    SimpleUniform(/*UniformType unitype,*/ const char *namestr)
+        : Uniform(/*unitype,*/ namestr)
     {}
 
     void Set(T v0, T v1, T v2, T v3) { u0 = v0; u0 = v1; u2 = v2, u3 = v3; }
@@ -236,12 +235,12 @@ struct VecUniform : public Uniform
 {
     vec<N, T, defaultp> vector;
 
-    VecUniform(UniformType unitype, const char* namestr)
-        : Uniform(unitype, namestr, true, false)
+    VecUniform(/*UniformType unitype,*/ const char *namestr)
+        : Uniform(/*unitype,*/ namestr, true, false)
     {}
 
 
-    void Set(vec<N, T, defaultp> vec) { vector = vec; }
+    void Set(vec<N, T, defaultp>& vec) { vector = vec; }
 
     virtual int32 GetElementsCount() override { return 1; }
     virtual void BindLocation(uint32 location) override;
@@ -254,11 +253,11 @@ struct MatUniform : public Uniform
 {
     mat<Row, Column, T, defaultp> matrix;
 
-    MatUniform(UniformType unitype, const char* namestr)
-        : Uniform(unitype, namestr, false, true)
+    MatUniform(/*UniformType unitype,*/ const char *namestr)
+        : Uniform(/*unitype,*/ namestr, false, true)
     {}
 
-    void Set(mat<Row, Column, T, defaultp> mat) { matrix = mat; }
+    void Set(mat<Row, Column, T, defaultp>& mat) { matrix = mat; }
 
     virtual int32 GetElementsCount() override { return 1; }
     virtual void BindLocation(uint32 location, bool transpose) override;

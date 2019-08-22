@@ -6,6 +6,11 @@ namespace TwinkleGraphics
 
 /*------------------------------Simple Uniform--------------------------*/
 
+template <>
+void SimpleUniform<bool, 1>::BindLocation(uint32 location)
+{
+    glUniform1i(location, u0);
+}
 template<>
 void SimpleUniform<float32, 1>::BindLocation(uint32 location)
 {

@@ -96,8 +96,6 @@ void Material::AddUniform(const char *name, Uniform *uniform)
         SAFE_DEL(it->second);
         it->second = uniform;
     }
-
-
 }
 
 void Material::RemoveUniform(const char *name)

@@ -87,9 +87,12 @@ void TextureExploreView::Initialize()
         // std::cout << index0_name << std::endl;
     }
 
-    Material::Ptr material = std::make_shared<Material>();
-
     // std::cout << sizeof(TextureSlot) << "\n";
+
+    Material::Ptr material = std::make_shared<Material>();
+    material->SetSimpleUniformValue<bool, 1>("light_on", true);
+    vec4 tint_color;
+    material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 }
 void TextureExploreView::Destroy()
 {
