@@ -54,7 +54,7 @@ void TextureExploreView::Initialize()
     ImageManagerInst imageMgr;
     ImageReadInfo images_info[] =
     {
-        "Assets/Textures/test.dds"
+        {"Assets/Textures/test.dds"}
     };
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 
@@ -64,8 +64,6 @@ void TextureExploreView::Initialize()
         texture = std::make_shared<Texture2D>(true);
         texture->SetImage(image);
     }
-
-    // Texture::Ptr tex_ptr(new Texture2D());
 
     // initialise sprite
     if(texture != nullptr)
@@ -79,19 +77,14 @@ void TextureExploreView::Initialize()
         {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
         {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
     ShaderProgram::Ptr sprite_shader = shaderMgr->ReadShaders(sprite_shader_info, 2);
-    {
-        ShaderProgramUse use_program(sprite_shader);
-        uint32 main_tex_loc = sprite_shader->GetUniformLocation("main_tex");
 
-        // const char* index0_name = sprite_shader->GetActiveUniform(0);
-        // std::cout << index0_name << std::endl;
-    }
-
-    // std::cout << sizeof(TextureSlot) << "\n";
-
+    RenderPass::Ptr pass0 = std::make_shared<RenderPass>(sprite_shader);
     Material::Ptr material = std::make_shared<Material>();
-    material->SetSimpleUniformValue<bool, 1>("light_on", true);
+    material->AddRenderPass(pass0);
+
     vec4 tint_color;
+    material->SetMainTexture(texture);
+    // material->SetSimpleUniformValue<bool, 1>("light_on", true);
     material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 }
 void TextureExploreView::Destroy()

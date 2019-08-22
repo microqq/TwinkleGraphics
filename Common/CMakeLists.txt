@@ -7,8 +7,6 @@ IF(DEFINE_FREEIMAGE_LIB)
 ENDIF(DEFINE_FREEIMAGE_LIB)
 
 
-
-
 SET(Common_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
@@ -49,14 +47,14 @@ target_compile_definitions(twCommon PUBLIC _DEBUG=1)
 # set_target_properties(twCommon PROPERTIES LINKER_LANGUAGE CXX)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_link_libraries(twCommon -lglfw -lGL -lGLEW imgui vermilion)
-    target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/linux/libfreeimage.a)
+    target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/linux/libfreeimage-3.18.0.so)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twCommon OpenGL32.lib)
     target_link_libraries(twCommon ${GLEWLIBDIR}/glew32.lib)
     target_link_libraries(twCommon ${GLFWLIBDIR}/libglfw3dll.a)
-    target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/win/FreeImage.lib)
+    target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/win/FreeImage.dll)
     target_link_libraries(twCommon imgui)
     target_link_libraries(twCommon vermilion)
 endif()

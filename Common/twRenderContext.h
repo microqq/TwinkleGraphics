@@ -7,6 +7,12 @@
 
 namespace TwinkleGraphics
 {
+
+struct StateAttribute
+{
+
+};
+
 /*------------------------------Drew Command--------------------------*/
 
 struct DrawCommand
@@ -41,6 +47,11 @@ struct RenderState
 };
 
 
+struct RenderStateAttribute : public StateAttribute
+{
+
+};
+
 /*------------------------------Raster State--------------------------*/
 
 enum class CullMode
@@ -54,6 +65,11 @@ enum class PolygonMode
 struct RasterState
 {
 
+};
+
+struct RasterStateAttribute : public StateAttribute
+{
+    
 };
 
 
@@ -140,9 +156,10 @@ struct Uniform
 
     Uniform(/*UniformType unitype,*/ const char *namestr, bool isvec = false, bool ismat = false)
         : name(namestr)
-        // , uni_type(unitype)
+        /* , uni_type(unitype) */
         , ismatrix(ismat), isvector(isvec)
     {}
+    virtual ~Uniform() {}
 
     bool IsVector() { return isvector; }
     bool IsMatrix() { return ismatrix; }
@@ -163,10 +180,15 @@ struct Uniform
     virtual void BindLocation(uint32 location, bool transpose) {}
 };
 
-struct UniformBinding
+struct UniformLocation
 {
     Uniform* uniform;
     int32 location = -1;
+
+    void Bind()
+    {
+        uniform->Bind(location);
+    }
 };
 
 
@@ -181,6 +203,7 @@ struct SimpleUniform<T, 1> : public Uniform
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
     {}
+    virtual ~SimpleUniform() {}
 
     void Set(T v) { u0 = v; }
     virtual int32 GetElementsCount() override { return 1; }
@@ -194,6 +217,7 @@ struct SimpleUniform<T, 2> : public Uniform
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
     {}
+    virtual ~SimpleUniform() {}
 
     void Set(T v0, T v1) { u0 = v0; u0 = v1; }
     virtual int32 GetElementsCount() override { return 2; }
@@ -207,6 +231,7 @@ struct SimpleUniform<T, 3> : public Uniform
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
     {}
+    virtual ~SimpleUniform() {}
 
     void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
 
@@ -221,6 +246,7 @@ struct SimpleUniform<T, 4> : public Uniform
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
     {}
+    virtual ~SimpleUniform() {}
 
     void Set(T v0, T v1, T v2, T v3) { u0 = v0; u0 = v1; u2 = v2, u3 = v3; }
 
@@ -238,7 +264,7 @@ struct VecUniform : public Uniform
     VecUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr, true, false)
     {}
-
+    virtual ~VecUniform() {}
 
     void Set(vec<N, T, defaultp>& vec) { vector = vec; }
 
@@ -256,6 +282,7 @@ struct MatUniform : public Uniform
     MatUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr, false, true)
     {}
+    virtual ~MatUniform() {}
 
     void Set(mat<Row, Column, T, defaultp>& mat) { matrix = mat; }
 

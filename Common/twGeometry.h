@@ -482,7 +482,7 @@ private:
         float32 x = radius * sin_pole_angle;
         float32 y = radius * cos_pole_angle;
         float32 z = x;
-        for (int32 i = 0, j = 5; i < 5, j < 10; i++, j++)
+        for (int32 i = 0, j = 5; j < 10; i++, j++)
         {
             float32 cos_azimuth = cos(azimuth_step * i);
             float32 sin_azimuth = sin(azimuth_step * i);
@@ -1100,7 +1100,9 @@ public:
 
 private:
     glm::vec3 DeCasteljau(float32 u, glm::vec3* points, int32 n)
-    {}
+    {
+        return vec3();
+    }
 
 private:
     glm::vec4* _control_points;
@@ -1130,10 +1132,11 @@ public:
         , _apdv_surface(nullptr)
         , _u_points_count(n1), _v_points_count(n2)
         , _u_knots_count(n1 + p1 + 1), _v_knots_count(n2 + p2 + 1)
-        , _u_degree(p1), _v_degree(p2)
+        , _u_degree(p1)
+        , _v_degree(p2)
         , _subdivide(subdivide)
-        , _rational(rational)
         , _flag(flag)
+        , _rational(rational)
     {
         _control_points = new glm::vec4[_u_points_count * _v_points_count];
         _u_knots = new Knot[_u_knots_count];

@@ -198,26 +198,20 @@ int32 ShaderProgram::GetActiveUniformsCount()
     return count;
 }
 
-const char *ShaderProgram::GetActiveAttribute(uint32 index)
+void ShaderProgram::GetActiveAttribute(uint32 index, char* name)
 {
     int32 length;
     int32 size;
     GLenum type;
-    char name[256] = {0};
     glGetActiveAttrib(_res.id, index, 256, &length, &size, &type, name);
-
-    return name;
 }
 
-const char *ShaderProgram::GetActiveUniform(uint32 index)
+void ShaderProgram::GetActiveUniform(uint32 index, char* name)
 {
     int32 length;
     int32 size;
     GLenum type;
-    char name[256] = {0};
     glGetActiveUniform(_res.id, index, 256, &length, &size, &type, name);
-
-    return name;
 }
 
 int32 ShaderProgram::GetActiveUniformBlock(uint32 index)

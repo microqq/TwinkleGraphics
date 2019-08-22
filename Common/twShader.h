@@ -74,12 +74,12 @@ public:
     int32 GetActiveUniformsCount();
     int32 GetActiveUniformBlocksCount();
 
-    const char* GetActiveAttribute(uint32 index);
-    const char* GetActiveUniform(uint32 index);
+    void GetActiveAttribute(uint32 index, char* name);
+    void GetActiveUniform(uint32 index, char* name);
     int32 GetActiveUniformBlock(uint32 index);
 
     const RenderResInstance& GetRes() { return _res; }
-    uint32 GetUniformLocation(const char* name) { return glGetUniformLocation(_res.id, name); }
+    int32 GetUniformLocation(const char* name) { return glGetUniformLocation(_res.id, name); }
 
 private:
     RenderResInstance _res;

@@ -13,32 +13,46 @@
 namespace TwinkleGraphics
 {
 
+class RenderPass;
+class Material;
+
+/**
+ * @brief 
+ * 
+ */
 class RenderPass : public Object
 {
 public:
     typedef std::shared_ptr<RenderPass> Ptr;
 
-    RenderPass();
+    RenderPass(ShaderProgram::Ptr shader);
     virtual ~RenderPass();
 
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
 
     void SetShader(ShaderProgram::Ptr shader) { _shader = shader; }
+    void SetEnable(bool enable) { _enable = enable; }
+
+    inline bool Enabled() { return _enable; }
+    inline const RenderState& GetRenderState() { return _state; }
+    inline const ShaderProgram::Ptr& GetShader() { return _shader; }
+    inline const std::vector<TextureSlot>& GetTextureSlots() { return _slots; }
+
+private:
     void SetMaintexture(Texture::Ptr maintex) { SetTexture("main_tex", maintex); }
     void SetTexture(const char* name, Texture::Ptr tex);
-
     void SetUniform(const char* name, Uniform* uniform);
-
-    const RenderState& GetRenderState() { return _state; }
-    const ShaderProgram::Ptr& GetShader() { return _shader; }
-    const std::vector<TextureSlot>& GetTextureSlots() { return _slots; }
 
 private:
     std::vector<TextureSlot> _slots;
-    std::vector<UniformBinding> _uniformbindings;
+    std::vector<UniformLocation> _uniformlocations;
     RenderState _state;
     ShaderProgram::Ptr _shader;
+
+    bool _enable;
+
+    friend class Material;
 };
 
 
@@ -57,10 +71,21 @@ public:
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
 
+    void SetRenderPass(int32 index, const RenderPass::Ptr pass) { if(index < _passes.size()) _passes[index] = pass; }
     void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
-    void AddUniform(const char* name, Uniform* uniform);
-    void RemoveUniform(const char* name);
 
+    void SetMainTexture(Texture::Ptr maintex);
+    void SetTexture(const char* name, Texture::Ptr tex);
+
+    /**
+     * @brief Set the Simple Uniform Value object
+     * 
+     * @tparam T 
+     * @tparam N 
+     * @tparam Args 
+     * @param name 
+     * @param args 
+     */
     template<class T, uint32 N, class ...Args>
     void SetSimpleUniformValue(const char* name, Args&&...args)
     {
@@ -71,6 +96,7 @@ public:
         {
             uniform = new SimpleUniform<T, N>(name);
             AddUniform(name, uniform);
+            SetPassesUniform(name, uniform);
         }
         else
         {
@@ -80,6 +106,15 @@ public:
         uniform->Set(std::forward<Args>(args)...);
     }
 
+
+    /**
+     * @brief Set the Vec Uniform Value object
+     * 
+     * @tparam T 
+     * @tparam N 
+     * @param name 
+     * @param value 
+     */
     template <class T, uint32 N>
     void SetVecUniformValue(const char *name, vec<N, T, defaultp>& value)
     {
@@ -90,6 +125,7 @@ public:
         {
             uniform = new VecUniform<T, N>(name);
             AddUniform(name, uniform);
+            SetPassesUniform(name, uniform);
         }
         else
         {
@@ -99,6 +135,15 @@ public:
         uniform->Set(value);
     }
 
+    /**
+     * @brief Set the Matrix Uniform Value object
+     * 
+     * @tparam T 
+     * @tparam Row 
+     * @tparam Column 
+     * @param name 
+     * @param value 
+     */
     template <class T, uint32 Row, uint32 Column>
     void SetMatrixUniformValue(const char *name, mat<Row, Column, T, defaultp>& value)
     {
@@ -109,6 +154,7 @@ public:
         {
             uniform = new MatUniform<T, Row, Column>(name);
             AddUniform(name, uniform);
+            SetPassesUniform(name, uniform);
         }
         else
         {
@@ -118,15 +164,21 @@ public:
         uniform->Set(value);
     }
 
-    const RenderState &GetRenderState()
-    {
-        return _state;
-    }
+    const RenderState &GetRenderState() { return _state; }
     const Uniform* GetUniform(const char* name);
+
+    void RemoveUniform(const char* name);
+
+
+private:
+    void AddUniform(const char* name, Uniform* uniform);
+    void SetPassesUniform(const char* name, Uniform* uniform);
+
 
 private:
     std::vector<RenderPass::Ptr> _passes;
     std::map<std::string, Uniform*> _uniforms;
+    std::map<std::string, Texture::Ptr> _textures;
 
     RenderState _state;
 };

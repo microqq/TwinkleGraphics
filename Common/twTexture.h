@@ -161,7 +161,7 @@ public:
     Texture(bool immutable = true);
     virtual ~Texture();
 
-    void SetImage(Image::Ptr image) 
+    void SetImage(Image::Ptr image)
     { 
         if(_image == nullptr) 
         {
@@ -215,7 +215,7 @@ protected:
 
 struct TextureSlot
 {
-    std::string texname;
+    // std::string texname;
     Texture::Ptr tex;
     int8 location;
     int8 slot;
