@@ -80,11 +80,11 @@ public:
     /**
      * @brief Set the Simple Uniform Value object
      * 
-     * @tparam T 
-     * @tparam N 
-     * @tparam Args 
+     * @tparam T: bool, float, double, int, uint,
+     * @tparam N: 1, 2, 3, 4
+     * @tparam Args
      * @param name 
-     * @param args 
+     * @param args: T t1, T t2, ...
      */
     template<class T, uint32 N, class ...Args>
     void SetSimpleUniformValue(const char* name, Args&&...args)
@@ -110,8 +110,8 @@ public:
     /**
      * @brief Set the Vec Uniform Value object
      * 
-     * @tparam T 
-     * @tparam N 
+     * @tparam T: bool, float, double, int, uint,
+     * @tparam N: 2, 3, 4 
      * @param name 
      * @param value 
      */
@@ -138,14 +138,14 @@ public:
     /**
      * @brief Set the Matrix Uniform Value object
      * 
-     * @tparam T 
-     * @tparam Row 
-     * @tparam Column 
+     * @tparam T: bool, float, double, int, uint, 
+     * @tparam Row: 2, 3, 4 
+     * @tparam Column: 2, 3, 4 
      * @param name 
      * @param value 
      */
     template <class T, uint32 Row, uint32 Column>
-    void SetMatrixUniformValue(const char *name, mat<Row, Column, T, defaultp>& value)
+    void SetMatrixUniformValue(const char *name, mat<Row, Column, T, defaultp>& value, bool transpose = false)
     {
         MatUniform<T, Row, Column> *uniform = nullptr;
 
@@ -161,7 +161,7 @@ public:
             uniform = dynamic_cast<MatUniform<T, Row, Column> *>(it->second);
         }
 
-        uniform->Set(value);
+        uniform->Set(value, transpose);
     }
 
     const RenderState &GetRenderState() { return _state; }

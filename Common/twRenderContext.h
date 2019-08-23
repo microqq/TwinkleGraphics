@@ -165,19 +165,7 @@ struct Uniform
     bool IsMatrix() { return ismatrix; }
 
     virtual int32 GetElementsCount() { return 0; }
-    void Bind(uint32 location, bool transpose = false)
-    {
-        if(!ismatrix)
-        {
-            BindLocation(location);
-        }
-        else
-        {
-            BindLocation(location, transpose);
-        }
-    }
     virtual void BindLocation(uint32 location) {}
-    virtual void BindLocation(uint32 location, bool transpose) {}
 };
 
 struct UniformLocation
@@ -187,7 +175,7 @@ struct UniformLocation
 
     void Bind()
     {
-        uniform->Bind(location);
+        uniform->BindLocation(location);
     }
 };
 
@@ -278,16 +266,21 @@ template<class T, uint32 Row, uint32 Column>
 struct MatUniform : public Uniform
 {
     mat<Row, Column, T, defaultp> matrix;
+    bool transpose;
 
     MatUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr, false, true)
     {}
     virtual ~MatUniform() {}
 
-    void Set(mat<Row, Column, T, defaultp>& mat) { matrix = mat; }
+    void Set(mat<Row, Column, T, defaultp>& mat, bool transposed = false) 
+    { 
+        matrix = mat;
+        transpose = transposed; 
+    }
 
     virtual int32 GetElementsCount() override { return 1; }
-    virtual void BindLocation(uint32 location, bool transpose) override;
+    virtual void BindLocation(uint32 location) override;
 };
 
 

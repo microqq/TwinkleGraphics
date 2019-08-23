@@ -197,24 +197,24 @@ void VecUniform<float64, 4>::BindLocation(uint32 location)
 /*------------------------------Matrix Uniform--------------------------*/
 
 template<>
-void MatUniform<float32, 2, 2>::BindLocation(uint32 location, bool transpose)
+void MatUniform<float32, 2, 2>::BindLocation(uint32 location)
 {
     glUniformMatrix2fv(location, 1, transpose, glm::value_ptr(matrix));    
 }
 template<>
-void MatUniform<float64, 2, 2>::BindLocation(uint32 location, bool transpose)
+void MatUniform<float64, 2, 2>::BindLocation(uint32 location)
 {
     glUniformMatrix2dv(location, 1, transpose, glm::value_ptr(matrix));    
 }
 
 
 template<>
-void MatUniform<float32, 3, 3>::BindLocation(uint32 location, bool transpose)
+void MatUniform<float32, 3, 3>::BindLocation(uint32 location)
 {
     glUniformMatrix3fv(location, 1, transpose, glm::value_ptr(matrix));    
 }
 template<>
-void MatUniform<float64, 3, 3>::BindLocation(uint32 location, bool transpose)
+void MatUniform<float64, 3, 3>::BindLocation(uint32 location)
 {
     glUniformMatrix3dv(location, 1, transpose, glm::value_ptr(matrix));    
 }
@@ -222,12 +222,12 @@ void MatUniform<float64, 3, 3>::BindLocation(uint32 location, bool transpose)
 
 
 template<>
-void MatUniform<float32, 4, 4>::BindLocation(uint32 location, bool transpose)
+void MatUniform<float32, 4, 4>::BindLocation(uint32 location)
 {
     glUniformMatrix4fv(location, 1, transpose, glm::value_ptr(matrix));    
 }
 template<>
-void MatUniform<float64, 4, 4>::BindLocation(uint32 location, bool transpose)
+void MatUniform<float64, 4, 4>::BindLocation(uint32 location)
 {
     glUniformMatrix4dv(location, 1, transpose, glm::value_ptr(matrix));    
 }
