@@ -13,6 +13,19 @@
 namespace TwinkleGraphics
 {
 
+/**
+ * Material Construct Steps:
+ * 1、Material:Construct Material
+ * 2、RenderPass:Construct RenderPass
+ * 3、RenderPass:Set ShaderProgram
+ * 4、RenderPass:Set RenderState
+ * 5、Material:Set RenderPass
+ * 6、Material:Set Texture
+ * 7、Material:Set Uniform
+ * 8、Material:Set RenderState
+*/
+
+
 class RenderPass;
 class Material;
 
@@ -71,11 +84,47 @@ public:
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
 
+    /**
+     * @brief Set the Render Pass object
+     * 
+     * @param index 
+     * @param pass 
+     */
     void SetRenderPass(int32 index, const RenderPass::Ptr pass) { if(index < _passes.size()) _passes[index] = pass; }
+    /**
+     * @brief 
+     * 
+     * @param pass 
+     */
     void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
 
+    /**
+     * @brief Set the Main Texture object
+     * 
+     * @param maintex 
+     */
     void SetMainTexture(Texture::Ptr maintex);
+    /**
+     * @brief Set the Texture object
+     * 
+     * @param name 
+     * @param tex 
+     */
     void SetTexture(const char* name, Texture::Ptr tex);
+    /**
+     * @brief Set the Texture Tiling object
+     * 
+     * @param name 
+     * @param tiling 
+     */
+    void SetTextureTiling(const char* name, vec2& tiling);
+    /**
+     * @brief Set the Texture Offset object
+     * 
+     * @param name 
+     * @param offset 
+     */
+    void SetTextureOffset(const char* name,vec2& offset);
 
     /**
      * @brief Set the Simple Uniform Value object
@@ -164,14 +213,41 @@ public:
         uniform->Set(value, transpose);
     }
 
+    /**
+     * @brief Get the Render State object
+     * 
+     * @return const RenderState& 
+     */
     const RenderState &GetRenderState() { return _state; }
+    /**
+     * @brief Get the Uniform object
+     * 
+     * @param name 
+     * @return const Uniform* 
+     */
     const Uniform* GetUniform(const char* name);
-
+    /**
+     * @brief 
+     * 
+     * @param name 
+     */
     void RemoveUniform(const char* name);
 
 
 private:
+    /**
+     * @brief 
+     * 
+     * @param name 
+     * @param uniform 
+     */
     void AddUniform(const char* name, Uniform* uniform);
+    /**
+     * @brief Set the Passes Uniform object
+     * 
+     * @param name 
+     * @param uniform 
+     */
     void SetPassesUniform(const char* name, Uniform* uniform);
 
 

@@ -76,6 +76,10 @@ struct RasterStateAttribute : public StateAttribute
 
 /*------------------------------Per Fragment Operation--------------------------*/
 
+/**
+ * @brief 
+ * 
+ */
 struct PerFragmentOperation
 {
 
@@ -104,6 +108,10 @@ struct VertexLayoutAttrib
 
 /*------------------------------Uniform--------------------------*/
 
+/**
+ * @brief 
+ * 
+ */
 enum UniformType
 {
     UNI_FLOAT,
@@ -172,6 +180,13 @@ struct UniformLocation
 {
     Uniform* uniform;
     int32 location = -1;
+
+    UniformLocation() {}
+    UniformLocation(Uniform* uni, int32 loc)
+        : uniform(uni)
+        , location(loc)
+    {}
+    ~UniformLocation() { uniform = nullptr; }
 
     void Bind()
     {

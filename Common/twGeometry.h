@@ -9,6 +9,10 @@
 
 namespace TwinkleGraphics
 {
+/**
+ * @brief 
+ * 
+ */
 class Geometry : public Object
 {
 public:
@@ -26,7 +30,10 @@ protected:
     MeshRenderer::Ptr _renderer;
 };
 
-
+/**
+ * @brief 
+ * 
+ */
 class UVSphere : public Geometry
 {
 public: 

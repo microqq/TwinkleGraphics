@@ -173,4 +173,38 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
     }
 }
 
+void Material::SetTextureTiling(const char *name, vec2& tiling)
+{
+    if (_passes.size() == 0)
+    {
+#ifdef _DEBUG
+
+#endif
+        return;
+    }    
+
+    char* dest = new char[::strlen(name)];
+    memcpy(dest, name, ::strlen(name));
+    char* uniformname = ::strcat(dest, "_tiling");
+
+    this->SetVecUniformValue<float32, 2>(uniformname, tiling);
+}
+
+void Material::SetTextureOffset(const char *name, vec2& offset)
+{
+    if (_passes.size() == 0)
+    {
+#ifdef _DEBUG
+
+#endif
+        return;
+    }    
+
+    char* dest = new char[::strlen(name)];
+    memcpy(dest, name, ::strlen(name));
+    char* uniformname = ::strcat(dest, "_offset");
+
+    this->SetVecUniformValue<float32, 2>(uniformname, offset);
+}
+
 } // namespace TwinkleGraphics
