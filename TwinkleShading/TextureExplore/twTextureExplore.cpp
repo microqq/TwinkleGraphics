@@ -84,7 +84,6 @@ void TextureExploreView::Initialize()
 
     vec4 tint_color;
     material->SetMainTexture(texture);
-    // material->SetSimpleUniformValue<bool, 1>("light_on", true);
     material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 }
 void TextureExploreView::Destroy()

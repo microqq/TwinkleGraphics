@@ -12,6 +12,24 @@ RenderPass::RenderPass(ShaderProgram::Ptr shader)
 {
 }
 
+RenderPass::RenderPass(const RenderPass &copy)
+    : Object()
+    , _slots()
+    , _state(copy._state)
+    , _shader(copy._shader)
+    , _enable(copy._enable)
+{
+    // for(auto src : copy._slots)
+    // {
+    //     TextureSlot dest;
+    //     dest.tex = src.tex;
+    //     dest.slot = src.slot;
+    //     dest.location = src.location;
+
+    //     _slots.push_back(dest);
+    // }
+}
+
 RenderPass::~RenderPass()
 {
     _slots.clear();
@@ -83,6 +101,43 @@ Material::Material()
     , _textures()
 {
 
+}
+
+Material::Material(const Material &copy)
+    : Object()
+    , _passes()
+    , _uniforms()
+    , _textures()
+    , _state(copy._state)
+{
+    for(auto src_pass : copy._passes)
+    {
+        RenderPass::Ptr pass = std::make_shared<RenderPass>(*(src_pass.get()));
+        _passes.push_back(pass);
+    }
+
+    for(auto src_uniform : copy._uniforms)
+    {
+        Uniform* uniform = (Uniform*)::malloc(sizeof(*(src_uniform.second)));
+        ::memcpy(uniform, src_uniform.second, sizeof(*(src_uniform.second)));
+
+        _uniforms.insert(std::map<std::string, Uniform*>::value_type(src_uniform.first, uniform));
+
+        for(auto pass : _passes)
+        {
+            pass->SetUniform(uniform->name.c_str(), uniform);
+        }
+    }
+
+    for(auto src_tex : copy._textures)
+    {
+        _textures.insert(std::map<std::string, Texture::Ptr>::value_type(src_tex.first, src_tex.second));
+
+        for (auto pass : _passes)
+        {
+            pass->SetTexture(src_tex.first.c_str(), src_tex.second);
+        }
+    }
 }
 
 Material::~Material()

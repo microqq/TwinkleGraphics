@@ -165,7 +165,13 @@ struct Uniform
     Uniform(/*UniformType unitype,*/ const char *namestr, bool isvec = false, bool ismat = false)
         : name(namestr)
         /* , uni_type(unitype) */
-        , ismatrix(ismat), isvector(isvec)
+        , ismatrix(ismat)
+        , isvector(isvec)
+    {}
+    Uniform(const Uniform& copy)
+        : name(copy.name)
+        , ismatrix(copy.ismatrix)
+        , isvector(copy.isvector)
     {}
     virtual ~Uniform() {}
 
@@ -206,6 +212,10 @@ struct SimpleUniform<T, 1> : public Uniform
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
     {}
+    SimpleUniform(const SimpleUniform& copy)
+        : Uniform(copy)
+        , u0(copy.u0)
+    {}
     virtual ~SimpleUniform() {}
 
     void Set(T v) { u0 = v; }
@@ -219,6 +229,11 @@ struct SimpleUniform<T, 2> : public Uniform
 
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
+    {}
+    SimpleUniform(const SimpleUniform& copy)
+        : Uniform(copy)
+        , u0(copy.u0)
+        , u1(copy.u1)
     {}
     virtual ~SimpleUniform() {}
 
@@ -234,6 +249,12 @@ struct SimpleUniform<T, 3> : public Uniform
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
     {}
+    SimpleUniform(const SimpleUniform& copy)
+        : Uniform(copy)
+        , u0(copy.u0)
+        , u1(copy.u1)
+        , u2(copy.u2)
+    {}
     virtual ~SimpleUniform() {}
 
     void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
@@ -248,6 +269,13 @@ struct SimpleUniform<T, 4> : public Uniform
 
     SimpleUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr)
+    {}
+    SimpleUniform(const SimpleUniform& copy)
+        : Uniform(copy)
+        , u0(copy.u0)
+        , u1(copy.u1)
+        , u2(copy.u2)
+        , u3(copy.u3)
     {}
     virtual ~SimpleUniform() {}
 
@@ -267,6 +295,10 @@ struct VecUniform : public Uniform
     VecUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr, true, false)
     {}
+    VecUniform(const VecUniform& copy)
+        : Uniform(copy)
+        , vector(copy.vector)
+    {}
     virtual ~VecUniform() {}
 
     void Set(vec<N, T, defaultp>& vec) { vector = vec; }
@@ -285,6 +317,11 @@ struct MatUniform : public Uniform
 
     MatUniform(/*UniformType unitype,*/ const char *namestr)
         : Uniform(/*unitype,*/ namestr, false, true)
+    {}
+    MatUniform(const MatUniform& copy)
+        : Uniform(copy)
+        , matrix(copy.matrix)
+        , transpose(copy.transpose)
     {}
     virtual ~MatUniform() {}
 

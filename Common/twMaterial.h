@@ -38,7 +38,8 @@ class RenderPass : public Object
 public:
     typedef std::shared_ptr<RenderPass> Ptr;
 
-    RenderPass(ShaderProgram::Ptr shader);
+    RenderPass(ShaderProgram::Ptr shader = nullptr);
+    RenderPass(const RenderPass& copy);
     virtual ~RenderPass();
 
     void SetCullMode(CullMode cull) {}
@@ -79,6 +80,7 @@ public:
     typedef std::shared_ptr<Material> Ptr;
 
     Material();
+    Material(const Material& copy);
     virtual ~Material();
 
     void SetCullMode(CullMode cull) {}
