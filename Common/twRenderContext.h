@@ -178,6 +178,7 @@ struct Uniform
     bool IsVector() { return isvector; }
     bool IsMatrix() { return ismatrix; }
 
+    virtual Uniform* clone() { return nullptr; }
     virtual int32 GetElementsCount() { return 0; }
     virtual void BindLocation(uint32 location) {}
 };
@@ -219,6 +220,14 @@ struct SimpleUniform<T, 1> : public Uniform
     virtual ~SimpleUniform() {}
 
     void Set(T v) { u0 = v; }
+
+    virtual Uniform* clone() override
+    { 
+        SimpleUniform<T, 1> *uniform =  new SimpleUniform<T, 1>(this->name.c_str());
+        uniform->u0 = this->u0;
+
+        return uniform;
+    }
     virtual int32 GetElementsCount() override { return 1; }
     virtual void BindLocation(uint32 location) override;
 };
@@ -238,6 +247,16 @@ struct SimpleUniform<T, 2> : public Uniform
     virtual ~SimpleUniform() {}
 
     void Set(T v0, T v1) { u0 = v0; u0 = v1; }
+
+    virtual Uniform* clone() override
+    { 
+        SimpleUniform<T, 2> *uniform =  new SimpleUniform<T, 2>(this->name.c_str());
+
+        uniform->u0 = this->u0;
+        uniform->u1 = this->u1;
+
+        return uniform;
+    }
     virtual int32 GetElementsCount() override { return 2; }
     virtual void BindLocation(uint32 location) override;
 };
@@ -259,6 +278,16 @@ struct SimpleUniform<T, 3> : public Uniform
 
     void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
 
+    virtual Uniform* clone() override
+    { 
+        SimpleUniform<T, 3> *uniform =  new SimpleUniform<T, 3>(this->name.c_str());
+
+        uniform->u0 = this->u0;
+        uniform->u1 = this->u1;
+        uniform->u2 = this->u2;
+
+        return uniform;
+    }
     virtual int32 GetElementsCount() override { return 3; }
     virtual void BindLocation(uint32 location) override;
 };
@@ -281,6 +310,17 @@ struct SimpleUniform<T, 4> : public Uniform
 
     void Set(T v0, T v1, T v2, T v3) { u0 = v0; u0 = v1; u2 = v2, u3 = v3; }
 
+    virtual Uniform* clone() override
+    { 
+        SimpleUniform<T, 4> *uniform =  new SimpleUniform<T, 4>(this->name.c_str());
+
+        uniform->u0 = this->u0;
+        uniform->u1 = this->u1;
+        uniform->u2 = this->u2;
+        uniform->u3 = this->u3;
+
+        return uniform;
+    }
     virtual int32 GetElementsCount() override { return 4; }
     virtual void BindLocation(uint32 location) override;
 };
@@ -303,6 +343,13 @@ struct VecUniform : public Uniform
 
     void Set(vec<N, T, defaultp>& vec) { vector = vec; }
 
+    virtual Uniform* clone() override
+    { 
+        VecUniform<T, N>* uniform = new VecUniform<T, N>(this->name.c_str());
+
+        uniform->vector = this->vector;
+        return uniform;
+    }
     virtual int32 GetElementsCount() override { return 1; }
     virtual void BindLocation(uint32 location) override;
 };
@@ -331,6 +378,14 @@ struct MatUniform : public Uniform
         transpose = transposed; 
     }
 
+    virtual Uniform* clone() override
+    { 
+        MatUniform<T, Row, Column>* uniform = new MatUniform<T, Row, Column>(this->name.c_str());
+
+        uniform->transpose = this->transpose;
+        uniform->matrix = this->matrix;
+        return uniform;
+    }
     virtual int32 GetElementsCount() override { return 1; }
     virtual void BindLocation(uint32 location) override;
 };

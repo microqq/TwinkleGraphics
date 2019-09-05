@@ -56,6 +56,7 @@ TEST(MaterialTests, UniformSetting)
     ASSERT_EQ(vecuniform2.vector.y, 2.0f);
 
 
+    // material
     RenderPass::Ptr pass0 = std::make_shared<RenderPass>();
     Material::Ptr material = std::make_shared<Material>();
     material->AddRenderPass(pass0);
@@ -63,9 +64,10 @@ TEST(MaterialTests, UniformSetting)
     vec4 tint_color(2.0f, 3.0f, 4.0f, 5.0f);
     material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 
+    //material2
     Material::Ptr material2 = std::make_shared<Material>(*(material.get()));
     const VecUniform<float32, 4> *cast_vec4 = dynamic_cast<const VecUniform<float32, 4>* >(material2->GetUniform("tint_color"));
-    ASSERT_EQ(cast_vec4->vector.x, 2.0f);
+    ASSERT_EQ(cast_vec4->vector, vec4(2.0f, 3.0f, 4.0f, 5.0f));
 
     // std::vector<int> vec{1, 2, 3, 4, 5};
     // int sum = std::accumulate(vec.begin(), vec.end(), 0);

@@ -118,9 +118,7 @@ Material::Material(const Material &copy)
 
     for(auto src_uniform : copy._uniforms)
     {
-        Uniform* uniform = (Uniform*)::malloc(sizeof(*(src_uniform.second)));
-        ::memcpy(uniform, src_uniform.second, sizeof(*(src_uniform.second)));
-
+        Uniform* uniform = src_uniform.second->clone();
         _uniforms.insert(std::map<std::string, Uniform*>::value_type(src_uniform.first, uniform));
 
         for(auto pass : _passes)
