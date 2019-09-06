@@ -178,7 +178,7 @@ struct Uniform
     bool IsVector() { return isvector; }
     bool IsMatrix() { return ismatrix; }
 
-    virtual Uniform* clone() { return nullptr; }
+    virtual Uniform* Clone() { return nullptr; }
     virtual int32 GetElementsCount() { return 0; }
     virtual void BindLocation(uint32 location) {}
 };
@@ -221,7 +221,7 @@ struct SimpleUniform<T, 1> : public Uniform
 
     void Set(T v) { u0 = v; }
 
-    virtual Uniform* clone() override
+    virtual Uniform* Clone() override
     { 
         SimpleUniform<T, 1> *uniform =  new SimpleUniform<T, 1>(this->name.c_str());
         uniform->u0 = this->u0;
@@ -248,7 +248,7 @@ struct SimpleUniform<T, 2> : public Uniform
 
     void Set(T v0, T v1) { u0 = v0; u0 = v1; }
 
-    virtual Uniform* clone() override
+    virtual Uniform* Clone() override
     { 
         SimpleUniform<T, 2> *uniform =  new SimpleUniform<T, 2>(this->name.c_str());
 
@@ -278,7 +278,7 @@ struct SimpleUniform<T, 3> : public Uniform
 
     void Set(T v0, T v1, T v2) { u0 = v0; u0 = v1; u2 = v2; }
 
-    virtual Uniform* clone() override
+    virtual Uniform* Clone() override
     { 
         SimpleUniform<T, 3> *uniform =  new SimpleUniform<T, 3>(this->name.c_str());
 
@@ -310,7 +310,7 @@ struct SimpleUniform<T, 4> : public Uniform
 
     void Set(T v0, T v1, T v2, T v3) { u0 = v0; u0 = v1; u2 = v2, u3 = v3; }
 
-    virtual Uniform* clone() override
+    virtual Uniform* Clone() override
     { 
         SimpleUniform<T, 4> *uniform =  new SimpleUniform<T, 4>(this->name.c_str());
 
@@ -343,7 +343,7 @@ struct VecUniform : public Uniform
 
     void Set(vec<N, T, defaultp>& vec) { vector = vec; }
 
-    virtual Uniform* clone() override
+    virtual Uniform* Clone() override
     { 
         VecUniform<T, N>* uniform = new VecUniform<T, N>(this->name.c_str());
 
@@ -378,7 +378,7 @@ struct MatUniform : public Uniform
         transpose = transposed; 
     }
 
-    virtual Uniform* clone() override
+    virtual Uniform* Clone() override
     { 
         MatUniform<T, Row, Column>* uniform = new MatUniform<T, Row, Column>(this->name.c_str());
 
@@ -398,27 +398,105 @@ struct MatUniform : public Uniform
 
 struct VertexArrayObject
 {
+    RenderResInstance instance;
 
+    VertexArrayObject()
+    {
+        uint32 vaos[1];
+        glGenVertexArrays(1, vaos);
+
+        instance.id = vaos[0];
+        instance.type = GL_VERTEX_ARRAY;
+    }
+
+    ~VertexArrayObject()
+    {
+        if (instance.id != 0)
+        {
+            uint32 vaos[1] = { instance.id };
+            glDeleteVertexArrays(1, vaos);
+        }
+    }
+    // void Bind()
+    // {
+    //     glBindVertexArray(instance.id);
+    // }
+    // void UnBind()
+    // {
+    //     glBindVertexArray(0);
+    // }
 };
 
 
 
 /*------------------------------Vertex Buffer--------------------------*/
 
-struct VertexBuffer
+struct VertexBufferObject
 {
+    RenderResInstance instance;
 
+    VertexBufferObject()
+    {
+        uint32 vbos[1];
+        glGenBuffers(GL_ARRAY_BUFFER, vbos);
+
+        instance.id = vbos[0];
+        instance.type = GL_ARRAY_BUFFER;
+    }
+
+    ~VertexBufferObject()
+    {
+        if(instance.id != 0)
+        {
+            uint32 vbos[1] = { instance.id };
+            glDeleteBuffers(1, vbos);
+        }
+    }
 };
+
 
 
 /*------------------------------Index Buffer--------------------------*/
 
-struct IndexBuffer
+struct IndexBufferObject
 {
+    RenderResInstance instance;
 
+    IndexBufferObject()
+    {
+        uint32 ibos[1] = { instance.id };
+        glGenBuffers(GL_ELEMENT_ARRAY_BUFFER, ibos);
+
+        instance.id = ibos[0];
+        instance.type = GL_ELEMENT_ARRAY_BUFFER;
+    }
+
+    ~IndexBufferObject()
+    {
+        if(instance.id != 0)
+        {
+            uint32 ibos[1] = { instance.id };
+            glDeleteBuffers(1, ibos);
+        }
+    }
 };
 
 
+/*------------------------------FrameBuffer--------------------------*/
+
+struct FrameBufferObject
+{
+    RenderResInstance instance;
+};
+
+
+
+/*------------------------------RenderBuffer--------------------------*/
+
+struct RenderBufferObject
+{
+    RenderResInstance instance;
+};
 
 /*------------------------------Render Context--------------------------*/
 

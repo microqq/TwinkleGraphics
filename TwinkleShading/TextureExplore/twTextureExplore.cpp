@@ -71,20 +71,7 @@ void TextureExploreView::Initialize()
         _sprite = std::make_shared<Sprite>(texture);
     }
 
-    ShaderManagerInst shaderMgr;
 
-    ShaderReadInfo sprite_shader_info[] = {
-        {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
-    ShaderProgram::Ptr sprite_shader = shaderMgr->ReadShaders(sprite_shader_info, 2);
-
-    RenderPass::Ptr pass0 = std::make_shared<RenderPass>(sprite_shader);
-    Material::Ptr material = std::make_shared<Material>();
-    material->AddRenderPass(pass0);
-
-    vec4 tint_color;
-    material->SetMainTexture(texture);
-    material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 }
 void TextureExploreView::Destroy()
 {
@@ -139,7 +126,7 @@ void TextureExploreView::RenderSprite()
 {
     if(_sprite != nullptr)
     {
-        
+            
     }
 }
 

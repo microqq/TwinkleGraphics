@@ -39,6 +39,7 @@ target_include_directories(twCommon PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 target_compile_definitions(twCommon PUBLIC _DEBUG=1)
+target_compile_definitions(twCommon PUBLIC TEMPORARY_USE=1)
 
 
 # target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)

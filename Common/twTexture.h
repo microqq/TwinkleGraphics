@@ -190,8 +190,8 @@ public:
     int32 GetNumMipLevels() { return _image == nullptr ? 0 : _image->GetImageSource().mipLevels; }
     InternalFormat GetInternalformat() { return _image == nullptr ? GL_NONE : _image->GetImageSource().internalFormat; }
 
-    int32 GetWidth(int32 level) { return _image->GetImageSource().mip[level].width; }
-    int32 GetHeight(int32 level) { return _image->GetImageSource().mip[level].height; }
+    int32 GetWidth(int32 level = 0) { return _image->GetImageSource().mip[level].width; }
+    int32 GetHeight(int32 level = 0) { return _image->GetImageSource().mip[level].height; }
     int32 GetDepth(int32 level = 0) { return _image->GetImageSource().mip[level].depth; }
 
     const RenderResInstance& GetRenderRes() { return _res; }

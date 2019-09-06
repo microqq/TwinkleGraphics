@@ -51,7 +51,11 @@ public:
     inline bool Enabled() { return _enable; }
     inline const RenderState& GetRenderState() { return _state; }
     inline const ShaderProgram::Ptr& GetShader() { return _shader; }
-    inline const std::vector<TextureSlot>& GetTextureSlots() { return _slots; }
+    inline const std::map<std::string, TextureSlot>& GetTextureSlots() { return _slots; }
+
+#ifdef TEMPORARY_USE
+    void Apply();
+#endif
 
 private:
     void SetMaintexture(Texture::Ptr maintex) { SetTexture("main_tex", maintex); }
@@ -59,8 +63,8 @@ private:
     void SetUniform(const char* name, Uniform* uniform);
 
 private:
-    std::vector<TextureSlot> _slots;
-    std::vector<UniformLocation> _uniformlocations;
+    std::map<std::string, TextureSlot> _slots;
+    std::map<std::string, UniformLocation> _uniformlocations;
     RenderState _state;
     ShaderProgram::Ptr _shader;
 

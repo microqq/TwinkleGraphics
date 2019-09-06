@@ -45,25 +45,34 @@ void RenderPass::SetTexture(const char *name, Texture::Ptr tex)
     {
         // ShaderProgramUse use(_shader);
 
-        char unif_name[128];
-        int32 count = _shader->GetActiveUniformsCount();
-        for(int32 i = 0; i < count; i++)
+        std::map<std::string, TextureSlot>::iterator it = _slots.find(name);
+        if(it == _slots.end())
         {
-            _shader->GetActiveUniform(i, unif_name);
-            if(::strcmp(name, unif_name) == 0)
+            char unif_name[128];
+            int32 count = _shader->GetActiveUniformsCount();
+            for (int32 i = 0; i < count; i++)
             {
-                int32 location = _shader->GetUniformLocation(name);
-                TextureSlot slot;
-                // slot.texname = name;
-                slot.tex = tex;
-                slot.slot = _slots.size();
+                _shader->GetActiveUniform(i, unif_name);
+                if (::strcmp(name, unif_name) == 0)
+                {
+                    int32 location = _shader->GetUniformLocation(name);
+                    TextureSlot slot;
+                    // slot.texname = name;
+                    slot.tex = tex;
+                    slot.slot = _slots.size();
 
-                slot.location = location;
-                _slots.push_back(slot);
+                    slot.location = location;
+                    _slots.insert(std::map<std::string, TextureSlot>::value_type(name, slot));
 
-                return;
+                    return;
+                }
             }
         }
+        else
+        {
+            TextureSlot& slot = it->second;
+            slot.tex = tex;
+        }        
     }
 }
 
@@ -72,25 +81,49 @@ void RenderPass::SetUniform(const char *name, Uniform *uniform)
     if(_shader != nullptr)
     {
         // ShaderProgramUse use(_shader);
-
-        char unif_name[128];
-        int32 count = _shader->GetActiveUniformsCount();
-        for(int32 i = 0; i < count; i++)
+        std::map<std::string, UniformLocation>::iterator it = _uniformlocations.find(name);
+        if(it == _uniformlocations.end())
         {
-            _shader->GetActiveUniform(i, unif_name);
-            if(::strcmp(name, unif_name) == 0)
+            char unif_name[128];
+            int32 count = _shader->GetActiveUniformsCount();
+            for(int32 i = 0; i < count; i++)
             {
-                UniformLocation binding;
-                binding.uniform = uniform;
-                binding.location = _shader->GetUniformLocation(name);
+                _shader->GetActiveUniform(i, unif_name);
+                if(::strcmp(name, unif_name) == 0)
+                {
+                    UniformLocation binding;
+                    binding.uniform = uniform;
+                    binding.location = _shader->GetUniformLocation(name);
 
-                _uniformlocations.push_back(binding);
+                    _uniformlocations.insert(std::map<std::string, UniformLocation>::value_type(name, binding));
 
-                return;
+                    return;
+                }
             }
+        }
+        else
+        {
+            UniformLocation& location = it->second;
+            location.uniform = uniform;
         }
     }
 }
+
+
+#ifdef TEPORARY_USE
+/**
+ * @brief 
+ * 
+ */
+void RenderPass::Apply()
+{
+    //Apply render states
+
+
+    //Apply shader
+}
+#endif
+
 
 /*------------------------------Material--------------------------*/
 
@@ -118,7 +151,7 @@ Material::Material(const Material &copy)
 
     for(auto src_uniform : copy._uniforms)
     {
-        Uniform* uniform = src_uniform.second->clone();
+        Uniform* uniform = src_uniform.second->Clone();
         _uniforms.insert(std::map<std::string, Uniform*>::value_type(src_uniform.first, uniform));
 
         for(auto pass : _passes)
@@ -221,6 +254,19 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
             if (pass != nullptr)
             {
                 pass->SetTexture(name, tex);
+            }
+        }
+    }
+    else
+    {
+        if(it->second != tex)
+        {
+            for (auto pass : _passes)
+            {
+                if (pass != nullptr)
+                {
+                    pass->SetTexture(name, tex);
+                }
             }
         }
     }

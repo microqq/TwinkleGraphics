@@ -17,13 +17,12 @@ public:
     MeshRenderer();
     virtual ~MeshRenderer();
 
-
     void PushDrawCommands();
 
     void AddMaterial(Material::Ptr material);
     void SetMaterial(int32 index, Material::Ptr material);
 
-    void SetMaterial(Material::Ptr material) { _shared_material = material; }
+    void SetMaterial(Material::Ptr material) { _shared_material = _material = material; }
     void SetSharedMaterial(Material::Ptr material) { _shared_material = material; }
     void SetMesh(Mesh::Ptr mesh);
 

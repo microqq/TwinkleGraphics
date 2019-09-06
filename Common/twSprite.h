@@ -12,15 +12,16 @@ class SpriteRenderer : public MeshRenderer
 public:
     typedef std::shared_ptr<SpriteRenderer> Ptr;
 
-    SpriteRenderer();
+    SpriteRenderer(Texture2D::Ptr texture);
     virtual ~SpriteRenderer();
 
-    void SetFlip(bool flip) { _flip = flip; }
-    void SetColor(vec4& color) { _tintcolor = color; }
+    void SetFlip(bool flip);
+    void SetColor(vec4& color);
 
 private:
-    vec4 _tintcolor;
-    bool _flip;
+    void Init(Texture2D::Ptr texture);
+
+private:
 };
 
 
@@ -32,9 +33,13 @@ public:
     Sprite(Texture2D::Ptr texture);
     virtual ~Sprite();
 
-    void SetTexture(Texture2D::Ptr texture) {}
+    void SetFlip(bool flip);
+    void SetColor(vec4& color);
+    void SetTexture(Texture2D::Ptr texture);
 
 private:
+    void Init(Texture2D::Ptr texture);
+
     void GenerateUVs()
     {
         if(_mesh != nullptr)
@@ -64,6 +69,7 @@ private:
     {}
 
 private:
+    SpriteRenderer::Ptr _sprite_renderer;
     int32 _perpixelunit;
 };
 

@@ -8,8 +8,11 @@ out vec2 texcoord;
 uniform vec2 main_tex_tiling;
 uniform vec2 main_tex_offset;
 
+uniform mat4 mvp; 
+uniform bool flip;
+
 void main()
 {
-    gl_Position = vec4(position, 1.0f);
+    gl_Position = mvp * vec4(position, 1.0f);
     texcoord = uv.xy;
 }
