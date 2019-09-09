@@ -196,12 +196,8 @@ public:
 
     const RenderResInstance& GetRenderRes() { return _res; }
 
-    void Apply();
-
 protected:
-    virtual void InitStorage();
-    virtual void ApplyTexParams();
-    
+    virtual void InitStorage();    
 
 protected:
     TexParams _parameters;
@@ -219,6 +215,16 @@ struct TextureSlot
     Texture::Ptr tex;
     int8 location;
     int8 slot;
+
+    void Apply()
+    {
+        const RenderResInstance &res = tex->GetRenderRes();
+        glBindTexture(res.type, res.id);
+        glActiveTexture(location);
+
+        const TexParams& params = tex->GetTexParams();
+
+    }
 };
 
 

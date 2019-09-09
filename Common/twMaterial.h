@@ -52,6 +52,7 @@ public:
     inline const RenderState& GetRenderState() { return _state; }
     inline const ShaderProgram::Ptr& GetShader() { return _shader; }
     inline const std::map<std::string, TextureSlot>& GetTextureSlots() { return _slots; }
+    inline const std::map<std::string, UniformLocation>& GetUniformLocations() { return _uniformlocations; }
 
 #ifdef TEMPORARY_USE
     void Apply();
@@ -103,6 +104,8 @@ public:
      * @param pass 
      */
     void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
+
+    RenderPass::Ptr GetRenderPass(int32 index) { if(index >= 0 && index < _passes.size()) return _passes[index]; }
 
     /**
      * @brief Set the Main Texture object

@@ -36,6 +36,7 @@ public:
     void SetFlip(bool flip);
     void SetColor(vec4& color);
     void SetTexture(Texture2D::Ptr texture);
+    Material::Ptr GetMaterial() { return _renderer->GetSharedMaterial(); }
 
 private:
     void Init(Texture2D::Ptr texture);

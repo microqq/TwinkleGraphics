@@ -16,6 +16,8 @@ namespace TwinkleGraphics
 class Geometry : public Object
 {
 public:
+    typedef std::shared_ptr<Geometry> Ptr;
+
     Geometry();
     virtual ~Geometry();
 
@@ -754,7 +756,6 @@ protected:
     }
 
 protected:
-    Mesh::Ptr _mesh;
     glm::vec2 _size;
 
     MeshDataFlag _flag;

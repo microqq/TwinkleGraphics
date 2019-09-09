@@ -91,6 +91,8 @@ public:
     uint32* GetIndice() { return _indice; }
     int32 GetIndiceNum() { return _indice_num; }
 
+    int32 GetDataSize();
+
 private:
     glm::vec3* _vertice_pos;
     glm::vec4* _vertice_color;

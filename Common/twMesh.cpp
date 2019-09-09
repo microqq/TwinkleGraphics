@@ -48,11 +48,32 @@ void SubMesh::Initialize(int32 num, int32 indice_num, MeshDataFlag flag)
     }
 }
 
+int32 SubMesh::GetDataSize()
+{
+    int32 totalsize = 0;
+    if((_data_flag & MeshDataFlag::DEFAULT) != 0)
+    {
+        totalsize += _vertice_num * 12;
+    }
+    if((_data_flag & MeshDataFlag::HAS_COLOR) != 0)
+    {
+        totalsize += _vertice_num * 16;
+    }
+    if((_data_flag & MeshDataFlag::HAS_NORMAL) != 0)
+    {
+        totalsize += _vertice_num * 12;
+    }
+    if((_data_flag & MeshDataFlag::HAS_BINORMAL) != 0)
+    {
+        totalsize += _vertice_num * 12;
+    }
+    if((_data_flag & MeshDataFlag::HAS_UV) != 0)
+    {
+        totalsize += _vertice_num * 16;
+    }
 
-
-
-
-
+    return totalsize;
+}
 
 
 

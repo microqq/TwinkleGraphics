@@ -93,11 +93,6 @@ void Texture::SetLodBias(LodBiasParam parameter, float32 bias)
     _parameters.lodbias = bias;
 }
 
-void Texture::Apply()
-{
-    ApplyTexParams();
-}
-
 void Texture::InitStorage()
 {
     glBindTexture(_res.type, _res.id);
@@ -107,10 +102,6 @@ void Texture::InitStorage()
     const GLubyte* error_str = glGetString(error);
 #endif
 
-}
-
-void Texture::ApplyTexParams()
-{
 }
 
 

@@ -88,7 +88,7 @@ void SpriteRenderer::Init(Texture2D::Ptr texture)
 
     Material::Ptr sprite_mat = std::make_shared<Material>();
     RenderPass::Ptr pass = std::make_shared<RenderPass>(sprite_shader);
-    sprite_mat->SetRenderPass(0, pass);
+    sprite_mat->AddRenderPass(pass);
 
     vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
     sprite_mat->SetSimpleUniformValue<bool, 1>("flip", false);
