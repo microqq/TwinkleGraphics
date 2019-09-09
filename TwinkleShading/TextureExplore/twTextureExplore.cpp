@@ -228,7 +228,7 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
     int32 verticenum =submesh->GetVerticeNum();
     glBufferData(GL_ARRAY_BUFFER, submesh->GetDataSize(), nullptr, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, verticenum * 12, submesh->GetVerticePos());
-    glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticePos());
+    glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticeUV());
 
     glBindVertexBuffer(0, _vbos[index], 0, sizeof(vec3));
     glEnableVertexAttribArray(0);
@@ -237,7 +237,7 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
 
     glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));
     glEnableVertexAttribArray(1);
-    glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(1, 1);
 }
 
