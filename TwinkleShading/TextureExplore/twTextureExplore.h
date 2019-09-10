@@ -41,8 +41,24 @@ public:
         , _vbos(nullptr)
         , _ebos(nullptr)
         , _sprite(nullptr)
+        , _wrap_modes()
+        , _wrap_option(-1)
+        , _filter_modes()
+        , _filter_option(-1)
+        , _swizzle_option(-1)
         , _current_tex_option(-1)
-        {}
+        , _lodbias_value(1.0f)
+        , _swizzle_masks()
+        , _texparams_tabitem()
+        , _enable_lodbias(false)
+        {
+            _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
+            _filter_modes[0] = _filter_modes[1] = -1;
+            _swizzle_masks[0] = 0;
+            _swizzle_masks[1] = 1;
+            _swizzle_masks[2] = 2;
+            _swizzle_masks[3] = 3;
+        }
 
     virtual ~TextureExploreView()
     {}
@@ -61,6 +77,17 @@ private:
     void CreateGeometry(Geometry::Ptr geom, uint32 index);
     void RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face = GL_CCW);
 
+    void OnWrapModeGUI(int32& wrap_mode_option);
+    void OnFilterModeGUI(int32& filter_mode_option);
+    void OnSwizzleModeGUI();
+    void ResetGUI();
+
+    void SetTexparams();
+    WrapMode GetWrapMode(int32 wrap_mode_option);
+    FilterMode GetFilterMode(int32 filter_mode_option);
+    SwizzleParam GetSwizzleParam(int32 swizzle_option);
+    SwizzleMask GetSwizzleMask(int32 swizzle_mask_option);
+
 
 private:
     glm::mat4 _model_mat;
@@ -72,6 +99,7 @@ private:
     uint32 *_vbos;
     uint32 *_ebos;
 
+    TexParams _texparams;
     glm::vec4 _viewport_params;
 
     Texture1D::Ptr _texture1D;
@@ -79,10 +107,19 @@ private:
     Texture3D::Ptr _texture3D;
     TextureCube::Ptr _textureCube;
     Texture1DArray::Ptr _texture1DArray;
-
     Sprite::Ptr _sprite;
 
     int32 _current_tex_option;
+    int32 _wrap_modes[3];
+    int32 _wrap_option;
+    int32 _filter_modes[2];
+    int32 _filter_option;
+    int32 _swizzle_option;
+    int32 _swizzle_masks[4];
+
+    float32 _lodbias_value;
+    bool _texparams_tabitem[4];
+    bool _enable_lodbias;
 
     friend class TextureExplore;
 };

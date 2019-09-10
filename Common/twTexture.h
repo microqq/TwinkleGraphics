@@ -123,12 +123,14 @@ typedef Swizzle<4> Swizzle4;
 
 struct TexParams
 {
-    WrapMode wrap_s;
-    WrapMode wrap_t;
-    WrapMode wrap_r;
+    WrapMode wrap_modes[3];
+    // WrapMode wrap_s;
+    // WrapMode wrap_t;
+    // WrapMode wrap_r;
 
-    FilterMode filter_min;
-    FilterMode filter_mag;
+    FilterMode filter_modes[2];
+    // FilterMode filter_min;
+    // FilterMode filter_mag;
 
     SwizzleParam swizzle_parameter;
     SwizzleMask swizzle[4];
@@ -137,12 +139,12 @@ struct TexParams
     float32 lodbias;
 
     TexParams()
-        : wrap_s(WrapMode::NONE)
-        , wrap_t(WrapMode::NONE)
-        , wrap_r(WrapMode::NONE)
-        , filter_min(FilterMode::NONE)
-        , filter_mag(FilterMode::NONE)
-        , swizzle_parameter(SwizzleParam::NONE)
+        // : wrap_s(WrapMode::NONE)
+        // , wrap_t(WrapMode::NONE)
+        // , wrap_r(WrapMode::NONE)
+        // , filter_min(FilterMode::NONE)
+        // , filter_mag(FilterMode::NONE)
+        : swizzle_parameter(SwizzleParam::NONE)
         , lod_parameter(LodBiasParam::NONE)
     {
     }

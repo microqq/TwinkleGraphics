@@ -120,10 +120,11 @@ void TextureExploreView::OnGUI()
     {
         if(ImGui::RadioButton(u8"一维纹理", &_current_tex_option, 0))
         {
-
+            ResetGUI();
         }
         if(ImGui::RadioButton(u8"二维纹理", &_current_tex_option, 1))
         {
+            ResetGUI();
             if(_sprite == nullptr)
             {
                 CreateSprite();
@@ -131,44 +132,260 @@ void TextureExploreView::OnGUI()
         }
         if(ImGui::RadioButton(u8"三维纹理", &_current_tex_option, 2))
         {
-
+            ResetGUI();
         }
         if(ImGui::RadioButton(u8"立方体纹理", &_current_tex_option, 3))
         {
+            ResetGUI();
 
         }
         if(ImGui::RadioButton(u8"程序纹理", &_current_tex_option, 4))
         {
+            ResetGUI();
 
         }
         if(ImGui::RadioButton(u8"法线纹理", &_current_tex_option, 5))
         {
+            ResetGUI();
 
         }
         if(ImGui::RadioButton(u8"投影纹理", &_current_tex_option, 6))
         {
+            ResetGUI();
 
         }
         if(ImGui::RadioButton(u8"纹理视图", &_current_tex_option, 7))
         {
+            ResetGUI();
 
         }
     }
     ImGui::End();
 
-    ImGui::Begin(u8"纹理参数");
+    ImGui::Begin(u8"纹理设置");
     {
+        ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+        _texparams_tabitem[0] = true;
+        _texparams_tabitem[1] = true;
+        _texparams_tabitem[2] = true;
+        _texparams_tabitem[3] = true;
+        ImGui::BeginTabBar(u8"纹理参数", ImGuiTabBarFlags_None);
 
+        if (ImGui::BeginTabItem(u8"纹理环绕", &(_texparams_tabitem[0])))
+        {
+            bool wrap_option_clicked = false;
+            ImGui::BeginGroup();
+            ImGui::Text(u8"参数:");
+            ImGui::Indent();
+            wrap_option_clicked = ImGui::RadioButton(u8"Wrap_S", &_wrap_option, 0);
+            wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_T", &_wrap_option, 1);
+            wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_R", &_wrap_option, 2);
+            ImGui::EndGroup();
+
+            ImGui::SameLine();
+            OnWrapModeGUI(_wrap_modes[_wrap_option]);
+
+            ImGui::EndTabItem();
+        }
+
+        if(ImGui::BeginTabItem(u8"纹理过滤", &(_texparams_tabitem[1])))
+        {
+            bool filter_option_clicked = false;
+            ImGui::BeginGroup();
+            ImGui::Text(u8"参数:");
+            ImGui::Indent();
+            filter_option_clicked = ImGui::RadioButton(u8"Minification", &_filter_option, 0);
+            filter_option_clicked |= ImGui::RadioButton(u8"Magnification", &_filter_option, 1);
+            ImGui::EndGroup();
+
+            ImGui::SameLine();
+            OnFilterModeGUI(_filter_modes[_filter_option]);
+
+            ImGui::EndTabItem();
+        }
+
+        if(ImGui::BeginTabItem(u8"纹理抖动", &(_texparams_tabitem[2])))
+        {
+            bool swizzle_option_clicked = false;
+            ImGui::BeginGroup();
+            ImGui::Text(u8"参数:");
+            ImGui::Indent();
+            swizzle_option_clicked = ImGui::RadioButton(u8"Swizzle_R", &_swizzle_option, 0);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_G", &_swizzle_option, 1);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_B", &_swizzle_option, 2);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_A", &_swizzle_option, 3);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_RGBA", &_swizzle_option, 4);
+            ImGui::EndGroup();
+
+            ImGui::SameLine();
+            OnSwizzleModeGUI();
+
+            ImGui::EndTabItem();
+        }
+
+        if(ImGui::BeginTabItem("Lod Bias", &(_texparams_tabitem[3])))
+        {
+            if(ImGui::Checkbox(u8"启用", &_enable_lodbias))
+            {
+            }
+            if(_enable_lodbias)
+            {
+                ImGui::SameLine();
+                ImGui::SliderFloat("Bias Value", &_lodbias_value, 0.0f, 10.0f);
+            }
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
     }
     ImGui::End();
+
+    this->SetTexparams();
+}
+
+void TextureExploreView::OnWrapModeGUI(int32& wrap_mode_option)
+{
+    bool wrap_mode_clicked = false;
+    ImGui::BeginGroup();
+    ImGui::Text(u8"模式:");
+    ImGui::Indent();
+    wrap_mode_clicked = ImGui::RadioButton(u8"REPEAT", &wrap_mode_option, 0);
+    wrap_mode_clicked |= ImGui::RadioButton(u8"CLAMP", &wrap_mode_option, 1);
+    wrap_mode_clicked |= ImGui::RadioButton(u8"CLAMP_TO_EDGE", &wrap_mode_option, 2);
+    wrap_mode_clicked |= ImGui::RadioButton(u8"CLAMP_TO_BORDER", &wrap_mode_option, 3);
+    ImGui::EndGroup();
+}
+
+void TextureExploreView::OnFilterModeGUI(int32& filter_mode_option)
+{
+    bool filter_mode_clicked = false;
+    ImGui::BeginGroup();
+    ImGui::Text(u8"模式:");
+    ImGui::Indent();
+    filter_mode_clicked = ImGui::RadioButton(u8"NEAREST", &filter_mode_option, 0);
+    filter_mode_clicked |= ImGui::RadioButton(u8"LINEAR", &filter_mode_option, 1);
+    filter_mode_clicked |= ImGui::RadioButton(u8"NEAREST_MIPMAP_NEAREST", &filter_mode_option, 2);
+    filter_mode_clicked |= ImGui::RadioButton(u8"NEAREST_MIPMAP_LINEAR", &filter_mode_option, 3);
+    filter_mode_clicked |= ImGui::RadioButton(u8"LINEAR_MIPMAP_NEAREST", &filter_mode_option, 4);
+    filter_mode_clicked |= ImGui::RadioButton(u8"LINEAR_MIPMAP_LINEAR", &filter_mode_option, 5);
+    ImGui::EndGroup();
+}
+
+void TextureExploreView::OnSwizzleModeGUI()
+{
+    ImGui::BeginGroup();
+    ImGui::Text(u8"模式:");
+    ImGui::Indent();
+
+    char* items[6] = { "RED", "GREEN", "BLUE", "ALPHA", "ZERO", "ONE" };
+    if(_swizzle_option == 4 || _swizzle_option == 0)
+        ImGui::Combo(u8"Swizzle RED", &(_swizzle_masks[0]), items, 6);
+
+    if(_swizzle_option == 4 || _swizzle_option == 1)    
+        ImGui::Combo(u8"Swizzle GREEN", &(_swizzle_masks[1]), items, 6);
+
+    if(_swizzle_option == 4 || _swizzle_option == 2)
+        ImGui::Combo(u8"Swizzle BLUE", &(_swizzle_masks[2]), items, 6);
+   
+    if(_swizzle_option == 4 || _swizzle_option == 3)   
+        ImGui::Combo(u8"Swizzle ALPHA", &(_swizzle_masks[3]), items, 6);
+
+    ImGui::EndGroup();
+}
+
+void TextureExploreView::ResetGUI()
+{
+    _wrap_option = -1;
+    _filter_option = -1;
+    _swizzle_option = -1;
+    _enable_lodbias = false;
+    _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
+    _filter_modes[0] = _filter_modes[1] = -1;
+    _swizzle_masks[0] = 0;
+    _swizzle_masks[1] = 1;
+    _swizzle_masks[2] = 2;
+    _swizzle_masks[3] = 3;
+}
+
+void TextureExploreView::SetTexparams()
+{
+    // set wrap mode
+    for(int32 i = 0; i < 3; i++)
+    {
+        WrapMode mode = GetWrapMode(_wrap_modes[i]);
+        _texparams.wrap_modes[i] = mode;
+    }
+
+    // set filter
+    for(int32 i = 0; i < 2; i++)
+    {
+        FilterMode mode = GetFilterMode(_filter_modes[i]);
+        _texparams.filter_modes[i] = mode;
+    }
+
+    // set swizzle
+    _texparams.swizzle_parameter = GetSwizzleParam(_swizzle_option);
+    SwizzleMask masks[4];
+    for(int32 i = 0; i < 4; i++)
+    {
+        _texparams.swizzle[i] = GetSwizzleMask(_swizzle_masks[i]);
+    }
+
+    // set lod bias
+    _texparams.lod_parameter = _enable_lodbias ? LodBiasParam::LOD_BIAS : LodBiasParam::NONE;
+    _texparams.lodbias = _lodbias_value;
+}
+
+WrapMode TextureExploreView::GetWrapMode(int32 wrap_mode_option)
+{
+    if(wrap_mode_option == -1)
+        return WrapMode::NONE;
+
+    WrapMode modes[5] = { WrapMode::REPEAT, WrapMode::CLAMP, WrapMode::CLAMP_TO_EDGE, 
+        WrapMode::CLAMP_TO_BORDER, WrapMode::NONE };
+
+    return modes[wrap_mode_option];
+}
+
+FilterMode TextureExploreView::GetFilterMode(int32 filter_mode_option)
+{
+    if(filter_mode_option == -1)
+    {
+        return FilterMode::NONE;
+    }
+
+    FilterMode modes[7] = { FilterMode::NEAREST, FilterMode::LINEAR, FilterMode::NEAREST_MIPMAP_NEAREST,
+        FilterMode::NEAREST_MIPMAP_LINEAR, FilterMode::LINEAR_MIPMAP_NEAREST, FilterMode::LINEAR_MIPMAP_LINEAR,
+        FilterMode::NONE };
+
+    return modes[filter_mode_option];
+}
+
+SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option)
+{
+    if(swizzle_option = -1)
+    {
+        return SwizzleParam::NONE;
+    }
+
+    SwizzleParam params[5] = { SwizzleParam::SWIZZLE_R, SwizzleParam::SWIZZLE_G, SwizzleParam::SWIZZLE_B,
+        SwizzleParam::SWIZZLE_A, SwizzleParam::SWIZZLE_RGBA };
+    
+    return params[swizzle_option];
+}
+
+SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzle_mask_option)
+{
+    SwizzleMask masks[6] = { SwizzleMask::RED, SwizzleMask::GREEN, SwizzleMask::BLUE, 
+        SwizzleMask::ALPHA, SwizzleMask::ZERO, SwizzleMask::ONE };
+
+    return masks[swizzle_mask_option];
 }
 
 void TextureExploreView::CreateSprite()
 {
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info[] =
-        {
-            {"Assets/Textures/test.dds"}};
+    ImageReadInfo images_info[] = {{"Assets/Textures/test.dds"}};
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 
     Texture2D::Ptr texture = nullptr;
@@ -243,7 +460,6 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
 
 void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face)
 {
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -257,8 +473,6 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
-    // glDrawElements(GL_POINTS, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
-
 
     glFrontFace(GL_CCW);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

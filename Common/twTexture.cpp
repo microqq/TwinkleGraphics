@@ -42,32 +42,32 @@ Texture::~Texture()
 template<>
 void Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap)
 {
-    _parameters.wrap_s = wrap;
+    _parameters.wrap_modes[0] = wrap;
 }
 
 template<>
 void Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap)
 {
-    _parameters.wrap_t = wrap;
+    _parameters.wrap_modes[1] = wrap;
 }
 
 template<>
 void Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap)
 {
-    _parameters.wrap_r = wrap;
+    _parameters.wrap_modes[2] = wrap;
 }
 
 
 template<>
 void Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter)
 {
-    _parameters.filter_min = filter;
+    _parameters.filter_modes[0] = filter;
 }
 
 template<>
 void Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter)
 {
-    _parameters.filter_mag = filter;
+    _parameters.filter_modes[1] = filter;
 }
 
 
