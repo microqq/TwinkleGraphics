@@ -98,6 +98,7 @@ public:
      * @param pass 
      */
     void SetRenderPass(int32 index, const RenderPass::Ptr pass) { if(index < _passes.size()) _passes[index] = pass; }
+
     /**
      * @brief 
      * 
@@ -105,7 +106,7 @@ public:
      */
     void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
 
-    RenderPass::Ptr GetRenderPass(int32 index) { if(index >= 0 && index < _passes.size()) return _passes[index]; }
+    RenderPass::Ptr GetRenderPass(int32 index) { if(index >= 0 && index < _passes.size()) return _passes[index]; return nullptr; }
 
     /**
      * @brief Set the Main Texture object
@@ -113,6 +114,7 @@ public:
      * @param maintex 
      */
     void SetMainTexture(Texture::Ptr maintex);
+
     /**
      * @brief Set the Texture object
      * 
@@ -120,6 +122,10 @@ public:
      * @param tex 
      */
     void SetTexture(const char* name, Texture::Ptr tex);
+
+    Texture::Ptr GetMainTexture() { return GetTexture("main_tex"); }
+    Texture::Ptr GetTexture(const char* name);
+
     /**
      * @brief Set the Texture Tiling object
      * 
@@ -127,6 +133,7 @@ public:
      * @param tiling 
      */
     void SetTextureTiling(const char* name, vec2& tiling);
+
     /**
      * @brief Set the Texture Offset object
      * 
@@ -228,6 +235,7 @@ public:
      * @return const RenderState& 
      */
     const RenderState &GetRenderState() { return _state; }
+
     /**
      * @brief Get the Uniform object
      * 
@@ -235,12 +243,6 @@ public:
      * @return const Uniform* 
      */
     const Uniform* GetUniform(const char* name);
-    /**
-     * @brief 
-     * 
-     * @param name 
-     */
-    void RemoveUniform(const char* name);
 
 
 private:
@@ -251,6 +253,14 @@ private:
      * @param uniform 
      */
     void AddUniform(const char* name, Uniform* uniform);
+
+    /**
+     * @brief 
+     * 
+     * @param name 
+     */
+    void RemoveUniform(const char* name);
+
     /**
      * @brief Set the Passes Uniform object
      * 

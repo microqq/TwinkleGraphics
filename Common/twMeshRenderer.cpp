@@ -9,9 +9,9 @@ namespace TwinkleGraphics
 {
 MeshRenderer::MeshRenderer()
     : Object()
-    , _mesh(nullptr)
     , _material(nullptr)
     , _shared_material(nullptr)
+    , _mesh(nullptr)
 {
 
 }   

@@ -33,10 +33,10 @@ void Sprite::SetColor(vec4 &color)
 
 /**
  * @brief when texture changed, mesh & material settting should follow
- * 
- * @param texture 
+ *
+ * @param texture
  */
-void Sprite::SetTexture(Texture2D::Ptr texture) 
+void Sprite::SetTexture(Texture2D::Ptr texture)
 {
     if(_sprite_renderer != nullptr)
     {
@@ -50,7 +50,7 @@ void Sprite::Init(Texture2D::Ptr texture)
 #ifdef _DEBUG
     assert(texture != nullptr);
 #endif
-    
+
     // set sprite renderer
     _sprite_renderer = std::make_shared<SpriteRenderer>(texture);
     SetMeshRenderer(_sprite_renderer);
@@ -93,6 +93,10 @@ void SpriteRenderer::Init(Texture2D::Ptr texture)
     vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
     sprite_mat->SetSimpleUniformValue<bool, 1>("flip", false);
     sprite_mat->SetVecUniformValue<float32, 4>("tint_color", tint_color);
+    vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
+    sprite_mat->SetTextureTiling("main_tex", tiling);
+    sprite_mat->SetTextureOffset("main_tex", offset);
+
     sprite_mat->SetMainTexture(texture);
 
     SetMaterial(sprite_mat);

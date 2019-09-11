@@ -272,6 +272,17 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
     }
 }
 
+Texture::Ptr Material::GetTexture(const char *name)
+{
+    std::map<std::string, Texture::Ptr>::iterator it = _textures.find(name);
+    if (it == _textures.end())
+    {
+        return nullptr;
+    }
+
+    return it->second;
+}
+
 void Material::SetTextureTiling(const char *name, vec2& tiling)
 {
     if (_passes.size() == 0)
@@ -282,11 +293,9 @@ void Material::SetTextureTiling(const char *name, vec2& tiling)
         return;
     }    
 
-    char* dest = new char[::strlen(name)];
-    memcpy(dest, name, ::strlen(name));
-    char* uniformname = ::strcat(dest, "_tiling");
-
-    this->SetVecUniformValue<float32, 2>(uniformname, tiling);
+    std::string sname = name;
+    sname += "_tiling";
+    this->SetVecUniformValue<float32, 2>(sname.c_str(), tiling);
 }
 
 void Material::SetTextureOffset(const char *name, vec2& offset)
@@ -299,11 +308,9 @@ void Material::SetTextureOffset(const char *name, vec2& offset)
         return;
     }    
 
-    char* dest = new char[::strlen(name)];
-    memcpy(dest, name, ::strlen(name));
-    char* uniformname = ::strcat(dest, "_offset");
-
-    this->SetVecUniformValue<float32, 2>(uniformname, offset);
+    std::string sname = name;
+    sname += "_offset";
+    this->SetVecUniformValue<float32, 2>(sname.c_str(), offset);
 }
 
 } // namespace TwinkleGraphics

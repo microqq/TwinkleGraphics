@@ -377,7 +377,7 @@ void BasicGeometryView::OnParametersGUI()
 
                 }
 
-                ImGui::InputFloat3(u8"颜色", glm::value_ptr(_line_color));
+                ImGui::DragFloat3(u8"颜色", glm::value_ptr(_line_color), 0.01f, 0.0f, 1.0f);
             }
         }
         else if(_current_mesh_index == 0)

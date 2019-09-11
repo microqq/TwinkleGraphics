@@ -139,14 +139,13 @@ struct TexParams
     float32 lodbias;
 
     TexParams()
-        // : wrap_s(WrapMode::NONE)
-        // , wrap_t(WrapMode::NONE)
-        // , wrap_r(WrapMode::NONE)
-        // , filter_min(FilterMode::NONE)
-        // , filter_mag(FilterMode::NONE)
         : swizzle_parameter(SwizzleParam::NONE)
         , lod_parameter(LodBiasParam::NONE)
     {
+        wrap_modes[0] = wrap_modes[1] = wrap_modes[2] = WrapMode::NONE;
+        filter_modes[0] = filter_modes[1] = FilterMode::NONE;
+    //     swizzle_parameter = SwizzleParam::NONE;
+    //     lod_parameter = LodBiasParam::NONE;
     }
 };
 
@@ -185,6 +184,7 @@ public:
     void SetFilter(FilterMode filter);
     template<int32 L>
     void SetSwizzle(SwizzleParam parameter, Swizzle<L> swizzle);
+    void SetSwizzle(SwizzleParam parameter, SwizzleMask* masks);
     void SetLodBias(LodBiasParam parameter, float32 bias);
 
     Image::Ptr GetImage() { return _image; }
@@ -198,8 +198,14 @@ public:
 
     const RenderResInstance& GetRenderRes() { return _res; }
 
+    virtual void ApplyTexParameters();
+
 protected:
-    virtual void InitStorage();    
+    virtual void InitStorage();
+    virtual void ApplyWrapParameter();
+    virtual void ApplyFilterParameter();
+    virtual void ApplySwizzleParameter();
+    virtual void ApplyLodBias();
 
 protected:
     TexParams _parameters;
@@ -208,6 +214,7 @@ protected:
 
     bool _immutable;
     bool _initialized;
+    bool _parameters_dirty;
 };
 
 
@@ -222,10 +229,9 @@ struct TextureSlot
     {
         const RenderResInstance &res = tex->GetRenderRes();
         glBindTexture(res.type, res.id);
+        tex->ApplyTexParameters();
+
         glActiveTexture(location);
-
-        const TexParams& params = tex->GetTexParams();
-
     }
 };
 
@@ -244,6 +250,14 @@ public:
 
 protected:
     virtual void InitStorage() override;
+    virtual void ApplyWrapParameter() override
+    {
+        // wrap
+        if (_parameters.wrap_modes[0] != WrapMode::NONE)
+        {
+            glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
+        }
+    }
 };
 
 class Texture2D : public Texture
@@ -260,7 +274,18 @@ public:
 
 protected:
     virtual void InitStorage() override;
-
+    virtual void ApplyWrapParameter() override
+    {
+        // wrap
+        if (_parameters.wrap_modes[0] != WrapMode::NONE)
+        {
+            glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
+        }
+        if (_parameters.wrap_modes[1] != WrapMode::NONE)
+        {
+            glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrap_modes[1]));
+        }
+    }
 };
 
 class Texture2DMultiSample : public Texture
@@ -407,7 +432,7 @@ public:
     Texture2DMultiSampleArray(bool immutable = true)
             : Texture(immutable)
     {
-        _res.type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;        
+        _res.type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
     }
 
     virtual ~Texture2DMultiSampleArray() {}

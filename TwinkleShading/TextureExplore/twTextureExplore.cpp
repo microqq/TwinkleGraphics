@@ -89,11 +89,28 @@ void TextureExploreView::Advance(float64 delta_time)
     _projection_mat = _camera->GetProjectionMatrix();
     _mvp_mat = _projection_mat * _view_mat;
 
+    // sprite material setting
     Material::Ptr sprite_mat = nullptr;
     if(_sprite != nullptr)
     {
         sprite_mat = _sprite->GetMaterial();
         sprite_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+        vec4 tintColor(_tintColor[0], _tintColor[1], _tintColor[1], _tintColor[3]);
+        sprite_mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
+        sprite_mat->SetTextureTiling("main_tex", _tex_tiling);
+        sprite_mat->SetTextureOffset("main_tex", _tex_offset);
+
+        // set sprite texture parameters
+        Texture::Ptr tex = _sprite->GetTexture();
+        tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+        tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+        tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+
+        tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
+        tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+
+        tex->SetSwizzle(_texparams.swizzle_parameter, _texparams.swizzle);
+        tex->SetLodBias(_texparams.lod_parameter, _texparams.lodbias);
     }
 }
 void TextureExploreView::RenderImpl()
@@ -240,6 +257,18 @@ void TextureExploreView::OnGUI()
     }
     ImGui::End();
 
+    ImGui::Begin(u8"其他...");
+    {
+        ImGui::DragFloat2("Tiling", glm::value_ptr(_tex_tiling), 0.1f, 0.1f, 10.0f);
+        ImGui::DragFloat2("Offset", glm::value_ptr(_tex_offset), 0.01f, -1.0f, 1.0f);
+
+        if (_current_tex_option == 1)
+        {
+            ImGui::ColorEdit4("Tint Color", _tintColor);
+        }
+    }
+    ImGui::End();
+
     this->SetTexparams();
 }
 
@@ -277,17 +306,17 @@ void TextureExploreView::OnSwizzleModeGUI()
     ImGui::Text(u8"模式:");
     ImGui::Indent();
 
-    char* items[6] = { "RED", "GREEN", "BLUE", "ALPHA", "ZERO", "ONE" };
+    char const* items[6] = { "RED", "GREEN", "BLUE", "ALPHA", "ZERO", "ONE" };
     if(_swizzle_option == 4 || _swizzle_option == 0)
         ImGui::Combo(u8"Swizzle RED", &(_swizzle_masks[0]), items, 6);
 
-    if(_swizzle_option == 4 || _swizzle_option == 1)    
+    if(_swizzle_option == 4 || _swizzle_option == 1)
         ImGui::Combo(u8"Swizzle GREEN", &(_swizzle_masks[1]), items, 6);
 
     if(_swizzle_option == 4 || _swizzle_option == 2)
         ImGui::Combo(u8"Swizzle BLUE", &(_swizzle_masks[2]), items, 6);
    
-    if(_swizzle_option == 4 || _swizzle_option == 3)   
+    if(_swizzle_option == 4 || _swizzle_option == 3)
         ImGui::Combo(u8"Swizzle ALPHA", &(_swizzle_masks[3]), items, 6);
 
     ImGui::EndGroup();
@@ -305,6 +334,11 @@ void TextureExploreView::ResetGUI()
     _swizzle_masks[1] = 1;
     _swizzle_masks[2] = 2;
     _swizzle_masks[3] = 3;
+
+    _tintColor[0] = _tintColor[1] = _tintColor[2] = _tintColor[3] = 1.0f;
+
+    _tex_tiling = vec2(1.0f, 1.0f);
+    _tex_offset = vec2(0.0f, 0.0f);
 }
 
 void TextureExploreView::SetTexparams()
@@ -363,7 +397,7 @@ FilterMode TextureExploreView::GetFilterMode(int32 filter_mode_option)
 
 SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option)
 {
-    if(swizzle_option = -1)
+    if(swizzle_option == -1)
     {
         return SwizzleParam::NONE;
     }

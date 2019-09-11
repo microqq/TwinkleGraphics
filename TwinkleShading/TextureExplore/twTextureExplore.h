@@ -58,6 +58,11 @@ public:
             _swizzle_masks[1] = 1;
             _swizzle_masks[2] = 2;
             _swizzle_masks[3] = 3;
+
+            _tintColor[0] = _tintColor[1] = _tintColor[2] = _tintColor[3] = 1.0f;
+
+            _tex_tiling = vec2(1.0f, 1.0f);
+            _tex_offset = vec2 (0.0f, 0.0f);
         }
 
     virtual ~TextureExploreView()
@@ -100,7 +105,6 @@ private:
     uint32 *_ebos;
 
     TexParams _texparams;
-    glm::vec4 _viewport_params;
 
     Texture1D::Ptr _texture1D;
     Texture2D::Ptr _texture2D;
@@ -108,6 +112,11 @@ private:
     TextureCube::Ptr _textureCube;
     Texture1DArray::Ptr _texture1DArray;
     Sprite::Ptr _sprite;
+
+    glm::vec4 _viewport_params;
+    float32 _tintColor[4];
+    glm::vec2 _tex_tiling;
+    glm::vec2 _tex_offset;
 
     int32 _current_tex_option;
     int32 _wrap_modes[3];
