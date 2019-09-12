@@ -149,6 +149,96 @@ struct TexParams
     }
 };
 
+typedef TexParams SamplerParams;
+
+class Sampler : Object
+{
+public:
+    typedef std::shared_ptr<Sampler> Ptr;
+
+    Sampler()
+        : Object()
+    {
+        uint32 samplers[1];
+        glGenSamplers(1, samplers);
+
+        _res.id = samplers[0];
+    }
+    virtual ~Sampler()
+    {
+        if(_res.id != 0)
+        {
+            uint32 samplers[1] = { _res.id };
+            glDeleteSamplers(1, samplers);
+        }
+    }
+
+    bool IsValid() { return _res.id != 0; }
+    void Apply(uint32 tex_unit, const SamplerParams& params, bool dirty)
+    {
+        if(_res.id == 0)
+        {
+            glBindSampler(tex_unit, 0);
+            return;
+        }
+
+        glBindSampler(tex_unit, _res.id);
+        if(dirty)
+        {
+            // wrap
+            if (params.wrap_modes[0] != WrapMode::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_WRAP_S, (int32)(params.wrap_modes[0]));
+            }
+            if (params.wrap_modes[1] != WrapMode::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_WRAP_T, (int32)(params.wrap_modes[1]));
+            }
+            if (_parameters.wrap_modes[2] != WrapMode::NONE)
+            {
+                glTexParameteri(_res.type, GL_TEXTURE_WRAP_R, (int32)(_parameters.wrap_modes[2]));
+            }
+
+            // filter
+            if (params.filter_modes[0] != FilterMode::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_MIN_FILTER, (int32)(params.filter_modes[0]));
+            }
+            if (params.filter_modes[1] != FilterMode::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_MAG_FILTER, (int32)(params.filter_modes[1]));
+            }
+
+            // // swizzle
+            // if (params.swizzle_parameter != SwizzleParam::NONE)
+            // {
+            //     uint32 swizzle_param = uint32(params.swizzle_parameter);
+            //     int32 index = swizzle_param - (uint32)(SwizzleParam::SWIZZLE_R);
+            //     if (index == 4)
+            //     {
+            //         glSamplerParameteriv(_res.id, swizzle_param, reinterpret_cast<const int32 *>(params.swizzle));
+            //     }
+            //     else
+            //     {
+            //         glSamplerParameteri(_res.id, swizzle_param, (int32)(params.swizzle[index]));
+            //     }
+            // }
+            
+            // lod bias
+            if (params.lod_parameter != LodBiasParam::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_LOD_BIAS, params.lodbias);
+            }
+        }
+    }
+
+private:
+    RenderResInstance _res;
+
+
+};
+
+
 /**
  * @brief 
  * "A GL texture object includes both categories. The first category represents dimensionality and other image parameters, 
@@ -178,6 +268,9 @@ public:
         }
     }
 
+    void SetSampler(Sampler::Ptr sampler) { _sampler = sampler; }
+    Sampler::Ptr GetSampler() { return _sampler; }
+
     template<WrapParam Wrap>
     void SetWrap(WrapMode wrap);
     template<FilterParam Filter>
@@ -191,6 +284,7 @@ public:
     const TexParams& GetTexParams() { return _parameters; }
     int32 GetNumMipLevels() { return _image == nullptr ? 0 : _image->GetImageSource().mipLevels; }
     InternalFormat GetInternalformat() { return _image == nullptr ? GL_NONE : _image->GetImageSource().internalFormat; }
+    bool IsTexParametersDirty() { return _parameters_dirty; }
 
     int32 GetWidth(int32 level = 0) { return _image->GetImageSource().mip[level].width; }
     int32 GetHeight(int32 level = 0) { return _image->GetImageSource().mip[level].height; }
@@ -211,6 +305,7 @@ protected:
     TexParams _parameters;
     RenderResInstance _res;
     Image::Ptr _image;
+    Sampler::Ptr _sampler;
 
     bool _immutable;
     bool _initialized;
@@ -229,7 +324,16 @@ struct TextureSlot
     {
         const RenderResInstance &res = tex->GetRenderRes();
         glBindTexture(res.type, res.id);
-        tex->ApplyTexParameters();
+
+        Sampler::Ptr sampler = tex->GetSampler();
+        if(sampler != nullptr && sampler->IsValid())
+        {
+            sampler->Apply(location, tex->GetTexParams(), tex->IsTexParametersDirty());
+        }
+        else
+        {
+            tex->ApplyTexParameters();
+        }
 
         glActiveTexture(location);
     }

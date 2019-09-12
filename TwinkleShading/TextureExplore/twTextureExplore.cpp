@@ -248,7 +248,7 @@ void TextureExploreView::OnGUI()
             if(_enable_lodbias)
             {
                 ImGui::SameLine();
-                ImGui::SliderFloat("Bias Value", &_lodbias_value, 0.0f, 10.0f);
+                ImGui::SliderFloat("Bias Value", &_lodbias_value, -10.0f, 10.0f);
             }
             ImGui::EndTabItem();
         }
@@ -427,6 +427,9 @@ void TextureExploreView::CreateSprite()
     {
         texture = std::make_shared<Texture2D>(true);
         texture->SetImage(image);
+
+        // Sampler::Ptr sampler = std::make_shared<Sampler>();
+        // texture->SetSampler(sampler);
     }
 
     // initialise sprite
