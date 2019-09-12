@@ -11,11 +11,10 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 # Don't add this line if you will try_compile with boost.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+# include(CheckCXXSymbolExists)
+# CHECK_CXX_SYMBOL_EXISTS(std::filesystem::path::preferred_separator filesystem cxx17fs)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    # FIND_LIBRARY(COMM_LIB comm "D:/Program Files/glfw-3.3.bin.WIN64/lib-mingw-w64" NO_DEFAULT_PATH)
-    # FIND_LIBRARY(RUNTIME_LIB rt "D:/Program Files/glfw-3.3.bin.WIN64/lib-mingw-w64" NO_DEFAULT_PATH)
 endif()
 
 

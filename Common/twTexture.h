@@ -279,70 +279,7 @@ public:
     }
 
     bool IsValid() { return _res.id != 0; }
-    void Apply(uint32 tex_unit, const SamplerParams& params, bool dirty)
-    {
-        if(_res.id == 0)
-        {
-            glBindSampler(tex_unit, 0);
-            return;
-        }
-
-        glBindSampler(tex_unit, _res.id);
-        if(dirty)
-        {
-            // wrap
-            if (params.wrap_modes[0] != WrapMode::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_WRAP_S, (int32)(params.wrap_modes[0]));
-            }
-            if (params.wrap_modes[1] != WrapMode::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_WRAP_T, (int32)(params.wrap_modes[1]));
-            }
-            if (params.wrap_modes[2] != WrapMode::NONE)
-            {
-                glTexParameteri(_res.type, GL_TEXTURE_WRAP_R, (int32)(params.wrap_modes[2]));
-            }
-
-            // filter
-            if (params.filter_modes[0] != FilterMode::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_MIN_FILTER, (int32)(params.filter_modes[0]));
-            }
-            if (params.filter_modes[1] != FilterMode::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_MAG_FILTER, (int32)(params.filter_modes[1]));
-            }
-            
-            // lod bias
-            if (params.lod_parameter != LodBiasParam::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_LOD_BIAS, params.lodbias);
-            }
-
-            // border color
-            glSamplerParameterfv(_res.id, GL_TEXTURE_BORDER_COLOR, glm::value_ptr<float32>(params.border_color));
- 
-            // tex lod
-            if(params.min_lod_parameter != TextureMinLODParam::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_MIN_LOD, params.min_lod);
-            }
-            if(params.max_lod_parameter != TextureMaxLODParam::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_MAX_LOD, params.max_lod);
-            }
-
-            // depth texture compare mode&func
-            glSamplerParameteri(_res.id, GL_TEXTURE_COMPARE_MODE
-                                , (uint32)(params.depth_tex_comp_mode));
-            if(params.depth_tex_comp_func != DepthTextureCompareFunc::NONE)
-            {
-                glSamplerParameteri(_res.id, GL_TEXTURE_COMPARE_FUNC
-                                , (uint32)(params.depth_tex_comp_func));
-            }
-        }
-    }
+    const RenderResInstance& GetRenderRes() { return _res; }
 
 private:
     RenderResInstance _res;
@@ -409,7 +346,6 @@ public:
     const TexParams& GetTexParams() { return _parameters; }
     int32 GetNumMipLevels() { return _image == nullptr ? 0 : _image->GetImageSource().mipLevels; }
     InternalFormat GetInternalformat() { return _image == nullptr ? GL_NONE : _image->GetImageSource().internalFormat; }
-    bool IsTexParametersDirty() { return _parameters_dirty; }
 
     int32 GetWidth(int32 level = 0) { return _image->GetImageSource().mip[level].width; }
     int32 GetHeight(int32 level = 0) { return _image->GetImageSource().mip[level].height; }
@@ -443,7 +379,6 @@ protected:
 
     bool _immutable;
     bool _initialized;
-    bool _parameters_dirty;
 };
 
 
@@ -462,12 +397,14 @@ struct TextureSlot
         Sampler::Ptr sampler = tex->GetSampler();
         if(sampler != nullptr && sampler->IsValid())
         {
-            sampler->Apply(location, tex->GetTexParams(), tex->IsTexParametersDirty());
+            glBindSampler(location, sampler->GetRenderRes().id);
         }
         else
         {
-            tex->ApplyTexParameters();
+            glBindSampler(location, 0);
         }
+
+        tex->ApplyTexParameters();
 
         glActiveTexture(location);
     }
