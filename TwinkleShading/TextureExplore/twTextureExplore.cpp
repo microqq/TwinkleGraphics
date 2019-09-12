@@ -1,11 +1,10 @@
 
 
 #include "imgui.h"
+#include "imgui_filebrowser.h"
 
 #include "twTextureExplore.h"
 #include "twImage.h"
-
-#include "twRenderContext.h"
 
 namespace TwinkleGraphics
 {
@@ -95,7 +94,7 @@ void TextureExploreView::Advance(float64 delta_time)
     {
         sprite_mat = _sprite->GetMaterial();
         sprite_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
-        vec4 tintColor(_tintColor[0], _tintColor[1], _tintColor[1], _tintColor[3]);
+        vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
         sprite_mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
         sprite_mat->SetTextureTiling("main_tex", _tex_tiling);
         sprite_mat->SetTextureOffset("main_tex", _tex_offset);
@@ -109,8 +108,7 @@ void TextureExploreView::Advance(float64 delta_time)
         tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
         tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
 
-        tex->SetSwizzle(_texparams.swizzle_parameter, _texparams.swizzle);
-        tex->SetLodBias(_texparams.lod_parameter, _texparams.lodbias);
+        tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);
     }
 }
 void TextureExploreView::RenderImpl()
@@ -119,7 +117,7 @@ void TextureExploreView::RenderImpl()
     {
     case 0:
         /* code */
-        break;    
+        break;
     case 1:
         RenderSprite();
         break;
@@ -240,16 +238,22 @@ void TextureExploreView::OnGUI()
             ImGui::EndTabItem();
         }
 
-        if(ImGui::BeginTabItem("Lod Bias", &(_texparams_tabitem[3])))
+        if(ImGui::BeginTabItem("其他", &(_texparams_tabitem[3])))
         {
-            if(ImGui::Checkbox(u8"启用", &_enable_lodbias))
-            {
-            }
+            ImGui::Checkbox(u8"Lod Bias", &_enable_lodbias);
             if(_enable_lodbias)
             {
                 ImGui::SameLine();
                 ImGui::SliderFloat("Bias Value", &_lodbias_value, -10.0f, 10.0f);
             }
+
+            ImGui::Checkbox(u8"Border Color", &_enable_border_color);
+            if(_enable_border_color)
+            {
+                ImGui::SameLine();
+                ImGui::ColorEdit4("Color", glm::value_ptr<float32>(_bordercolor));
+            }
+
             ImGui::EndTabItem();
         }
 
@@ -264,10 +268,24 @@ void TextureExploreView::OnGUI()
 
         if (_current_tex_option == 1)
         {
-            ImGui::ColorEdit4("Tint Color", _tintColor);
+            ImGui::ColorEdit4("Tint Color", _tintcolor);
         }
     }
     ImGui::End();
+
+    // ImGui::FileBrowser fileDialog(ImGuiFileBrowserFlags_SelectDirectory);
+
+    // // open file dialog when user clicks this button
+    // if (ImGui::Button("open file dialog"))
+    //     fileDialog.Open();
+
+    // fileDialog.Display();
+
+    // if (fileDialog.HasSelected())
+    // {
+    //     std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
+    //     fileDialog.ClearSelected();
+    // }
 
     this->SetTexparams();
 }
@@ -315,7 +333,7 @@ void TextureExploreView::OnSwizzleModeGUI()
 
     if(_swizzle_option == 4 || _swizzle_option == 2)
         ImGui::Combo(u8"Swizzle BLUE", &(_swizzle_masks[2]), items, 6);
-   
+
     if(_swizzle_option == 4 || _swizzle_option == 3)
         ImGui::Combo(u8"Swizzle ALPHA", &(_swizzle_masks[3]), items, 6);
 
@@ -328,6 +346,7 @@ void TextureExploreView::ResetGUI()
     _filter_option = -1;
     _swizzle_option = -1;
     _enable_lodbias = false;
+    _enable_border_color = false;
     _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
     _filter_modes[0] = _filter_modes[1] = -1;
     _swizzle_masks[0] = 0;
@@ -335,7 +354,8 @@ void TextureExploreView::ResetGUI()
     _swizzle_masks[2] = 2;
     _swizzle_masks[3] = 3;
 
-    _tintColor[0] = _tintColor[1] = _tintColor[2] = _tintColor[3] = 1.0f;
+    _tintcolor[0] = _tintcolor[1] = _tintcolor[2] = _tintcolor[3] = 1.0f;
+    _bordercolor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     _tex_tiling = vec2(1.0f, 1.0f);
     _tex_offset = vec2(0.0f, 0.0f);
@@ -368,6 +388,9 @@ void TextureExploreView::SetTexparams()
     // set lod bias
     _texparams.lod_parameter = _enable_lodbias ? LodBiasParam::LOD_BIAS : LodBiasParam::NONE;
     _texparams.lodbias = _lodbias_value;
+
+    _texparams.bordercolor_parameter = _enable_border_color ? TextureBorderColorParam::BORDER_COLOR : TextureBorderColorParam::NONE;
+    _texparams.border_color = _bordercolor;
 }
 
 WrapMode TextureExploreView::GetWrapMode(int32 wrap_mode_option)
@@ -375,7 +398,7 @@ WrapMode TextureExploreView::GetWrapMode(int32 wrap_mode_option)
     if(wrap_mode_option == -1)
         return WrapMode::NONE;
 
-    WrapMode modes[5] = { WrapMode::REPEAT, WrapMode::CLAMP, WrapMode::CLAMP_TO_EDGE, 
+    WrapMode modes[5] = { WrapMode::REPEAT, WrapMode::CLAMP, WrapMode::CLAMP_TO_EDGE,
         WrapMode::CLAMP_TO_BORDER, WrapMode::NONE };
 
     return modes[wrap_mode_option];
@@ -404,13 +427,13 @@ SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option)
 
     SwizzleParam params[5] = { SwizzleParam::SWIZZLE_R, SwizzleParam::SWIZZLE_G, SwizzleParam::SWIZZLE_B,
         SwizzleParam::SWIZZLE_A, SwizzleParam::SWIZZLE_RGBA };
-    
+
     return params[swizzle_option];
 }
 
 SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzle_mask_option)
 {
-    SwizzleMask masks[6] = { SwizzleMask::RED, SwizzleMask::GREEN, SwizzleMask::BLUE, 
+    SwizzleMask masks[6] = { SwizzleMask::RED, SwizzleMask::GREEN, SwizzleMask::BLUE,
         SwizzleMask::ALPHA, SwizzleMask::ZERO, SwizzleMask::ONE };
 
     return masks[swizzle_mask_option];
@@ -502,7 +525,7 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 
     glFrontFace(front_face);
     glDisable(GL_CULL_FACE);
-    
+
     SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
 
     //draw command use vertex array object

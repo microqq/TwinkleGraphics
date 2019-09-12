@@ -60,7 +60,8 @@ enum class SwizzleParam
     SWIZZLE_G = GL_TEXTURE_SWIZZLE_G,
     SWIZZLE_B = GL_TEXTURE_SWIZZLE_B,
     SWIZZLE_A = GL_TEXTURE_SWIZZLE_A,
-    SWIZZLE_RGBA = GL_TEXTURE_SWIZZLE_RGBA
+    SWIZZLE_RGBA = GL_TEXTURE_SWIZZLE_RGBA,
+    DEFAULT = SWIZZLE_RGBA
 };
 
 /**
@@ -70,7 +71,8 @@ enum class SwizzleParam
 enum class LodBiasParam
 {
     NONE = GL_NONE,
-    LOD_BIAS = GL_TEXTURE_LOD_BIAS
+    LOD_BIAS = GL_TEXTURE_LOD_BIAS,
+    DEFAULT = LOD_BIAS
 };
 
 enum class WrapMode
@@ -79,7 +81,8 @@ enum class WrapMode
     CLAMP = GL_CLAMP,
     CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
     CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER,
-    REPEAT = GL_REPEAT
+    REPEAT = GL_REPEAT,
+    DEFAULT = REPEAT
 };
 
 enum class FilterMode
@@ -90,7 +93,8 @@ enum class FilterMode
     NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
     LINEAR = GL_LINEAR,
     LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST,
-    LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR
+    LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR,
+    DEFAULT = LINEAR
 };
 
 enum class SwizzleMask
@@ -121,6 +125,89 @@ struct Swizzle<4>
 typedef Swizzle<1> Swizzle1;
 typedef Swizzle<4> Swizzle4;
 
+enum class DepthStencilTextureMode
+{
+    NONE = GL_NONE,
+    DEPTH = GL_DEPTH_COMPONENT,
+    STENCIL = GL_STENCIL_INDEX
+};
+
+enum class DepthTextureCompareMode
+{
+    NONE = GL_NONE,
+    COMPARE_REF_TO_TEXTURE = GL_COMPARE_REF_TO_TEXTURE
+};
+
+enum class DepthTextureCompareFunc
+{
+    NONE = GL_NONE,
+    LEQUAL = GL_LEQUAL,
+    GEQUAL = GL_GEQUAL,
+    EQUAL = GL_EQUAL,
+    NOTEQUAL = GL_NOTEQUAL,
+    LESS = GL_LESS,
+    GREATER = GL_GREATER,
+    ALWAYS = GL_ALWAYS,
+    NEVER = GL_NEVER
+};
+
+enum class TextureBorderColorParam
+{
+    NONE = GL_NONE,
+    BORDER_COLOR = GL_TEXTURE_BORDER_COLOR
+};
+
+enum class MipMapBaseLevelParam
+{
+    NONE = GL_NONE,
+    BESE_LEVEL = GL_TEXTURE_BASE_LEVEL
+};
+
+enum class MipMapMaxLevelParam
+{
+    NONE = GL_NONE,
+    MAX_LEVEL = GL_TEXTURE_MAX_LEVEL
+};
+
+enum class TextureMinLODParam
+{
+    NONE = GL_NONE,
+    MIN_LOD = GL_TEXTURE_MIN_LOD
+};
+
+enum class TextureMaxLODParam
+{
+    NONE = GL_NONE,
+    MAX_LOD = GL_TEXTURE_MAX_LOD
+};
+
+enum TexParameterMask
+{
+    TEXPARAMETER_WRAP_S_MASK = 1 << 0,
+    TEXPARAMETER_WRAP_T_MASK = 1 << 1,
+    TEXPARAMETER_WRAP_R_MASK = 1 << 2,
+    TEXPARAMETER_FILTER_MIN_MASK = 1 << 3,
+    TEXPARAMETER_FILTER_MAG_MASK = 1 << 4,
+    TEXPARAMETER_SWIZZLE_MASK = 1 << 5,
+    TEXPARAMETER_LODBIAS_MASK = 1 << 6,
+    TEXPARAMETER_BORDERCOLOR_MASK = 1 << 7,
+    TEXPARAMETER_MIPMAP_BASE_LEVEL_MASK = 1 << 8,
+    TEXPARAMETER_MIPMAP_MAX_LEVEL_MASK = 1 << 9,
+    TEXPARAMETER_MIN_LOD_MASK = 1 << 10,
+    TEXPARAMETER_MAX_LOD_MASK = 1 << 11,
+    TEXPARAMETER_DEPTHSTENCIL_MASK = 1 << 12,
+    TEXPARAMETER_DEPTH_TEX_COMP_MODE_MASK = 1 << 13,
+    TEXPARAMETER_DEPTH_TEX_COMP_FUNC_MASK = 1 << 14,
+    TEXPARAMETER_DEFAULT_MASK = TEXPARAMETER_WRAP_S_MASK | 
+                                TEXPARAMETER_WRAP_T_MASK | 
+                                TEXPARAMETER_FILTER_MIN_MASK |
+                                TEXPARAMETER_FILTER_MAG_MASK |
+                                TEXPARAMETER_BORDERCOLOR_MASK,
+    TEXPARAMETER_DEFAULT_DIRTY_FLAG = 0
+};
+
+typedef TexParameterMask TexParameterDirtyFlag;
+
 struct TexParams
 {
     WrapMode wrap_modes[3];
@@ -138,14 +225,32 @@ struct TexParams
     LodBiasParam lod_parameter;
     float32 lodbias;
 
+    MipMapBaseLevelParam baselevel_parameter;
+    int32 mipmap_baselevel = 0;
+    MipMapMaxLevelParam maxlevel_parameter;
+    int32 mipmap_maxlevel = 1000;
+
+    TextureBorderColorParam bordercolor_parameter;
+    vec4 border_color;
+
+    DepthStencilTextureMode depthstencil_tex_mode;
+    
+    DepthTextureCompareMode depth_tex_comp_mode;
+    DepthTextureCompareFunc depth_tex_comp_func;
+
+    TextureMinLODParam min_lod_parameter;
+    int32 min_lod = -1000;
+    TextureMaxLODParam max_lod_parameter;
+    int32 max_lod = 1000;
+
     TexParams()
         : swizzle_parameter(SwizzleParam::NONE)
         , lod_parameter(LodBiasParam::NONE)
     {
         wrap_modes[0] = wrap_modes[1] = wrap_modes[2] = WrapMode::NONE;
         filter_modes[0] = filter_modes[1] = FilterMode::NONE;
-    //     swizzle_parameter = SwizzleParam::NONE;
-    //     lod_parameter = LodBiasParam::NONE;
+
+
     }
 };
 
@@ -194,9 +299,9 @@ public:
             {
                 glSamplerParameteri(_res.id, GL_TEXTURE_WRAP_T, (int32)(params.wrap_modes[1]));
             }
-            if (_parameters.wrap_modes[2] != WrapMode::NONE)
+            if (params.wrap_modes[2] != WrapMode::NONE)
             {
-                glTexParameteri(_res.type, GL_TEXTURE_WRAP_R, (int32)(_parameters.wrap_modes[2]));
+                glTexParameteri(_res.type, GL_TEXTURE_WRAP_R, (int32)(params.wrap_modes[2]));
             }
 
             // filter
@@ -208,26 +313,33 @@ public:
             {
                 glSamplerParameteri(_res.id, GL_TEXTURE_MAG_FILTER, (int32)(params.filter_modes[1]));
             }
-
-            // // swizzle
-            // if (params.swizzle_parameter != SwizzleParam::NONE)
-            // {
-            //     uint32 swizzle_param = uint32(params.swizzle_parameter);
-            //     int32 index = swizzle_param - (uint32)(SwizzleParam::SWIZZLE_R);
-            //     if (index == 4)
-            //     {
-            //         glSamplerParameteriv(_res.id, swizzle_param, reinterpret_cast<const int32 *>(params.swizzle));
-            //     }
-            //     else
-            //     {
-            //         glSamplerParameteri(_res.id, swizzle_param, (int32)(params.swizzle[index]));
-            //     }
-            // }
             
             // lod bias
             if (params.lod_parameter != LodBiasParam::NONE)
             {
                 glSamplerParameteri(_res.id, GL_TEXTURE_LOD_BIAS, params.lodbias);
+            }
+
+            // border color
+            glSamplerParameterfv(_res.id, GL_TEXTURE_BORDER_COLOR, glm::value_ptr<float32>(params.border_color));
+ 
+            // tex lod
+            if(params.min_lod_parameter != TextureMinLODParam::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_MIN_LOD, params.min_lod);
+            }
+            if(params.max_lod_parameter != TextureMaxLODParam::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_MAX_LOD, params.max_lod);
+            }
+
+            // depth texture compare mode&func
+            glSamplerParameteri(_res.id, GL_TEXTURE_COMPARE_MODE
+                                , (uint32)(params.depth_tex_comp_mode));
+            if(params.depth_tex_comp_func != DepthTextureCompareFunc::NONE)
+            {
+                glSamplerParameteri(_res.id, GL_TEXTURE_COMPARE_FUNC
+                                , (uint32)(params.depth_tex_comp_func));
             }
         }
     }
@@ -280,6 +392,19 @@ public:
     void SetSwizzle(SwizzleParam parameter, SwizzleMask* masks);
     void SetLodBias(LodBiasParam parameter, float32 bias);
 
+    void SetMipMapBaseLevel(MipMapBaseLevelParam parameter, int32 level);
+    void SetMipMapMaxLevel(MipMapMaxLevelParam parameter, int32 level);
+
+    void SetTexBorderColor(TextureBorderColorParam parameter, const vec4& color);
+
+    void SeTexMinLOD(TextureMinLODParam parameter, int32 lod);
+    void SeTexMaxLOD(TextureMaxLODParam parameter, int32 lod);
+
+    void SetDepthTexCompareMode(DepthTextureCompareMode mode);
+    void SetDepthTexCompareFun(DepthTextureCompareFunc func);
+
+    void SetDepthStencilMode(DepthStencilTextureMode mode);
+
     Image::Ptr GetImage() { return _image; }
     const TexParams& GetTexParams() { return _parameters; }
     int32 GetNumMipLevels() { return _image == nullptr ? 0 : _image->GetImageSource().mipLevels; }
@@ -292,6 +417,8 @@ public:
 
     const RenderResInstance& GetRenderRes() { return _res; }
 
+    void AppendTexParameterMask(TexParameterMask mask) { _mask = (TexParameterMask)(_mask | mask); }
+    void SetTexParameterMask(TexParameterMask mask) { _mask = mask; }
     virtual void ApplyTexParameters();
 
 protected:
@@ -300,12 +427,19 @@ protected:
     virtual void ApplyFilterParameter();
     virtual void ApplySwizzleParameter();
     virtual void ApplyLodBias();
+    virtual void ApplyDepthTexCompParameter();
+    virtual void ApplyMipMapParameter();
+    virtual void ApplyTexLODParameter();
+    virtual void ApplyTexBorderColor();
+    virtual void ApplyDepthStencilMode();
 
 protected:
     TexParams _parameters;
     RenderResInstance _res;
     Image::Ptr _image;
     Sampler::Ptr _sampler;
+    TexParameterMask _mask;
+    TexParameterDirtyFlag _dirty_flag;
 
     bool _immutable;
     bool _initialized;

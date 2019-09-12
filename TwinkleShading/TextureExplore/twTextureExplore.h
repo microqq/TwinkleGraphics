@@ -51,6 +51,7 @@ public:
         , _swizzle_masks()
         , _texparams_tabitem()
         , _enable_lodbias(false)
+        , _enable_border_color(false)
         {
             _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
             _filter_modes[0] = _filter_modes[1] = -1;
@@ -59,7 +60,8 @@ public:
             _swizzle_masks[2] = 2;
             _swizzle_masks[3] = 3;
 
-            _tintColor[0] = _tintColor[1] = _tintColor[2] = _tintColor[3] = 1.0f;
+            _tintcolor[0] = _tintcolor[1] = _tintcolor[2] = _tintcolor[3] = 1.0f;
+            _bordercolor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
             _tex_tiling = vec2(1.0f, 1.0f);
             _tex_offset = vec2 (0.0f, 0.0f);
@@ -114,7 +116,8 @@ private:
     Sprite::Ptr _sprite;
 
     glm::vec4 _viewport_params;
-    float32 _tintColor[4];
+    float32 _tintcolor[4];
+    glm::vec4 _bordercolor;
     glm::vec2 _tex_tiling;
     glm::vec2 _tex_offset;
 
@@ -129,6 +132,7 @@ private:
     float32 _lodbias_value;
     bool _texparams_tabitem[4];
     bool _enable_lodbias;
+    bool _enable_border_color;
 
     friend class TextureExplore;
 };

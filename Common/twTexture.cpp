@@ -8,6 +8,7 @@ Texture::Texture(bool immutable)
     , _res()
     , _image(nullptr)
     , _sampler(nullptr)
+    , _mask(TexParameterMask::TEXPARAMETER_DEFAULT_MASK)
     , _immutable(immutable)
     , _initialized(false)
     , _parameters_dirty(true)
@@ -46,7 +47,9 @@ void Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap)
 {
     if(wrap == _parameters.wrap_modes[0])
         return;
-    _parameters.wrap_modes[0] = wrap;
+    _parameters.wrap_modes[0] = (wrap == WrapMode::NONE ? WrapMode::DEFAULT : wrap);
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_WRAP_S_MASK);
+
     _parameters_dirty = true;
 }
 
@@ -55,7 +58,9 @@ void Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap)
 {
     if(wrap == _parameters.wrap_modes[1])
         return;
-    _parameters.wrap_modes[1] = wrap;
+    _parameters.wrap_modes[1] = (wrap == WrapMode::NONE ? WrapMode::DEFAULT : wrap);
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_WRAP_T_MASK);
+
     _parameters_dirty = true;
 }
 
@@ -64,7 +69,10 @@ void Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap)
 {
     if(wrap == _parameters.wrap_modes[2])
         return;
-    _parameters.wrap_modes[2] = wrap;
+
+    _parameters.wrap_modes[2] = (wrap == WrapMode::NONE ? WrapMode::DEFAULT : wrap);
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_WRAP_R_MASK);
+
     _parameters_dirty = true;
 }
 
@@ -74,7 +82,9 @@ void Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter)
 {
     if(filter == _parameters.filter_modes[0])
         return;
-    _parameters.filter_modes[0] = filter;
+    _parameters.filter_modes[0] = (filter == FilterMode::NONE ? FilterMode::DEFAULT : filter);
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_FILTER_MIN_MASK);
+
     _parameters_dirty = true;
 }
 
@@ -83,7 +93,9 @@ void Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter)
 {
     if(filter == _parameters.filter_modes[1])
         return;
-    _parameters.filter_modes[1] = filter;
+    _parameters.filter_modes[1] = (filter == FilterMode::NONE ? FilterMode::DEFAULT : filter);
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_FILTER_MAG_MASK);
+
     _parameters_dirty = true;
 }
 
@@ -133,21 +145,184 @@ void Texture::SetSwizzle(SwizzleParam parameter, SwizzleMask* masks)
         _parameters.swizzle[2] = masks[2];
         _parameters.swizzle[3] = masks[3];
     }
-    
+    else
+    {
+        _parameters.swizzle_parameter = SwizzleParam::DEFAULT;
+        _parameters.swizzle[0] = SwizzleMask::RED;
+        _parameters.swizzle[1] = SwizzleMask::GREEN;
+        _parameters.swizzle[2] = SwizzleMask::BLUE;
+        _parameters.swizzle[3] = SwizzleMask::ALPHA;
+    }
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_SWIZZLE_MASK);
+    }
+        
     _parameters_dirty |= dirty;
 }
 
 void Texture::SetLodBias(LodBiasParam parameter, float32 bias)
 {
-    bool dirty = _parameters.lod_parameter == parameter;
+    bool dirty = _parameters.lod_parameter != parameter;
     _parameters.lod_parameter = parameter;
 
     if(!dirty && parameter == LodBiasParam::NONE)
         return;
 
     dirty |= ::fabs(_parameters.lodbias - bias) > glm::epsilon<float32>();
-    _parameters.lodbias = bias;
+    _parameters.lod_parameter = parameter == LodBiasParam::NONE ? LodBiasParam::DEFAULT : parameter;  
+    _parameters.lodbias = parameter == LodBiasParam::NONE ? 0.0f : bias;
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_LODBIAS_MASK);
+    }
+
     _parameters_dirty |= dirty;
+}
+
+void Texture::SetMipMapBaseLevel(MipMapBaseLevelParam parameter, int32 level)
+{
+    bool dirty = _parameters.baselevel_parameter != parameter;
+    _parameters.baselevel_parameter = parameter;
+
+    if(!dirty && parameter == MipMapBaseLevelParam::NONE)
+        return;
+
+    dirty |= level != _parameters.mipmap_baselevel;
+    if(parameter == MipMapBaseLevelParam::NONE)
+        _parameters.mipmap_baselevel = 0;
+    else
+        _parameters.mipmap_baselevel = level;
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_MIPMAP_BASE_LEVEL_MASK);        
+    }
+
+    _parameters_dirty |= dirty;
+}
+
+void Texture::SetMipMapMaxLevel(MipMapMaxLevelParam parameter, int32 level)
+{
+    bool dirty = _parameters.maxlevel_parameter != parameter;
+    _parameters.maxlevel_parameter = parameter;
+
+    if(!dirty && parameter == MipMapMaxLevelParam::NONE)
+        return;
+
+    dirty |= level != _parameters.mipmap_maxlevel;
+    if(parameter == MipMapMaxLevelParam::NONE)
+        _parameters.mipmap_maxlevel = 0;
+    else
+        _parameters.mipmap_maxlevel = level;
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_MIPMAP_BASE_LEVEL_MASK);        
+    }
+
+    _parameters_dirty |= dirty;
+}
+
+void Texture::SetTexBorderColor(TextureBorderColorParam parameter, const vec4& color)
+{
+    bool dirty = _parameters.bordercolor_parameter != parameter;
+    _parameters.bordercolor_parameter = parameter;
+
+    if(!dirty && parameter == TextureBorderColorParam::NONE)
+        return;
+
+    dirty |= _parameters.border_color != color;
+    if(parameter == TextureBorderColorParam::NONE)
+        _parameters.border_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    else
+        _parameters.border_color = color;    
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_BORDERCOLOR_MASK);
+    }
+
+    _parameters_dirty |= dirty;
+}
+
+void Texture::SeTexMinLOD(TextureMinLODParam parameter, int32 lod)
+{
+    bool dirty = _parameters.min_lod_parameter != parameter;
+    _parameters.min_lod_parameter = parameter;
+
+    if(!dirty && parameter == TextureMinLODParam::NONE)
+        return;
+
+    dirty |= _parameters.min_lod != lod;
+    _parameters.min_lod_parameter = parameter;
+    if(parameter == TextureMinLODParam::NONE)
+        _parameters.min_lod = 0;
+    else
+        _parameters.min_lod = lod;
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_MIN_LOD_MASK);
+    }
+
+    _parameters_dirty |= dirty;
+}
+
+void Texture::SeTexMaxLOD(TextureMaxLODParam parameter, int32 lod)
+{
+    bool dirty = _parameters.max_lod_parameter != parameter;
+    _parameters.max_lod_parameter = parameter;
+
+    if(!dirty && parameter == TextureMaxLODParam::NONE)
+        return;
+
+    dirty |= _parameters.max_lod != lod;
+    _parameters.max_lod_parameter = parameter;
+    if(parameter == TextureMaxLODParam::NONE)
+        _parameters.max_lod = 0;
+    else
+        _parameters.max_lod = lod;
+
+    if(dirty)
+    {
+        _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_MAX_LOD_MASK);
+    }
+
+    _parameters_dirty |= dirty;
+}
+
+void Texture::SetDepthTexCompareMode(DepthTextureCompareMode mode)
+{
+    if(_parameters.depth_tex_comp_mode == mode)
+        return;
+
+    _parameters.depth_tex_comp_mode = mode;
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_DEPTH_TEX_COMP_MODE_MASK);
+
+    _parameters_dirty = true;
+}
+
+void Texture::SetDepthTexCompareFun(DepthTextureCompareFunc func)
+{
+    if(_parameters.depth_tex_comp_func == func)
+        return;
+
+    _parameters.depth_tex_comp_func = func;
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_DEPTH_TEX_COMP_FUNC_MASK);
+
+    _parameters_dirty = true;
+}
+
+void Texture::SetDepthStencilMode(DepthStencilTextureMode mode)
+{
+    if(_parameters.depthstencil_tex_mode == mode)
+        return;
+    
+    _parameters.depthstencil_tex_mode = mode;
+    _dirty_flag = (TexParameterDirtyFlag)(_dirty_flag | TexParameterDirtyFlag::TEXPARAMETER_DEPTHSTENCIL_MASK);
 }
 
 void Texture::InitStorage()
@@ -169,6 +344,7 @@ void Texture::ApplyTexParameters()
         ApplyFilterParameter();
         ApplySwizzleParameter();
         ApplyLodBias();
+        ApplyTexBorderColor();
 
         _parameters_dirty = false;
     }
@@ -176,16 +352,23 @@ void Texture::ApplyTexParameters()
 
 void Texture::ApplyWrapParameter()
 {
+    if(_sampler != nullptr && _sampler->IsValid())
+    {
+        
+
+        return;
+    }
+    
     // wrap
-    if (_parameters.wrap_modes[0] != WrapMode::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_WRAP_S_MASK != 0)
     {
         glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
     }
-    if (_parameters.wrap_modes[1] != WrapMode::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_WRAP_T_MASK != 0)
     {
         glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrap_modes[1]));
     }
-    if (_parameters.wrap_modes[2] != WrapMode::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_WRAP_R_MASK != 0)
     {
         glTexParameteri(_res.type, GL_TEXTURE_WRAP_R, (int32)(_parameters.wrap_modes[2]));
     }
@@ -194,11 +377,11 @@ void Texture::ApplyWrapParameter()
 void Texture::ApplyFilterParameter()
 {
     // filter
-    if (_parameters.filter_modes[0] != FilterMode::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_FILTER_MIN_MASK != 0)
     {
         glTexParameteri(_res.type, GL_TEXTURE_MIN_FILTER, (int32)(_parameters.filter_modes[0]));
     }
-    if (_parameters.filter_modes[1] != FilterMode::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_FILTER_MAG_MASK != 0)
     {
         glTexParameteri(_res.type, GL_TEXTURE_MAG_FILTER, (int32)(_parameters.filter_modes[1]));
     }
@@ -207,7 +390,7 @@ void Texture::ApplyFilterParameter()
 void Texture::ApplySwizzleParameter()
 {
     // swizzle
-    if (_parameters.swizzle_parameter != SwizzleParam::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_SWIZZLE_MASK != 0)
     {
         uint32 swizzle_param = uint32(_parameters.swizzle_parameter);
         int32 index = swizzle_param - (uint32)(SwizzleParam::SWIZZLE_R);
@@ -225,13 +408,49 @@ void Texture::ApplySwizzleParameter()
 void Texture::ApplyLodBias()
 {
     // lod bias
-    if (_parameters.lod_parameter != LodBiasParam::NONE)
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_LODBIAS_MASK != 0)
     {
         glTexParameterf(_res.type, GL_TEXTURE_LOD_BIAS, _parameters.lodbias);
     }
 }
 
+void Texture::ApplyDepthTexCompParameter()
+{
+    if(_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_DEPTH_TEX_COMP_MODE_MASK != 0)
+    {}
+    if(_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_DEPTH_TEX_COMP_FUNC_MASK != 0)
+    {}
+}
 
+void Texture::ApplyMipMapParameter()
+{
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_MIPMAP_BASE_LEVEL_MASK != 0)
+    {
+    }
+}
+
+void Texture::ApplyTexLODParameter()
+{
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_MIPMAP_MAX_LEVEL_MASK != 0)
+    {
+    }
+}
+
+void Texture::ApplyTexBorderColor()
+{
+    if(_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_BORDERCOLOR_MASK != 0)
+    {
+        glTexParameterfv(_res.type, (uint32)TextureBorderColorParam::BORDER_COLOR
+                        , glm::value_ptr<float32>(_parameters.border_color));
+    }
+}
+
+void Texture::ApplyDepthStencilMode()
+{
+    if (_dirty_flag & TexParameterDirtyFlag::TEXPARAMETER_DEPTHSTENCIL_MASK != 0)
+    {
+    }
+}
 
 /*------------------------------Texture1D----------------------------- */
 
