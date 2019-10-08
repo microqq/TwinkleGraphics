@@ -110,7 +110,7 @@ void RenderPass::SetUniform(const char *name, Uniform *uniform)
 }
 
 
-#ifdef TEPORARY_USE
+#ifdef TEMPORARY_USE
 /**
  * @brief 
  * 

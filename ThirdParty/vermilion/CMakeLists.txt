@@ -10,6 +10,8 @@ add_library(vermilion SHARED
 target_include_directories(vermilion PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}
 )
+target_compile_definitions(vermilion PUBLIC _DEBUG=1)
+target_compile_options(vermilion PUBLIC -fno-elide-constructors)
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 #     target_link_libraries(imgui OpenGL32.lib)

@@ -29,7 +29,6 @@ public:
 
 private:
     TextureExploreView* _view;
-    CameraControl* _camera_control;
 };
 
 class TextureExploreView : public View
@@ -109,10 +108,10 @@ private:
     TexParams _texparams;
 
     Texture1D::Ptr _texture1D;
-    Texture2D::Ptr _texture2D;
     Texture3D::Ptr _texture3D;
     TextureCube::Ptr _textureCube;
     Texture1DArray::Ptr _texture1DArray;
+
     Sprite::Ptr _sprite;
 
     glm::vec4 _viewport_params;

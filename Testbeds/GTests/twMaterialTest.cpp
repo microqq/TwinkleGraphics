@@ -8,6 +8,8 @@
 
 using namespace TwinkleGraphics;
 
+ImageData GetImageData() { ImageData data; data.mip[0].data = new int[10]; return data; }
+
 TEST(MaterialTests, UniformSetting)
 {
     // ImageManagerInst imageMgr;
@@ -68,6 +70,11 @@ TEST(MaterialTests, UniformSetting)
     Material::Ptr material2 = std::make_shared<Material>(*(material.get()));
     const VecUniform<float32, 4> *cast_vec4 = dynamic_cast<const VecUniform<float32, 4>* >(material2->GetUniform("tint_color"));
     ASSERT_EQ(cast_vec4->vector, vec4(2.0f, 3.0f, 4.0f, 5.0f));
+
+    ImageData data = GetImageData();
+
+    ImageData imagedatacopy = GetImageData();
+    ASSERT_EQ(imagedatacopy.mip[0].data != nullptr, true);
 
     // std::vector<int> vec{1, 2, 3, 4, 5};
     // int sum = std::accumulate(vec.begin(), vec.end(), 0);

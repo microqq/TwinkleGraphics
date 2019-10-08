@@ -11,13 +11,11 @@ namespace TwinkleGraphics
 TextureExplore::TextureExplore(std::string& name)
     : GLPlugin(name)
     , _view(nullptr)
-    , _camera_control(nullptr)
 {}
 
 TextureExplore::~TextureExplore()
 {
     SAFE_DEL(_view);
-    SAFE_DEL(_camera_control);
 }
 
 void TextureExplore::Install()
@@ -29,9 +27,9 @@ void TextureExplore::Install()
     Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
     _view = new TextureExploreView();
     _view->SetViewCamera(camera);
-    _camera_control = new OrbitControl(camera);
-    (dynamic_cast<OrbitControl*>(_camera_control))->SetMinDistance(1.0f);
-    _view->SetCameraControl(_camera_control);
+    OrbitControl* camera_control = new OrbitControl(camera);
+    camera_control->SetMinDistance(1.0f);
+    _view->SetCameraControl(camera_control);
     _view->Initialize();
 
     _views[_views_count++] = _view;

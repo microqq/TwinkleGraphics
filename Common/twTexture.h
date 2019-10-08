@@ -256,6 +256,10 @@ struct TexParams
 
 typedef TexParams SamplerParams;
 
+/**
+ * @brief 
+ * https://www.khronos.org/registry/OpenGL-Refpages/gl4/
+ */
 class Sampler : Object
 {
 public:
@@ -314,6 +318,14 @@ public:
         else if(!_immutable)
         {
             //update texture storage
+        }
+    }
+
+    void SetImageData(ImageData&& src)
+    {
+        if(_data == nullptr)
+        {
+            _data = new ImageData(src);
         }
     }
 
@@ -376,6 +388,8 @@ protected:
     Sampler::Ptr _sampler;
     TexParameterMask _mask;
     TexParameterDirtyFlag _dirty_flag;
+
+    ImageData* _data;
 
     bool _immutable;
     bool _initialized;
