@@ -146,7 +146,7 @@ public:
     virtual ~Mesh() 
     { 
 #ifdef _DEBUG
-        std::cout << "Mesh Deconstruct.\n";
+        std::cout << "Mesh: Mesh Deconstruct.\n";
 #endif
         _submeshes.clear();
     }

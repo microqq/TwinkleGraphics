@@ -56,10 +56,17 @@ ReadResult<Image::Ptr> ImageReader::ReadDDS(const char *filename, ReaderOption *
 	vglImageData data;
 	if(vglLoadDDS(filename, &data))
 	{
+#ifdef _DEBUG
+		std::cout << "Image: Load image " << filename << " successed." << std::endl;
+#endif
 		Image::Ptr image = std::make_shared<Image>(filename, data);		
 		return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::FAILED);
 	}
-        
+
+#ifdef _DEBUG
+		std::cout << "Image: Load image " << filename << " failed" << std::endl;
+#endif
+
 	return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
 }
 
@@ -88,25 +95,54 @@ ReadResult<Image::Ptr> ImageReader::ReadOthers(const char *filename, ReaderOptio
 		dib = FreeImage_Load(fif, filename);
 	//if the image failed to load, return failure
 	if(!dib)
+	{
+#ifdef _DEBUG
+		std::cout << "Image: Load image " << filename << " failed." << std::endl;
+#endif
         return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+	}
+
+	FIBITMAP* image = FreeImage_ConvertTo32Bits(dib);
 
 	//retrieve the image data
-	bits = FreeImage_GetBits(dib);
+	bits = FreeImage_GetBits(image);
 	//get the image width and height
-	width = FreeImage_GetWidth(dib);
-	height = FreeImage_GetHeight(dib);
+	width = FreeImage_GetWidth(image);
+	height = FreeImage_GetHeight(image);
+
 	//if this somehow one of these failed (they shouldn't), return failure
 	if((bits == 0) || (width == 0) || (height == 0))
+	{
+#ifdef _DEBUG
+		std::cout << "Image: Load image " << filename << " failed(...)." << std::endl;
+#endif
         return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+	}
 	
+	ImageData data;
+	data.target = GL_TEXTURE_2D;
+	data.internalFormat = GL_RGBA8;
+	data.format = GL_BGRA;
+	data.type = GL_UNSIGNED_BYTE;
+	data.mipLevels = 1;
+	data.totalDataSize = width * height * 4;
+
+	data.mip[0].width = width;
+	data.mip[0].height = height;
+	data.mip[0].mipStride = data.totalDataSize;
+	data.mip[0].data = bits;
+
+	Image::Ptr ret_image = std::make_shared<Image>(filename, data);
+
 	//Free FreeImage's copy of the data
 	FreeImage_Unload(dib);
 
-	ImageData data;
-	Image::Ptr image = std::make_shared<Image>(filename, data);
+#ifdef _DEBUG
+		std::cout << "Image: Load image " << filename << " successed." << std::endl;
+#endif
 
 	//return success
-    return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::SUCCESS);
+    return ReadResult<Image::Ptr>(ret_image, ReadResult<Image::Ptr>::Status::SUCCESS);
 }
 
 

@@ -1,7 +1,10 @@
 #ifndef _VERMILION_H_
 #define _VERMILION_H_
 
+#include <stdlib.h>
+#include <string.h>
 #include <glew/glew.h>
+
 
 #ifdef _DEBUG
     #include <iostream>
@@ -51,6 +54,11 @@ struct vglImageMipData
         copy.data = nullptr;
     }
 
+    ~vglImageMipData()
+    {
+        data = nullptr;
+    }
+
     vglImageMipData& operator =(const vglImageMipData& mipdata)
     {
         width = mipdata.width;
@@ -68,7 +76,7 @@ struct vglImageData
     GLenum target;                              // Texture target (1D, 2D, cubemap, array, etc.)
     GLenum internalFormat;                      // Recommended internal format (GL_RGBA32F, etc).
     GLenum format;                              // Format in memory
-    GLenum type;                                // Type in memory (GL_RED, GL_RGB, etc.)
+    GLenum type;                                // Type in memory (GL_UNSIGNED_BYTE, etc.)
     GLenum swizzle[4];                          // Swizzle for RGBA
     GLsizei mipLevels;                          // Number of present mipmap levels
     GLsizei slices;                             // Number of slices (for arrays)
@@ -96,14 +104,26 @@ struct vglImageData
 
         for(int i = 0; i < mipLevels; i++)
         {
-            //Todo: clone mipdata
-            mip[i].data = copy.mip[i].data;
-
             mip[i].width = copy.mip[i].width;
             mip[i].height = copy.mip[i].height;
             mip[i].depth = copy.mip[i].depth;
             mip[i].mipStride = copy.mip[i].mipStride;
-        }        
+
+            mip[i].data = copy.mip[i].data;
+            // if(copy.mip[i].data != nullptr)
+            // {
+            //     if(i == 0)
+            //     {
+            //         mip[i].data = malloc(totalDataSize);
+            //     }
+            //     else
+            //     {
+            //         mip[i].data = (char*)(mip[i - 1].data) + mip[i - 1].mipStride;
+            //     }
+
+            //     memcpy(mip[i].data, copy.mip[i].data, mip[i].mipStride);
+            // }
+        }
     }
 
     vglImageData(vglImageData&& copy)
@@ -155,8 +175,20 @@ struct vglImageData
 
         for(int i = 0; i < mipLevels; i++)
         {
-            //Todo: clone mipdata
-            //mip[i].data = data.mip[i].data;
+            mip[i].data = data.mip[i].data;
+            // if(data.mip[i].data != nullptr)
+            // {
+            //     if(i == 0)
+            //     {
+            //         mip[i].data = malloc(totalDataSize);
+            //     }
+            //     else
+            //     {
+            //         mip[i].data = (char*)(mip[i - 1].data) + mip[i - 1].mipStride;
+            //     }
+
+            //     memcpy(mip[i].data, data.mip[i].data, mip[i].mipStride);
+            // }
 
             mip[i].width = data.mip[i].width;
             mip[i].height = data.mip[i].height;
@@ -165,6 +197,15 @@ struct vglImageData
         }
 
         return *this;
+    }
+
+    void ReleaseMipData()
+    {   
+        for(int i = 0; i < mipLevels; i++)
+        {
+            free(mip[i].data);
+            mip[i].data = nullptr;
+        }
     }
 };
 

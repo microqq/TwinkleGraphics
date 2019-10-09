@@ -74,7 +74,7 @@ Shader::Shader(const Shader &copy)
 Shader::~Shader()
 {
 #ifdef _DEBUG    
-    std::cout<< "Shader " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
+    std::cout<< "Shader: Shader " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
 #endif
 
     if(_res.id != GL_NONE)
@@ -96,7 +96,7 @@ bool Shader::Compile()
 
         GLchar *log = new GLchar[len + 1];
         glGetShaderInfoLog(_res.id, len, &len, log);
-        std::cerr << "Shader compilation failed: " << log << std::endl;
+        std::cerr << "Shader: Shader compilation failed: " << log << std::endl;
         SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
@@ -125,7 +125,7 @@ ShaderProgram::ShaderProgram()
 ShaderProgram::~ShaderProgram()
 {
 #ifdef _DEBUG
-    std::cout<< "Shader Program " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
+    std::cout<< "Shader: Shader Program " << _res.id  << "(hash: " << _res.hash << ")" << " deconstruct.\n";
 #endif
 
     glDeleteProgram(_res.id);
@@ -152,7 +152,7 @@ bool ShaderProgram::Link(uint32 shaders[], int num)
 
         GLchar *log = new GLchar[len + 1];
         glGetProgramInfoLog(_res.id, len, &len, log);
-        std::cerr << "Shader linking failed: " << log << std::endl;
+        std::cerr << "Shader: Shader linking failed: " << log << std::endl;
         SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
@@ -265,8 +265,10 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
     if (fp)
     {
 #ifdef _DEBUG
-        std::cout << "Console Log: ShaderReader open shader file successed " << filename << std::endl;
+        std::cout << "Shader: ShaderReader open shader file " << filename << " successed" << std::endl;
 #endif
+
+        //opengl programing guide 8th source code
         //read source
         fseek(fp, 0, SEEK_END);
         int len = ftell(fp);
@@ -291,7 +293,7 @@ ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, Re
     else
     {
 #ifdef _DEBUG
-        std::cerr << "Error: ShaderReader open shader file failed " << filename << std::endl;
+        std::cerr << "Shader: ShaderReader open shader file " << filename << " failed" << std::endl;
 #endif
         return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
     }

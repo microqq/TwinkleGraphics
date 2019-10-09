@@ -4,11 +4,18 @@
 
 namespace TwinkleGraphics
 {
-Sprite::Sprite(Texture2D::Ptr texture)
+Sprite::Sprite(Texture::Ptr texture)
     : Quad()
     , _perpixelunit(100)
 {
     Init(texture);
+}
+
+Sprite::Sprite(int type, Texture::Ptr texture, glm::vec2 size)
+    : Quad()
+    , _perpixelunit(100)
+{
+    Init(type, texture, size);
 }
 
 Sprite::~Sprite()
@@ -36,7 +43,7 @@ void Sprite::SetColor(vec4 &color)
  *
  * @param texture
  */
-void Sprite::SetTexture(Texture2D::Ptr texture)
+void Sprite::SetTexture(Texture::Ptr texture)
 {
     if(_sprite_renderer != nullptr)
     {
@@ -45,14 +52,14 @@ void Sprite::SetTexture(Texture2D::Ptr texture)
 }
 
 
-void Sprite::Init(Texture2D::Ptr texture)
+void Sprite::Init(Texture::Ptr texture)
 {
 #ifdef _DEBUG
     assert(texture != nullptr);
 #endif
 
     // set sprite renderer
-    _sprite_renderer = std::make_shared<SpriteRenderer>(texture);
+    _sprite_renderer = std::make_shared<SpriteRenderer>(GL_TEXTURE_2D, texture);
     SetMeshRenderer(_sprite_renderer);
 
     _flag = MeshDataFlag(9);
@@ -62,15 +69,29 @@ void Sprite::Init(Texture2D::Ptr texture)
     GenerateUVs();
 }
 
+void Sprite::Init(int type, Texture::Ptr texture, glm::vec2 size)
+{
+#ifdef _DEBUG
+    assert(texture != nullptr);
+#endif
 
+    // set sprite renderer
+    _sprite_renderer = std::make_shared<SpriteRenderer>(GL_TEXTURE_1D, texture);
+    SetMeshRenderer(_sprite_renderer);
+
+    _flag = MeshDataFlag(9);
+    Quad::SetSize(size);
+    Quad::GenerateMesh();
+    GenerateUVs();
+}
 
 /*-------------------------------Sprite Renderer-------------------------------*/
 
 
-SpriteRenderer::SpriteRenderer(Texture2D::Ptr texture)
+SpriteRenderer::SpriteRenderer(int type, Texture::Ptr texture)
     : MeshRenderer()
 {
-    Init(texture);
+    Init(type, texture);
 }
 
 SpriteRenderer::~SpriteRenderer()
@@ -78,16 +99,28 @@ SpriteRenderer::~SpriteRenderer()
 }
 
 
-void SpriteRenderer::Init(Texture2D::Ptr texture)
+void SpriteRenderer::Init(int type, Texture::Ptr texture)
 {
     ShaderManagerInst shaderMgr;
-    ShaderReadInfo sprite_shader_info[] = {
-        {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
-    ShaderProgram::Ptr sprite_shader = shaderMgr->ReadShaders(sprite_shader_info, 2);
+    ShaderProgram::Ptr program = nullptr;
+    if(type == GL_TEXTURE_1D)
+    {
+        ShaderReadInfo sprite_shader_info[] = {
+            {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
+            {std::string("Assets/Shaders/sprite_1d.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(sprite_shader_info, 2);
+    }
+    else if(type == GL_TEXTURE_2D)
+    {
+        ShaderReadInfo sprite_shader_info[] = {
+            {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
+            {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(sprite_shader_info, 2);
+    }
+
 
     Material::Ptr sprite_mat = std::make_shared<Material>();
-    RenderPass::Ptr pass = std::make_shared<RenderPass>(sprite_shader);
+    RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
     sprite_mat->AddRenderPass(pass);
 
     vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);

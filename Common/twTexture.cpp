@@ -23,12 +23,17 @@ Texture::Texture(bool immutable)
     assert(textures[0] != 0);
 #endif
 
-
     _res.id = textures[0];
 }
 
 Texture::~Texture()
 {
+    if(_data != nullptr)
+    {
+        _data->ReleaseMipData();
+        SAFE_DEL(_data);
+    }
+
     if(_res.id != 0)
     {
         uint32 id = _res.id;
@@ -569,43 +574,52 @@ void Texture1D::InitStorage()
 {
     Texture::InitStorage();
 
+    ImageData* destimage = nullptr;
     if(_image != nullptr)
     {
-        const ImageData& image_source = _image->GetImageSource();
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
+    {
         if(_immutable)
         {
             glTexStorage1D(_res.type,
-                        image_source.mipLevels,
-                        image_source.internalFormat,
-                        image_source.mip[0].width);
+                        destimage->mipLevels,
+                        destimage->internalFormat,
+                        destimage->mip[0].width);
 
-            for (int32 level = 0, miplevels = image_source.mipLevels; level < miplevels; ++level)
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
             {
                 glTexSubImage1D(_res.type,
                                 level,
                                 0,
-                                image_source.mip[level].width,
-                                image_source.format, 
-                                image_source.type,
-                                image_source.mip[level].data);
+                                destimage->mip[level].width,
+                                destimage->format, 
+                                destimage->type,
+                                destimage->mip[level].data);
             }
         }
         else
         {
-            for (int32 level = 0, miplevels = image_source.mipLevels; level < miplevels; ++level)
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
             {
                 glTexImage1D(_res.type,
                             level,
-                            image_source.internalFormat,
-                            image_source.mip[level].width,
+                            destimage->internalFormat,
+                            destimage->mip[level].width,
                             0,
-                            image_source.format,
-                            image_source.type,
-                            image_source.mip[level].data);
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
             }
         }
     }
-
 }
 
 
@@ -617,42 +631,53 @@ void Texture2D::InitStorage()
 {
     Texture::InitStorage();
 
+    ImageData* destimage = nullptr;
     if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
     {
         const ImageData& image_source = _image->GetImageSource();
         if(_immutable)
         {
-            glTexStorage2D(_res.type, image_source.mipLevels, 
-                            image_source.internalFormat, 
-                            image_source.mip[0].width, 
-                            image_source.mip[0].height
+            glTexStorage2D(_res.type, destimage->mipLevels, 
+                            destimage->internalFormat, 
+                            destimage->mip[0].width, 
+                            destimage->mip[0].height
             );
 
-            for (int32 level = 0, miplevels = image_source.mipLevels; level < miplevels; ++level)
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
             {
                 glTexSubImage2D(_res.type,
                                 level,
                                 0, 0,
-                                image_source.mip[level].width,
-                                image_source.mip[level].height,
-                                image_source.format,
-                                image_source.type,
-                                image_source.mip[level].data);
+                                destimage->mip[level].width,
+                                destimage->mip[level].height,
+                                destimage->format,
+                                destimage->type,
+                                destimage->mip[level].data);
             }
         }
         else
         {
-            for (int32 level = 0, miplevels = image_source.mipLevels; level < miplevels; ++level)
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
             {
                 glTexImage2D(_res.type,
                             level,
-                            image_source.internalFormat,
-                            image_source.mip[level].width,
-                            image_source.mip[level].height,
+                            destimage->internalFormat,
+                            destimage->mip[level].width,
+                            destimage->mip[level].height,
                             0,
-                            image_source.format,
-                            image_source.type,
-                            image_source.mip[level].data);
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
             }
         }
     }

@@ -87,10 +87,16 @@ void TextureExploreView::Advance(float64 delta_time)
     _mvp_mat = _projection_mat * _view_mat;
 
     // sprite material setting
-    Material::Ptr sprite_mat = nullptr;
-    if(_sprite != nullptr)
+    Sprite::Ptr sprite = nullptr;
+    if(_current_tex_option == 0)
+        sprite = _sprite_1d;
+    else if(_current_tex_option == 1)
+        sprite = _sprite;
+    
+    if(sprite != nullptr)
     {
-        sprite_mat = _sprite->GetMaterial();
+        Material::Ptr sprite_mat = nullptr;
+        sprite_mat = sprite->GetMaterial();
         sprite_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
         vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
         sprite_mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
@@ -98,7 +104,7 @@ void TextureExploreView::Advance(float64 delta_time)
         sprite_mat->SetTextureOffset("main_tex", _tex_offset);
 
         // set sprite texture parameters
-        Texture::Ptr tex = _sprite->GetTexture();
+        Texture::Ptr tex = sprite->GetTexture();
         tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
         tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
         tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
@@ -114,10 +120,8 @@ void TextureExploreView::RenderImpl()
     switch (_current_tex_option)
     {
     case 0:
-        /* code */
-        break;
     case 1:
-        RenderSprite();
+        RenderSprite(_current_tex_option);
         break;
     case 2:
         /* code */
@@ -134,6 +138,7 @@ void TextureExploreView::OnGUI()
         if(ImGui::RadioButton(u8"一维纹理", &_current_tex_option, 0))
         {
             ResetGUI();
+            CreateSprite1D();
         }
         if(ImGui::RadioButton(u8"二维纹理", &_current_tex_option, 1))
         {
@@ -263,11 +268,7 @@ void TextureExploreView::OnGUI()
     {
         ImGui::DragFloat2("Tiling", glm::value_ptr(_tex_tiling), 0.1f, 0.1f, 10.0f);
         ImGui::DragFloat2("Offset", glm::value_ptr(_tex_offset), 0.01f, -1.0f, 1.0f);
-
-        if (_current_tex_option == 1)
-        {
-            ImGui::ColorEdit4("Tint Color", _tintcolor);
-        }
+        ImGui::ColorEdit4("Tint Color", _tintcolor);
     }
     ImGui::End();
 
@@ -440,7 +441,7 @@ SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzle_mask_option)
 void TextureExploreView::CreateSprite()
 {
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info[] = {{"Assets/Textures/test.dds"}};
+    ImageReadInfo images_info[] = {{"Assets/Textures/test3.png"}};
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 
     Texture2D::Ptr texture = nullptr;
@@ -463,11 +464,17 @@ void TextureExploreView::CreateSprite()
     CreateGeometry(_sprite, 1);
 }
 
-void TextureExploreView::RenderSprite()
+void TextureExploreView::RenderSprite(int index)
 {
-    if(_sprite != nullptr)
+    Sprite::Ptr sprite = nullptr;
+    if(index == 0)
+        sprite = _sprite_1d;
+    else if(index == 1)
+        sprite = _sprite;
+
+    if(sprite != nullptr)
     {
-        Material::Ptr sprite_mat = _sprite->GetMaterial();
+        Material::Ptr sprite_mat = sprite->GetMaterial();
         RenderPass::Ptr pass = sprite_mat->GetRenderPass(0);
         ShaderProgram::Ptr shader = pass->GetShader();
 
@@ -482,7 +489,38 @@ void TextureExploreView::RenderSprite()
             loc.second.Bind();
         }
 
-        RenderGeometry(_sprite, 1);
+        RenderGeometry(sprite, index);
+    }
+}
+
+void TextureExploreView::CreateSprite1D()
+{
+    if(_sprite_1d == nullptr)
+    {
+        ImageData data;
+        data.target = GL_TEXTURE_1D;
+        data.internalFormat = GL_RGBA8;
+        data.format = GL_RGBA;
+        data.type = GL_UNSIGNED_BYTE;
+        data.mipLevels = 1;
+        data.totalDataSize = 3 * 1 * 4;
+
+        data.mip[0].width = 3;
+        data.mip[0].height = 1;
+        data.mip[0].mipStride = data.totalDataSize;
+
+        GLubyte* bytes = new GLubyte[12]{ 255, 0, 0, 255, 
+                                            0, 255, 0, 255, 
+                                            0, 0, 255, 255
+                                        };
+        data.mip[0].data = bytes;
+
+        Texture1D::Ptr texture1D = std::make_shared<Texture1D>(true);
+        texture1D->SetImageData(data);
+
+        _sprite_1d = std::make_shared<Sprite>((int)(TextureType::TEXTURE_1D), texture1D, glm::vec2(5, 5));
+
+        CreateGeometry(_sprite_1d, 0);
     }
 }
 

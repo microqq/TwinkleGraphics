@@ -78,7 +78,8 @@ protected:
 
 private:
     void CreateSprite();
-    void RenderSprite();
+    void RenderSprite(int index);
+    void CreateSprite1D();
     
     void CreateGeometry(Geometry::Ptr geom, uint32 index);
     void RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face = GL_CCW);
@@ -107,12 +108,8 @@ private:
 
     TexParams _texparams;
 
-    Texture1D::Ptr _texture1D;
-    Texture3D::Ptr _texture3D;
-    TextureCube::Ptr _textureCube;
-    Texture1DArray::Ptr _texture1DArray;
-
     Sprite::Ptr _sprite;
+    Sprite::Ptr _sprite_1d;
 
     glm::vec4 _viewport_params;
     float32 _tintcolor[4];

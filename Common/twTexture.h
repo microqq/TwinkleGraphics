@@ -321,12 +321,17 @@ public:
         }
     }
 
-    void SetImageData(ImageData&& src)
+    void SetImageData(const ImageData& src)
     {
-        if(_data == nullptr)
+        if(_image != nullptr) return;
+
+        if(_data != nullptr)
         {
-            _data = new ImageData(src);
+            SAFE_DEL(_data);
         }
+
+        _data = new ImageData(src);
+        InitStorage();
     }
 
     void SetSampler(Sampler::Ptr sampler) { _sampler = sampler; }
@@ -356,12 +361,32 @@ public:
 
     Image::Ptr GetImage() { return _image; }
     const TexParams& GetTexParams() { return _parameters; }
-    int32 GetNumMipLevels() { return _image == nullptr ? 0 : _image->GetImageSource().mipLevels; }
-    InternalFormat GetInternalformat() { return _image == nullptr ? GL_NONE : _image->GetImageSource().internalFormat; }
+    int32 GetNumMipLevels() 
+    { 
+        return _image == nullptr ? (_data == nullptr ? 0 : _data->mipLevels)
+            : _image->GetImageSource().mipLevels; 
+    }
+    InternalFormat GetInternalformat() 
+    { 
+        return _image == nullptr ? (_data == nullptr ? GL_NONE : _data->internalFormat)
+        : _image->GetImageSource().internalFormat; 
+    }
 
-    int32 GetWidth(int32 level = 0) { return _image->GetImageSource().mip[level].width; }
-    int32 GetHeight(int32 level = 0) { return _image->GetImageSource().mip[level].height; }
-    int32 GetDepth(int32 level = 0) { return _image->GetImageSource().mip[level].depth; }
+    int32 GetWidth(int32 level = 0) 
+    { 
+        return _image == nullptr ? (_data == nullptr ? 0 : _data->mip[level].width) 
+            : _image->GetImageSource().mip[level].width; 
+    }
+    int32 GetHeight(int32 level = 0) 
+    { 
+        return _image == nullptr ? (_data == nullptr ? 0 : _data->mip[level].height) 
+            : _image->GetImageSource().mip[level].height; 
+    }
+    int32 GetDepth(int32 level = 0) 
+    { 
+        return _image == nullptr ? (_data == nullptr ? 0 : _data->mip[level].depth) 
+            : _image->GetImageSource().mip[level].depth; 
+    }
 
     const RenderResInstance& GetRenderRes() { return _res; }
 
@@ -434,6 +459,10 @@ public:
         : Texture(immutable)
     {
         _res.type = GL_TEXTURE_1D;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture1D " << _res.id << "(hash: " << _res.hash << ")." << std::endl;
+#endif
     }
     virtual ~Texture1D() {}
 
@@ -458,6 +487,10 @@ public:
         : Texture(immutable)
     {
         _res.type = GL_TEXTURE_2D;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture2D " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
     virtual ~Texture2D() {}
 
