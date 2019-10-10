@@ -1,6 +1,7 @@
 
 
 #include "twSprite.h"
+#include "twMaterialInstance.h"
 
 namespace TwinkleGraphics
 {
@@ -11,18 +12,18 @@ Sprite::Sprite(Texture::Ptr texture)
     Init(texture);
 }
 
-Sprite::Sprite(int type, Texture::Ptr texture, glm::vec2 size)
+Sprite::Sprite(Texture::Ptr texture, glm::vec2 size)
     : Quad()
     , _perpixelunit(100)
 {
-    Init(type, texture, size);
+    Init(texture, size);
 }
 
 Sprite::~Sprite()
 {
 }
 
-void Sprite::SetFlip(bool flip)
+void Sprite::SetFlip(bvec2 flip)
 {
     if(_sprite_renderer != nullptr)
     {
@@ -59,7 +60,7 @@ void Sprite::Init(Texture::Ptr texture)
 #endif
 
     // set sprite renderer
-    _sprite_renderer = std::make_shared<SpriteRenderer>(GL_TEXTURE_2D, texture);
+    _sprite_renderer = std::make_shared<SpriteRenderer>(texture);
     SetMeshRenderer(_sprite_renderer);
 
     _flag = MeshDataFlag(9);
@@ -67,31 +68,35 @@ void Sprite::Init(Texture::Ptr texture)
     Quad::SetSize(size);
     Quad::GenerateMesh();
     GenerateUVs();
+
+    _sprite_renderer->SetMesh(_mesh);
 }
 
-void Sprite::Init(int type, Texture::Ptr texture, glm::vec2 size)
+void Sprite::Init(Texture::Ptr texture, glm::vec2 size)
 {
 #ifdef _DEBUG
     assert(texture != nullptr);
 #endif
 
     // set sprite renderer
-    _sprite_renderer = std::make_shared<SpriteRenderer>(GL_TEXTURE_1D, texture);
+    _sprite_renderer = std::make_shared<SpriteRenderer>(texture);
     SetMeshRenderer(_sprite_renderer);
 
     _flag = MeshDataFlag(9);
     Quad::SetSize(size);
     Quad::GenerateMesh();
     GenerateUVs();
+
+    _sprite_renderer->SetMesh(_mesh);
 }
 
 /*-------------------------------Sprite Renderer-------------------------------*/
 
 
-SpriteRenderer::SpriteRenderer(int type, Texture::Ptr texture)
+SpriteRenderer::SpriteRenderer(Texture::Ptr texture)
     : MeshRenderer()
 {
-    Init(type, texture);
+    Init(texture);
 }
 
 SpriteRenderer::~SpriteRenderer()
@@ -99,47 +104,32 @@ SpriteRenderer::~SpriteRenderer()
 }
 
 
-void SpriteRenderer::Init(int type, Texture::Ptr texture)
+void SpriteRenderer::Init(Texture::Ptr texture)
 {
+    if(texture == nullptr) return;
+
+    const RenderResInstance& res = texture->GetRenderRes();
     ShaderManagerInst shaderMgr;
     ShaderProgram::Ptr program = nullptr;
-    if(type == GL_TEXTURE_1D)
+    if(res.type == (int)(TextureType::TEXTURE_1D))
     {
-        ShaderReadInfo sprite_shader_info[] = {
-            {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/sprite_1d.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(sprite_shader_info, 2);
+        Sprite1DMaterial::Ptr mat = std::make_shared<Sprite1DMaterial>();
+        mat->SetMainTexture(texture);
+        SetMaterial(mat);
     }
-    else if(type == GL_TEXTURE_2D)
+    else if(res.type == (int)(TextureType::TEXTURE_2D))
     {
-        ShaderReadInfo sprite_shader_info[] = {
-            {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(sprite_shader_info, 2);
+        SpriteMaterial::Ptr mat = std::make_shared<SpriteMaterial>();
+        mat->SetMainTexture(texture);
+        SetMaterial(mat);
     }
-
-
-    Material::Ptr sprite_mat = std::make_shared<Material>();
-    RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
-    sprite_mat->AddRenderPass(pass);
-
-    vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
-    sprite_mat->SetSimpleUniformValue<bool, 1>("flip", false);
-    sprite_mat->SetVecUniformValue<float32, 4>("tint_color", tint_color);
-    vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
-    sprite_mat->SetTextureTiling("main_tex", tiling);
-    sprite_mat->SetTextureOffset("main_tex", offset);
-
-    sprite_mat->SetMainTexture(texture);
-
-    SetMaterial(sprite_mat);
 }
 
-void SpriteRenderer::SetFlip(bool flip)
+void SpriteRenderer::SetFlip(bvec2 flip)
 {
     if(_shared_material != nullptr)
     {
-        _shared_material->SetSimpleUniformValue<bool, 1>("flip", flip);
+        _shared_material->SetVecUniformValue<bool, 2>("flip", flip);
     }
 }
 

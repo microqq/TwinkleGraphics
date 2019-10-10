@@ -126,7 +126,12 @@ void SimpleUniform<float64, 4>::BindLocation(uint32 location)
 //     glUniform1dv(location, 1, glm::value_ptr(vector));
 // }
 
-
+template<>
+void VecUniform<bool, 2>::BindLocation(uint32 location)
+{
+    ivec2 ivector(vector.x, vector.y);
+    glUniform2iv(location, 1, glm::value_ptr(ivector));
+}
 template<>
 void VecUniform<float32, 2>::BindLocation(uint32 location)
 {
@@ -148,7 +153,12 @@ void VecUniform<float64, 2>::BindLocation(uint32 location)
     glUniform2dv(location, 1, glm::value_ptr(vector));
 }
 
-
+template<>
+void VecUniform<bool, 3>::BindLocation(uint32 location)
+{
+    ivec3 ivector(vector.x, vector.y, vector.z);
+    glUniform3iv(location, 1, glm::value_ptr(ivector));
+}
 template<>
 void VecUniform<float32, 3>::BindLocation(uint32 location)
 {
@@ -171,6 +181,12 @@ void VecUniform<float64, 3>::BindLocation(uint32 location)
 }
 
 
+template<>
+void VecUniform<bool, 4>::BindLocation(uint32 location)
+{
+    ivec4 ivector(vector.x, vector.y, vector.z, vector.w);
+    glUniform4iv(location, 1, glm::value_ptr(ivector));
+}
 template<>
 void VecUniform<float32, 4>::BindLocation(uint32 location)
 {

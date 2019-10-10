@@ -10,6 +10,7 @@ Texture::Texture(bool immutable)
     , _sampler(nullptr)
     , _data(nullptr)
     , _mask(TexParameterMask::TEXPARAMETER_DEFAULT_MASK)
+    , _dirty_flag(TexParameterMask::TEXPARAMETER_DEFAULT_DIRTY_FLAG)
     , _immutable(immutable)
     , _initialized(false)
 {
@@ -619,6 +620,9 @@ void Texture1D::InitStorage()
                             destimage->mip[level].data);
             }
         }
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
     }
 }
 
@@ -680,6 +684,9 @@ void Texture2D::InitStorage()
                             destimage->mip[level].data);
             }
         }
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
     }
 }
 
@@ -688,6 +695,64 @@ void Texture2DMultiSample::InitStorage()
 
 void Texture3D::InitStorage()
 {
+    Texture::InitStorage();
+
+    ImageData* destimage = nullptr;
+    if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
+    {
+        const ImageData& image_source = _image->GetImageSource();
+        if(_immutable)
+        {
+            glTexStorage3D(_res.type, destimage->mipLevels, 
+                            destimage->internalFormat, 
+                            destimage->mip[0].width, 
+                            destimage->mip[0].height,
+                            destimage->mip[0].depth
+            );
+
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexSubImage3D(_res.type,
+                                level,
+                                0, 0, 0,
+                                destimage->mip[level].width,
+                                destimage->mip[level].height,
+                                destimage->mip[level].depth,
+                                destimage->format,
+                                destimage->type,
+                                destimage->mip[level].data);
+            }
+        }
+        else
+        {
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexImage3D(_res.type,
+                            level,
+                            destimage->internalFormat,
+                            destimage->mip[level].width,
+                            destimage->mip[level].height,
+                            destimage->mip[level].depth,
+                            0,
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
+            }
+        }
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
+    }
 }
 
 void TextureRectangle::InitStorage()

@@ -2,9 +2,11 @@
 
 #include "imgui.h"
 // #include "imgui_filebrowser.h"
+#include "twImage.h"
+#include "twMaterialInstance.h"
 
 #include "twTextureExplore.h"
-#include "twImage.h"
+
 
 namespace TwinkleGraphics
 {
@@ -87,32 +89,47 @@ void TextureExploreView::Advance(float64 delta_time)
     _mvp_mat = _projection_mat * _view_mat;
 
     // sprite material setting
-    Sprite::Ptr sprite = nullptr;
-    if(_current_tex_option == 0)
-        sprite = _sprite_1d;
-    else if(_current_tex_option == 1)
-        sprite = _sprite;
-    
-    if(sprite != nullptr)
     {
-        Material::Ptr sprite_mat = nullptr;
-        sprite_mat = sprite->GetMaterial();
-        sprite_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
-        vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
-        sprite_mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
-        sprite_mat->SetTextureTiling("main_tex", _tex_tiling);
-        sprite_mat->SetTextureOffset("main_tex", _tex_offset);
+        Sprite::Ptr sprite = nullptr;
+        if (_current_tex_option == 0)
+            sprite = _sprite_1d;
+        else if (_current_tex_option == 1)
+            sprite = _sprite;
 
-        // set sprite texture parameters
-        Texture::Ptr tex = sprite->GetTexture();
-        tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
-        tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
-        tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+        if (sprite != nullptr)
+        {
+            Material::Ptr mat = nullptr;
+            mat = sprite->GetMaterial();
+            mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+            vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
+            mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
+            mat->SetTextureTiling("main_tex", _tex_tiling);
+            mat->SetTextureOffset("main_tex", _tex_offset);
 
-        tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
-        tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+            // set sprite texture parameters
+            Texture::Ptr tex = sprite->GetTexture();
+            tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+            tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+            tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
 
-        tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);
+            tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
+            tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+
+            tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);
+        }
+    }
+    // cube material setting
+    {
+        Geometry::Ptr geom = nullptr;
+        if (_current_tex_option == 3)
+            geom = _skybox;
+        
+        if(geom != nullptr)
+        {
+            // Material::Ptr mat = nullptr;
+            // mat = geom->GetMeshRenderer()->GetMaterial();
+            // mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);            
+        }
     }
 }
 void TextureExploreView::RenderImpl()
@@ -121,10 +138,8 @@ void TextureExploreView::RenderImpl()
     {
     case 0:
     case 1:
-        RenderSprite(_current_tex_option);
-        break;
-    case 2:
-        /* code */
+    case 3:
+        RenderGeometryEx(_current_tex_option);
         break;
     default:
         break;
@@ -143,10 +158,7 @@ void TextureExploreView::OnGUI()
         if(ImGui::RadioButton(u8"二维纹理", &_current_tex_option, 1))
         {
             ResetGUI();
-            if(_sprite == nullptr)
-            {
-                CreateSprite();
-            }
+            CreateSprite();
         }
         if(ImGui::RadioButton(u8"三维纹理", &_current_tex_option, 2))
         {
@@ -155,7 +167,7 @@ void TextureExploreView::OnGUI()
         if(ImGui::RadioButton(u8"立方体纹理", &_current_tex_option, 3))
         {
             ResetGUI();
-
+            CreateSkybox();
         }
         if(ImGui::RadioButton(u8"程序纹理", &_current_tex_option, 4))
         {
@@ -440,6 +452,8 @@ SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzle_mask_option)
 
 void TextureExploreView::CreateSprite()
 {
+    if(_sprite != nullptr) return;
+                
     ImageManagerInst imageMgr;
     ImageReadInfo images_info[] = {{"Assets/Textures/test3.png"}};
     Image::Ptr image = imageMgr->ReadImage(images_info[0]);
@@ -458,39 +472,10 @@ void TextureExploreView::CreateSprite()
     if (texture != nullptr)
     {
         _sprite = std::make_shared<Sprite>(texture);
-        // Material::Ptr sprite_mat = _sprite->GetMaterial();
+        // Material::Ptr mat = _sprite->GetMaterial();
     }
 
     CreateGeometry(_sprite, 1);
-}
-
-void TextureExploreView::RenderSprite(int index)
-{
-    Sprite::Ptr sprite = nullptr;
-    if(index == 0)
-        sprite = _sprite_1d;
-    else if(index == 1)
-        sprite = _sprite;
-
-    if(sprite != nullptr)
-    {
-        Material::Ptr sprite_mat = sprite->GetMaterial();
-        RenderPass::Ptr pass = sprite_mat->GetRenderPass(0);
-        ShaderProgram::Ptr shader = pass->GetShader();
-
-        for(auto tex_slot : pass->GetTextureSlots())
-        {
-            tex_slot.second.Apply();
-        }
-
-        ShaderProgramUse use(shader);
-        for(auto loc : pass->GetUniformLocations())
-        {
-            loc.second.Bind();
-        }
-
-        RenderGeometry(sprite, index);
-    }
 }
 
 void TextureExploreView::CreateSprite1D()
@@ -518,9 +503,81 @@ void TextureExploreView::CreateSprite1D()
         Texture1D::Ptr texture1D = std::make_shared<Texture1D>(true);
         texture1D->SetImageData(data);
 
-        _sprite_1d = std::make_shared<Sprite>((int)(TextureType::TEXTURE_1D), texture1D, glm::vec2(5, 5));
+        _sprite_1d = std::make_shared<Sprite>(texture1D, glm::vec2(5, 5));
 
         CreateGeometry(_sprite_1d, 0);
+    }
+}
+
+void TextureExploreView::CreateSkybox()
+{
+    if(_skybox == nullptr)
+    {
+        _skybox = std::make_shared<Cube>(2.0f, MeshDataFlag(9));
+        _skybox->GenerateMesh();
+        
+        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+        SkyboxMaterial::Ptr mat = std::make_shared<SkyboxMaterial>();
+        renderer->SetMaterial(mat);
+        renderer->SetMesh(_skybox->GetMesh());
+
+        _skybox->SetMeshRenderer(renderer);
+
+        CreateGeometry(_skybox, 3);
+    }
+}
+
+void TextureExploreView::CreateCube()
+{
+    if(_cube == nullptr)
+    {
+
+    }
+}
+void TextureExploreView::CreateIconSphere()
+{
+    if(_sphere == nullptr)
+    {
+        
+    }
+}
+
+void TextureExploreView::RenderGeometryEx(int index)
+{
+    Geometry::Ptr geom = nullptr;
+    switch (index)
+    {
+    case 0:
+        geom = _sprite_1d;
+        break;
+    case 1:
+        geom = _sprite;
+        break;
+    case 3:
+        geom = _skybox;
+        break;
+    default:
+        break;
+    }
+
+    if(geom != nullptr)
+    {
+        Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
+        RenderPass::Ptr pass = mat->GetRenderPass(0);
+        ShaderProgram::Ptr shader = pass->GetShader();
+
+        for(auto tex_slot : pass->GetTextureSlots())
+        {
+            tex_slot.second.Apply();
+        }
+
+        ShaderProgramUse use(shader);
+        for(auto loc : pass->GetUniformLocations())
+        {
+            loc.second.Bind();
+        }
+
+        RenderGeometry(geom, index);
     }
 }
 

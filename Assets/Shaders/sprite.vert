@@ -9,12 +9,15 @@ uniform vec2 main_tex_tiling;
 uniform vec2 main_tex_offset;
 
 uniform mat4 mvp; 
-uniform bool flip;
+uniform bvec2 flip;
 
 vec2 transform_texcoord(vec2 coord)
 {
     vec2 ret_uv;
-    ret_uv = coord * main_tex_tiling;
+    vec2 tcoord = vec2(flip.x ? 1.0f - coord.x : coord.x
+        , flip.y ? 1.0f - coord.y : coord.y); 
+
+    ret_uv = tcoord * main_tex_tiling;
     ret_uv += main_tex_offset;
 
     return ret_uv;

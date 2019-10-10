@@ -203,8 +203,11 @@ struct vglImageData
     {   
         for(int i = 0; i < mipLevels; i++)
         {
-            free(mip[i].data);
-            mip[i].data = nullptr;
+            if(mip[i].data != nullptr)
+            {
+                free(mip[i].data);
+                mip[i].data = nullptr;
+            }
         }
     }
 };

@@ -24,6 +24,8 @@ public:
 
     void SetMaterial(Material::Ptr material) { _shared_material = _material = material; }
     void SetSharedMaterial(Material::Ptr material) { _shared_material = material; }
+
+    //Todo: Shared mesh
     void SetMesh(Mesh::Ptr mesh);
 
     const Material::Ptr GetMaterial()

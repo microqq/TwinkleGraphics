@@ -519,6 +519,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_2D_MULTISAMPLE;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture2D-multisample " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~Texture2DMultiSample() {}
@@ -537,6 +541,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_3D;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture3D " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~Texture3D() {}
@@ -554,6 +562,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_RECTANGLE;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create textureRectangle " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~TextureRectangle() {}
@@ -571,6 +583,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_BUFFER;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create textureBuffer " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~TextureBuffer() {}
@@ -588,6 +604,10 @@ public:
         : Texture(false)
     {
         _res.type = GL_TEXTURE_CUBE_MAP;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create textureCube " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
     virtual ~TextureCube() {}
 
@@ -604,6 +624,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_1D_ARRAY;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture1DArray " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~Texture1DArray() {}
@@ -621,6 +645,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_2D_ARRAY;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture3DArray " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~Texture2DArray() {}
@@ -638,6 +666,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_CUBE_MAP_ARRAY;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create textureCubeArray " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~TextureCubeArray() {}
@@ -655,6 +687,10 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+
+#ifdef _DEBUG
+    std::cout << "Texture: Create texture2D-multisample-array " << _res.id << " (hash: " << _res.hash << ")." << std::endl;
+#endif
     }
 
     virtual ~Texture2DMultiSampleArray() {}

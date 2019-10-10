@@ -12,14 +12,14 @@ class SpriteRenderer : public MeshRenderer
 public:
     typedef std::shared_ptr<SpriteRenderer> Ptr;
 
-    SpriteRenderer(int type, Texture::Ptr texture);
+    SpriteRenderer(Texture::Ptr texture);
     virtual ~SpriteRenderer();
 
-    void SetFlip(bool flip);
+    void SetFlip(bvec2 flip);
     void SetColor(vec4& color);
 
 private:
-    void Init(int type, Texture::Ptr texture);
+    void Init(Texture::Ptr texture);
 
 private:
 };
@@ -31,10 +31,10 @@ public:
     typedef std::shared_ptr<Sprite> Ptr;
 
     Sprite(Texture::Ptr texture);
-    Sprite(int type, Texture::Ptr texture, glm::vec2 size);
+    Sprite(Texture::Ptr texture, glm::vec2 size);
     virtual ~Sprite();
 
-    void SetFlip(bool flip);
+    void SetFlip(bvec2 flip);
     void SetColor(vec4& color);
     void SetTexture(Texture::Ptr texture);
     Texture::Ptr GetTexture() { if(_renderer == nullptr || _renderer->GetSharedMaterial() == nullptr) return nullptr; return _renderer->GetSharedMaterial()->GetMainTexture(); }
@@ -42,7 +42,7 @@ public:
 
 private:
     void Init(Texture::Ptr texture);
-    void Init(int type, Texture::Ptr texture, glm::vec2 size);
+    void Init(Texture::Ptr texture, glm::vec2 size);
 
     void GenerateUVs()
     {

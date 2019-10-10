@@ -78,8 +78,12 @@ protected:
 
 private:
     void CreateSprite();
-    void RenderSprite(int index);
     void CreateSprite1D();
+    void CreateVolumnTexture();
+    void CreateSkybox();
+    void CreateCube();
+    void CreateIconSphere();
+    void RenderGeometryEx(int index);
     
     void CreateGeometry(Geometry::Ptr geom, uint32 index);
     void RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face = GL_CCW);
@@ -110,6 +114,10 @@ private:
 
     Sprite::Ptr _sprite;
     Sprite::Ptr _sprite_1d;
+
+    Cube::Ptr _skybox;
+    Cube::Ptr _cube;
+    IcosahedronSphere::Ptr _sphere;
 
     glm::vec4 _viewport_params;
     float32 _tintcolor[4];
