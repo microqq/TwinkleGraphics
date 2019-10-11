@@ -246,12 +246,7 @@ private:
         this->AddRenderPass(pass);
 
         vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
-        bvec2 flip(false, false);
-        this->SetVecUniformValue<bool, 2>("flip", flip);
         this->SetVecUniformValue<float32, 4>("tint_color", tint_color);
-        vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
-        this->SetTextureTiling("main_tex", tiling);
-        this->SetTextureOffset("main_tex", offset);        
     }
 };
 

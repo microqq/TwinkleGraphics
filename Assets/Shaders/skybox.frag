@@ -4,7 +4,10 @@ in vec3 texcoord;
 
 out vec4 fragcolor;
 
+uniform samplerCube main_tex;
+uniform vec4 tint_color;
+
 void main()
 {
-    fragcolor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    fragcolor = texture(main_tex, texcoord) * tint_color;
 }

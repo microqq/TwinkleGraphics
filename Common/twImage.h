@@ -64,6 +64,7 @@ public:
 
     void SetImageSource(ImageData &data) { _data = data; }
     const ImageData& GetImageSource() { return _data; }
+    ImageData* GetImageSourcePtr() { return &_data; }
 
     void SetFilename(const char* filename) { _filename = filename; }
     const std::string& GetFilename() { return _filename; }

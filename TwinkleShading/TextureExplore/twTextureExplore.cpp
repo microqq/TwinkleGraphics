@@ -124,12 +124,15 @@ void TextureExploreView::Advance(float64 delta_time)
         if (_current_tex_option == 3)
         {
             geom = _skybox;
-
-            mat3 rotate_mat = mat3_cast(_camera->GetWorldOrientation());
+            Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
+            mat4 rotate_mat = mat4_cast(_camera->GetWorldOrientation());
+            mat4 tempmat = _projection_mat * rotate_mat;
+            skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", tempmat);
 
             Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
             mat4 mvp = _mvp_mat * _cube->GetTransform()->GetLocalToWorldMatrix();
             cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+            cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
 
             Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
             mvp = _mvp_mat * _sphere->GetTransform()->GetLocalToWorldMatrix();
@@ -144,6 +147,7 @@ void TextureExploreView::Advance(float64 delta_time)
 
         if(geom != nullptr)
         {
+            //refer to opengl programing guide 8th source code
             mat4 rotmat = glm::identity<mat3>();
             glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
             glm::vec3 y_axis(0.0f, 1.0f, 0.0f);
@@ -173,7 +177,11 @@ void TextureExploreView::Advance(float64 delta_time)
         }
     }
 
-    _update_time += 0.0002f;
+#ifdef _WIN32 || _WIN64
+    _update_time += 0.02f;
+#elif defined __linux__
+    _update_time += 0.00002f;
+#endif
 }
 void TextureExploreView::RenderImpl()
 {
@@ -615,6 +623,16 @@ void TextureExploreView::CreateCube()
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
+
+        ImageManagerInst imageMgr;
+        ImageReadInfo images_info[] = {{"Assets/Textures/TantolundenCube.dds"}};
+        Image::Ptr image = imageMgr->ReadImage(images_info[0]);
+
+        TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+        cubemap->SetImage(image);
+
+        mat->SetMainTexture(cubemap);
+
         renderer->SetMaterial(mat);
         renderer->SetMesh(_cube->GetMesh());
 
@@ -666,6 +684,8 @@ void TextureExploreView::RenderGeometryEx(int index)
             RenderGeometry(_cube, 15);
         if(_sphere != nullptr)
             RenderGeometry(_sphere, 14);
+
+        glDepthFunc(GL_LEQUAL);
         break;
     default:
         break;
@@ -678,6 +698,8 @@ void TextureExploreView::RenderGeometryEx(int index)
 
     if(index == 2)
         glDisable(GL_BLEND);
+
+    glDepthFunc(GL_LESS);
 }
 
 void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)

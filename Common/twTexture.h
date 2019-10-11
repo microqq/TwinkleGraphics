@@ -600,8 +600,8 @@ class TextureCube : public Texture
 public:
     typedef std::shared_ptr<TextureCube> Ptr;
 
-    TextureCube()
-        : Texture(false)
+    TextureCube(bool immutable = true)
+        : Texture(immutable)
     {
         _res.type = GL_TEXTURE_CUBE_MAP;
 
@@ -621,6 +621,10 @@ public:
 
 protected:
     virtual void InitStorage() override;
+
+private:
+    void InitTexStorage(int32 target, ImageData *data);
+    void InitTexStorage(ImageData *data);
 
 private:
     Image::Ptr _image_positive_x;

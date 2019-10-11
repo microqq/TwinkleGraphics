@@ -12,5 +12,5 @@ void main()
     vec4 tex_color = texture(main_tex, texcoord);
     fragcolor = tex_color * tint_color;
 
-    fragcolor = tint_color;
+    // fragcolor = vec4(texcoord, 1.0f);
 }
