@@ -7,6 +7,7 @@ Geometry::Geometry()
     : Object()
     , _mesh(nullptr)
 {
+    _transform = std::make_shared<Transform>();
 }
 
 Geometry::~Geometry()

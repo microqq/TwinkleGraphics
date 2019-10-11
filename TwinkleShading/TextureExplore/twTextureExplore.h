@@ -47,6 +47,7 @@ public:
         , _swizzle_option(-1)
         , _current_tex_option(-1)
         , _lodbias_value(1.0f)
+        , _update_time(0.0f)
         , _swizzle_masks()
         , _texparams_tabitem()
         , _enable_lodbias(false)
@@ -115,6 +116,7 @@ private:
     Sprite::Ptr _sprite;
     Sprite::Ptr _sprite_1d;
 
+    Quad::Ptr _volumn_quad;
     Cube::Ptr _skybox;
     Cube::Ptr _cube;
     IcosahedronSphere::Ptr _sphere;
@@ -134,6 +136,9 @@ private:
     int32 _swizzle_masks[4];
 
     float32 _lodbias_value;
+
+    float32 _update_time;
+
     bool _texparams_tabitem[4];
     bool _enable_lodbias;
     bool _enable_border_color;

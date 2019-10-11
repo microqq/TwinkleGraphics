@@ -146,7 +146,9 @@ void Transform::ComputeWorldMatrix()
 {
     if(_world_dirty)
     {
-        if(_parent == nullptr)
+        ComputeLocalMatrix();
+
+        if(_parent != nullptr)
         {
             _world_matrix = _parent->GetLocalToWorldMatrix() * glm::inverse(_local_matrix);
         }

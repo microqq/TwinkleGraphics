@@ -6,6 +6,7 @@
 #include "twCommon.h"
 #include "twMesh.h"
 #include "twMeshRenderer.h"
+#include "twTransform.h"
 
 namespace TwinkleGraphics
 {
@@ -26,10 +27,17 @@ public:
 
     Mesh::Ptr GetMesh() { return _mesh; }
     MeshRenderer::Ptr GetMeshRenderer() { return _renderer; }
+    
+    Transform::Ptr GetTransform() { return _transform; }
+
+    MeshDataFlag GetMeshDataFlag() { return _flag; }
 
 protected:
     Mesh::Ptr _mesh;
     MeshRenderer::Ptr _renderer;
+    Transform::Ptr _transform;
+
+    MeshDataFlag _flag;
 };
 
 /**
@@ -43,8 +51,8 @@ public:
         : Geometry()
         , _radius(radius)
         , _subdivision(subdivision)
-        , _flag(flag)
     {
+        _flag = flag;
     }
     virtual ~UVSphere()
     {}
@@ -195,8 +203,6 @@ private:
 private:
     float32 _radius;
     int32 _subdivision;
-
-    MeshDataFlag _flag;
 };
 
 class NormalizedCubeSphere : public Geometry
@@ -206,8 +212,8 @@ public:
         : Geometry()
         , _radius(radius)
         , _subdivision(subdivision)
-        , _flag(flag)
     {
+        _flag = flag;
     }
     virtual ~NormalizedCubeSphere()
     {}
@@ -342,8 +348,6 @@ private:
 private:
     float32 _radius;
     int32 _subdivision;
-
-    MeshDataFlag _flag;
 };
 
 class IcosahedronSphere : public Geometry
@@ -353,8 +357,8 @@ public:
         : Geometry()
         , _radius(radius)
         , _subdivision(subdivision)
-        , _flag(flag)
     {
+        _flag = flag;
     }
     virtual ~IcosahedronSphere()
     {}
@@ -574,8 +578,6 @@ private:
 private:
     float32 _radius;
     int32 _subdivision;
-
-    MeshDataFlag _flag;
 };
 
 class Cube : public Geometry
@@ -586,8 +588,8 @@ public:
     Cube(float32 size = 1.0f, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _size(size)
-        , _flag(flag)
     {
+        _flag = flag;
     }
     virtual ~Cube()
     {}
@@ -686,8 +688,6 @@ private:
 
 private:
     float32 _size;
-
-    MeshDataFlag _flag;
 };
 
 class Quad : public Geometry
@@ -696,13 +696,14 @@ public:
     Quad(MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _size()
-        , _flag(flag)
-    {}
+    {
+        _flag = flag;
+    }
     Quad(glm::vec2 size, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _size(size)
-        , _flag(flag)
     {
+        _flag = flag;
     }
     virtual ~Quad()
     {}
@@ -750,6 +751,25 @@ protected:
         submesh->_vertice_pos[2] = glm::vec3(half_x_size, -half_y_size, 0.0f);
         submesh->_vertice_pos[3] = glm::vec3(half_x_size, half_y_size, 0.0f);
 
+        if((_flag & MeshDataFlag::HAS_UV) != 0)
+        {
+            glm::vec4* uvs = submesh->GetVerticeUV();
+
+            /**
+             * @brief
+             * 0 __ __ __ 3
+             *  |        |
+             *  |        |
+             *  |__ __ __|
+             * 1          2
+             */
+            
+            uvs[0] = glm::vec4(0.0f, 1.0f, 0.0, 0.0f);
+            uvs[1] = glm::vec4(0.0f, 0.0f, 0.0, 0.0f);
+            uvs[2] = glm::vec4(1.0f, 0.0f, 0.0, 0.0f);
+            uvs[3] = glm::vec4(1.0f, 1.0f, 0.0, 0.0f);
+        }
+
         Mesh::Ptr mesh = std::make_shared<Mesh>();
         mesh->AddSubMesh(submesh);
         return mesh;
@@ -757,8 +777,6 @@ protected:
 
 protected:
     glm::vec2 _size;
-
-    MeshDataFlag _flag;
 };
 
 class Line : public Geometry
@@ -1143,9 +1161,10 @@ public:
         , _u_degree(p1)
         , _v_degree(p2)
         , _subdivide(subdivide)
-        , _flag(flag)
         , _rational(rational)
     {
+        _flag = flag;
+
         _control_points = new glm::vec4[_u_points_count * _v_points_count];
         _u_knots = new Knot[_u_knots_count];
         _v_knots = new Knot[_v_knots_count];
@@ -1670,7 +1689,6 @@ private:
     int32 _v_degree;
 
     int32 _subdivide;
-    MeshDataFlag _flag;
 
     bool _rational;
 };

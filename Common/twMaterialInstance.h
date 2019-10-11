@@ -198,8 +198,48 @@ private:
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
         ShaderReadInfo shader_info[] = {
-            {std::string("Assets/Shaders/volumn.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/volumn.frag"), ShaderType::FRAGMENT_SHADER}};
+            {std::string("Assets/Shaders/volumn_quad.vert"), ShaderType::VERTEX_SHADER},
+            {std::string("Assets/Shaders/volumn_quad.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(shader_info, 2);
+
+        RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+        this->AddRenderPass(pass);
+
+        vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
+        bvec2 flip(false, false);
+        this->SetVecUniformValue<bool, 2>("flip", flip);
+        this->SetVecUniformValue<float32, 4>("tint_color", tint_color);
+        vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
+        this->SetTextureTiling("main_tex", tiling);
+        this->SetTextureOffset("main_tex", offset);
+    }    
+};
+
+
+class CubeMaterial : public Material
+{
+public:
+    typedef std::shared_ptr<CubeMaterial> Ptr;
+
+    CubeMaterial()
+        : Material()
+    {
+        Initialize();
+    }
+    CubeMaterial(const CubeMaterial &copy)
+        : Material(copy)
+    {
+    }
+    virtual ~CubeMaterial() {}
+
+private:
+    void Initialize()
+    {
+        ShaderManagerInst shaderMgr;
+        ShaderProgram::Ptr program = nullptr;
+        ShaderReadInfo shader_info[] = {
+            {std::string("Assets/Shaders/cube.vert"), ShaderType::VERTEX_SHADER},
+            {std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER}};
         program = shaderMgr->ReadShaders(shader_info, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
@@ -212,7 +252,7 @@ private:
         vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
         this->SetTextureTiling("main_tex", tiling);
         this->SetTextureOffset("main_tex", offset);        
-    }    
+    }
 };
 
 

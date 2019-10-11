@@ -44,31 +44,6 @@ private:
     void Init(Texture::Ptr texture);
     void Init(Texture::Ptr texture, glm::vec2 size);
 
-    void GenerateUVs()
-    {
-        if(_mesh != nullptr)
-        {
-            SubMesh::Ptr submesh = _mesh->GetSubMesh(0);
-            glm::vec4* uvs = submesh->GetVerticeUV();
-
-            /**
-             * @brief
-             * 0 __ __ __ 3
-             *  |        |
-             *  |        |
-             *  |__ __ __|
-             * 1          2
-             */
-            
-            uvs[0] = glm::vec4(0.0f, 1.0f, 0.0, 0.0f);
-            uvs[1] = glm::vec4(0.0f, 0.0f, 0.0, 0.0f);
-            uvs[2] = glm::vec4(1.0f, 0.0f, 0.0, 0.0f);
-            uvs[3] = glm::vec4(1.0f, 1.0f, 0.0, 0.0f);
-
-            _renderer->SetMesh(_mesh);
-        }
-    }
-
     void UpdateSize()
     {}
 

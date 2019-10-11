@@ -611,8 +611,24 @@ public:
     }
     virtual ~TextureCube() {}
 
+    void SetPositiveX(Image::Ptr image);
+    void SetPositiveY(Image::Ptr image);
+    void SetPositiveZ(Image::Ptr image);
+
+    void SetNegativeX(Image::Ptr image);
+    void SetNegativeY(Image::Ptr image);
+    void SetNegativeZ(Image::Ptr image);
+
 protected:
     virtual void InitStorage() override;
+
+private:
+    Image::Ptr _image_positive_x;
+    Image::Ptr _image_negative_x;
+    Image::Ptr _image_positive_y;
+    Image::Ptr _image_negative_y;
+    Image::Ptr _image_positive_z;
+    Image::Ptr _image_negative_z;
 };
 
 class Texture1DArray : public Texture

@@ -88,7 +88,7 @@ void TextureExploreView::Advance(float64 delta_time)
     _projection_mat = _camera->GetProjectionMatrix();
     _mvp_mat = _projection_mat * _view_mat;
 
-    // sprite material setting
+    // sprite setting
     {
         Sprite::Ptr sprite = nullptr;
         if (_current_tex_option == 0)
@@ -109,8 +109,8 @@ void TextureExploreView::Advance(float64 delta_time)
             // set sprite texture parameters
             Texture::Ptr tex = sprite->GetTexture();
             tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
-            tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
-            tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+            if(sprite == _sprite)
+                tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
 
             tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
             tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
@@ -118,19 +118,62 @@ void TextureExploreView::Advance(float64 delta_time)
             tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);
         }
     }
-    // cube material setting
+    // skybox setting
     {
         Geometry::Ptr geom = nullptr;
         if (_current_tex_option == 3)
-            geom = _skybox;
-        
-        if(geom != nullptr)
         {
-            // Material::Ptr mat = nullptr;
-            // mat = geom->GetMeshRenderer()->GetMaterial();
-            // mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);            
+            geom = _skybox;
+
+            mat3 rotate_mat = mat3_cast(_camera->GetWorldOrientation());
+
+            Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
+            mat4 mvp = _mvp_mat * _cube->GetTransform()->GetLocalToWorldMatrix();
+            cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+
+            Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
+            mvp = _mvp_mat * _sphere->GetTransform()->GetLocalToWorldMatrix();
+            spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
         }
     }
+    // volumn quad material setting
+    {
+        Geometry::Ptr geom = nullptr;
+        if(_current_tex_option == 2)
+            geom = _volumn_quad;
+
+        if(geom != nullptr)
+        {
+            mat4 rotmat = glm::identity<mat3>();
+            glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
+            glm::vec3 y_axis(0.0f, 1.0f, 0.0f);
+            glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
+            mat4 unifmat = glm::rotate(rotmat, _update_time * glm::radians<float32>(10.0f), x_axis) *
+                            glm::rotate(rotmat, _update_time * glm::radians<float32>(10.0f), y_axis) *
+                            glm::rotate(rotmat, _update_time * glm::radians<float32>(10.0f), z_axis);
+
+            Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
+            mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+            vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
+            mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
+            mat->SetTextureTiling("main_tex", _tex_tiling);
+            mat->SetTextureOffset("main_tex", _tex_offset);
+            mat->SetMatrixUniformValue<float32, 4, 4>("rotmat", unifmat);
+
+            // set sprite texture parameters
+            Texture::Ptr tex = mat->GetTexture("main_tex");
+            tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+            tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+            tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+
+            tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
+            tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+
+            tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);            
+        }
+    }
+
+    _update_time += 0.0002f;
 }
 void TextureExploreView::RenderImpl()
 {
@@ -138,6 +181,7 @@ void TextureExploreView::RenderImpl()
     {
     case 0:
     case 1:
+    case 2:
     case 3:
         RenderGeometryEx(_current_tex_option);
         break;
@@ -163,6 +207,7 @@ void TextureExploreView::OnGUI()
         if(ImGui::RadioButton(u8"三维纹理", &_current_tex_option, 2))
         {
             ResetGUI();
+            CreateVolumnTexture();
         }
         if(ImGui::RadioButton(u8"立方体纹理", &_current_tex_option, 3))
         {
@@ -509,11 +554,39 @@ void TextureExploreView::CreateSprite1D()
     }
 }
 
+void TextureExploreView::CreateVolumnTexture()
+{
+    if(_volumn_quad == nullptr)
+    {
+        vec2 size(10.0f, 10.0f);
+        _volumn_quad = std::make_shared<Quad>(size, MeshDataFlag(9));
+        _volumn_quad->GenerateMesh();
+
+        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+        VolumnMaterial::Ptr mat = std::make_shared<VolumnMaterial>();
+
+        ImageManagerInst imageMgr;
+        ImageReadInfo images_info[] = {{"Assets/Textures/cloud.dds"}};
+        Image::Ptr image = imageMgr->ReadImage(images_info[0]);
+
+        Texture3D::Ptr volumntex = std::make_shared<Texture3D>(true);
+        volumntex->SetImage(image);
+
+        mat->SetMainTexture(volumntex);
+        renderer->SetMaterial(mat);
+        renderer->SetMesh(_volumn_quad->GetMesh());
+
+        _volumn_quad->SetMeshRenderer(renderer);
+
+        CreateGeometry(_volumn_quad, 2);
+    }
+}
+
 void TextureExploreView::CreateSkybox()
 {
     if(_skybox == nullptr)
     {
-        _skybox = std::make_shared<Cube>(2.0f, MeshDataFlag(9));
+        _skybox = std::make_shared<Cube>(2.0f, MeshDataFlag::DEFAULT);
         _skybox->GenerateMesh();
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
@@ -524,6 +597,9 @@ void TextureExploreView::CreateSkybox()
         _skybox->SetMeshRenderer(renderer);
 
         CreateGeometry(_skybox, 3);
+
+        CreateCube();
+        CreateIconSphere();
     }
 }
 
@@ -531,14 +607,40 @@ void TextureExploreView::CreateCube()
 {
     if(_cube == nullptr)
     {
+        _cube = std::make_shared<Cube>(5.0f, MeshDataFlag::DEFAULT);
+        _cube->GenerateMesh();
 
+        Transform::Ptr trans = _cube->GetTransform();
+        trans->Translate(glm::vec3(2.5f, 0.0f, 0.0f));
+
+        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+        CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
+        renderer->SetMaterial(mat);
+        renderer->SetMesh(_cube->GetMesh());
+
+        _cube->SetMeshRenderer(renderer);
+
+        CreateGeometry(_cube, 15);
     }
 }
 void TextureExploreView::CreateIconSphere()
 {
     if(_sphere == nullptr)
     {
+        _sphere = std::make_shared<IcosahedronSphere>(2.5f, 50, MeshDataFlag::DEFAULT);
+        _sphere->GenerateMesh();
+
+        Transform::Ptr trans = _sphere->GetTransform();
+        trans->Translate(glm::vec3(-2.5f, 0.0f, 0.0f));
         
+        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+        CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
+        renderer->SetMaterial(mat);
+        renderer->SetMesh(_sphere->GetMesh());
+
+        _sphere->SetMeshRenderer(renderer);
+
+        CreateGeometry(_sphere, 14);
     }
 }
 
@@ -553,8 +655,17 @@ void TextureExploreView::RenderGeometryEx(int index)
     case 1:
         geom = _sprite;
         break;
+    case 2:
+        geom = _volumn_quad;
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        break;
     case 3:
         geom = _skybox;
+        if(_cube != nullptr)
+            RenderGeometry(_cube, 15);
+        if(_sphere != nullptr)
+            RenderGeometry(_sphere, 14);
         break;
     default:
         break;
@@ -562,23 +673,11 @@ void TextureExploreView::RenderGeometryEx(int index)
 
     if(geom != nullptr)
     {
-        Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
-        RenderPass::Ptr pass = mat->GetRenderPass(0);
-        ShaderProgram::Ptr shader = pass->GetShader();
-
-        for(auto tex_slot : pass->GetTextureSlots())
-        {
-            tex_slot.second.Apply();
-        }
-
-        ShaderProgramUse use(shader);
-        for(auto loc : pass->GetUniformLocations())
-        {
-            loc.second.Bind();
-        }
-
         RenderGeometry(geom, index);
     }
+
+    if(index == 2)
+        glDisable(GL_BLEND);
 }
 
 void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
@@ -596,23 +695,50 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
 
     int32 verticenum =submesh->GetVerticeNum();
-    glBufferData(GL_ARRAY_BUFFER, submesh->GetDataSize(), nullptr, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, verticenum * 12, submesh->GetVerticePos());
-    glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticeUV());
+    if(geom->GetMeshDataFlag() == MeshDataFlag::DEFAULT)
+    {
+        glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_DYNAMIC_DRAW);
+    }
+    else
+    {
+        glBufferData(GL_ARRAY_BUFFER, submesh->GetDataSize(), nullptr, GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, verticenum * 12, submesh->GetVerticePos());
+
+        if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
+            glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticeUV());
+    }    
 
     glBindVertexBuffer(0, _vbos[index], 0, sizeof(vec3));
     glEnableVertexAttribArray(0);
     glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(0, 0);
 
-    glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));
-    glEnableVertexAttribArray(1);
-    glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
-    glVertexAttribBinding(1, 1);
+    if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
+    {
+        glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));
+        glEnableVertexAttribArray(1);
+        glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
+        glVertexAttribBinding(1, 1);
+    }
 }
 
 void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face)
 {
+    Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
+    RenderPass::Ptr pass = mat->GetRenderPass(0);
+    ShaderProgram::Ptr shader = pass->GetShader();
+
+    for (auto tex_slot : pass->GetTextureSlots())
+    {
+        tex_slot.second.Apply();
+    }
+
+    ShaderProgramUse use(shader);
+    for (auto loc : pass->GetUniformLocations())
+    {
+        loc.second.Bind();
+    }
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 

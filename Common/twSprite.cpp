@@ -67,7 +67,6 @@ void Sprite::Init(Texture::Ptr texture)
     glm::vec2 size = glm::vec2(texture->GetWidth(0), texture->GetHeight(0)) / (float32)_perpixelunit * 2.0f;
     Quad::SetSize(size);
     Quad::GenerateMesh();
-    GenerateUVs();
 
     _sprite_renderer->SetMesh(_mesh);
 }
@@ -85,7 +84,6 @@ void Sprite::Init(Texture::Ptr texture, glm::vec2 size)
     _flag = MeshDataFlag(9);
     Quad::SetSize(size);
     Quad::GenerateMesh();
-    GenerateUVs();
 
     _sprite_renderer->SetMesh(_mesh);
 }

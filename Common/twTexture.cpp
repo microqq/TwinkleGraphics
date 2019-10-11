@@ -763,8 +763,94 @@ void TextureBuffer::InitStorage()
 {
 }
 
+
+
+void TextureCube::SetPositiveX(Image::Ptr image)
+{
+    _image_positive_x = image;
+}
+void TextureCube::SetPositiveY(Image::Ptr image)
+{
+    _image_positive_y = image;
+}
+void TextureCube::SetPositiveZ(Image::Ptr image)
+{
+    _image_positive_z = image;
+}
+
+void TextureCube::SetNegativeX(Image::Ptr image)
+{
+    _image_negative_x = image;
+}
+void TextureCube::SetNegativeY(Image::Ptr image)
+{
+    _image_negative_y = image;
+}
+void TextureCube::SetNegativeZ(Image::Ptr image)
+{
+    _image_negative_z = image;
+}
+
 void TextureCube::InitStorage()
 {
+    Texture::InitStorage();
+
+    ImageData* destimage = nullptr;
+    if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
+    {
+        const ImageData& image_source = _image->GetImageSource();
+        if(_immutable)
+        {
+            glTexStorage3D(_res.type, destimage->mipLevels, 
+                            destimage->internalFormat, 
+                            destimage->mip[0].width, 
+                            destimage->mip[0].height,
+                            destimage->mip[0].depth
+            );
+
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexSubImage3D(_res.type,
+                                level,
+                                0, 0, 0,
+                                destimage->mip[level].width,
+                                destimage->mip[level].height,
+                                destimage->mip[level].depth,
+                                destimage->format,
+                                destimage->type,
+                                destimage->mip[level].data);
+            }
+        }
+        else
+        {
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexImage3D(_res.type,
+                            level,
+                            destimage->internalFormat,
+                            destimage->mip[level].width,
+                            destimage->mip[level].height,
+                            destimage->mip[level].depth,
+                            0,
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
+            }
+        }
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
+    }    
 }
 
 void Texture1DArray::InitStorage()
