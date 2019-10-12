@@ -624,6 +624,8 @@ void Texture1D::InitStorage()
         if(destimage != _data)
             SAFE_DEL(destimage);
     }
+
+    glBindTexture(GL_TEXTURE_1D, 0);
 }
 
 
@@ -688,6 +690,8 @@ void Texture2D::InitStorage()
         if(destimage != _data)
             SAFE_DEL(destimage);
     }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture2DMultiSample::InitStorage()
@@ -753,6 +757,8 @@ void Texture3D::InitStorage()
         if(destimage != _data)
             SAFE_DEL(destimage);
     }
+
+    glBindTexture(GL_TEXTURE_3D, 0);
 }
 
 void TextureRectangle::InitStorage()
@@ -887,6 +893,8 @@ void TextureCube::InitStorage()
         if(destimage != _data)
             SAFE_DEL(destimage);
     }    
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void TextureCube::InitTexStorage(int32 target, ImageData *data)

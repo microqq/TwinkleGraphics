@@ -126,17 +126,24 @@ void TextureExploreView::Advance(float64 delta_time)
             geom = _skybox;
             Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
             mat4 rotate_mat = mat4_cast(_camera->GetWorldOrientation());
-            mat4 tempmat = _projection_mat * rotate_mat;
-            skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", tempmat);
+            mat4 mvp = _projection_mat * rotate_mat;
+            skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+
+            Transform::Ptr cubetrans = _cube->GetTransform();
+            cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
 
             Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
-            mat4 mvp = _mvp_mat * _cube->GetTransform()->GetLocalToWorldMatrix();
+            mvp = _mvp_mat * cubetrans->GetLocalToWorldMatrix();
             cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
             cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
 
+            Transform::Ptr spheretrans = _sphere->GetTransform();
+            spheretrans->Rotate(0.004f, glm::vec3(1.0f, 1.0f, 0.0f));
+
             Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
-            mvp = _mvp_mat * _sphere->GetTransform()->GetLocalToWorldMatrix();
+            mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
             spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+            spheremat->SetSimpleUniformValue<float32, 1>("size", 2.5f);
         }
     }
     // volumn quad material setting
@@ -180,7 +187,7 @@ void TextureExploreView::Advance(float64 delta_time)
 #ifdef _WIN32 || _WIN64
     _update_time += 0.02f;
 #elif defined __linux__
-    _update_time += 0.00002f;
+    _update_time += 0.0002f;
 #endif
 }
 void TextureExploreView::RenderImpl()
@@ -599,6 +606,16 @@ void TextureExploreView::CreateSkybox()
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         SkyboxMaterial::Ptr mat = std::make_shared<SkyboxMaterial>();
+
+        ImageManagerInst imageMgr;
+        ImageReadInfo images_info[] = {{"Assets/Textures/TantolundenCube.dds"}};
+        Image::Ptr image = imageMgr->ReadImage(images_info[0]);
+
+        TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+        cubemap->SetImage(image);
+
+        mat->SetMainTexture(cubemap);
+
         renderer->SetMaterial(mat);
         renderer->SetMesh(_skybox->GetMesh());
 
@@ -606,12 +623,12 @@ void TextureExploreView::CreateSkybox()
 
         CreateGeometry(_skybox, 3);
 
-        CreateCube();
-        CreateIconSphere();
+        CreateCube(image);
+        CreateIconSphere(image);
     }
 }
 
-void TextureExploreView::CreateCube()
+void TextureExploreView::CreateCube(Image::Ptr image)
 {
     if(_cube == nullptr)
     {
@@ -619,14 +636,10 @@ void TextureExploreView::CreateCube()
         _cube->GenerateMesh();
 
         Transform::Ptr trans = _cube->GetTransform();
-        trans->Translate(glm::vec3(2.5f, 0.0f, 0.0f));
+        trans->Translate(glm::vec3(3.5f, 0.0f, 0.0f));
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
-
-        ImageManagerInst imageMgr;
-        ImageReadInfo images_info[] = {{"Assets/Textures/TantolundenCube.dds"}};
-        Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
         cubemap->SetImage(image);
@@ -641,7 +654,7 @@ void TextureExploreView::CreateCube()
         CreateGeometry(_cube, 15);
     }
 }
-void TextureExploreView::CreateIconSphere()
+void TextureExploreView::CreateIconSphere(Image::Ptr image)
 {
     if(_sphere == nullptr)
     {
@@ -649,10 +662,16 @@ void TextureExploreView::CreateIconSphere()
         _sphere->GenerateMesh();
 
         Transform::Ptr trans = _sphere->GetTransform();
-        trans->Translate(glm::vec3(-2.5f, 0.0f, 0.0f));
+        trans->Translate(glm::vec3(-3.5f, 0.0f, 0.0f));
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
+        SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
+
+        TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+        cubemap->SetImage(image);
+
+        mat->SetMainTexture(cubemap);
+
         renderer->SetMaterial(mat);
         renderer->SetMesh(_sphere->GetMesh());
 
@@ -675,8 +694,6 @@ void TextureExploreView::RenderGeometryEx(int index)
         break;
     case 2:
         geom = _volumn_quad;
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         break;
     case 3:
         geom = _skybox;
@@ -684,8 +701,6 @@ void TextureExploreView::RenderGeometryEx(int index)
             RenderGeometry(_cube, 15);
         if(_sphere != nullptr)
             RenderGeometry(_sphere, 14);
-
-        glDepthFunc(GL_LEQUAL);
         break;
     default:
         break;
@@ -695,11 +710,6 @@ void TextureExploreView::RenderGeometryEx(int index)
     {
         RenderGeometry(geom, index);
     }
-
-    if(index == 2)
-        glDisable(GL_BLEND);
-
-    glDepthFunc(GL_LESS);
 }
 
 void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
@@ -762,7 +772,16 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
     }
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    if(geom == _skybox)
+        glDepthFunc(GL_LEQUAL);
+    else
+        glDepthFunc(GL_LESS);
+
+    if(geom == _volumn_quad)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 
     glFrontFace(front_face);
     glDisable(GL_CULL_FACE);
@@ -777,6 +796,13 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 
     glFrontFace(GL_CCW);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glDisable(GL_BLEND);
+
+    for (auto tex_slot : pass->GetTextureSlots())
+    {
+        glBindTexture(tex_slot.second.tex->GetRenderRes().type, 0);
+    }
 }
 
 } // namespace TwinkleGraphics

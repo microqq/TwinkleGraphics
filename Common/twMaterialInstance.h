@@ -251,6 +251,41 @@ private:
 };
 
 
+class SphereMaterial : public Material
+{
+public:
+    typedef std::shared_ptr<SphereMaterial> Ptr;
+
+    SphereMaterial()
+        : Material()
+    {
+        Initialize();
+    }
+    SphereMaterial(const SphereMaterial &copy)
+        : Material(copy)
+    {
+    }
+    virtual ~SphereMaterial() {}
+
+private:
+    void Initialize()
+    {
+        ShaderManagerInst shaderMgr;
+        ShaderProgram::Ptr program = nullptr;
+        ShaderReadInfo shader_info[] = {
+            {std::string("Assets/Shaders/sphere.vert"), ShaderType::VERTEX_SHADER},
+            {std::string("Assets/Shaders/sphere.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(shader_info, 2);
+
+        RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+        this->AddRenderPass(pass);
+
+        vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
+        this->SetVecUniformValue<float32, 4>("tint_color", tint_color);
+    }
+};
+
+
 class SkyboxMaterial : public Material
 {
 public:

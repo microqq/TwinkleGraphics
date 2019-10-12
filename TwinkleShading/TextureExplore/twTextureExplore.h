@@ -82,8 +82,8 @@ private:
     void CreateSprite1D();
     void CreateVolumnTexture();
     void CreateSkybox();
-    void CreateCube();
-    void CreateIconSphere();
+    void CreateCube(Image::Ptr image);
+    void CreateIconSphere(Image::Ptr image);
     void RenderGeometryEx(int index);
     
     void CreateGeometry(Geometry::Ptr geom, uint32 index);
