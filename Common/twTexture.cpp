@@ -826,17 +826,23 @@ void TextureCube::InitStorage()
         }
     }
 
-    if (destimage != nullptr)
+    // if (destimage != nullptr)
     {
         const ImageData& image_source = _image->GetImageSource();
-        if(!_immutable)
+        if(_immutable)
         {
-            if(!useOthers)
+            if(!useOthers && destimage != nullptr)
             {
                 InitTexStorage(destimage);
             }
-            else
+            else if(useOthers)
             {
+                ImageData* data = _image_positive_x->GetImageSourcePtr();
+                glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->mipLevels,
+                               data->internalFormat,
+                               data->mip[0].width,
+                               data->mip[0].height);
+
                 InitTexStorage(GL_TEXTURE_CUBE_MAP_POSITIVE_X, _image_positive_x->GetImageSourcePtr());
                 InitTexStorage(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, _image_negative_x->GetImageSourcePtr());
                 InitTexStorage(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, _image_positive_y->GetImageSourcePtr());
@@ -847,7 +853,7 @@ void TextureCube::InitStorage()
         }
         else
         {
-            if(!useOthers)
+            if(!useOthers && destimage != nullptr)
             {
                 GLubyte* ptr = nullptr;
                 for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
@@ -865,7 +871,7 @@ void TextureCube::InitStorage()
                     }
                 }
             }
-            else
+            else if(useOthers)
             {
                 ImageData * datas[6] = {_image_positive_x->GetImageSourcePtr(),
                                    _image_negative_x->GetImageSourcePtr(),
@@ -899,11 +905,6 @@ void TextureCube::InitStorage()
 
 void TextureCube::InitTexStorage(int32 target, ImageData *data)
 {
-    glTexStorage2D(target, data->mipLevels,
-                   data->internalFormat,
-                   data->mip[0].width,
-                   data->mip[0].height);
-
     for (int32 level = 0, mipLevels = data->mipLevels; level < mipLevels; ++level)
     {
         glTexSubImage2D(target,
@@ -919,13 +920,10 @@ void TextureCube::InitTexStorage(int32 target, ImageData *data)
 
 void TextureCube::InitTexStorage(ImageData *data)
 {
-    for (int32 face = 0; face < 6; face++)
-    {
-        glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, data->mipLevels,
-                       data->internalFormat,
-                       data->mip[0].width,
-                       data->mip[0].height);
-    }
+    glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->mipLevels,
+                   data->internalFormat,
+                   data->mip[0].width,
+                   data->mip[0].height);
 
     GLubyte *ptr = nullptr;
     for (int32 level = 0, mipLevels = data->mipLevels; level < mipLevels; ++level)

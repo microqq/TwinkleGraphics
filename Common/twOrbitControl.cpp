@@ -130,15 +130,16 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
     glm::vec3 v0(0.0f, 0.0f, 1.0f);
     glm::vec3 v1 = glm::normalize(glm::vec3(p.x, p.y, _radius));
 
-    // glm::mat3 rot_mat = glm::mat3_cast(_camera->GetOrientation());
-    // v0 = rot_mat * v0;
-    // v1 = rot_mat * v1;
-
     glm::vec3 v = glm::normalize(glm::cross(v0, v1));
     float32 theta = glm::acos(glm::dot(v0, v1));
 
     if (::fabs(theta) <= glm::epsilon<float32>())
         return;
+
+    glm::mat3 rot_mat = glm::mat3_cast(glm::inverse(_transform->GetWorldOrientation()));
+    // v0 = rot_mat * v0;
+    // v1 = rot_mat * v1;
+    v =  rot_mat * v;
 
     _transform->Rotate(theta, v);
 

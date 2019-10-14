@@ -128,6 +128,14 @@ void TextureExploreView::Advance(float64 delta_time)
             mat4 rotate_mat = mat4_cast(_camera->GetWorldOrientation());
             mat4 mvp = _projection_mat * rotate_mat;
             skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+            
+            Texture::Ptr skyboxtex = skyboxmat->GetMainTexture();
+            skyboxtex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+            skyboxtex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+            skyboxtex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+
+            skyboxtex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
+            skyboxtex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
 
             Transform::Ptr cubetrans = _cube->GetTransform();
             cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
@@ -144,6 +152,14 @@ void TextureExploreView::Advance(float64 delta_time)
             mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
             spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
             spheremat->SetSimpleUniformValue<float32, 1>("size", 2.5f);
+
+            Texture::Ptr spheretex = spheremat->GetMainTexture();
+            spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+            spheretex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+            spheretex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+
+            spheretex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
+            spheretex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
         }
     }
     // volumn quad material setting
@@ -611,8 +627,42 @@ void TextureExploreView::CreateSkybox()
         ImageReadInfo images_info[] = {{"Assets/Textures/TantolundenCube.dds"}};
         Image::Ptr image = imageMgr->ReadImage(images_info[0]);
 
+        // ImageReadInfo front_info[] = {{"Assets/Textures/skybox/front.png"}};
+        // Image::Ptr front_image = imageMgr->ReadImage(front_info[0]);
+        // ImageReadInfo back_info[] = {{"Assets/Textures/skybox/back.png"}};
+        // Image::Ptr back_image = imageMgr->ReadImage(back_info[0]);
+        // ImageReadInfo left_info[] = {{"Assets/Textures/skybox/left.png"}};
+        // Image::Ptr left_image = imageMgr->ReadImage(left_info[0]);
+        // ImageReadInfo right_info[] = {{"Assets/Textures/skybox/right.png"}};
+        // Image::Ptr right_image = imageMgr->ReadImage(right_info[0]);
+        // ImageReadInfo top_info[] = {{"Assets/Textures/skybox/top.png"}};
+        // Image::Ptr top_image = imageMgr->ReadImage(top_info[0]);
+        // ImageReadInfo down_info[] = {{"Assets/Textures/skybox/bottom.png"}};
+        // Image::Ptr down_image = imageMgr->ReadImage(down_info[0]);
+
+        ImageReadInfo front_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"}};
+        Image::Ptr front_image = imageMgr->ReadImage(front_info[0]);
+        ImageReadInfo back_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"}};
+        Image::Ptr back_image = imageMgr->ReadImage(back_info[0]);
+        ImageReadInfo left_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"}};
+        Image::Ptr left_image = imageMgr->ReadImage(left_info[0]);
+        ImageReadInfo right_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"}};
+        Image::Ptr right_image = imageMgr->ReadImage(right_info[0]);
+        ImageReadInfo top_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"}};
+        Image::Ptr top_image = imageMgr->ReadImage(top_info[0]);
+        ImageReadInfo down_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"}};
+        Image::Ptr down_image = imageMgr->ReadImage(down_info[0]);
+
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
-        cubemap->SetImage(image);
+        // cubemap->SetImage(image);
+
+        cubemap->SetPositiveX(right_image);
+        cubemap->SetPositiveY(top_image);
+        cubemap->SetPositiveZ(front_image);
+        cubemap->SetNegativeX(left_image);
+        cubemap->SetNegativeY(down_image);
+        cubemap->SetNegativeZ(back_image);
+        cubemap->InitStorageByOthers();
 
         mat->SetMainTexture(cubemap);
 
@@ -726,13 +776,14 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
 
-    int32 verticenum =submesh->GetVerticeNum();
+    int32 verticenum = submesh->GetVerticeNum();
     if(geom->GetMeshDataFlag() == MeshDataFlag::DEFAULT)
     {
         glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_DYNAMIC_DRAW);
     }
     else
     {
+        // map vertexbuffer data(position & uv)
         glBufferData(GL_ARRAY_BUFFER, submesh->GetDataSize(), nullptr, GL_DYNAMIC_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, verticenum * 12, submesh->GetVerticePos());
 
@@ -740,11 +791,13 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
             glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticeUV());
     }    
 
+    // bind vertex position
     glBindVertexBuffer(0, _vbos[index], 0, sizeof(vec3));
     glEnableVertexAttribArray(0);
     glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(0, 0);
 
+    // bind vertex uv
     if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
     {
         glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));

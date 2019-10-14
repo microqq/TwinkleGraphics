@@ -619,6 +619,8 @@ public:
     void SetNegativeY(Image::Ptr image);
     void SetNegativeZ(Image::Ptr image);
 
+    void InitStorageByOthers() { InitStorage(); }
+
 protected:
     virtual void InitStorage() override;
 
