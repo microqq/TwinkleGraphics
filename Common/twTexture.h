@@ -530,6 +530,20 @@ public:
 protected:
     virtual void InitStorage() override;
 
+    virtual void ApplyWrapParameter() override
+    {
+        // wrap
+        if (_parameters.wrap_modes[0] != WrapMode::NONE)
+        {
+            glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
+        }
+        if (_parameters.wrap_modes[1] != WrapMode::NONE)
+        {
+            glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrap_modes[1]));
+        }
+    }
+
+
 };
 
 class Texture3D : public Texture
@@ -553,6 +567,11 @@ protected:
     virtual void InitStorage() override;
 };
 
+/**
+ * @brief 
+ * https://stackoverflow.com/questions/25157306/gl-texture-2d-vs-gl-texture-rectangle
+ * https://www.khronos.org/opengl/wiki/Rectangle_Texture
+ */
 class TextureRectangle : public Texture
 {
 public:
@@ -572,8 +591,35 @@ public:
 
 protected:
     virtual void InitStorage() override;
+
+    virtual void ApplyWrapParameter() override
+    {
+        // wrap only support clamp_to_edge/clamp_to_border
+        // do not support mipmap
+        // if (_parameters.wrap_modes[0] != WrapMode::NONE)
+        // {
+        //     glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
+        // }
+        // if (_parameters.wrap_modes[1] != WrapMode::NONE)
+        // {
+        //     glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrap_modes[1]));
+        // }
+    }
+
+
+    virtual void ApplyFilterParameter() override
+    {
+        // filter only support nearest/linear
+
+    }
 };
 
+
+/**
+ * @brief 
+ * https://stackoverflow.com/questions/21424968/what-is-the-purpose-of-opengl-texture-buffer-objects
+ * https://stackoverflow.com/questions/6281109/texture-buffer-objects-or-regular-textures?rq=1
+ */
 class TextureBuffer : public Texture
 {
 public:
@@ -589,10 +635,27 @@ public:
 #endif
     }
 
-    virtual ~TextureBuffer() {}
+    virtual ~TextureBuffer();
+
+    void SetBufferData(int32 size, int32 format, GLvoid* data)
+    {
+        if(size <= 0 || data == nullptr) return;
+
+        _size = size;
+        _internalformat = format;
+        _buffer_data = data;
+
+        InitStorage();
+    }
 
 protected:
     virtual void InitStorage() override;
+
+private:
+    GLvoid* _buffer_data;
+    int32 _size;
+    uint32 _buffer;
+    int32 _internalformat;
 };
 
 class TextureCube : public Texture

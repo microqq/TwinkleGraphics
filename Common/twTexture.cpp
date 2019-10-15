@@ -37,6 +37,8 @@ Texture::~Texture()
 
     if(_res.id != 0)
     {
+        glBindTexture(_res.type, 0);
+
         uint32 id = _res.id;
         glDeleteTextures(1, &id);
 
@@ -625,7 +627,7 @@ void Texture1D::InitStorage()
             SAFE_DEL(destimage);
     }
 
-    glBindTexture(GL_TEXTURE_1D, 0);
+    glBindTexture(_res.type, 0);
 }
 
 
@@ -691,7 +693,7 @@ void Texture2D::InitStorage()
             SAFE_DEL(destimage);
     }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(_res.type, 0);
 }
 
 void Texture2DMultiSample::InitStorage()
@@ -758,17 +760,71 @@ void Texture3D::InitStorage()
             SAFE_DEL(destimage);
     }
 
-    glBindTexture(GL_TEXTURE_3D, 0);
+    glBindTexture(_res.type, 0);
 }
 
 void TextureRectangle::InitStorage()
 {
+    Texture::InitStorage();
+
+
+    ImageData* destimage = nullptr;
+    if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
+    {
+        glTexImage2D(_res.type,
+                     0,
+                     destimage->internalFormat,
+                     destimage->mip[0].width,
+                     destimage->mip[0].height,
+                     0,
+                     destimage->format,
+                     destimage->type,
+                     destimage->mip[0].data);
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
+    }
+
+    glBindTexture(_res.type, 0);    
 }
 
 void TextureBuffer::InitStorage()
 {
+    Texture::InitStorage();
+
+    glGenBuffers(1, &_buffer);
+
+    glBindBuffer(_res.type, _buffer);
+    glBufferData(_res.type, _size, _buffer_data, GL_STATIC_DRAW);
+
+    glTexBuffer(_res.type, _internalformat, _buffer);
+
+    glBindBuffer(_res.type, 0);
+    glBindTexture(_res.type, 0);
 }
 
+TextureBuffer::~TextureBuffer()
+{
+    glBindBuffer(_res.type, 0);
+    glBindTexture(_res.type, 0);
+
+    glDeleteBuffers(1, &_buffer);
+
+    if(_buffer_data != nullptr)
+    {
+
+    }
+}
 
 
 void TextureCube::SetPositiveX(Image::Ptr image)
@@ -838,7 +894,7 @@ void TextureCube::InitStorage()
             else if(useOthers)
             {
                 ImageData* data = _image_positive_x->GetImageSourcePtr();
-                glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->mipLevels,
+                glTexStorage2D(_res.type, data->mipLevels,
                                data->internalFormat,
                                data->mip[0].width,
                                data->mip[0].height);
@@ -900,7 +956,7 @@ void TextureCube::InitStorage()
             SAFE_DEL(destimage);
     }    
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    glBindTexture(_res.type, 0);
 }
 
 void TextureCube::InitTexStorage(int32 target, ImageData *data)
@@ -920,7 +976,7 @@ void TextureCube::InitTexStorage(int32 target, ImageData *data)
 
 void TextureCube::InitTexStorage(ImageData *data)
 {
-    glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->mipLevels,
+    glTexStorage2D(_res.type, data->mipLevels,
                    data->internalFormat,
                    data->mip[0].width,
                    data->mip[0].height);
@@ -945,14 +1001,174 @@ void TextureCube::InitTexStorage(ImageData *data)
 
 void Texture1DArray::InitStorage()
 {
+    Texture::InitStorage();
+
+    ImageData* destimage = nullptr;
+    if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+
+    if(destimage != nullptr)
+    {
+        if(_immutable)
+        {
+            glTexStorage2D(_res.type,
+                        destimage->mipLevels,
+                        destimage->internalFormat,
+                        destimage->mip[0].width,
+                        destimage->slices);
+            for (int level = 0; level < destimage->mipLevels; ++level)
+            {
+                glTexSubImage2D(_res.type,
+                                level,
+                                0, 0,
+                                destimage->mip[level].width, destimage->slices,
+                                destimage->format, destimage->type,
+                                destimage->mip[level].data);
+            }
+        }
+        else
+        {
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexImage2D(_res.type,
+                            level,
+                            destimage->internalFormat,
+                            destimage->mip[level].width,
+                            destimage->slices,
+                            0,
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
+            }
+        }       
+
+        if (destimage != _data)
+            SAFE_DEL(destimage);
+    }
+
+    glBindTexture(_res.type, 0);
 }
+
+void Texture2DArray::InitStorage()
+{
+    Texture::InitStorage();
+
+    ImageData* destimage = nullptr;
+    if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
+    {
+        const ImageData& image_source = _image->GetImageSource();
+        if(_immutable)
+        {
+            glTexStorage3D(_res.type, destimage->mipLevels, 
+                            destimage->internalFormat, 
+                            destimage->mip[0].width, 
+                            destimage->mip[0].height,
+                            destimage->slices
+            );
+
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexSubImage3D(_res.type,
+                                level,
+                                0, 0, 0,
+                                destimage->mip[level].width,
+                                destimage->mip[level].height,
+                                destimage->slices,
+                                destimage->format,
+                                destimage->type,
+                                destimage->mip[level].data);
+            }
+        }
+        else
+        {
+            for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+            {
+                glTexImage3D(_res.type,
+                            level,
+                            destimage->internalFormat,
+                            destimage->mip[level].width,
+                            destimage->mip[level].height,
+                            destimage->slices,
+                            0,
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
+            }
+        }
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
+    }
+
+    glBindTexture(_res.type, 0);
+}
+
 
 void TextureCubeArray::InitStorage()
 {
+    Texture::InitStorage();
+
+    ImageData* destimage = nullptr;
+    if(_image != nullptr)
+    {
+        const ImageData& source = _image->GetImageSource();
+        destimage = new ImageData(source);
+    }
+    else if(_data != nullptr)
+    {
+        destimage = _data;
+    }
+    
+    if(destimage != nullptr)
+    {
+        const ImageData &image_source = _image->GetImageSource();
+        glTexStorage3D(_res.type, destimage->mipLevels,
+                       destimage->internalFormat,
+                       destimage->mip[0].width,
+                       destimage->mip[0].height,
+                       destimage->slices);
+
+        for (int32 level = 0, mipLevels = destimage->mipLevels; level < mipLevels; ++level)
+        {
+            glTexSubImage3D(_res.type,
+                            level,
+                            0, 0, 0,
+                            destimage->mip[level].width,
+                            destimage->mip[level].height,
+                            destimage->slices,
+                            destimage->format,
+                            destimage->type,
+                            destimage->mip[level].data);
+        }
+        //glTexImage3D do not support GL_TEXTURE_CUBE_MAP_ARRAY
+
+        if(destimage != _data)
+            SAFE_DEL(destimage);
+    }
+
+    glBindTexture(_res.type, 0);    
 }
 
 void Texture2DMultiSampleArray::InitStorage()
 {
+    //glTexStorage3DMultisample glTexImage3DMultisample
 }
 
 } // namespace TwinkleGraphics
