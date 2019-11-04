@@ -447,6 +447,12 @@ struct TextureSlot
 
         glActiveTexture(location);
     }
+
+    void UnBind()
+    {
+        const RenderResInstance &res = tex->GetRenderRes();
+        glBindTexture(res.type, 0);
+    }
 };
 
 

@@ -102,8 +102,9 @@ class ImageManager
 public:
     ImageManager();
     ~ImageManager();
-    
-    Image::Ptr ReadImage(ImageReadInfo& shader_info);
+
+    void ReadImages(ImageReadInfo images_info[], Image::Ptr images[], int num);
+    Image::Ptr ReadImage(ImageReadInfo& image_info);
 
 private:
     

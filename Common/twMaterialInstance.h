@@ -176,21 +176,21 @@ private:
     }
 };
 
-class VolumnMaterial : public Material
+class VolumnQuadMaterial : public Material
 {
 public:
-    typedef std::shared_ptr<VolumnMaterial> Ptr;
+    typedef std::shared_ptr<VolumnQuadMaterial> Ptr;
 
-    VolumnMaterial()
+    VolumnQuadMaterial()
         : Material()
     {
         Initialize();
     }
-    VolumnMaterial(const VolumnMaterial &copy)
+    VolumnQuadMaterial(const VolumnQuadMaterial &copy)
         : Material(copy)
     {
     }
-    virtual ~VolumnMaterial() {}
+    virtual ~VolumnQuadMaterial() {}
 
 private:
     void Initialize()

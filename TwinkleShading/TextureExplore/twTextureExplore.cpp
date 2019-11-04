@@ -594,7 +594,7 @@ void TextureExploreView::CreateVolumnTexture()
         _volumn_quad->GenerateMesh();
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        VolumnMaterial::Ptr mat = std::make_shared<VolumnMaterial>();
+        VolumnQuadMaterial::Ptr mat = std::make_shared<VolumnQuadMaterial>();
 
         ImageManagerInst imageMgr;
         ImageReadInfo images_info[] = {{"Assets/Textures/cloud.dds"}};
@@ -854,7 +854,7 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 
     for (auto tex_slot : pass->GetTextureSlots())
     {
-        glBindTexture(tex_slot.second.tex->GetRenderRes().type, 0);
+        tex_slot.second.UnBind();
     }
 }
 

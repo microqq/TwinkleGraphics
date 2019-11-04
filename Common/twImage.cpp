@@ -166,6 +166,16 @@ ImageManager::~ImageManager()
 
 }
 
+void ImageManager::ReadImages(ImageReadInfo images_info[], Image::Ptr images[], int num)
+{
+	for(int i = 0; i < num; i++)
+	{
+		images[i] = ReadImage(images_info[i]);
+	}
+
+	return;
+}
+
 Image::Ptr ImageManager::ReadImage(ImageReadInfo &image_info)
 {
     ResourceManagerInst resMgr;
