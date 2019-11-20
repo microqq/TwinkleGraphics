@@ -24,7 +24,7 @@ public:
     void SetViewCamera(Camera::Ptr camera) { _camera = camera; }
     void SetCameraControl(CameraControl* control) { _camera_control = control; }
 
-    const Viewport& GetViewport() 
+    const Viewport& GetViewport()
     { return _camera->GetViewport(); }
 
     void Resize(float32 scale_x, float32 scale_y)

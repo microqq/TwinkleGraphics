@@ -6,6 +6,11 @@
 
 namespace TwinkleGraphics
 {
+struct StatsData
+{
+        
+};
+
 class Stats
 {
 public:

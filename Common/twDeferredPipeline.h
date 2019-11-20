@@ -19,7 +19,7 @@ public:
     ~DeferredPipeline();
 };
 
-typedef Singleton<DeferredPipeline> Forward;
+typedef Singleton<DeferredPipeline> Deferred;
 
 } // namespace TwinkleGraphics
 

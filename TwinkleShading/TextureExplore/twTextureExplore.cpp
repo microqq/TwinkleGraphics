@@ -121,7 +121,7 @@ void TextureExploreView::Advance(float64 delta_time)
     // skybox setting
     {
         Geometry::Ptr geom = nullptr;
-        if (_current_tex_option == 3)
+        if (_current_tex_option == 3 || _enable_skybox)
         {
             geom = _skybox;
             Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
@@ -137,29 +137,32 @@ void TextureExploreView::Advance(float64 delta_time)
             skyboxtex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
             skyboxtex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
 
-            Transform::Ptr cubetrans = _cube->GetTransform();
-            cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
+            if(_current_tex_option == 3)
+            {
+                Transform::Ptr cubetrans = _cube->GetTransform();
+                cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
 
-            Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
-            mvp = _mvp_mat * cubetrans->GetLocalToWorldMatrix();
-            cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-            cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
+                Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
+                mvp = _mvp_mat * cubetrans->GetLocalToWorldMatrix();
+                cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+                cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
 
-            Transform::Ptr spheretrans = _sphere->GetTransform();
-            spheretrans->Rotate(0.004f, glm::vec3(1.0f, 1.0f, 0.0f));
+                Transform::Ptr spheretrans = _sphere->GetTransform();
+                spheretrans->Rotate(0.004f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-            Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
-            mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
-            spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-            spheremat->SetSimpleUniformValue<float32, 1>("size", 2.5f);
+                Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
+                mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
+                spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+                spheremat->SetSimpleUniformValue<float32, 1>("size", 2.5f);
 
-            Texture::Ptr spheretex = spheremat->GetMainTexture();
-            spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
-            spheretex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
-            spheretex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+                Texture::Ptr spheretex = spheremat->GetMainTexture();
+                spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+                spheretex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+                spheretex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
 
-            spheretex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
-            spheretex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+                spheretex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
+                spheretex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+            }
         }
     }
     // volumn quad material setting
@@ -214,6 +217,8 @@ void TextureExploreView::RenderImpl()
     case 1:
     case 2:
     case 3:
+    case 4:
+    case 5:
         RenderGeometryEx(_current_tex_option);
         break;
     default:
@@ -244,6 +249,13 @@ void TextureExploreView::OnGUI()
         {
             ResetGUI();
             CreateSkybox();
+
+            ImageManagerInst imageMgr;
+            ImageReadInfo images_info = {"Assets/Textures/TantolundenCube.dds"};
+            Image::Ptr image = imageMgr->ReadImage(images_info);
+
+            CreateCube(image);
+            CreateIconSphere(image);
         }
         if(ImGui::RadioButton(u8"程序纹理", &_current_tex_option, 4))
         {
@@ -343,6 +355,15 @@ void TextureExploreView::OnGUI()
             {
                 ImGui::SameLine();
                 ImGui::ColorEdit4("Color", glm::value_ptr<float32>(_bordercolor));
+            }
+
+            ImGui::Checkbox(u8"显示天空盒", &_enable_skybox);
+            if (_enable_skybox)
+            {
+                if(_skybox == nullptr)
+                {
+                    CreateSkybox();
+                }
             }
 
             ImGui::EndTabItem();
@@ -498,11 +519,11 @@ FilterMode TextureExploreView::GetFilterMode(int32 filter_mode_option)
         return FilterMode::NONE;
     }
 
-    FilterMode modes[7] = { FilterMode::NEAREST, FilterMode::LINEAR, FilterMode::NEAREST_MIPMAP_NEAREST,
-        FilterMode::NEAREST_MIPMAP_LINEAR, FilterMode::LINEAR_MIPMAP_NEAREST, FilterMode::LINEAR_MIPMAP_LINEAR,
-        FilterMode::NONE };
+    // FilterMode modes[7] = { FilterMode::NEAREST, FilterMode::LINEAR, FilterMode::NEAREST_MIPMAP_NEAREST,
+    //     FilterMode::NEAREST_MIPMAP_LINEAR, FilterMode::LINEAR_MIPMAP_NEAREST, FilterMode::LINEAR_MIPMAP_LINEAR,
+    //     FilterMode::NONE };
 
-    return modes[filter_mode_option];
+    return FilterMode((int)FilterMode::NEAREST + filter_mode_option);// modes[filter_mode_option];
 }
 
 SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option)
@@ -512,10 +533,10 @@ SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option)
         return SwizzleParam::NONE;
     }
 
-    SwizzleParam params[5] = { SwizzleParam::SWIZZLE_R, SwizzleParam::SWIZZLE_G, SwizzleParam::SWIZZLE_B,
-        SwizzleParam::SWIZZLE_A, SwizzleParam::SWIZZLE_RGBA };
+    // SwizzleParam params[5] = { SwizzleParam::SWIZZLE_R, SwizzleParam::SWIZZLE_G, SwizzleParam::SWIZZLE_B,
+    //     SwizzleParam::SWIZZLE_A, SwizzleParam::SWIZZLE_RGBA };
 
-    return params[swizzle_option];
+    return SwizzleParam((int)SwizzleParam::SWIZZLE_R + swizzle_option);// params[swizzle_option];
 }
 
 SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzle_mask_option)
@@ -531,8 +552,8 @@ void TextureExploreView::CreateSprite()
     if(_sprite != nullptr) return;
                 
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info[] = {{"Assets/Textures/test3.png"}};
-    Image::Ptr image = imageMgr->ReadImage(images_info[0]);
+    ImageReadInfo images_info = {"Assets/Textures/test3.png"};
+    Image::Ptr image = imageMgr->ReadImage(images_info);
 
     Texture2D::Ptr texture = nullptr;
     if (image != nullptr)
@@ -597,8 +618,8 @@ void TextureExploreView::CreateVolumnTexture()
         VolumnQuadMaterial::Ptr mat = std::make_shared<VolumnQuadMaterial>();
 
         ImageManagerInst imageMgr;
-        ImageReadInfo images_info[] = {{"Assets/Textures/cloud.dds"}};
-        Image::Ptr image = imageMgr->ReadImage(images_info[0]);
+        ImageReadInfo images_info = {"Assets/Textures/cloud.dds"};
+        Image::Ptr image = imageMgr->ReadImage(images_info);
 
         Texture3D::Ptr volumntex = std::make_shared<Texture3D>(true);
         volumntex->SetImage(image);
@@ -623,37 +644,25 @@ void TextureExploreView::CreateSkybox()
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         SkyboxMaterial::Ptr mat = std::make_shared<SkyboxMaterial>();
 
-        ImageManagerInst imageMgr;
-        ImageReadInfo images_info[] = {{"Assets/Textures/TantolundenCube.dds"}};
-        Image::Ptr image = imageMgr->ReadImage(images_info[0]);
-
-        // ImageReadInfo front_info[] = {{"Assets/Textures/skybox/front.png"}};
-        // Image::Ptr front_image = imageMgr->ReadImage(front_info[0]);
-        // ImageReadInfo back_info[] = {{"Assets/Textures/skybox/back.png"}};
-        // Image::Ptr back_image = imageMgr->ReadImage(back_info[0]);
-        // ImageReadInfo left_info[] = {{"Assets/Textures/skybox/left.png"}};
-        // Image::Ptr left_image = imageMgr->ReadImage(left_info[0]);
-        // ImageReadInfo right_info[] = {{"Assets/Textures/skybox/right.png"}};
-        // Image::Ptr right_image = imageMgr->ReadImage(right_info[0]);
-        // ImageReadInfo top_info[] = {{"Assets/Textures/skybox/top.png"}};
-        // Image::Ptr top_image = imageMgr->ReadImage(top_info[0]);
-        // ImageReadInfo down_info[] = {{"Assets/Textures/skybox/bottom.png"}};
-        // Image::Ptr down_image = imageMgr->ReadImage(down_info[0]);
-
-        ImageReadInfo front_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"}};
-        Image::Ptr front_image = imageMgr->ReadImage(front_info[0]);
-        ImageReadInfo back_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"}};
-        Image::Ptr back_image = imageMgr->ReadImage(back_info[0]);
-        ImageReadInfo left_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"}};
-        Image::Ptr left_image = imageMgr->ReadImage(left_info[0]);
-        ImageReadInfo right_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"}};
-        Image::Ptr right_image = imageMgr->ReadImage(right_info[0]);
-        ImageReadInfo top_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"}};
-        Image::Ptr top_image = imageMgr->ReadImage(top_info[0]);
-        ImageReadInfo down_info[] = {{"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"}};
-        Image::Ptr down_image = imageMgr->ReadImage(down_info[0]);
-
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+
+        ImageManagerInst imageMgr;
+        // ImageReadInfo images_info = {"Assets/Textures/TantolundenCube.dds"};
+        // Image::Ptr image = imageMgr->ReadImage(images_info);
+
+        ImageReadInfo front_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"};
+        Image::Ptr front_image = imageMgr->ReadImage(front_info);
+        ImageReadInfo back_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"};
+        Image::Ptr back_image = imageMgr->ReadImage(back_info);
+        ImageReadInfo left_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"};
+        Image::Ptr left_image = imageMgr->ReadImage(left_info);
+        ImageReadInfo right_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"};
+        Image::Ptr right_image = imageMgr->ReadImage(right_info);
+        ImageReadInfo top_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"};
+        Image::Ptr top_image = imageMgr->ReadImage(top_info);
+        ImageReadInfo down_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"};
+        Image::Ptr down_image = imageMgr->ReadImage(down_info);
+
         // cubemap->SetImage(image);
 
         cubemap->SetPositiveX(right_image);
@@ -673,8 +682,8 @@ void TextureExploreView::CreateSkybox()
 
         CreateGeometry(_skybox, 3);
 
-        CreateCube(image);
-        CreateIconSphere(image);
+        // CreateCube(image);
+        // CreateIconSphere(image);
     }
 }
 
@@ -733,6 +742,11 @@ void TextureExploreView::CreateIconSphere(Image::Ptr image)
 
 void TextureExploreView::RenderGeometryEx(int index)
 {
+    if(index != 3 && _enable_skybox)
+    {
+        RenderGeometry(_skybox, 3);
+    }
+
     Geometry::Ptr geom = nullptr;
     switch (index)
     {
@@ -825,12 +839,12 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
     }
 
     glEnable(GL_DEPTH_TEST);
-    if(geom == _skybox)
+    if(index == 3)
         glDepthFunc(GL_LEQUAL);
     else
         glDepthFunc(GL_LESS);
 
-    if(geom == _volumn_quad)
+    if(index == 1 || index == 2)
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

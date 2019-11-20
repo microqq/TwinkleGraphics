@@ -253,7 +253,7 @@ private:
 
         //cube faces
         glm::vec3 faces[24] =
-            {
+        {
                 /**
          * @brief
          * 0 __ __ __ 3
@@ -297,7 +297,8 @@ private:
                 glm::vec3(-0.5f, -0.5f, 0.5f),
                 glm::vec3(-0.5f, -0.5f, -0.5f),
                 glm::vec3(0.5f, -0.5f, -0.5f),
-                glm::vec3(0.5f, -0.5f, 0.5f)};
+                glm::vec3(0.5f, -0.5f, 0.5f)
+        };
 
         //compute vertice & indice
         int32 vertice_index = 0;

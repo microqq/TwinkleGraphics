@@ -52,6 +52,7 @@ public:
         , _texparams_tabitem()
         , _enable_lodbias(false)
         , _enable_border_color(false)
+        , _enable_skybox(false)
         {
             _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
             _filter_modes[0] = _filter_modes[1] = -1;
@@ -142,6 +143,7 @@ private:
     bool _texparams_tabitem[4];
     bool _enable_lodbias;
     bool _enable_border_color;
+    bool _enable_skybox;
 
     friend class TextureExplore;
 };
