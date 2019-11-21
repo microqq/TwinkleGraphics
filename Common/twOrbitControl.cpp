@@ -126,6 +126,7 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
     spherical_p1 = (spherical_p1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
     spherical_p2 = (spherical_p2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
     glm::vec2 p = spherical_p2 - spherical_p1;
+    p.y = -p.y;
 
     glm::vec3 v0(0.0f, 0.0f, 1.0f);
     glm::vec3 v1 = glm::normalize(glm::vec3(p.x, p.y, _radius));
@@ -141,6 +142,7 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
     // v1 = rot_mat * v1;
     v =  rot_mat * v;
 
+    // _camera->Rotate(theta, v);
     _transform->Rotate(theta, v);
 
     _dirty = true;

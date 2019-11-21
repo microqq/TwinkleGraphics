@@ -60,6 +60,10 @@ void TextureExploreView::Initialize()
     _vaos = new uint32[16];
     glGenVertexArrays(16, _vaos);
 
+    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    _proj_tex_camera = std::make_shared<Camera>(viewport, 30.0f, 0.1f, 1000.0f);
+    // _proj_tex_camera->SetOrientation(quat(1.0f, 0.0f, 0.0f, glm::pi<float32>() * 0.5f));
+    _proj_tex_camera->Translate(vec3(0.0f, 0.0f, 10.0f));
 }
 void TextureExploreView::Destroy()
 {
@@ -202,6 +206,35 @@ void TextureExploreView::Advance(float64 delta_time)
             tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);            
         }
     }
+    {
+        Geometry::Ptr geom = nullptr;
+        if(_current_tex_option == 6)
+            geom = _nurbs_surface;
+
+        if(geom != nullptr)
+        {
+            mat4 mat_tex_view = _proj_tex_camera->GetViewMatrix();
+            mat4 mat_tex_proj = _proj_tex_camera->GetProjectionMatrix();
+            mat4 mat_tex_vp = mat_tex_proj * mat_tex_view;
+
+            Transform::Ptr nurbs_trans = _nurbs_surface->GetTransform();
+            // nurbs_trans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
+
+            mat4 world = nurbs_trans->GetLocalToWorldMatrix();
+            mat4 mvp = _mvp_mat * world;
+
+            Material::Ptr nurbs_mat = _nurbs_surface->GetMeshRenderer()->GetMaterial();
+            nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
+            nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+
+            Material::Ptr quad_mat = _proj_tex_quad->GetMeshRenderer()->GetMaterial();
+            Transform::Ptr quad_trans = _proj_tex_quad->GetTransform();
+            world = quad_trans->GetLocalToWorldMatrix();
+            mvp = _mvp_mat * world;
+            quad_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
+            quad_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+        }
+    }
 
 #ifdef _WIN32 || _WIN64
     _update_time += 0.02f;
@@ -209,19 +242,13 @@ void TextureExploreView::Advance(float64 delta_time)
     _update_time += 0.0002f;
 #endif
 }
+
 void TextureExploreView::RenderImpl()
 {
     switch (_current_tex_option)
     {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-        RenderGeometryEx(_current_tex_option);
-        break;
     default:
+        RenderGeometryEx(_current_tex_option);
         break;
     }
 
@@ -260,17 +287,15 @@ void TextureExploreView::OnGUI()
         if(ImGui::RadioButton(u8"程序纹理", &_current_tex_option, 4))
         {
             ResetGUI();
-
         }
         if(ImGui::RadioButton(u8"法线纹理", &_current_tex_option, 5))
         {
             ResetGUI();
-
         }
         if(ImGui::RadioButton(u8"投影纹理", &_current_tex_option, 6))
         {
             ResetGUI();
-
+            CreateNURBSSurface();
         }
         if(ImGui::RadioButton(u8"纹理视图", &_current_tex_option, 7))
         {
@@ -740,6 +765,139 @@ void TextureExploreView::CreateIconSphere(Image::Ptr image)
     }
 }
 
+void TextureExploreView::CreateNURBSSurface()
+{
+    if(_nurbs_surface == nullptr)
+    {
+        _nurbs_surface = std::make_shared<NURBSSurface>(5, 3, 5, 3);
+
+        Transform::Ptr trans = _nurbs_surface->GetTransform();
+        trans->Translate(glm::vec3(-6.0f, 0.0f, 0.0f));
+
+        glm::vec4* control_points = new glm::vec4[25];
+
+        int32 n = 0;
+        control_points[0] = glm::vec4(-10.f, 0.5f, 0.0f, 1.0f);
+        control_points[1] = glm::vec4(-8.5f, 3.5f, -3.0f, 1.0f);
+        control_points[2] = glm::vec4(-8.f, 4.5f, -6.0f, 1.0f);
+        control_points[3] = glm::vec4(-10.5f, 0.5f, -9.0f, 1.0f);
+        control_points[4] = glm::vec4(-8.5f, -1.5f, -12.0f, 1.0f);
+
+        // _nurbs_control_line = Mesh::CreateLineMeshEx(control_points, 5);
+        // CreateGeometry(_nurbs_control_line->GetSubMesh(0), 19);
+
+        n = 5;
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+
+        n = 10;
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+
+        n = 15;
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+
+        n = 20;
+        control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+        control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+        control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+        control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+        control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+
+        _nurbs_surface->SetControlPoints(control_points, 25);
+
+        Knot* u_knots = new Knot[9];
+        u_knots[0].u = 0.0f;
+        u_knots[8].u = 1.0f;
+        u_knots[1].u = 0.0f;
+        u_knots[2].u = 0.0f;
+        u_knots[3].u = 0.0f;
+        u_knots[4].u = 0.5f;
+        u_knots[5].u = 1.f;
+        u_knots[6].u = 1.f;
+        u_knots[7].u = 1.f;
+
+        u_knots[3].multiplity = 3;
+        u_knots[8].multiplity = 3;
+        _nurbs_surface->SetUKnots(u_knots, 9);
+
+        Knot* v_knots = new Knot[9];
+        v_knots[0].u = 0.0f;
+        v_knots[8].u = 1.0f;
+        v_knots[1].u = 0.0f;
+        v_knots[2].u = 0.0f;
+        v_knots[3].u = 0.0f;
+        v_knots[4].u = 0.5f;
+        v_knots[5].u = 1.f;
+        v_knots[6].u = 1.f;
+        v_knots[7].u = 1.f;
+
+        v_knots[3].multiplity = 3;
+        v_knots[8].multiplity = 3;
+        _nurbs_surface->SetVKnots(v_knots, 9);
+
+        _nurbs_surface->GenerateMesh();
+        Mesh::Ptr mesh = _nurbs_surface->GetMesh();
+        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+
+        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+        ProjectionMappingMaterial::Ptr mat = std::make_shared<ProjectionMappingMaterial>();
+
+        ImageManagerInst imageMgr;
+        ImageReadInfo images_info = {"Assets/Textures/test3.png"};
+        Image::Ptr image = imageMgr->ReadImage(images_info);
+
+        Texture2D::Ptr texture = nullptr;
+        texture = std::make_shared<Texture2D>(true);
+        texture->SetImage(image);
+
+        texture->SetWrap<WrapParam::WRAP_S>(WrapMode::CLAMP_TO_BORDER);
+        texture->SetWrap<WrapParam::WRAP_T>(WrapMode::CLAMP_TO_BORDER);
+
+        texture->SetTexBorderColor(TextureBorderColorParam::BORDER_COLOR, vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+        mat->SetMainTexture(texture);
+
+        renderer->SetSharedMaterial(mat);
+        renderer->SetMesh(_nurbs_surface->GetMesh());
+
+        _nurbs_surface->SetMeshRenderer(renderer);
+
+        vec2 size(10.0f, 10.0f);
+        _proj_tex_quad = std::make_shared<Quad>(size, MeshDataFlag(9));
+        _proj_tex_quad->GenerateMesh();
+
+        Transform::Ptr quad_trans = _proj_tex_quad->GetTransform();
+        quad_trans->Translate(glm::vec3(6.0f, 0.0f, 0.0f));
+
+        MeshRenderer::Ptr quad_renderer = std::make_shared<MeshRenderer>();
+        ProjectionMappingMaterial::Ptr quad_mat = std::make_shared<ProjectionMappingMaterial>();
+
+        quad_mat->SetMainTexture(texture);
+        quad_renderer->SetSharedMaterial(quad_mat);
+        quad_renderer->SetMesh(_proj_tex_quad->GetMesh());
+
+        _proj_tex_quad->SetMeshRenderer(quad_renderer);
+
+        CreateGeometry(_nurbs_surface, 6);
+        CreateGeometry(_proj_tex_quad, 13);
+
+        SAFE_DEL_ARR(control_points);
+        SAFE_DEL_ARR(u_knots);
+        SAFE_DEL_ARR(v_knots);
+    }
+}
+
 void TextureExploreView::RenderGeometryEx(int index)
 {
     if(index != 3 && _enable_skybox)
@@ -766,6 +924,9 @@ void TextureExploreView::RenderGeometryEx(int index)
         if(_sphere != nullptr)
             RenderGeometry(_sphere, 14);
         break;
+    case 6:
+        geom = _nurbs_surface;
+        RenderGeometry(_proj_tex_quad, 13);
     default:
         break;
     }

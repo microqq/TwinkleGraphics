@@ -85,9 +85,11 @@ private:
     void CreateSkybox();
     void CreateCube(Image::Ptr image);
     void CreateIconSphere(Image::Ptr image);
-    void RenderGeometryEx(int index);
+    void CreateNURBSSurface();
     
     void CreateGeometry(Geometry::Ptr geom, uint32 index);
+
+    void RenderGeometryEx(int index);
     void RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face = GL_CCW);
 
     void OnWrapModeGUI(int32& wrap_mode_option);
@@ -121,6 +123,10 @@ private:
     Cube::Ptr _skybox;
     Cube::Ptr _cube;
     IcosahedronSphere::Ptr _sphere;
+    NURBSSurface::Ptr _nurbs_surface;
+    Quad::Ptr _proj_tex_quad;
+
+    Camera::Ptr _proj_tex_camera;
 
     glm::vec4 _viewport_params;
     float32 _tintcolor[4];

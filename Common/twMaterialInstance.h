@@ -13,6 +13,7 @@ public:
     BasicGeomMaterial()
         : Material()
     {
+        Initialize();
     }
     BasicGeomMaterial(const BasicGeomMaterial &copy)
         : Material(copy)
@@ -322,6 +323,41 @@ private:
         vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
         this->SetTextureTiling("main_tex", tiling);
         this->SetTextureOffset("main_tex", offset);        
+    }
+};
+
+class ProjectionMappingMaterial : public Material
+{
+public:
+
+    typedef std::shared_ptr<ProjectionMappingMaterial> Ptr;
+
+    ProjectionMappingMaterial()
+        : Material()
+    {
+        Initialize();
+    }
+    ProjectionMappingMaterial(const ProjectionMappingMaterial &copy)
+        : Material(copy)
+    {
+    }
+    virtual ~ProjectionMappingMaterial() {}
+
+private:
+    void Initialize()
+    {
+        ShaderManagerInst shaderMgr;
+        ShaderProgram::Ptr program = nullptr;
+        ShaderReadInfo shader_info[] = {
+            {std::string("Assets/Shaders/projtex.vert"), ShaderType::VERTEX_SHADER},
+            {std::string("Assets/Shaders/projtex.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(shader_info, 2);
+
+        RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+        this->AddRenderPass(pass);
+
+        vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
+        this->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 };
 
