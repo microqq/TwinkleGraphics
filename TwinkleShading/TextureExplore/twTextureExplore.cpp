@@ -129,7 +129,7 @@ void TextureExploreView::Advance(float64 delta_time)
         {
             geom = _skybox;
             Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
-            mat4 rotate_mat = mat4_cast(_camera->GetWorldOrientation());
+            mat4 rotate_mat = glm::mat4_cast(_camera->GetWorldOrientation());
             mat4 mvp = _projection_mat * rotate_mat;
             skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
             
@@ -144,7 +144,7 @@ void TextureExploreView::Advance(float64 delta_time)
             if(_current_tex_option == 3)
             {
                 Transform::Ptr cubetrans = _cube->GetTransform();
-                cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
+                cubetrans->Rotate(0.004f, glm::vec3(1.0f, 0.0f, 0.0f));
 
                 Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
                 mvp = _mvp_mat * cubetrans->GetLocalToWorldMatrix();
@@ -720,7 +720,9 @@ void TextureExploreView::CreateCube(Image::Ptr image)
         _cube->GenerateMesh();
 
         Transform::Ptr trans = _cube->GetTransform();
-        trans->Translate(glm::vec3(3.5f, 0.0f, 0.0f));
+        trans->Translate(glm::vec3(0.0f, 0.0f, -15.0f));
+
+        trans->SetParent(_camera->GetTransform());
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();

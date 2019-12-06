@@ -12,11 +12,13 @@ OrbitControl::OrbitControl(Camera::Ptr camera)
     , _transform(nullptr)
     , _target(nullptr)
     , _center()
-    , _max_distance(100.0f)
-    , _min_distance(10.0f)
+    , _max_distance(500.0f)
+    , _min_distance(5.0f)
     , _distance(25.0f)
     , _zoom_speed(1.0f)
     , _radius(10.0f)
+    , _rotateX(0.0f)
+    , _rotateY(0.0f)
     , _dirty(true)
 {
     Initialize();
@@ -40,7 +42,7 @@ void OrbitControl::Initialize()
     _camera->GetTransform()->SetParent(_transform);
     _camera->Translate(glm::vec3(0.0f, 0.0f, _distance));
 
-    _transform->Translate(_center);
+    // _transform->Translate(_center);
     // _transform->Rotate(glm::radians<float32>(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
@@ -117,7 +119,7 @@ void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2)
 void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
 {
     glm::vec2 screen_size = glm::vec2(_camera->GetViewport().Width()
-        , _camera->GetViewport().Height() 
+        , _camera->GetViewport().Height()
     );
 
     glm::vec2 spherical_p1 = p1 / screen_size;
@@ -126,24 +128,29 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
     spherical_p1 = (spherical_p1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
     spherical_p2 = (spherical_p2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
     glm::vec2 p = spherical_p2 - spherical_p1;
-    p.y = -p.y;
 
     glm::vec3 v0(0.0f, 0.0f, 1.0f);
-    glm::vec3 v1 = glm::normalize(glm::vec3(p.x, p.y, _radius));
+    glm::vec3 v1 = glm::normalize(glm::vec3(p.x, 0.0f, _radius));
+    glm::vec3 v2 = glm::normalize(glm::vec3(0.0f, p.y, _radius));
 
-    glm::vec3 v = glm::normalize(glm::cross(v0, v1));
-    float32 theta = glm::acos(glm::dot(v0, v1));
+    float32 factor = 1.0f;
 
-    if (::fabs(theta) <= glm::epsilon<float32>())
-        return;
+    float32 theta_x = glm::acos(glm::dot(v0, v1));
+    if (::fabs(theta_x) > glm::epsilon<float32>())
+    {
+        factor = p.x > 0.0f ? 1.0f : -1.0f; 
+        _rotateX += theta_x * factor;
+    }
 
-    glm::mat3 rot_mat = glm::mat3_cast(glm::inverse(_transform->GetWorldOrientation()));
-    // v0 = rot_mat * v0;
-    // v1 = rot_mat * v1;
-    v =  rot_mat * v;
+    float32 theta_y = glm::acos(glm::dot(v0, v2));
+    if (::fabs(theta_y) > glm::epsilon<float32>())
+    {
+        factor = p.y > 0.0f ? -1.0f : 1.0f; 
+        _rotateY += theta_y * factor;
+    }
 
-    // _camera->Rotate(theta, v);
-    _transform->Rotate(theta, v);
+    _transform->SetOrientation(glm::identity<glm::quat>());
+    _transform->Rotate(glm::vec3(_rotateY, _rotateX, 0.0f));
 
     _dirty = true;
 }

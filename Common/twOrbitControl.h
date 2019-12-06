@@ -54,6 +54,9 @@ private:
 
     float32 _radius;
 
+    float32 _rotateX;
+    float32 _rotateY;
+
     bool _dirty;
 };
 } // namespace TwinkleGraphics

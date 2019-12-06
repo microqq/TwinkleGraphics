@@ -18,13 +18,14 @@ void Transform::Translate(float trans, glm::vec3 axis)
 
 void Transform::Rotate(float32 angle, glm::vec3 axis)
 {
-    _orientation = glm::normalize(_orientation * glm::quat(::cosf(angle * 0.5f), ::sinf(angle * 0.5f) * glm::normalize(axis)));
+    glm::quat new_quat(::cosf(angle * 0.5f), ::sinf(angle * 0.5f) * glm::normalize(axis));
+    _orientation = glm::normalize(new_quat * _orientation);
     _local_dirty = _world_dirty = true;
 }
 
 void Transform::Rotate(glm::quat quaternion)
 {
-    _orientation = glm::normalize(_orientation * quaternion);
+    _orientation = glm::normalize(quaternion * _orientation);
     _local_dirty = _world_dirty = true;
 }
 
@@ -36,7 +37,7 @@ void Transform::Rotate(glm::quat quaternion)
 void Transform::Rotate(glm::vec3 euler)
 {
     glm::quat euler_quat = glm::quat(euler);
-    _orientation = glm::normalize(_orientation * glm::inverse(euler_quat));
+    _orientation = glm::normalize(glm::inverse(euler_quat) * _orientation);
     _local_dirty = _world_dirty = true;
 }
 
@@ -53,7 +54,6 @@ void Transform::Scale(float scale, glm::vec3 axis)
 
 void Transform::LookAt(glm::vec3 center, glm::vec3 up)
 {
-
 }
 
 void Transform::Reset()
@@ -132,7 +132,7 @@ void Transform::ComputeLocalMatrix()
         glm::mat4 translate_matrix = glm::identity<glm::mat4>();
         translate_matrix = glm::translate(translate_matrix, -_position);
 
-        glm::mat4 scale_matrix = glm::identity<glm::mat4>();;
+        glm::mat4 scale_matrix = glm::identity<glm::mat4>();
         scale_matrix = glm::scale(scale_matrix, 1.0f / _scale);
         
         glm::mat4 rotate_matrix = glm::mat4_cast(glm::inverse(_orientation));
@@ -144,7 +144,7 @@ void Transform::ComputeLocalMatrix()
 
 void Transform::ComputeWorldMatrix()
 {
-    if(_world_dirty)
+    if(WorldDirty())
     {
         ComputeLocalMatrix();
 

@@ -27,8 +27,8 @@ public:
         , _position()
         , _scale(glm::vec3(1.0f, 1.0f, 1.0f))
         , _parent(nullptr)
-        , _local_dirty(false)
-        , _world_dirty(false)
+        , _local_dirty(true)
+        , _world_dirty(true)
     {}
     ~Transform() {}
 
@@ -62,7 +62,15 @@ public:
     inline void SetParent(Ptr parent) { _parent = parent; _world_dirty = true; }
     inline void RemoveFromParent() { _parent = nullptr; _world_dirty = true; }
     inline bool LocalDirty() { return _local_dirty; }
-    inline bool WorldDirty() { return _world_dirty; }
+    inline bool WorldDirty() 
+    {
+        if(_parent == nullptr)
+            return _world_dirty; 
+        else 
+        {
+            return _parent->WorldDirty() || _world_dirty;
+        }
+    }
 
 private:
     void ComputeLocalMatrix();
