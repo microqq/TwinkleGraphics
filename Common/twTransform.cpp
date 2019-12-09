@@ -54,6 +54,10 @@ void Transform::Scale(float scale, glm::vec3 axis)
 
 void Transform::LookAt(glm::vec3 center, glm::vec3 up)
 {
+    glm::mat4 mat_lookat = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), center, up);
+    _orientation = glm::quat_cast(mat_lookat);
+
+    _local_dirty = _world_dirty = true;
 }
 
 void Transform::Reset()
@@ -78,15 +82,27 @@ glm::vec3 Transform::GetWorldPosition()
     }
 }
 
-glm::quat Transform::GetWorldOrientation()
+glm::quat Transform::GetWorldToLocalOrientation()
 {
     if(_parent == nullptr)
     {
-        return GetOrientation();
+        return _orientation;
     }
     else
     {
-        return _parent->GetWorldOrientation() * _orientation;
+        return _parent->GetWorldToLocalOrientation() * _orientation;
+    }
+}
+
+glm::quat Transform::GetLocalToWorldOrientation()
+{
+    if(_parent == nullptr)
+    {
+        return glm::inverse(_orientation);
+    }
+    else
+    {
+        return glm::inverse(_orientation) * _parent->GetLocalToWorldOrientation();
     }
 }
 
@@ -135,7 +151,7 @@ void Transform::ComputeLocalMatrix()
         glm::mat4 scale_matrix = glm::identity<glm::mat4>();
         scale_matrix = glm::scale(scale_matrix, 1.0f / _scale);
         
-        glm::mat4 rotate_matrix = glm::mat4_cast(glm::inverse(_orientation));
+        glm::mat4 rotate_matrix = glm::mat4_cast(_orientation);
         _local_matrix = scale_matrix * rotate_matrix * translate_matrix;
 
         _local_dirty = false;

@@ -64,6 +64,7 @@ void TextureExploreView::Initialize()
     _proj_tex_camera = std::make_shared<Camera>(viewport, 30.0f, 0.1f, 1000.0f);
     // _proj_tex_camera->SetOrientation(quat(1.0f, 0.0f, 0.0f, glm::pi<float32>() * 0.5f));
     _proj_tex_camera->Translate(vec3(0.0f, 0.0f, 10.0f));
+
 }
 void TextureExploreView::Destroy()
 {
@@ -129,8 +130,10 @@ void TextureExploreView::Advance(float64 delta_time)
         {
             geom = _skybox;
             Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
-            mat4 rotate_mat = glm::mat4_cast(_camera->GetWorldOrientation());
+            mat4 rotate_mat = glm::mat4_cast(_camera->GetOrientation());
+            // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
             mat4 mvp = _projection_mat * rotate_mat;
+            
             skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
             
             Texture::Ptr skyboxtex = skyboxmat->GetMainTexture();
@@ -144,7 +147,7 @@ void TextureExploreView::Advance(float64 delta_time)
             if(_current_tex_option == 3)
             {
                 Transform::Ptr cubetrans = _cube->GetTransform();
-                cubetrans->Rotate(0.004f, glm::vec3(1.0f, 0.0f, 0.0f));
+                cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 
                 Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
                 mvp = _mvp_mat * cubetrans->GetLocalToWorldMatrix();
@@ -152,7 +155,7 @@ void TextureExploreView::Advance(float64 delta_time)
                 cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
 
                 Transform::Ptr spheretrans = _sphere->GetTransform();
-                spheretrans->Rotate(0.004f, glm::vec3(1.0f, 1.0f, 0.0f));
+                spheretrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 
                 Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
                 mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
@@ -284,24 +287,23 @@ void TextureExploreView::OnGUI()
             CreateCube(image);
             CreateIconSphere(image);
         }
-        if(ImGui::RadioButton(u8"程序纹理", &_current_tex_option, 4))
-        {
-            ResetGUI();
-        }
-        if(ImGui::RadioButton(u8"法线纹理", &_current_tex_option, 5))
-        {
-            ResetGUI();
-        }
+        // if(ImGui::RadioButton(u8"程序纹理", &_current_tex_option, 4))
+        // {
+        //     ResetGUI();
+        // }
+        // if(ImGui::RadioButton(u8"法线纹理", &_current_tex_option, 5))
+        // {
+        //     ResetGUI();
+        // }
         if(ImGui::RadioButton(u8"投影纹理", &_current_tex_option, 6))
         {
             ResetGUI();
             CreateNURBSSurface();
         }
-        if(ImGui::RadioButton(u8"纹理视图", &_current_tex_option, 7))
-        {
-            ResetGUI();
-
-        }
+        // if(ImGui::RadioButton(u8"纹理视图", &_current_tex_option, 7))
+        // {
+        //     ResetGUI();
+        // }
     }
     ImGui::End();
 

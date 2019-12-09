@@ -33,6 +33,9 @@ private:
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
+
+        vec4 tint_color(1.0f, 1.0f, 1.0f, 1.0f);
+        this->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 };
 

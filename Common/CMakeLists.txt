@@ -28,6 +28,7 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twUtil.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})

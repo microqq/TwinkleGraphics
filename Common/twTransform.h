@@ -48,8 +48,9 @@ public:
     inline glm::vec3 GetScale() { return _scale; }
 
     glm::vec3 GetWorldPosition();
-    glm::quat GetWorldOrientation();
     glm::vec3 GetWorldScale();
+    glm::quat GetWorldToLocalOrientation();
+    glm::quat GetLocalToWorldOrientation();
 
     inline void SetPosition(glm::vec3 position) { _position = position; _local_dirty = _world_dirty = true; }
     inline void SetOrientation(glm::quat orientation) { _orientation = orientation; _local_dirty = _world_dirty = true; }

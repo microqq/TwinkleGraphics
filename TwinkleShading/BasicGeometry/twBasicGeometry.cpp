@@ -92,10 +92,14 @@ void BasicGeometryView::Initialize()
         _model_mat_loc = glGetUniformLocation(_program->GetRes().id, "model");
         _view_mat_loc = glGetUniformLocation(_program->GetRes().id, "view");
         _projection_mat_loc = glGetUniformLocation(_program->GetRes().id, "projection");
+        int32 tintcolor_loc = glGetUniformLocation(_program->GetRes().id, "tint_color");
+
+        glm::vec4 tintcolor(1.0f, 1.0f, 1.0f, 1.0f);
+        glUniform4fv(tintcolor_loc, 1, glm::value_ptr(tintcolor));
     }
 
 
-    _plane_param = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+    _plane_param = glm::vec4(0.0f, 1.0f, 0.0f, 5.0f);
     //create infinite-plane shader
     ShaderReadInfo infplane_shaders_info[] = {
         {std::string("Assets/Shaders/infinite_plane.vert"), ShaderType::VERTEX_SHADER},

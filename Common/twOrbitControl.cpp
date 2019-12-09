@@ -40,6 +40,7 @@ void OrbitControl::Initialize()
     }
     _camera->ResetTransform();
     _camera->GetTransform()->SetParent(_transform);
+    // _camera->LookAt(glm::vec3(0.0f, -10.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     _camera->Translate(glm::vec3(0.0f, 0.0f, _distance));
 
     // _transform->Translate(_center);
@@ -102,7 +103,7 @@ void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2)
     glm::vec2 p = spherical_p2 - spherical_p1;
     glm::vec3 d = glm::vec3(-p.x, p.y, 0.0f);
 
-    glm::mat3 rot_mat = glm::mat3_cast(_transform->GetOrientation());
+    glm::mat3 rot_mat = glm::mat3_cast(_transform->GetLocalToWorldOrientation());
     d = rot_mat * d;
 
     _transform->Translate(d);
@@ -138,7 +139,7 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
     float32 theta_x = glm::acos(glm::dot(v0, v1));
     if (::fabs(theta_x) > glm::epsilon<float32>())
     {
-        factor = p.x > 0.0f ? 1.0f : -1.0f; 
+        factor = p.x > 0.0f ? 1.0f : -1.0f;
         _rotateX += theta_x * factor;
     }
 

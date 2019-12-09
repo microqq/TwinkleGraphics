@@ -38,6 +38,7 @@ class SubMesh;
 class Mesh;
 class Line;
 class Quad;
+class Plane;
 class Cube;
 class UVSphere;
 class NormalizedCubeSphere;
@@ -109,6 +110,7 @@ private:
     friend class Mesh;
     friend class Line;
     friend class Quad;
+    friend class Plane;
     friend class Cube;
     friend class UVSphere;
     friend class NormalizedCubeSphere;

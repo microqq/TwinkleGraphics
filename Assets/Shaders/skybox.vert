@@ -4,7 +4,6 @@ layout (location = 0) in vec3 position;
 
 out vec3 texcoord;
 
-uniform mat4 view;
 uniform mat4 mvp;
 
 void main()

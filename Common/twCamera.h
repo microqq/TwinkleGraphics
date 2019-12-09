@@ -107,9 +107,9 @@ public:
 
     Transform::Ptr GetTransform() { return _transform; }
     glm::vec3 GetPosition() { return _transform->GetPosition(); }
-    glm::quat GetOrientation() { return _transform->GetOrientation(); }
+    glm::quat GetOrientation() { return _transform->GetWorldToLocalOrientation(); }
 
-    glm::quat GetWorldOrientation() { return _transform->GetWorldOrientation(); }
+    glm::quat GetWorldOrientation() { return _transform->GetLocalToWorldOrientation(); }
     glm::vec3 GetWorldPosition() { return _transform->GetWorldPosition(); }
 
     void ResizeViewport(float32 scale_x, float32 scale_y)

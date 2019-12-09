@@ -47,6 +47,8 @@ protected:
 class UVSphere : public Geometry
 {
 public: 
+    typedef std::shared_ptr<UVSphere> Ptr;
+
     UVSphere(float32 radius = 1.0f, int32 subdivision = 20, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _radius(radius)
@@ -208,6 +210,8 @@ private:
 class NormalizedCubeSphere : public Geometry
 {
 public:
+    typedef std::shared_ptr<NormalizedCubeSphere> Ptr;
+
     NormalizedCubeSphere(float32 radius = 1.0f, int32 subdivision = 20, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _radius(radius)
@@ -354,6 +358,8 @@ private:
 class IcosahedronSphere : public Geometry
 {
 public:
+    typedef std::shared_ptr<IcosahedronSphere> Ptr;
+
     IcosahedronSphere(float32 radius = 1.0f, int32 subdivision = 20, MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _radius(radius)
@@ -694,6 +700,8 @@ private:
 class Quad : public Geometry
 {
 public:
+    typedef std::shared_ptr<Quad> Ptr;
+
     Quad(MeshDataFlag flag = MeshDataFlag::DEFAULT)
         : Geometry()
         , _size()
@@ -779,6 +787,107 @@ protected:
 protected:
     glm::vec2 _size;
 };
+
+
+class Plane : public Geometry
+{
+public:
+    typedef std::shared_ptr<Plane> Ptr;
+
+    Plane(glm::vec3 normal, float32 width, int32 subdivision = 32, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+        : Geometry()
+        , _normal(normal)
+        , _width(width)
+        , _subdivision(subdivision)
+    {
+        _flag = flag;
+    }
+    virtual ~Plane()
+    {}
+
+    virtual void GenerateMesh() override
+    {
+        if(_mesh == nullptr)
+        {
+            _mesh = CreatePlaneMesh();
+        }
+    }
+
+protected:
+    Mesh::Ptr CreatePlaneMesh()
+    {
+        int32 row_count = _subdivision + 1;
+        int32 col_count = _subdivision + 1;
+        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        submesh->Initialize(row_count * col_count, 0, _flag);
+
+        int32 indice_num = _subdivision * _subdivision * 6;
+        submesh->_indice_num = indice_num;
+        submesh->_indice = new uint32[indice_num]{};
+
+        for(int32 i = 0; i < _subdivision; i++)
+        {
+            for (int32 j = 0; j < _subdivision; j++)
+            {
+                submesh->_indice[i * col_count + j] = i * col_count + j;
+                submesh->_indice[i * col_count + j + 1] = i * col_count + col_count + j;
+                submesh->_indice[i * col_count + j + 2] = i * col_count + col_count + j + 1;
+
+                submesh->_indice[i * col_count + j + 3] = i * col_count + j;
+                submesh->_indice[i * col_count + j + 4] = i * col_count + col_count + j + 1;
+                submesh->_indice[i * col_count + j + 5] = i * col_count + j + 1;
+            }
+        }
+
+        /**
+         * @brief
+         * 0 __ __ __ 3
+         *  |        |
+         *  |        |
+         *  |__ __ __|
+         * 1          2
+         */
+        glm::vec4* uvs = submesh->GetVerticeUV();
+        glm::vec3 axis = glm::normalize(glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), _normal));
+        float32 cos_theta = glm::dot(_normal, glm::vec3(0.0f, 0.0f, 1.0f));
+        float32 theta = ::acosf(cos_theta);
+        glm::mat3 mat_rot = glm::mat3_cast(
+            glm::quat(::sinf(theta * 0.5f), ::cosf(theta * 0.5f) * axis)
+        );
+
+        for(int32 i = 0; i < row_count; i++)
+        {
+            float32 y = _width * 0.5f - (_width / _subdivision) * i;
+            float32 v = 1.0f - (1.0f / _subdivision) * i;
+
+            for (int32 j = 0; j < col_count; j++)
+            {
+                float32 x = (_width / _subdivision) * j - _width * 0.5f;
+                float32 u = (1.0f / _subdivision) * j - 1.0f;
+
+                glm::vec3 point(x, y, 0.0f);
+                // point = mat_rot * point;
+
+                submesh->_vertice_pos[i * col_count + j] = point;
+
+                if ((_flag & MeshDataFlag::HAS_UV) != 0)
+                {
+                    uvs[0] = glm::vec4(u, v, 0.0, 0.0f);
+                }
+            }
+        }
+
+        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        mesh->AddSubMesh(submesh);
+        return mesh;
+    }
+
+protected:
+    glm::vec3 _normal;
+    float32 _width;
+    int32 _subdivision;
+};
+
 
 class Line : public Geometry
 {
@@ -869,7 +978,7 @@ class BezierCurve : public Geometry
 public:
     typedef std::shared_ptr<BezierCurve> Ptr;
 
-    BezierCurve(glm::vec4* points, int32 degree)
+    BezierCurve(glm::vec4* points, int32 degree, int32 segments = 128)
     : Geometry()
     , _control_points(nullptr)
     , _points_count(degree + 1)
@@ -1106,6 +1215,9 @@ private:
 class BezierSurface : public Geometry
 {
 public:
+    typedef std::shared_ptr<BezierSurface> Ptr;
+
+
     BezierSurface(int32 n1, int32 n2)
     : Geometry()
     , _control_points(nullptr)
