@@ -111,7 +111,12 @@ void GLFWMainWindow::AddGUIFunc(IMGUI_FUNC func)
 
 void GLFWMainWindow::Reset()
 {
+    // int old_width = _width;
+    // int old_height = _height;
     glfwGetFramebufferSize(_window, &_width, &_height);
+
+    // float32 scale_x = (float32)_width / (float32)old_width;
+    // float32 scale_y = (float32)_height / (float32)old_height;
 
     if (_view_count > 0)
     {
@@ -119,7 +124,8 @@ void GLFWMainWindow::Reset()
         {
             if (_views[i] != nullptr)
             {
-                //_views[i]->Reset(Rect(0, 0, _width, _height));
+                // _views[i]->Resize(scale_x, scale_y);
+                 _views[i]->Reset(Rect(0, 0, _width, _height));
             }
         }
     }

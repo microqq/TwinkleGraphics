@@ -43,7 +43,10 @@ void View::Advance(float64 delta_time)
 
 void View::Render()
 {
-    const Viewport& viewport = _camera->GetViewport();
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    const Viewport &viewport = _camera->GetViewport();
     glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
     glScissor(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
     glEnable(GL_SCISSOR_TEST);

@@ -28,6 +28,9 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
+)
+
+SET(Util_SRC
     ${CMAKE_CURRENT_LIST_DIR}/twUtil.cpp
 )
 
@@ -41,6 +44,11 @@ target_include_directories(twCommon PUBLIC
 )
 target_compile_definitions(twCommon PUBLIC _DEBUG=1)
 target_compile_definitions(twCommon PUBLIC TEMPORARY_USE=1)
+
+add_library(twUtil SHARED ${Util_SRC})
+target_include_directories(twUtil PUBLIC 
+    ${CMAKE_CURRENT_LIST_DIR}
+)
 
 
 # target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)
@@ -59,4 +67,5 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/win/FreeImage.dll)
     target_link_libraries(twCommon imgui)
     target_link_libraries(twCommon vermilion)
+    target_link_libraries(twUtil twCommon)
 endif()

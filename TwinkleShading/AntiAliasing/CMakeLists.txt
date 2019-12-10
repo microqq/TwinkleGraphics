@@ -29,6 +29,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twAntiAliasing ${GLEWLIBDIR}/glew32.lib)
     target_link_libraries(twAntiAliasing ${GLFWLIBDIR}/libglfw3dll.a)
     target_link_libraries(twAntiAliasing twCommon)
+    target_link_libraries(twAntiAliasing twUtil)
     target_link_libraries(twAntiAliasing imgui)
 endif()
 
@@ -44,14 +45,14 @@ endif()
 #     endif()
 # endif()
 
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll)
-#         file(COPY 
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll 
-#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-#         )
-#         file(REMOVE
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll
-#         )
-#     endif()
-# endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll)
+        file(COPY 
+            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll 
+            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
+        )
+        file(REMOVE
+            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll
+        )
+    endif()
+endif()

@@ -29,6 +29,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twFirstTriangle ${GLEWLIBDIR}/glew32.lib)
     target_link_libraries(twFirstTriangle ${GLFWLIBDIR}/libglfw3dll.a)
     target_link_libraries(twFirstTriangle twCommon)
+    target_link_libraries(twFirstTriangle twUtil)
     target_link_libraries(twFirstTriangle imgui)
 endif()
 
@@ -44,14 +45,14 @@ endif()
 #     endif()
 # endif()
 
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll)
-#         file(COPY 
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll 
-#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-#         )
-#         file(REMOVE
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll
-#         )
-#     endif()
-# endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll)
+        file(COPY 
+            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll 
+            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
+        )
+        file(REMOVE
+            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll
+        )
+    endif()
+endif()
