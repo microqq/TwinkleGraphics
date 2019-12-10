@@ -11,6 +11,9 @@ add_library(twBasicGeometry SHARED
     ${BasicGeometry_SRCs}
 )
 
+set_target_properties(twBasicGeometry PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}/twShading)
+
 target_include_directories(twBasicGeometry PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../../Common
@@ -29,26 +32,26 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twBasicGeometry imgui)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so)
-        file(COPY 
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so 
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-        )
-        file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so
-        )
-    endif()
-endif()
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so)
+#         file(COPY 
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so 
+#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
+#         )
+#         file(REMOVE
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so
+#         )
+#     endif()
+# endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll)
-        file(COPY 
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll 
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-        )
-        file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll
-        )
-    endif()
-endif()
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll)
+#         file(COPY 
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll 
+#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
+#         )
+#         file(REMOVE
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll
+#         )
+#     endif()
+# endif()

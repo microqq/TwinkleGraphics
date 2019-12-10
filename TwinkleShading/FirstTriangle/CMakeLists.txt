@@ -11,6 +11,9 @@ add_library(twFirstTriangle SHARED
     ${FirstTriangle_SRCs}
 )
 
+set_target_properties(twFirstTriangle PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}/twShading)
+
 target_include_directories(twFirstTriangle PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../../Common
@@ -29,26 +32,26 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twFirstTriangle imgui)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.so)
-        file(COPY 
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.so 
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-        )
-        file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.so
-        )
-    endif()
-endif()
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.so)
+#         file(COPY 
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.so 
+#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
+#         )
+#         file(REMOVE
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.so
+#         )
+#     endif()
+# endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll)
-        file(COPY 
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll 
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-        )
-        file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll
-        )
-    endif()
-endif()
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll)
+#         file(COPY 
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll 
+#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
+#         )
+#         file(REMOVE
+#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll
+#         )
+#     endif()
+# endif()

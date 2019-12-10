@@ -152,9 +152,7 @@ private:
     NURBSSurface::Ptr _nurbs_surface;
     Mesh::Ptr _nurbs_control_line;
 
-    uint32 _model_mat_loc;
-    uint32 _view_mat_loc;
-    uint32 _projection_mat_loc;
+    uint32 _mvp_mat_loc;
 
     uint32 _infplane_mvp_loc;
     uint32 _planeparam_loc;

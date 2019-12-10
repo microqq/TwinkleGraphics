@@ -119,7 +119,7 @@ void GLFWMainWindow::Reset()
         {
             if (_views[i] != nullptr)
             {
-                _views[i]->Reset(Rect(0, 0, _width, _height));
+                //_views[i]->Reset(Rect(0, 0, _width, _height));
             }
         }
     }

@@ -4,67 +4,98 @@
 
 namespace TwinkleGraphics
 {
-extern "C" __TWExport
-Line::Ptr CreateLine(glm::vec3* points, int32 num)
+Line* CreateLine(glm::vec3* points, int32 num)
 {
-    Line::Ptr line = std::make_shared<Line>(points, num);
+    Line* line = new Line(points, num);
 
     return line;
 }
 
-extern "C" __TWExport
-Quad::Ptr CreateQuad(glm::vec2 size, MeshDataFlag flag)
+Quad* CreateQuad(glm::vec2 size, MeshDataFlag flag)
 {
-    Quad::Ptr quad = std::make_shared<Quad>(size, flag);
+    Quad* quad = new Quad(size, flag);
     quad->GenerateMesh();
 
     return quad;
 }
 
-Cube::Ptr CreateCube(float32 size, MeshDataFlag flag)
+Cube* CreateCube(float32 size, MeshDataFlag flag)
 {
-    Cube::Ptr cube = std::make_shared<Cube>(size, flag);
+    Cube* cube = new Cube(size, flag);
     cube->GenerateMesh();
+
+    MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+    CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
+    mat->SetSimpleUniformValue<float32, 1>("size", size);
+
+    renderer->SetMaterial(mat);
+    renderer->SetMesh(cube->GetMesh());
+
+    cube->SetMeshRenderer(renderer);
 
     return cube;
 }
 
-UVSphere::Ptr CreateUVSphere(float32 radius, int32 subdivision, MeshDataFlag flag)
+UVSphere* CreateUVSphere(float32 radius, int32 subdivision, MeshDataFlag flag)
 {
-    UVSphere::Ptr uvsphere = std::make_shared<UVSphere>(radius, subdivision, flag);
+    UVSphere* uvsphere = new UVSphere(radius, subdivision, flag);
     uvsphere->GenerateMesh();
+
+    MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+    SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
+
+    renderer->SetMaterial(mat);
+    renderer->SetMesh(uvsphere->GetMesh());
+
+    uvsphere->SetMeshRenderer(renderer);
 
     return uvsphere;
 }
 
-NormalizedCubeSphere::Ptr CreateNorCubeSphere(float32 radius, int32 subdivision, MeshDataFlag flag)
+NormalizedCubeSphere* CreateNorCubeSphere(float32 radius, int32 subdivision, MeshDataFlag flag)
 {
-    NormalizedCubeSphere::Ptr norcube_sphere = std::make_shared<NormalizedCubeSphere>(radius, subdivision, flag);
+    NormalizedCubeSphere* norcube_sphere = new NormalizedCubeSphere(radius, subdivision, flag);
     norcube_sphere->GenerateMesh();
+
+    MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+    SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
+
+    renderer->SetMaterial(mat);
+    renderer->SetMesh(norcube_sphere->GetMesh());
+
+    norcube_sphere->SetMeshRenderer(renderer);
 
     return norcube_sphere;
 }
 
-IcosahedronSphere::Ptr CreateIcosahedronSphere(float32 radius, int32 subdivision, MeshDataFlag flag)
+IcosahedronSphere* CreateIcosahedronSphere(float32 radius, int32 subdivision, MeshDataFlag flag)
 {
-    IcosahedronSphere::Ptr icosphere = std::make_shared<IcosahedronSphere>(radius, subdivision, flag);
+    IcosahedronSphere* icosphere = new IcosahedronSphere(radius, subdivision, flag);
     icosphere->GenerateMesh();
+
+    MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+    SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
+
+    renderer->SetMaterial(mat);
+    renderer->SetMesh(icosphere->GetMesh());
+
+    icosphere->SetMeshRenderer(renderer);
 
     return icosphere;
 }
 
 
-BezierCurve::Ptr CreateBezierCurve(glm::vec4* points, int32 num, int32 degree, int32 segments)
+BezierCurve* CreateBezierCurve(glm::vec4* points, int32 num, int32 degree, int32 segments)
 {
-    BezierCurve::Ptr bezier_curve = std::make_shared<BezierCurve>(points, degree, segments);
+    BezierCurve* bezier_curve = new BezierCurve(points, degree, segments);
     bezier_curve->GenerateCurve();
 
     return bezier_curve;
 }
 
-BSplineCurve::Ptr CreateBSplineCurve(glm::vec4* points, int32 num, Knot* knots, int32 knots_num, int32 degree, int32 segments)
+BSplineCurve* CreateBSplineCurve(glm::vec4* points, int32 num, Knot* knots, int32 knots_num, int32 degree, int32 segments)
 {
-    BSplineCurve::Ptr bspline_curve = std::make_shared<BSplineCurve>(num, degree);
+    BSplineCurve* bspline_curve = new BSplineCurve(num, degree);
     bspline_curve->SetControlPoints(points, num);
     bspline_curve->SetKnots(knots, knots_num);
 
@@ -73,10 +104,10 @@ BSplineCurve::Ptr CreateBSplineCurve(glm::vec4* points, int32 num, Knot* knots, 
     return bspline_curve;
 }
 
-NURBSSurface::Ptr CreateNURBSSurface(glm::vec4* points, Knot* uknots, Knot* vknots, int32 unum, int32 vnum, int32 udegree, int32 vdegree
+NURBSSurface* CreateNURBSSurface(glm::vec4* points, Knot* uknots, Knot* vknots, int32 unum, int32 vnum, int32 udegree, int32 vdegree
         , int32 subdivide, bool rational, MeshDataFlag flag)
 {
-    NURBSSurface::Ptr nurbs_surface = std::make_shared<NURBSSurface>(unum, udegree, vnum, vdegree
+    NURBSSurface* nurbs_surface = new NURBSSurface(unum, udegree, vnum, vdegree
         , subdivide, rational, flag);
     nurbs_surface->SetControlPoints(points, unum * vnum);
 
@@ -88,10 +119,10 @@ NURBSSurface::Ptr CreateNURBSSurface(glm::vec4* points, Knot* uknots, Knot* vkno
     return nurbs_surface;
 }
 
-Plane::Ptr CreatePlane(glm::vec3 normal, float32 width, int32 subdivision
+Plane* CreatePlane(glm::vec3 normal, float32 width, int32 subdivision
     , MeshDataFlag flag)
 {
-    Plane::Ptr plane = std::make_shared<Plane>(normal, width, subdivision, flag);
+    Plane* plane = new Plane(normal, width, subdivision, flag);
     plane->GenerateMesh();
 
     MeshRenderer::Ptr plane_renderer = std::make_shared<MeshRenderer>();
@@ -104,15 +135,34 @@ Plane::Ptr CreatePlane(glm::vec3 normal, float32 width, int32 subdivision
     return plane;
 }
 
-Sprite::Ptr CreateSprite(Texture2D::Ptr tex)
+Plane* CreateInifinitePlane(glm::vec3 normal, float distance, float32 width
+    , int32 subdivision, MeshDataFlag flag)
 {
-    Sprite::Ptr sprite = std::make_shared<Sprite>(tex);
+    Plane* plane = new Plane(glm::vec3(0.0f, 0.0f, 1.0f), width, subdivision, flag);
+    plane->GenerateMesh();
+
+    MeshRenderer::Ptr plane_renderer = std::make_shared<MeshRenderer>();
+    InfinitePlaneMaterial::Ptr plane_mat = std::make_shared<InfinitePlaneMaterial>();
+
+    glm::vec4 plane_params(normal, distance);
+    plane_mat->SetVecUniformValue<float32, 4>("plane_params", plane_params);
+
+    plane_renderer->SetSharedMaterial(plane_mat);
+    plane_renderer->SetMesh(plane->GetMesh());
+    plane->SetMeshRenderer(plane_renderer);
+
+    return plane;
+}
+
+Sprite* CreateSprite(Texture2D::Ptr tex)
+{
+    Sprite* sprite = new Sprite(tex);
     return sprite;
 }
 
-Sprite::Ptr CreateSprite1D(Texture1D::Ptr tex, glm::vec2 size)
+Sprite* CreateSprite1D(Texture1D::Ptr tex, glm::vec2 size)
 {
-    Sprite::Ptr sprite = std::make_shared<Sprite>(tex, size);
+    Sprite* sprite = new Sprite(tex, size);
     return sprite;
 }
 

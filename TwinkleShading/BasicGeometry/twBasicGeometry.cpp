@@ -69,14 +69,7 @@ void BasicGeometryView::Initialize()
     //camera view setting: frustum and its position, orientation
     _view_mat = glm::mat4(_camera->GetViewMatrix());
     _projection_mat = glm::mat4(_camera->GetProjectionMatrix());
-    _model_mat = glm::mat4(1.0f);
-
     _mvp_mat = _projection_mat * _view_mat;
-
-    //model transformation
-    // _model_mat = glm::rotate(_model_mat, glm::radians<float32>(-90), glm::vec3(1.0f, 0.0f, 0.0f));
-    // _model_mat = glm::scale(_model_mat, glm::vec3(0.5f, 0.5f, 0.5f));
-    _model_mat = glm::identity<glm::mat4>();
 
     ShaderManagerInst shaderMgr;
 
@@ -89,9 +82,7 @@ void BasicGeometryView::Initialize()
     {
         ShaderProgramUse use_program(_program);
         //get shader uniform location
-        _model_mat_loc = glGetUniformLocation(_program->GetRes().id, "model");
-        _view_mat_loc = glGetUniformLocation(_program->GetRes().id, "view");
-        _projection_mat_loc = glGetUniformLocation(_program->GetRes().id, "projection");
+        _mvp_mat_loc = glGetUniformLocation(_program->GetRes().id, "mvp");
         int32 tintcolor_loc = glGetUniformLocation(_program->GetRes().id, "tint_color");
 
         glm::vec4 tintcolor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -490,9 +481,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
     ShaderProgramUse use_program(_program);
 
     //shader uniform setting
-    glUniformMatrix4fv(_model_mat_loc, 1, GL_FALSE, glm::value_ptr(_model_mat));
-    glUniformMatrix4fv(_view_mat_loc, 1, GL_FALSE, glm::value_ptr(_view_mat));
-    glUniformMatrix4fv(_projection_mat_loc, 1, GL_FALSE, glm::value_ptr(_projection_mat));
+    glUniformMatrix4fv(_mvp_mat_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
 
     SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 

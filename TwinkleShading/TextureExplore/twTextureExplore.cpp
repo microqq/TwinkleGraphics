@@ -160,7 +160,6 @@ void TextureExploreView::Advance(float64 delta_time)
                 Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
                 mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
                 spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-                spheremat->SetSimpleUniformValue<float32, 1>("size", 2.5f);
 
                 Texture::Ptr spheretex = spheremat->GetMainTexture();
                 spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);

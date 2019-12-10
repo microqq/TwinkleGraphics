@@ -825,17 +825,20 @@ protected:
         submesh->_indice_num = indice_num;
         submesh->_indice = new uint32[indice_num]{};
 
+        int32 indice_index = 0;
         for(int32 i = 0; i < _subdivision; i++)
         {
             for (int32 j = 0; j < _subdivision; j++)
             {
-                submesh->_indice[i * col_count + j] = i * col_count + j;
-                submesh->_indice[i * col_count + j + 1] = i * col_count + col_count + j;
-                submesh->_indice[i * col_count + j + 2] = i * col_count + col_count + j + 1;
+                submesh->_indice[indice_index] = i * col_count + j;
+                submesh->_indice[indice_index + 1] = i * col_count + col_count + j;
+                submesh->_indice[indice_index + 2] = i * col_count + col_count + j + 1;
 
-                submesh->_indice[i * col_count + j + 3] = i * col_count + j;
-                submesh->_indice[i * col_count + j + 4] = i * col_count + col_count + j + 1;
-                submesh->_indice[i * col_count + j + 5] = i * col_count + j + 1;
+                submesh->_indice[indice_index + 3] = i * col_count + j;
+                submesh->_indice[indice_index + 4] = i * col_count + col_count + j + 1;
+                submesh->_indice[indice_index + 5] = i * col_count + j + 1;
+
+                indice_index += 6;
             }
         }
 
@@ -854,6 +857,10 @@ protected:
         glm::mat3 mat_rot = glm::mat3_cast(
             glm::quat(::sinf(theta * 0.5f), ::cosf(theta * 0.5f) * axis)
         );
+        if(_normal == glm::vec3(0.0f, 0.0f, 1.0f))
+        {
+            mat_rot = glm::identity<glm::mat3>();
+        }
 
         for(int32 i = 0; i < row_count; i++)
         {
@@ -866,9 +873,7 @@ protected:
                 float32 u = (1.0f / _subdivision) * j - 1.0f;
 
                 glm::vec3 point(x, y, 0.0f);
-                // point = mat_rot * point;
-
-                submesh->_vertice_pos[i * col_count + j] = point;
+                submesh->_vertice_pos[i * col_count + j] = mat_rot * point;
 
                 if ((_flag & MeshDataFlag::HAS_UV) != 0)
                 {
@@ -887,7 +892,6 @@ protected:
     float32 _width;
     int32 _subdivision;
 };
-
 
 class Line : public Geometry
 {
@@ -984,13 +988,13 @@ public:
     , _points_count(degree + 1)
     {}
 
-    ~BezierCurve()
+    virtual ~BezierCurve()
     {
         SAFE_DEL_ARR(_control_points);
     }
 
-    virtual void SetControlPoints(glm::vec4* points, int32 count);
-    virtual void TranslatePoint(int32 index, glm::vec3 v);
+    virtual void SetControlPoints(glm::vec4* points, int32 count) {}
+    virtual void TranslatePoint(int32 index, glm::vec3 v) {}
     virtual void GenerateCurve()
     {
 
@@ -1409,43 +1413,6 @@ public:
             }
         }
 
-        // glm::vec4 *v_points = new glm::vec4[v_count * _u_points_count];
-        // int32 v_index = 0;
-        // //http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/surface/bspline-de-boor.html
-        // //稍微改了下计算顺序，这里按列优先计算（控制点按列优先顺序排列）
-        // for(int32 col = 0; col < _u_points_count; col++)
-        // {
-        //     for (int32 i = _v_degree; i < v_span; i++)
-        //     {
-        //         v_step = (_v_knots[i + 1].u - _v_knots[i].u) / _subdivide;
-
-        //         int32 gen_points_count = _subdivide;
-        //         if(i == v_span - 1)
-        //         {
-        //             gen_points_count = _subdivide + 1;
-        //         }
-
-        //         for (int32 j = 0; j < gen_points_count; j++)
-        //         {
-        //             float32 v = _v_knots[i].u + v_step * j;
-
-        //             v_points[v_index++] = DeBoor(v, 
-        //                 i, 
-        //                 _v_degree, 
-        //                 _v_knots, 
-        //                 &(_control_points[_v_points_count * col])
-        //             );
-
-        //             // std::cout << "------------------------" << std::endl;
-        //             // std::cout << "x:" << v_points[v_index - 1].x << std::endl;
-        //             // std::cout << "y:" << v_points[v_index - 1].y << std::endl;
-        //             // std::cout << "z:" << v_points[v_index - 1].z << std::endl;
-        //         }
-        //     }
-        // }
-
-        // glm::vec4* u_points = new glm::vec4[_u_points_count];
-        // //接下来按行序——也就是 u 方向来计算表面f(u,v)上的点
         for(int32 row = 0; row < v_count; row++)
         {
             if (row != v_count - 1)
@@ -1461,39 +1428,7 @@ public:
                     indices[gen_indice_index++] = (row + 1) * u_count + k;
                 }
             }
-            // //copy control points
-            // for(int32 i = 0; i < _u_points_count; i++)
-            // {
-            //     u_points[i] = v_points[row + i * v_count];
-            // }
-
-            // for (int32 i = _u_degree; i < u_span; i++)
-            // {
-            //     u_step = (_u_knots[i + 1].u - _u_knots[i].u) / _subdivide;
-
-            //     int32 gen_points_count = _subdivide;
-            //     if (i == u_span - 1)
-            //     {
-            //         gen_points_count = _subdivide + 1;
-            //     }
-
-            //     for (int32 j = 0; j < gen_points_count; j++)
-            //     {
-            //         float32 u = _u_knots[i].u + u_step * j;
-
-            //         glm::vec4 result = DeBoor(u, i, _u_degree, _u_knots, u_points); 
-            //         vertices[gen_point_index++] = glm::vec3(result.x, result.y, result.z) / result.w;
-
-            //         // std::cout << "------------------------" << std::endl;
-            //         // std::cout << "x:" << vertices[gen_point_index - 1].x << std::endl;
-            //         // std::cout << "y:" << vertices[gen_point_index - 1].y << std::endl;
-            //         // std::cout << "z:" << vertices[gen_point_index - 1].z << std::endl;
-            //     }
-            // }
         }
-
-        // SAFE_DEL_ARR(v_points);
-        // SAFE_DEL_ARR(u_points);
     }
 
     glm::vec4 GetPoint(float32 u, float32 v)

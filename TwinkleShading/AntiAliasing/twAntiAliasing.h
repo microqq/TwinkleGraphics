@@ -27,7 +27,9 @@ public:
 
 private:
     AntiAliasingView* _view;
+    AntiAliasingView* _view2;
     CameraControl* _camera_control;
+    CameraControl* _camera_control2;
 };
 
 class AntiAliasingView : public View
@@ -61,10 +63,20 @@ private:
     glm::mat4 _view_mat;
     glm::mat4 _projection_mat;    
     glm::mat4 _mvp_mat;
+    glm::mat4 _origin_mvp_mat;
 
     glm::vec4 _viewport_params;
 
     Plane::Ptr _plane_left;
+    Plane::Ptr _plane_top;
+    Plane::Ptr _plane_right;
+    Plane::Ptr _plane_bottom;
+    Plane::Ptr _plane_back;
+
+    IcosahedronSphere::Ptr _sphere;
+    Cube::Ptr _cube;
+
+    Transform::Ptr _root_trans;
 
     uint32 *_vaos;
     uint32 *_vbos;

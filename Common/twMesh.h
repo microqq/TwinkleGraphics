@@ -128,20 +128,34 @@ public:
     typedef std::shared_ptr<Mesh> Ptr;
     typedef std::weak_ptr<Mesh> WeakPtr;
 
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateLineMesh(glm::vec3* points, int32 num);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateLineMeshEx(glm::vec4* points, int32 num);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateQuadMesh(float32 x, float32 y);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateCubeMesh(float32 size);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateBezierLine(glm::vec3* points, int32 num, int32 segments = 128);
+    /*=============deprecated, use "Geometry" instead=============*/
     static Ptr CreateQuadraticBezierLine(glm::vec3* points, int32 segments = 128);
-    static Ptr CreateCubicBezierLine(glm::vec3* points, int32 segments = 128);
+     /*=============deprecated, use "Geometry" instead=============*/
+   static Ptr CreateCubicBezierLine(glm::vec3* points, int32 segments = 128);
+    /*=============deprecated, use "Geometry" instead=============*/
 
 private:
+    /*=============deprecated, use "Geometry" instead=============*/
     static void CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius);
+    /*=============deprecated, use "Geometry" instead=============*/
     static glm::vec3 DeCasteljau(glm::vec3* points, glm::vec3* helper, int32 num, float32 u);
+    /*=============deprecated=============*/
 
 public:
     Mesh() {}
