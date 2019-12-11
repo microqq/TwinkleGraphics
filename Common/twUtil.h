@@ -10,6 +10,8 @@
 
 namespace TwinkleGraphics
 {
+extern "C" __TWExport Triangle* CreateTriangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2);
+
 extern "C" __TWExport Line* CreateLine(glm::vec3* points, int32 num);
 extern "C" __TWExport Quad* CreateQuad(glm::vec2 size
     , MeshDataFlag flag = MeshDataFlag::DEFAULT);

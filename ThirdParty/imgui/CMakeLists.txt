@@ -22,6 +22,10 @@ target_include_directories(imgui PUBLIC
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
 # target_link_libraries(imgui -lstdc++fs)
 
+set_target_properties(imgui PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(imgui OpenGL32.lib)
     target_link_libraries(imgui ${GLEWLIBDIR}/glew32.lib)

@@ -111,6 +111,15 @@ void AntiAliasingView::OnGUI()
         if (ImGui::RadioButton(u8"MSAA", &_current_aa_option, 0))
         {
         }
+        if (ImGui::RadioButton(u8"SSAA", &_current_aa_option, 1))
+        {
+        }
+        if (ImGui::RadioButton(u8"CSAA", &_current_aa_option, 2))
+        {
+        }
+        if (ImGui::RadioButton(u8"CFAA", &_current_aa_option, 3))
+        {
+        }
     }
     ImGui::End();
 }
@@ -179,6 +188,27 @@ void AntiAliasingView::CreateScene()
         trans->SetParent(_root_trans);
 
         CreateGeometry(_cube, 6);
+    }
+
+    glm::vec4 tintcolor(0.6f, 0.9f, 0.2f, 1.0f);
+    glm::vec3 p0(-3.0f, 5.0f, 0.0f), p1(-4.0f, 0.0f, 0.0f), p2(3.0f, 5.2f, 0.0f);
+    _triangle_back.reset(CreateTriangle(p0, p1, p2));
+    {
+        Material::Ptr material = _triangle_back->GetMeshRenderer()->GetSharedMaterial();
+        material->SetVecUniformValue<float32, 4>("tint_color", tintcolor);
+
+        CreateGeometry(_triangle_back, 7);
+    }
+    p0 = glm::vec3(-2.0f, 3.0f, 0.0f);
+    p1 = glm::vec3(-3.0f, 0.0f, 0.0f);
+    p2 = glm::vec3(3.0f, 2.3f, 0.0f);
+    _triangle_front.reset(CreateTriangle(p0, p1, p2));
+    {
+        tintcolor = glm::vec4(1.0f, 0.3f, 0.8f, 1.0f);
+        Material::Ptr material = _triangle_front->GetMeshRenderer()->GetSharedMaterial();
+        material->SetVecUniformValue<float32, 4>("tint_color", tintcolor);
+
+        CreateGeometry(_triangle_front, 8);
     }
 }
 
@@ -258,6 +288,15 @@ void AntiAliasingView::UpdateScene()
         material_cube->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     }
 
+    Material::Ptr material_triangle = _triangle_back->GetMeshRenderer()->GetSharedMaterial();
+    {
+        material_triangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+    }
+    material_triangle = _triangle_front->GetMeshRenderer()->GetSharedMaterial();
+    {
+        material_triangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+    }
+
     _root_trans->Rotate(0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
@@ -270,6 +309,8 @@ void AntiAliasingView::RenderScene()
     RenderGeometry(_plane_back, 4);
     RenderGeometry(_sphere, 5);
     RenderGeometry(_cube, 6);
+    RenderGeometry(_triangle_back, 7);
+    RenderGeometry(_triangle_front, 8);
 }
 
 void AntiAliasingView::DestroyScene()
@@ -345,7 +386,16 @@ void AntiAliasingView::RenderGeometry(Geometry::Ptr geom, int32 index)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
+
+    if(_current_aa_option == AAOption::MSAA)
+    {
+        glEnable(GL_MULTISAMPLE);
+    }
+    else
+    {
+        glDisable(GL_MULTISAMPLE);
+    }
 
     SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
 

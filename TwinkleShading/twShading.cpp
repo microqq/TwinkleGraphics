@@ -17,7 +17,7 @@ PluginManagerInst pluginMgr;
 static MapPlugins PluginPaths;
 static std::string CurrentPlugin = std::string();
 //create opengl window
-static GLFWMainWindow mainWindow;
+static GLFWMainWindow mainWindow(1024, 768);
 
 void LoadPluginsGUI();
 void UnLoadCurrentPlugin();

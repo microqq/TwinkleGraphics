@@ -40,6 +40,51 @@ protected:
     MeshDataFlag _flag;
 };
 
+class Triangle : public Geometry
+{
+public: 
+    typedef std::shared_ptr<Triangle> Ptr;
+
+    Triangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+        : Geometry()
+        , _p0(p0)
+        , _p1(p1)
+        , _p2(p2)
+    {
+        _flag = flag;
+    }
+    virtual ~Triangle()
+    {}
+
+    virtual void GenerateMesh() override
+    {
+        if(_mesh == nullptr)
+        {
+            SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+            submesh->Initialize(3, 0, _flag);
+
+            submesh->_indice_num = 3;
+            submesh->_indice = new uint32[3];
+
+            submesh->_vertice_pos[0] = _p0;
+            submesh->_vertice_pos[1] = _p1;
+            submesh->_vertice_pos[2] = _p2;
+
+            submesh->_indice[0] = 0;
+            submesh->_indice[1] = 1;
+            submesh->_indice[2] = 2;
+
+            _mesh = std::make_shared<Mesh>();
+            _mesh->AddSubMesh(submesh);
+        }
+    }
+
+private:
+    glm::vec3 _p0;
+    glm::vec3 _p1;
+    glm::vec3 _p2;
+};
+
 /**
  * @brief 
  * 
@@ -110,18 +155,8 @@ private:
                 z = radius * sin(v_step * (i + 1)) * sin(u_step * j);
 
                 submesh->_vertice_pos[k++] = glm::vec3(x, y, z);
-                // submesh->_vertice_pos[k].x = x;
-                // submesh->_vertice_pos[k].y = y;
-                // submesh->_vertice_pos[k++].z = z;
             }
         }
-
-        // submesh->_indice_num = num;
-        // submesh->_indice = new uint32[num];
-        // for(int i = 0; i < num; i++)
-        // {
-        //     submesh->_indice[i] = i;
-        // }
 
         //compute indice
         SAFE_DEL_ARR(submesh->_indice);

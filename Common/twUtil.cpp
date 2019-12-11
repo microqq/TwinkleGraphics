@@ -4,6 +4,21 @@
 
 namespace TwinkleGraphics
 {
+Triangle* CreateTriangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2)
+{
+    Triangle* triangle = new Triangle(p0, p1, p2);
+    triangle->GenerateMesh();
+
+    MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+    BasicGeomMaterial::Ptr mat = std::make_shared<BasicGeomMaterial>();
+
+    renderer->SetSharedMaterial(mat);
+    renderer->SetMesh(triangle->GetMesh());
+    triangle->SetMeshRenderer(renderer);
+
+    return triangle;
+}
+
 Line* CreateLine(glm::vec3* points, int32 num)
 {
     Line* line = new Line(points, num);

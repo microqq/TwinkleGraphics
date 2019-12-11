@@ -64,7 +64,6 @@ void TextureExploreView::Initialize()
     _proj_tex_camera = std::make_shared<Camera>(viewport, 30.0f, 0.1f, 1000.0f);
     // _proj_tex_camera->SetOrientation(quat(1.0f, 0.0f, 0.0f, glm::pi<float32>() * 0.5f));
     _proj_tex_camera->Translate(vec3(0.0f, 0.0f, 10.0f));
-
 }
 void TextureExploreView::Destroy()
 {

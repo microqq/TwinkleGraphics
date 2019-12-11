@@ -76,6 +76,7 @@ protected:
     CameraControl* _camera_control;
 
     bool _done;
+    bool _ismainview;
 };
 
 } // namespace TwinkleGraphics

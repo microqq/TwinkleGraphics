@@ -188,7 +188,8 @@ void GLFWMainWindow::Initialise()
     // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    
     /* Create a windowed mode window and its OpenGL context */
     _window = glfwCreateWindow(_width, _height, "Twinkle Shading", NULL, NULL);
     if (!_window)

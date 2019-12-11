@@ -30,7 +30,7 @@ endif()
 
 
 # set output push
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+# set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 
 # including path

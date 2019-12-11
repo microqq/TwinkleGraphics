@@ -45,13 +45,20 @@ target_include_directories(twCommon PUBLIC
 target_compile_definitions(twCommon PUBLIC _DEBUG=1)
 target_compile_definitions(twCommon PUBLIC TEMPORARY_USE=1)
 
+set_target_properties(twCommon PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+
+
 add_library(twUtil SHARED ${Util_SRC})
 target_include_directories(twUtil PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
+set_target_properties(twUtil PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 
-# target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)
+
+         # target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)
 
 # #CMake Error: Cannot determine link language for target "twCommon"
 # set_target_properties(twCommon PROPERTIES LINKER_LANGUAGE CXX)

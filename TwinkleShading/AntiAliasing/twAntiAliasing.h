@@ -60,6 +60,15 @@ private:
     void RenderGeometry(Geometry::Ptr geom, int32 index);
 
 private:
+    enum AAOption
+    {
+        MSAA = 0,
+        SSAA = 1,
+        CSAA = 2,
+        CFAA = 3,
+        FXAA = 4
+    };
+
     glm::mat4 _view_mat;
     glm::mat4 _projection_mat;    
     glm::mat4 _mvp_mat;
@@ -75,6 +84,8 @@ private:
 
     IcosahedronSphere::Ptr _sphere;
     Cube::Ptr _cube;
+    Triangle::Ptr _triangle_back;
+    Triangle::Ptr _triangle_front;
 
     Transform::Ptr _root_trans;
 
@@ -83,7 +94,6 @@ private:
     uint32 *_ebos;
 
     int32 _current_aa_option;
-
 
     friend class AntiAliasing;
 };

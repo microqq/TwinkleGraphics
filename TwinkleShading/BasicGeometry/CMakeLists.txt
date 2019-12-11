@@ -12,7 +12,7 @@ add_library(twBasicGeometry SHARED
 )
 
 set_target_properties(twBasicGeometry PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}/twShading)
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 
 target_include_directories(twBasicGeometry PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
@@ -21,7 +21,7 @@ target_include_directories(twBasicGeometry PUBLIC
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(twBasicGeometry twCommon imgui)
+    target_link_libraries(twBasicGeometry twCommon imgui twUtil)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")

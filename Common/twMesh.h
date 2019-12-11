@@ -36,6 +36,7 @@ enum class LineEndCapFlag
 
 class SubMesh;
 class Mesh;
+class Triangle;
 class Line;
 class Quad;
 class Plane;
@@ -108,6 +109,7 @@ private:
     int32 _index;
 
     friend class Mesh;
+    friend class Triangle;
     friend class Line;
     friend class Quad;
     friend class Plane;

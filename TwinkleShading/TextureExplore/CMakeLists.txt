@@ -12,7 +12,7 @@ add_library(twTextureExplore SHARED
 )
 
 set_target_properties(twTextureExplore PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}/twShading)
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 
 target_include_directories(twTextureExplore PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
@@ -21,7 +21,7 @@ target_include_directories(twTextureExplore PUBLIC
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(twTextureExplore twCommon imgui)
+    target_link_libraries(twTextureExplore twCommon imgui twUtil)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
