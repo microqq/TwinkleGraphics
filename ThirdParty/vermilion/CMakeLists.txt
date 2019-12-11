@@ -13,9 +13,10 @@ target_include_directories(vermilion PUBLIC
 target_compile_definitions(vermilion PUBLIC _DEBUG=1)
 target_compile_options(vermilion PUBLIC -fno-elide-constructors)
 
-
-set_target_properties(vermilion PROPERTIES
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set_target_properties(vermilion PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+endif()
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 #     target_link_libraries(imgui OpenGL32.lib)

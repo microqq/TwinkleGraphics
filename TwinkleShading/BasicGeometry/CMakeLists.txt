@@ -11,8 +11,10 @@ add_library(twBasicGeometry SHARED
     ${BasicGeometry_SRCs}
 )
 
-set_target_properties(twBasicGeometry PROPERTIES
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set_target_properties(twBasicGeometry PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+endif()
 
 target_include_directories(twBasicGeometry PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty

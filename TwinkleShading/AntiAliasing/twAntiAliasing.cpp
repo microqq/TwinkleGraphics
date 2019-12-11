@@ -224,7 +224,7 @@ void AntiAliasingView::UpdateScene()
     glm::mat4 model = _plane_left->GetTransform()->GetLocalToWorldMatrix();
     glm::mat4 mvp = _mvp_mat * model;
     material_plane_left->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-    glm::vec4 tint_color(0.7f, 0.0f, 0.0f, 1.0f);
+    glm::vec4 tint_color(0.5f, 0.0f, 0.0f, 1.0f);
     material_plane_left->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 
     Material::Ptr material_plane_top = _plane_top->GetMeshRenderer()->GetSharedMaterial();
@@ -232,7 +232,7 @@ void AntiAliasingView::UpdateScene()
         model = _plane_top->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvp_mat * model;
         material_plane_top->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-        tint_color = glm::vec4(0.0f, 0.0f, 0.7f, 1.0f);
+        tint_color = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
         material_plane_top->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 
@@ -241,7 +241,7 @@ void AntiAliasingView::UpdateScene()
         model = _plane_right->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvp_mat * model;
         material_plane_right->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-        tint_color = glm::vec4(0.0f, 0.7f, 0.0f, 1.0f);
+        tint_color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
         material_plane_right->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 
@@ -257,7 +257,7 @@ void AntiAliasingView::UpdateScene()
     Material::Ptr material_plane_back = _plane_back->GetMeshRenderer()->GetSharedMaterial();
     {
         model = _plane_back->GetTransform()->GetLocalToWorldMatrix();
-        tint_color = glm::vec4(0.7f, 0.7f, 0.0f, 1.0f);
+        tint_color = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
         mvp = _mvp_mat * model;
         material_plane_back->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
         material_plane_back->SetVecUniformValue<float32, 4>("tint_color", tint_color);
@@ -302,6 +302,8 @@ void AntiAliasingView::UpdateScene()
 
 void AntiAliasingView::RenderScene()
 {
+    glDisable(GL_POLYGON_OFFSET_FILL);
+
     RenderGeometry(_plane_left, 0);
     RenderGeometry(_plane_top, 1);
     RenderGeometry(_plane_right, 2);
@@ -310,6 +312,9 @@ void AntiAliasingView::RenderScene()
     RenderGeometry(_sphere, 5);
     RenderGeometry(_cube, 6);
     RenderGeometry(_triangle_back, 7);
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(-1.0f, 0.0f);
     RenderGeometry(_triangle_front, 8);
 }
 
@@ -382,9 +387,9 @@ void AntiAliasingView::RenderGeometry(Geometry::Ptr geom, int32 index)
     }
 
     glFrontFace(GL_CCW);
-    glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    glDisable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -405,12 +410,12 @@ void AntiAliasingView::RenderGeometry(Geometry::Ptr geom, int32 index)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
-    glDisable(GL_BLEND);
-
     for (auto tex_slot : pass->GetTextureSlots())
     {
         tex_slot.second.UnBind();
     }
+
+    glDisable(GL_BLEND);
 }
 
 } // namespace TwinkleGraphics

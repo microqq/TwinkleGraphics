@@ -113,7 +113,7 @@ void GLFWMainWindow::Reset()
 {
     // int old_width = _width;
     // int old_height = _height;
-    glfwGetFramebufferSize(_window, &_width, &_height);
+    glfwGetWindowSize(_window, &_width, &_height);
 
     // float32 scale_x = (float32)_width / (float32)old_width;
     // float32 scale_y = (float32)_height / (float32)old_height;
@@ -285,8 +285,8 @@ void GLFWMainWindow::HandleEvents()
 
     int32 old_width = _width;
     int32 old_height = _height;
-    glfwGetFramebufferSize(_window, &_width, &_height);
-    if(old_width != _width || old_height != _height)
+    glfwGetWindowSize(_window, &_width, &_height);
+    if (old_width != _width || old_height != _height)
     {
         if (old_width == 0 || _width == 0 ||
             old_height == 0 || _height == 0)

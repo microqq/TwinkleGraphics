@@ -30,7 +30,9 @@ endif()
 
 
 # set output push
-# set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+endif()
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 
 # including path

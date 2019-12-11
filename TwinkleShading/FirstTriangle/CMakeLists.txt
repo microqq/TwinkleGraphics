@@ -11,8 +11,11 @@ add_library(twFirstTriangle SHARED
     ${FirstTriangle_SRCs}
 )
 
-set_target_properties(twFirstTriangle PROPERTIES
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set_target_properties(twFirstTriangle PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+endif()
 
 target_include_directories(twFirstTriangle PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
