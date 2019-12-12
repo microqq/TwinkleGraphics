@@ -9,10 +9,19 @@ in vec3 near_position;
 in vec3 far_position;
 
 //plane equation: Ax + By + Cz + D = 0
+//the line intersect plane at P1, compute parameter t = (-D - (A, B, C) * P0) / (A, B, C) * V
 uniform vec4 plane_param;
 uniform mat4 mvp;
 
-//line intersect plane at P1, compute parameter t = (-D - (A, B, C) * P0) / (A, B, C) * V
+/**
+Martin: https://github.com/martin-pr/possumwood/wiki/Infinite-ground-plane-using-GLSL-shaders
+*/
+float checkerboard(vec2 R, float scale) {
+	return float((
+		int(floor(R.x / scale)) +
+		int(floor(R.y / scale))
+	) % 2);
+}
 
 void main()
 {
@@ -38,15 +47,14 @@ void main()
 	float depth = (intersect_proj.z / intersect_proj.w + 1.0f) * 0.5f * (far - near) + near;
 	gl_FragDepth = depth;
 
-	vec2 grid = intersect.xz;
-	float fx = 1.0f - step(0.0f, mod(abs(grid.x), 10.0f) - 5.0f);
-	float fy = 1.0f - step(0.0f, mod(abs(grid.y), 10.0f) - 5.0f);
+	/**
+	Martin: https://github.com/martin-pr/possumwood/wiki/Infinite-ground-plane-using-GLSL-shaders
+	*/
+	float c =
+		checkerboard(intersect.xz, 1.0f) * 0.3f +
+		checkerboard(intersect.xz, 10.0f) * 0.2f +
+		checkerboard(intersect.xz, 100.0f) * 0.1f +
+		0.1f;
 
-	float f = fx + fy;
-	f = step(1.0f, f);
-
-	vec3 linecolor = vec3(0.6f, 0.6f, 0.6f);
-	vec3 color = vec3(0.4f, 0.4f, 0.4f);
-
-	out_fragcolor = vec4(f * linecolor + color * (1.0f - f), 1.0f);
+	out_fragcolor = vec4(vec3(0.0f, 0.0f, c * 0.5f + 0.3f), 1f) * float(t > 0.0f);
 }
