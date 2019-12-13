@@ -4,6 +4,7 @@
 #include "imgui.h"
 
 #include "twBasicGeometry.h"
+#include "twUtil.h"
 
 namespace TwinkleGraphics
 {
@@ -25,7 +26,7 @@ void BasicGeometry::Install()
 
     // Initilize view
     Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 1000.0f);
     _view = new BasicGeometryView();
     _view->SetViewCamera(camera);
     _camera_control = new OrbitControl(camera);
@@ -89,20 +90,10 @@ void BasicGeometryView::Initialize()
         glUniform4fv(tintcolor_loc, 1, glm::value_ptr(tintcolor));
     }
 
-
-    _plane_param = glm::vec4(0.0f, 1.0f, 0.0f, 5.0f);
     //create infinite-plane shader
     ShaderReadInfo infplane_shaders_info[] = {
         {std::string("Assets/Shaders/infinite_plane.vert"), ShaderType::VERTEX_SHADER},
         {std::string("Assets/Shaders/infinite_plane.frag"), ShaderType::FRAGMENT_SHADER}};
-
-    _infinite_plane_program = shaderMgr->ReadShaders(infplane_shaders_info, 2);
-    {
-        ShaderProgramUse use_program(_infinite_plane_program);
-        _infplane_mvp_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "mvp");
-        _planeparam_loc = glGetUniformLocation(_infinite_plane_program->GetRes().id, "plane_param");
-    }
-
 
     const Viewport& viewport = _camera->GetViewport();
     _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
@@ -141,6 +132,9 @@ void BasicGeometryView::Advance(float64 delta_time)
     _view_mat = _camera->GetViewMatrix();
     _projection_mat = _camera->GetProjectionMatrix();
     _mvp_mat = _projection_mat * _view_mat;
+
+    Material::Ptr material = _infinite_plane->GetMeshRenderer()->GetSharedMaterial();
+    material->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
 }
 
 void BasicGeometryView::RenderImpl()
@@ -289,7 +283,7 @@ void BasicGeometryView::OnGUI()
                 CreateInfinitePlane();
             }
             _front_face = GL_CCW;
-            _current_mesh = _infinite_plane;
+            _current_mesh = _infinite_plane->GetMesh();
         }
         if(ImGui::RadioButton(u8"二阶贝塞尔曲线", &_current_mesh_index, 7))
         {
@@ -503,23 +497,40 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
  */
 void BasicGeometryView::RenderInfinitePlane()
 {
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    Material::Ptr mat = _infinite_plane->GetMeshRenderer()->GetMaterial();
+    RenderPass::Ptr pass = mat->GetRenderPass(0);
+    ShaderProgram::Ptr shader = pass->GetShader();
 
+    for (auto tex_slot : pass->GetTextureSlots())
+    {
+        tex_slot.second.Apply();
+    }
+
+    ShaderProgramUse use(shader);
+    for (auto loc : pass->GetUniformLocations())
+    {
+        loc.second.Bind();
+    }
+    
     glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    ShaderProgramUse use_program(_infinite_plane_program);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    SubMesh::Ptr submesh = _infinite_plane->GetMesh()->GetSubMesh(0);
+
+    //draw command use vertex array object
+    glBindVertexArray(_vaos[6]);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[6]);
+    glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
+
+    glDisable(GL_BLEND);
+
+    for (auto tex_slot : pass->GetTextureSlots())
     {
-        glUniformMatrix4fv(_infplane_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
-        glUniform4fv(_planeparam_loc, 1, glm::value_ptr(_plane_param));
-
-        SubMesh::Ptr submesh = _infinite_plane->GetSubMesh(0);
-
-        //draw command use vertex array object
-        glBindVertexArray(_vaos[6]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[6]);
-        glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
+        tex_slot.second.UnBind();
     }
 }
 
@@ -646,8 +657,26 @@ void BasicGeometryView::CreateLine()
 
 void BasicGeometryView::CreateInfinitePlane()
 {
-    _infinite_plane = Mesh::CreateQuadMesh(2.0f, 2.0f);
-    SubMesh::Ptr submesh = _infinite_plane->GetSubMesh(0);
+    _infinite_plane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
+
+    ImageManagerInst imageMgr;
+    ImageReadInfo images_info = {"Assets/Textures/grid.png"};
+    Image::Ptr image = imageMgr->ReadImage(images_info);
+
+    Texture2D::Ptr texture = nullptr;
+    texture = std::make_shared<Texture2D>(true);
+    texture->SetImage(image);
+
+    texture->SetWrap<WrapParam::WRAP_S>(WrapMode::REPEAT);
+    texture->SetWrap<WrapParam::WRAP_T>(WrapMode::REPEAT);
+
+    texture->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
+    texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
+
+    Material::Ptr material = _infinite_plane->GetMeshRenderer()->GetSharedMaterial();
+    material->SetMainTexture(texture);
+
+    SubMesh::Ptr submesh = _infinite_plane->GetMesh()->GetSubMesh(0);
     CreateGeometry(submesh, 6);
 }
 

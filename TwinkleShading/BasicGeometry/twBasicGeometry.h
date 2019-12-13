@@ -35,7 +35,6 @@ public:
         : View()
         , _line_points(nullptr)
         , _program(nullptr)
-        , _infinite_plane_program(nullptr)
         , _line_program(nullptr)
         , _uvsphere(nullptr)
         , _norcubesphere(nullptr)
@@ -123,7 +122,6 @@ private:
     glm::mat4 _projection_mat;    
     glm::mat4 _mvp_mat;
 
-    glm::vec4 _plane_param;
     glm::vec4 _line_params;
     glm::vec4 _viewport_params;
     glm::vec3 _line_color;
@@ -135,7 +133,6 @@ private:
     glm::vec3* _line_points;
 
     ShaderProgram::Ptr _program;
-    ShaderProgram::Ptr _infinite_plane_program;
     ShaderProgram::Ptr _line_program;
 
     Mesh::Ptr _uvsphere;
@@ -144,18 +141,15 @@ private:
     Mesh::Ptr _cube;
     Mesh::Ptr _quad;
     Mesh::Ptr _line;
-    Mesh::Ptr _infinite_plane;
     Mesh::Ptr _current_mesh;
     Mesh::Ptr _quadbezierline;
     Mesh::Ptr _cubicbezierline;
     BSplineCurve::Ptr _bspline;
     NURBSSurface::Ptr _nurbs_surface;
     Mesh::Ptr _nurbs_control_line;
+    Plane::Ptr _infinite_plane;
 
     uint32 _mvp_mat_loc;
-
-    uint32 _infplane_mvp_loc;
-    uint32 _planeparam_loc;
 
     uint32 _line_mvp_loc;
     uint32 _line_parameters_loc; //x:thickness, y:feather, z:miterlimit, w:aspect
