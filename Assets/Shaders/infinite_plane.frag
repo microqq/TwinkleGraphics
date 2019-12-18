@@ -29,7 +29,7 @@ float checkerboard(vec2 R, float scale) {
 void main()
 {
 	vec3 plane_normal = plane_param.xyz;
-	vec3 ray_direction = (far_position - near_position);
+	vec3 ray_direction = far_position - near_position;
 
 	float dot_PR = dot(plane_normal, ray_direction);
 	if(abs(dot_PR) < 0.00001f)
@@ -52,17 +52,23 @@ void main()
 
 	// vec3 pos = intersect - plane_normal * (-plane_param.w);
 	// pos = rotate_mat * pos;
-	// vec2 texcoord = pos.xz / 16.0f;
+	// vec2 texcoord = (pos.xz) / 16.0f;
 	// fragcolor = texture(main_tex, texcoord) * vec4(0.0f, 0.5f, 2.0f, 1.0f);	
 
 	/**
 	Martin: https://github.com/martin-pr/possumwood/wiki/Infinite-ground-plane-using-GLSL-shaders
 	*/
-	float c =
-		checkerboard(intersect.xz, 1.0f) * 0.3f +
-		checkerboard(intersect.xz, 10.0f) * 0.2f +
-		checkerboard(intersect.xz, 100.0f) * 0.1f +
-		0.1f;
+	// float c =
+	// 	checkerboard(intersect.xz, 1.0f) * 0.3f +
+	// 	checkerboard(intersect.xz, 10.0f) * 0.2f +
+	// 	checkerboard(intersect.xz, 100.0f) * 0.1f +
+	// 	0.1f;
+	// fragcolor = vec4(vec3(0.0f, 0.0f, c * 0.5f + 0.3f), 1f);
 
-	fragcolor = vec4(vec3(0.0f, 0.0f, c * 0.5f + 0.3f), 1f);
+	// https://zhuanlan.zhihu.com/p/66637363
+	// http://madebyevan.com/shaders/grid/
+	vec2 grid = abs(fract(intersect.xz - 1.0f) - 0.5f) / fwidth(intersect.xz);
+	float line = min(grid.x, grid.y);
+
+	fragcolor = vec4(vec3(1.0f - min(line, 1.0f)), 1.0f);
 }
