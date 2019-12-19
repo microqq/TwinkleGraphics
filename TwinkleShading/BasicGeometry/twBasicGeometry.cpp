@@ -157,49 +157,48 @@ void BasicGeometryView::RenderImpl()
         }
         else if(_current_mesh_index == 5)
         {
+            RenderLine(_line);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
-            RenderLine(_line);
         }
         else if(_current_mesh_index == 7)
         {
+            RenderLine(_quadbezierline, 7);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
-            RenderLine(_quadbezierline, 7);
         }
         else if(_current_mesh_index == 8)
         {
+            RenderLine(_cubicbezierline, 8);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
-            RenderLine(_cubicbezierline, 8);
         }
         else if(_current_mesh_index == 9)
         {
+            RenderLine(_bspline->GetMesh(), 9);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
-            RenderLine(_bspline->GetMesh(), 9);
         }
         else if( _current_mesh_index != -1)
         {
-            if(_display_infplane)
-            {
-                RenderInfinitePlane();
-            }
-
             // //nurbs surface control line
             // if(_current_mesh_index == 10)
             // {
             //     RenderLine(_nurbs_control_line, 19);
             // }
             RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
+            if(_display_infplane)
+            {
+                RenderInfinitePlane();
+            }
         }
     }
 }
@@ -470,6 +469,9 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
         glDisable(GL_CULL_FACE);
     }
     
+    glEnable(GL_BLEND);
+    // glBlendFunc(GL_ONE, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //bind shader program
     ShaderProgramUse use_program(_program);
@@ -486,9 +488,10 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
     // glDrawElements(GL_POINTS, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
-
     glFrontFace(GL_CCW);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glDisable(GL_BLEND);
 }
 
 /**
@@ -511,12 +514,20 @@ void BasicGeometryView::RenderInfinitePlane()
     {
         loc.second.Bind();
     }
+
+    float aniso = 1.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
     
     glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    glEnable(GL_BLEND);
+    // glBlendFunc(GL_ONE, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     SubMesh::Ptr submesh = _infinite_plane->GetMesh()->GetSubMesh(0);
 
@@ -660,7 +671,7 @@ void BasicGeometryView::CreateInfinitePlane()
     _infinite_plane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info = {"Assets/Textures/grid.png"};
+    ImageReadInfo images_info = {"Assets/Textures/grid.dds"};
     Image::Ptr image = imageMgr->ReadImage(images_info);
 
     Texture2D::Ptr texture = nullptr;
