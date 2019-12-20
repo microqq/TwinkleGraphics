@@ -22,17 +22,30 @@ public:
     ~View();
 
     void SetViewCamera(Camera::Ptr camera) { _camera = camera; }
-    void SetCameraControl(CameraControl* control) { _camera_control = control; }
+    void SetCameraControl(CameraControl::Ptr control) { _camera_control = control; }
 
     const Viewport& GetViewport()
     { return _camera->GetViewport(); }
 
+    void Init(glm::ivec2 size) 
+    {
+        SetWindowSize(size);
+        Initialize();
+    }
+    void SetWindowSize(glm::ivec2 size)
+    {
+        _window_size = size;
+    }
+    const glm::ivec2& GetWindowSize() { return _window_size; }
+
     void Resize(float32 scale_x, float32 scale_y)
     {
+        _window_size.x = _window_size.x * scale_x;
+        _window_size.y = _window_size.y * scale_y;
         _camera->ResizeViewport(scale_x, scale_y);
     }
 
-    void Reset(Rect rect)
+    void ResetViewport(Rect rect)
     {
         _camera->SetViewportRect(rect);
     }
@@ -61,7 +74,7 @@ public:
     void OnViewGUI() { this->OnGUI(); }
 
 protected:
-    virtual void Initialize() {}
+    virtual void Initialize() { _initialized = true; }
     virtual void Advance(float64 delta_time);
     virtual void HandleEvents();
     virtual void RenderImpl() {}
@@ -73,10 +86,13 @@ private:
 
 protected:
     Camera::Ptr _camera;
-    CameraControl* _camera_control;
+    CameraControl::Ptr _camera_control;
+
+    glm::ivec2 _window_size;
 
     bool _done;
     bool _ismainview;
+    bool _initialized;
 };
 
 } // namespace TwinkleGraphics

@@ -10,44 +10,25 @@ namespace TwinkleGraphics
 AntiAliasing::AntiAliasing(std::string& name)
     : GLPlugin(name)
     , _view(nullptr)
-    , _camera_control(nullptr)
     , _view2(nullptr)
-    , _camera_control2(nullptr)
 {}
 
 AntiAliasing::~AntiAliasing()
 {
     SAFE_DEL(_view);
-    SAFE_DEL(_camera_control);
     SAFE_DEL(_view2);
-    SAFE_DEL(_camera_control2);
 }
 
 void AntiAliasing::Install()
 {
     Plugin::Install();
 
-    // Initilize view
-    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    // create view
     _view = new AntiAliasingView();
-
-    _view->SetViewCamera(camera);
-    _camera_control = new OrbitControl(camera);
-    (dynamic_cast<OrbitControl*>(_camera_control))->SetMinDistance(1.0f);
-    _view->SetCameraControl(_camera_control);
-    _view->Initialize();
-
-    // Viewport viewport2(Rect(400, 0, 400, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    // camera = std::make_shared<Camera>(viewport2, 45.0f, 0.1f, 1000.0f);
-    // _view2 = new AntiAliasingView();
-    // _view2->SetViewCamera(camera);
-    // _camera_control2 = new OrbitControl(camera);
-    // _view2->SetCameraControl(_camera_control2);
-    // _view2->Initialize();
+    _view2 = new AntiAliasingView();
 
     _views[_views_count++] = _view;
-    // _views[_views_count++] = _view2;
+    _views[_views_count++] = _view2;
 }
 
 void AntiAliasing::UnInstall()
@@ -58,8 +39,27 @@ void AntiAliasing::UnInstall()
     Plugin::UnInstall();
 }
 
+void AntiAliasing::UpdateViews()
+{
+    const glm::ivec2& size = _view->GetWindowSize();
+    _view->ResetViewport(Rect(0, 0, size.x / 2, size.y));
+    _view2->ResetViewport(Rect(size.x / 2, 0, size.x / 2, size.y));
+}
+
+
 void AntiAliasingView::Initialize()
 {
+    if(_initialized)
+        return;
+
+    Viewport viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    this->SetViewCamera(camera);
+
+    OrbitControl::Ptr camera_control = std::make_shared<OrbitControl>(camera);
+    camera_control->SetMinDistance(1.0f);
+    this->SetCameraControl(camera_control);
+
     //create vertex buffer object
     _vbos = new uint32[16];
     glGenBuffers(16, _vbos);
@@ -75,6 +75,8 @@ void AntiAliasingView::Initialize()
     _view_mat = _camera->GetViewMatrix();
     _projection_mat = _camera->GetProjectionMatrix();
     _origin_mvp_mat = _projection_mat * _view_mat;
+
+    View::Initialize();
 }
 
 void AntiAliasingView::Destroy()

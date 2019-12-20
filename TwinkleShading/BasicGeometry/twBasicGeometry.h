@@ -25,7 +25,6 @@ public:
 
 private:
     BasicGeometryView* _view;
-    CameraControl* _camera_control;
 };
 
 class BasicGeometryView : public View

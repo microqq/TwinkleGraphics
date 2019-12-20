@@ -17,7 +17,6 @@ BasicGeometry::BasicGeometry(std::string& name)
 BasicGeometry::~BasicGeometry()
 {
     SAFE_DEL(_view);
-    SAFE_DEL(_camera_control);
 }
 
 void BasicGeometry::Install()
@@ -25,15 +24,7 @@ void BasicGeometry::Install()
     Plugin::Install();
 
     // Initilize view
-    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 1000.0f);
     _view = new BasicGeometryView();
-    _view->SetViewCamera(camera);
-    _camera_control = new OrbitControl(camera);
-    (dynamic_cast<OrbitControl*>(_camera_control))->SetMinDistance(1.0f);
-    _view->SetCameraControl(_camera_control);
-    _view->Initialize();
-
     _views[_views_count++] = _view;
 }
 
@@ -49,6 +40,17 @@ void BasicGeometry::UnInstall()
 
 void BasicGeometryView::Initialize()
 {
+    if(_initialized)
+        return;
+
+    Viewport viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 1000.0f);
+    this->SetViewCamera(camera);
+
+    _camera_control = std::make_shared<OrbitControl>(camera);
+    (dynamic_cast<OrbitControl*>(_camera_control.get()))->SetMinDistance(1.0f);
+    this->SetCameraControl(_camera_control);
+
     //create vertex buffer object
     _vbos = new uint32[20];
     glGenBuffers(20, _vbos);
@@ -95,7 +97,6 @@ void BasicGeometryView::Initialize()
         {std::string("Assets/Shaders/infinite_plane.vert"), ShaderType::VERTEX_SHADER},
         {std::string("Assets/Shaders/infinite_plane.frag"), ShaderType::FRAGMENT_SHADER}};
 
-    const Viewport& viewport = _camera->GetViewport();
     _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
     _line_params = glm::vec4(0.01f, 0.002f, 0.99f, 1.0f);
     _line_color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -121,6 +122,8 @@ void BasicGeometryView::Initialize()
         _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
         _line_color_loc = glGetUniformLocation(_line_program->GetRes().id, "line_color");
     }
+
+    View::Initialize();
 }
 
 void BasicGeometryView::Advance(float64 delta_time)

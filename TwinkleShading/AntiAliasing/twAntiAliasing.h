@@ -25,11 +25,11 @@ public:
     virtual void Install() override;
     virtual void UnInstall() override;
 
+    virtual void UpdateViews() override;
+
 private:
     AntiAliasingView* _view;
     AntiAliasingView* _view2;
-    CameraControl* _camera_control;
-    CameraControl* _camera_control2;
 };
 
 class AntiAliasingView : public View

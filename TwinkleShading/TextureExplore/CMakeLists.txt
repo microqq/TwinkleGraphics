@@ -13,7 +13,7 @@ add_library(twTextureExplore SHARED
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twTextureExplore PROPERTIES
-         LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
 
 target_include_directories(twTextureExplore PUBLIC 

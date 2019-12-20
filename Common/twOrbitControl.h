@@ -11,6 +11,8 @@ namespace TwinkleGraphics
 class OrbitControl : public CameraControl
 {
 public:
+    typedef std::shared_ptr<OrbitControl> Ptr;
+
     OrbitControl(Camera::Ptr camera);
     virtual ~OrbitControl();
 

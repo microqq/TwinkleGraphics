@@ -18,6 +18,7 @@
 namespace TwinkleGraphics
 {
 class TextureExploreView;
+
 class TextureExplore : public GLPlugin
 {
 public:

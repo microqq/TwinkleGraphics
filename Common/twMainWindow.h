@@ -23,6 +23,18 @@ public:
     void AddView(View* view);
     void RemoveViews(View** view, int num);
     void RemoveView(View* view);
+    void ResetViewPosSize(View* view, glm::ivec2 pos, glm::ivec2 size)
+    {
+        if(view == nullptr)
+            return;
+        view->ResetViewport(Rect(pos.x, pos.y, size.x, size.y));
+    }
+    void ResetViewPosSize(int32 index, glm::ivec2 pos, glm::ivec2 size)
+    {
+        if(index < 0 || index >= MAX_VIEWPORT_COUNT || _views[index] == nullptr)
+            return;
+        ResetViewPosSize(_views[index], pos, size);
+    }
 
     virtual void Reset() = 0;
     virtual void Run() = 0;
@@ -31,6 +43,14 @@ public:
     virtual void CursorPosCallback(float64 xpos, float64 ypos) {}
     virtual void CursorEnterPosCallback(int32 entered) {}
     virtual void ScrollCallback(float64 dx, float64 dy) {}
+    virtual void WindowSizeCallback(int32 w, int32 h) 
+    {
+        if(_width != w || _height == h)
+        {
+            _window_resize = true;
+            _width = w; _height = h;
+        }
+    }
 
 protected:
     virtual void Initialise() = 0;
@@ -68,6 +88,7 @@ protected:
     bool _middle_button_dragmove;
     bool _mouse_moving;
     bool _cursor_enterd;
+    bool _window_resize;
 };
 
 
@@ -82,6 +103,7 @@ public:
     void SetCursorPosCallback(GLFWcursorposfun func) { glfwSetCursorPosCallback(_window, func); }
     void SetCursorPosEnterCallback(GLFWcursorenterfun func) { glfwSetCursorEnterCallback(_window, func); }
     void SetScrollCallback(GLFWscrollfun func) { glfwSetScrollCallback(_window, func); }
+    void SetWindowSizeCallback(GLFWwindowsizefun func) { glfwSetWindowSizeCallback(_window, func); }
 
     virtual void Reset() override;
     virtual void Run() override;
@@ -159,6 +181,34 @@ public:
     {
         MouseScroll(glm::dvec2(dx, dy));
         return;
+    }
+
+    virtual void WindowSizeCallback(int32 w, int32 h) override
+    {
+        int32 old_width = _width;
+        int32 old_height = _height;
+        MainWindow::WindowSizeCallback(w, h);
+
+        if (old_width != _width || old_height != _height)
+        {
+            if (old_width == 0 || _width == 0 ||
+                old_height == 0 || _height == 0)
+                return;
+
+            float32 scale_x = (float32)_width / (float32)old_width;
+            float32 scale_y = (float32)_height / (float32)old_height;
+
+            if (_view_count > 0)
+            {
+                for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
+                {
+                    if (_views[i] != nullptr)
+                    {
+                        _views[i]->Resize(scale_x, scale_y);
+                    }
+                }
+            }
+        }
     }
 
 protected:

@@ -6,7 +6,10 @@ namespace TwinkleGraphics
 View::View()
     : _camera(nullptr)
     , _camera_control(nullptr)
+    , _window_size(1.0, 1.0)
     , _done(false)
+    , _ismainview(false)
+    , _initialized(false)
 {
 }
 

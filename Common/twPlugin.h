@@ -17,7 +17,7 @@ public:
     {}
     virtual ~Plugin() {}
 
-    inline std::string& GetName() { return _name; }
+    std::string& GetName() { return _name; }
 
     virtual void Install() 
     {
@@ -29,6 +29,7 @@ public:
         std::cout << "------------------------------" << "Plugin UnInstall:"
             << _name << "------------------------------" << "\n";
     }
+
 protected:
     std::string _name;
 };
@@ -43,10 +44,13 @@ public:
     {}
     virtual ~GLPlugin() {}
 
+    virtual void UpdateViews() {}
     int GetViewsCount() { return _views_count; }
     View** GetViews() { return _views; }
 
 protected:
+    glm::ivec2 _window_size;
+
     View* _views[MAX_VIEWPORT_COUNT];
     int _views_count;
 };

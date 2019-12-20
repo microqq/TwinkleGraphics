@@ -25,6 +25,7 @@ void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods
 void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
 void CursorEnterPosCallback(GLFWwindow* window, int32 entered);
 void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy);
+void WindowSizeCallback(GLFWwindow* window, int, int);
 
 int main(int, char **)
 {
@@ -47,6 +48,7 @@ int main(int, char **)
     mainWindow.SetCursorPosCallback(CursorPosCallback);
     mainWindow.SetCursorPosEnterCallback(CursorEnterPosCallback);
     mainWindow.SetScrollCallback(ScrollCallback);
+    mainWindow.SetWindowSizeCallback(WindowSizeCallback);
 
     //main loop
     mainWindow.Run();
@@ -79,7 +81,7 @@ void LoadPluginsGUI(void)
                 if (plugin != nullptr && plugin->GetViewsCount() > 0)
                 {
                     mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
-                    mainWindow.Reset();
+                    plugin->UpdateViews();
                 }
             }
             CurrentPlugin = it->first;
@@ -124,4 +126,9 @@ void CursorEnterPosCallback(GLFWwindow* window, int32 entered)
 void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy)
 {
     mainWindow.ScrollCallback(dx, dy);
+}
+
+void WindowSizeCallback(GLFWwindow* window, int w, int h)
+{
+    mainWindow.WindowSizeCallback(w, h);
 }

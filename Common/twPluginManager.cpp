@@ -77,6 +77,7 @@ void PluginManager::InstallPlugin(Plugin *plugin)
     }
 
     plugin->Install();
+    std::cout << plugin->GetName() << std::endl;
     _plugins.insert(MapPlugins::value_type(plugin->GetName(), plugin));
 }
 

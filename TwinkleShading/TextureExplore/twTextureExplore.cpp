@@ -25,15 +25,7 @@ void TextureExplore::Install()
     Plugin::Install();
 
     // Initilize view
-    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
     _view = new TextureExploreView();
-    _view->SetViewCamera(camera);
-    OrbitControl* camera_control = new OrbitControl(camera);
-    camera_control->SetMinDistance(1.0f);
-    _view->SetCameraControl(camera_control);
-    _view->Initialize();
-
     _views[_views_count++] = _view;
 }
 
@@ -50,6 +42,17 @@ void TextureExplore::UnInstall()
 
 void TextureExploreView::Initialize()
 {
+    if(_initialized)
+        return;
+
+    Viewport viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    this->SetViewCamera(camera);
+    
+    OrbitControl::Ptr camera_control = std::make_shared<OrbitControl>(camera);
+    camera_control->SetMinDistance(1.0f);
+    this->SetCameraControl(camera_control);
+
     //create vertex buffer object
     _vbos = new uint32[16];
     glGenBuffers(16, _vbos);
@@ -60,11 +63,14 @@ void TextureExploreView::Initialize()
     _vaos = new uint32[16];
     glGenVertexArrays(16, _vaos);
 
-    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    _proj_tex_camera = std::make_shared<Camera>(viewport, 30.0f, 0.1f, 1000.0f);
+    Viewport pro_viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    _proj_tex_camera = std::make_shared<Camera>(pro_viewport, 30.0f, 0.1f, 1000.0f);
     // _proj_tex_camera->SetOrientation(quat(1.0f, 0.0f, 0.0f, glm::pi<float32>() * 0.5f));
     _proj_tex_camera->Translate(vec3(0.0f, 0.0f, 10.0f));
+
+    View::Initialize();
 }
+
 void TextureExploreView::Destroy()
 {
     ShaderProgramUse use(nullptr);

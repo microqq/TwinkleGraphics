@@ -23,12 +23,7 @@ void FirstTriangle::Install()
     Plugin::Install();
 
     // Initilize view
-    Viewport viewport(Rect(0, 0, 800, 640), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
     _view = new TriangleView();
-    _view->SetViewCamera(camera);
-    _view->Initialize();
-
     _views[_views_count++] = _view;
 }
 
@@ -44,6 +39,13 @@ void FirstTriangle::UnInstall()
 
 void TriangleView::Initialize()
 {
+    if(_initialized)
+        return;
+
+    Viewport viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    this->SetViewCamera(camera);
+
     //create triangle vertices & elements(indices)
     float32 vertices[3][3] = {
         {-1.0f, -1.0f, 0.0f},
@@ -99,6 +101,8 @@ void TriangleView::Initialize()
     _model_mat_loc = glGetUniformLocation(_program->GetRes().id, "model");
     _view_mat_loc = glGetUniformLocation(_program->GetRes().id, "view");
     _projection_mat_loc = glGetUniformLocation(_program->GetRes().id, "projection");
+
+    View::Initialize();
 }
 
 void TriangleView::Advance(float64 delta_time)

@@ -12,6 +12,15 @@ MainWindow::MainWindow(int width, int height)
     , _width(width)
     , _height(height)
     , _view_count(0)
+    , _left_button_down(false)
+    , _right_button_down(false)
+    , _middle_button_down(false)
+    , _left_button_dragmove(false)
+    , _right_button_dragmove(false)
+    , _middle_button_dragmove(false)
+    , _mouse_moving(false)
+    , _cursor_enterd(false)
+    , _window_resize(false)
 {
 }
 
@@ -42,6 +51,7 @@ void MainWindow::AddView(View *view)
     )
         return;
 
+    view->Init(glm::ivec2(_width, _height));
     for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
     {
         if(_views[i] == nullptr)
@@ -111,24 +121,6 @@ void GLFWMainWindow::AddGUIFunc(IMGUI_FUNC func)
 
 void GLFWMainWindow::Reset()
 {
-    // int old_width = _width;
-    // int old_height = _height;
-    glfwGetWindowSize(_window, &_width, &_height);
-
-    // float32 scale_x = (float32)_width / (float32)old_width;
-    // float32 scale_y = (float32)_height / (float32)old_height;
-
-    if (_view_count > 0)
-    {
-        for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
-        {
-            if (_views[i] != nullptr)
-            {
-                // _views[i]->Resize(scale_x, scale_y);
-                 _views[i]->Reset(Rect(0, 0, _width, _height));
-            }
-        }
-    }
 }
 
 void GLFWMainWindow::Run()
@@ -282,30 +274,6 @@ void GLFWMainWindow::HandleEvents()
 {
     /* Poll for and process events */
     glfwPollEvents();
-
-    int32 old_width = _width;
-    int32 old_height = _height;
-    glfwGetWindowSize(_window, &_width, &_height);
-    if (old_width != _width || old_height != _height)
-    {
-        if (old_width == 0 || _width == 0 ||
-            old_height == 0 || _height == 0)
-            return;
-
-        float32 scale_x = (float32)_width / (float32)old_width;
-        float32 scale_y = (float32)_height / (float32)old_height;
-
-        if (_view_count > 0)
-        {
-            for (int i = 0; i < MAX_VIEWPORT_COUNT; i++)
-            {
-                if (_views[i] != nullptr)
-                {
-                    _views[i]->Resize(scale_x, scale_y);
-                }
-            }
-        }
-    }
 }
 
 } // namespace TwinkleGraphics
