@@ -15,7 +15,6 @@ View::View()
 
 View::~View()
 {
-    _camera_control = nullptr;
 }
 
 View& View::operator=(const Viewport &viewport)
