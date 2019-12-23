@@ -42,8 +42,10 @@ void AntiAliasing::UnInstall()
 void AntiAliasing::UpdateViews()
 {
     const glm::ivec2& size = _view->GetWindowSize();
-    _view->ResetViewport(Rect(0, 0, size.x / 2, size.y));
-    _view2->ResetViewport(Rect(size.x / 2, 0, size.x / 2, size.y));
+    _view->ResetViewport(Rect(0, 0, size.x, size.y));
+    float32 ratio = (float32)size.x / (float32)size.y;
+    int32 w = ratio * 200.0f;
+    _view2->ResetViewport(Rect(size.x - w, 0, w, 200.0f));
 }
 
 
@@ -304,8 +306,6 @@ void AntiAliasingView::UpdateScene()
 
 void AntiAliasingView::RenderScene()
 {
-    glDisable(GL_POLYGON_OFFSET_FILL);
-
     RenderGeometry(_plane_left, 0);
     RenderGeometry(_plane_top, 1);
     RenderGeometry(_plane_right, 2);
@@ -318,6 +318,7 @@ void AntiAliasingView::RenderScene()
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(-1.0f, 0.0f);
     RenderGeometry(_triangle_front, 8);
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
 void AntiAliasingView::DestroyScene()

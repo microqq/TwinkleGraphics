@@ -681,17 +681,43 @@ void TextureExploreView::CreateSkybox()
         // ImageReadInfo images_info = {"Assets/Textures/TantolundenCube.dds"};
         // Image::Ptr image = imageMgr->ReadImage(images_info);
 
-        ImageReadInfo front_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"};
+        // ImageReadInfo front_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"};
+        // Image::Ptr front_image = imageMgr->ReadImage(front_info);
+        // ImageReadInfo back_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"};
+        // Image::Ptr back_image = imageMgr->ReadImage(back_info);
+        // ImageReadInfo left_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"};
+        // Image::Ptr left_image = imageMgr->ReadImage(left_info);
+        // ImageReadInfo right_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"};
+        // Image::Ptr right_image = imageMgr->ReadImage(right_info);
+        // ImageReadInfo top_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"};
+        // Image::Ptr top_image = imageMgr->ReadImage(top_info);
+        // ImageReadInfo down_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"};
+        // Image::Ptr down_image = imageMgr->ReadImage(down_info);
+
+        // ImageReadInfo front_info = {"Assets/Textures/skybox/front.png"};
+        // Image::Ptr front_image = imageMgr->ReadImage(front_info);
+        // ImageReadInfo back_info = {"Assets/Textures/skybox/back.png"};
+        // Image::Ptr back_image = imageMgr->ReadImage(back_info);
+        // ImageReadInfo left_info = {"Assets/Textures/skybox/left.png"};
+        // Image::Ptr left_image = imageMgr->ReadImage(left_info);
+        // ImageReadInfo right_info = {"Assets/Textures/skybox/right.png"};
+        // Image::Ptr right_image = imageMgr->ReadImage(right_info);
+        // ImageReadInfo top_info = {"Assets/Textures/skybox/top.png"};
+        // Image::Ptr top_image = imageMgr->ReadImage(top_info);
+        // ImageReadInfo down_info = {"Assets/Textures/skybox/bottom.png"};
+        // Image::Ptr down_image = imageMgr->ReadImage(down_info);
+
+        ImageReadInfo front_info = {"Assets/Textures/sor_sea/sea_ft.png"};
         Image::Ptr front_image = imageMgr->ReadImage(front_info);
-        ImageReadInfo back_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"};
+        ImageReadInfo back_info = {"Assets/Textures/sor_sea/sea_bk.png"};
         Image::Ptr back_image = imageMgr->ReadImage(back_info);
-        ImageReadInfo left_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"};
+        ImageReadInfo left_info = {"Assets/Textures/sor_sea/sea_lf.png"};
         Image::Ptr left_image = imageMgr->ReadImage(left_info);
-        ImageReadInfo right_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"};
+        ImageReadInfo right_info = {"Assets/Textures/sor_sea/sea_rt.png"};
         Image::Ptr right_image = imageMgr->ReadImage(right_info);
-        ImageReadInfo top_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"};
+        ImageReadInfo top_info = {"Assets/Textures/sor_sea/sea_up.png"};
         Image::Ptr top_image = imageMgr->ReadImage(top_info);
-        ImageReadInfo down_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"};
+        ImageReadInfo down_info = {"Assets/Textures/sor_sea/sea_dn.png"};
         Image::Ptr down_image = imageMgr->ReadImage(down_info);
 
         // cubemap->SetImage(image);
