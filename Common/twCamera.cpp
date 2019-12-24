@@ -33,6 +33,8 @@ Camera::Camera(Viewport viewport, float32 fov, float32 near, float32 far, Frustu
     : Frustum(fov, viewport.AspectRatio(), near, far, type)
     , _viewport(viewport)
     , _transform(nullptr)
+    , _viewport_dirty(true)
+    , _rendertoraget(false)
 {
     _transform = std::make_shared<Transform>();
 }

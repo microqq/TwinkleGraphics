@@ -143,16 +143,19 @@ public:
             {
                 //compute frustum left\right\bottom...
                 //_projection_matrix = glm::ortho(left, right, bottom, top, near, far);
-            }            
+            }
         }
         return _projection_matrix; 
     }
+
+    void SetRenderToTarget(bool rtt) { _rendertoraget = rtt; }
 
 private:
     Viewport _viewport;
     Transform::Ptr _transform;
 
     bool _viewport_dirty;
+    bool _rendertoraget;
 };
 } // namespace TwinkleGraphics
 

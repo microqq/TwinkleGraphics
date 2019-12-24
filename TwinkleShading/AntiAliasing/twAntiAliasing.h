@@ -12,6 +12,7 @@
 #include "twCamera.h"
 #include "twOrbitControl.h"
 #include "twUtil.h"
+#include "twScene.h"
 
 namespace TwinkleGraphics
 {
@@ -30,6 +31,18 @@ public:
 private:
     AntiAliasingView* _view;
     AntiAliasingView* _view2;
+};
+
+class AntiAliasingScene
+{
+public:
+    AntiAliasingScene()
+    {}
+    ~AntiAliasingScene()
+    {}
+
+private:
+    Scene::Ptr _scene;
 };
 
 class AntiAliasingView : public View

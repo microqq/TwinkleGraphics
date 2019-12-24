@@ -10,8 +10,8 @@
 // #include "twCommon.h"
 
 #include "twCamera.h"
-
 #include "twCameraControl.h"
+#include "twScene.h"
 
 namespace TwinkleGraphics
 {
@@ -21,8 +21,26 @@ public:
     View();
     ~View();
 
-    void SetViewCamera(Camera::Ptr camera) { _camera = camera; }
+    void SetViewCamera(Camera::Ptr camera) 
+    { 
+        if(camera == nullptr)
+            return;
+        _camera = camera;
+
+        if(_scene != nullptr)
+        {
+            _scene->SetMainCamera(_camera);
+        }
+    }
     void SetCameraControl(CameraControl::Ptr control) { _camera_control = control; }
+    void AttachToScene(Scene::Ptr scene) 
+    {
+        _scene = scene;
+        if(_camera != nullptr)
+        {
+            _scene->SetMainCamera(_camera);
+        }
+    }
 
     const Viewport& GetViewport()
     { return _camera->GetViewport(); }
@@ -87,6 +105,7 @@ private:
 protected:
     Camera::Ptr _camera;
     CameraControl::Ptr _camera_control;
+    Scene::Ptr _scene;
 
     glm::ivec2 _window_size;
 

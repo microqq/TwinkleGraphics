@@ -25,10 +25,10 @@ void AntiAliasing::Install()
 
     // create view
     _view = new AntiAliasingView();
-    _view2 = new AntiAliasingView();
+    // _view2 = new AntiAliasingView();
 
     _views[_views_count++] = _view;
-    _views[_views_count++] = _view2;
+    // _views[_views_count++] = _view2;
 }
 
 void AntiAliasing::UnInstall()
@@ -43,9 +43,9 @@ void AntiAliasing::UpdateViews()
 {
     const glm::ivec2& size = _view->GetWindowSize();
     _view->ResetViewport(Rect(0, 0, size.x, size.y));
-    float32 ratio = (float32)size.x / (float32)size.y;
-    int32 w = ratio * 200.0f;
-    _view2->ResetViewport(Rect(size.x - w, 0, w, 200.0f));
+    // float32 ratio = (float32)size.x / (float32)size.y;
+    // int32 w = ratio * 200.0f;
+    // _view2->ResetViewport(Rect(size.x - w, 0, w, 200.0f));
 }
 
 
