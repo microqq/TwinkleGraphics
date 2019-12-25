@@ -75,11 +75,12 @@ private:
 private:
     enum AAOption
     {
-        MSAA = 0,
-        SSAA = 1,
-        CSAA = 2,
-        CFAA = 3,
-        FXAA = 4
+        MSAA_HW = 0,
+        MSAA_SW = 1,
+        SSAA = 2,
+        CSAA = 3,
+        CFAA = 4,
+        FXAA = 5
     };
 
     glm::mat4 _view_mat;

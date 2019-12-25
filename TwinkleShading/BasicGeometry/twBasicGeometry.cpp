@@ -511,16 +511,15 @@ void BasicGeometryView::RenderInfinitePlane()
     {
         tex_slot.second.Apply();
     }
+    float aniso = 1.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 
     ShaderProgramUse use(shader);
     for (auto loc : pass->GetUniformLocations())
     {
         loc.second.Bind();
     }
-
-    float aniso = 1.0f;
-    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
     
     glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
