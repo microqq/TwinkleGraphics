@@ -112,19 +112,22 @@ void AntiAliasingView::OnGUI()
 {
     ImGui::Begin(u8"反走样");
     {
-        if (ImGui::RadioButton(u8"MSAA_HW", &_current_aa_option, 0))
+        if (ImGui::RadioButton(u8"MSAA_HW", &(_current_aa_option), AAOption::MSAA_HW))
         {
         }
-        if (ImGui::RadioButton(u8"MSAA_SW", &_current_aa_option, 1))
+        if (ImGui::RadioButton(u8"MSAA_SW", &_current_aa_option, AAOption::MSAA_SW))
         {
         }
-        if (ImGui::RadioButton(u8"SSAA", &_current_aa_option, 2))
+        if (ImGui::RadioButton(u8"SSAA", &_current_aa_option, AAOption::SSAA))
         {
         }
-        if (ImGui::RadioButton(u8"CSAA", &_current_aa_option, 3))
+        if (ImGui::RadioButton(u8"CSAA", &_current_aa_option, AAOption::CSAA))
         {
         }
-        if (ImGui::RadioButton(u8"CFAA", &_current_aa_option, 4))
+        if (ImGui::RadioButton(u8"CFAA", &_current_aa_option, AAOption::CFAA))
+        {
+        }
+        if (ImGui::RadioButton(u8"FXAA", &_current_aa_option, AAOption::FXAA))
         {
         }
     }
@@ -283,7 +286,7 @@ void AntiAliasingView::UpdateScene()
         spheretex->SetWrap<WrapParam::WRAP_R>(WrapMode::CLAMP_TO_EDGE);
 
         spheretex->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
-        spheretex->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
+        spheretex->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
     }
 
     Material::Ptr material_cube = _cube->GetMeshRenderer()->GetSharedMaterial();

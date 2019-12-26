@@ -3,6 +3,8 @@
 #define TW_RENDERCONTEXT_H
 
 #include <glew/glew.h>
+
+#include "twReference.hpp"
 #include "twCommon.h"
 
 namespace TwinkleGraphics
@@ -391,66 +393,96 @@ struct MatUniform : public Uniform
 };
 
 
+class IHWObject : public Reference<IHWObject>
+{
+public:
+    typedef std::shared_ptr<IHWObject> Ptr;
 
+    IHWObject() {}
+    ~IHWObject() {}
+
+    virtual void Create() = 0;
+    virtual void Destroy() = 0;
+    virtual void Bind() = 0;
+
+protected:
+    RenderResInstance _resinstance;
+};
 
 
 /*------------------------------Vertex Array Object--------------------------*/
 
-struct VertexArrayObject
+class VertexArrayObject : public IHWObject
 {
-    RenderResInstance instance;
+public:
+    typedef std::shared_ptr<VertexArrayObject> Ptr;
 
     VertexArrayObject()
+    {
+    }
+
+    virtual ~VertexArrayObject()
+    {
+    }
+
+    virtual void Create() override
     {
         uint32 vaos[1];
         glGenVertexArrays(1, vaos);
 
-        instance.id = vaos[0];
-        instance.type = GL_VERTEX_ARRAY;
+        _resinstance.id = vaos[0];
+        _resinstance.type = GL_VERTEX_ARRAY;
     }
-
-    ~VertexArrayObject()
+    virtual void Destroy() override
     {
-        if (instance.id != 0)
+        if (_resinstance.id != 0)
         {
-            uint32 vaos[1] = { instance.id };
+            glBindVertexArray(0);
+
+            uint32 vaos[1] = { _resinstance.id };
             glDeleteVertexArrays(1, vaos);
         }
     }
-    // void Bind()
-    // {
-    //     glBindVertexArray(instance.id);
-    // }
-    // void UnBind()
-    // {
-    //     glBindVertexArray(0);
-    // }
+    virtual void Bind() override
+    {
+        glBindVertexArray(_resinstance.id);
+    }
 };
 
 
 
 /*------------------------------Vertex Buffer--------------------------*/
 
-struct VertexBufferObject
+class VertexBufferObject : public IHWObject
 {
-    RenderResInstance instance;
-
+public:
     VertexBufferObject()
+    {
+    }
+
+    virtual ~VertexBufferObject()
+    {
+    }
+
+    virtual void Create() override
     {
         uint32 vbos[1];
         glGenBuffers(GL_ARRAY_BUFFER, vbos);
 
-        instance.id = vbos[0];
-        instance.type = GL_ARRAY_BUFFER;
+        _resinstance.id = vbos[0];
+        _resinstance.type = GL_ARRAY_BUFFER;
     }
-
-    ~VertexBufferObject()
+    virtual void Destroy() override
     {
-        if(instance.id != 0)
+        if(_resinstance.id != 0)
         {
-            uint32 vbos[1] = { instance.id };
+            uint32 vbos[1] = { _resinstance.id };
             glDeleteBuffers(1, vbos);
-        }
+        }        
+    }
+    virtual void Bind() override
+    {
+        glBindBuffer(_resinstance.type, _resinstance.id);
     }
 };
 
@@ -458,50 +490,72 @@ struct VertexBufferObject
 
 /*------------------------------Index Buffer--------------------------*/
 
-struct IndexBufferObject
+class IndexBufferObject : public IHWObject
 {
-    RenderResInstance instance;
-
+public:
     IndexBufferObject()
     {
-        uint32 ibos[1] = { instance.id };
-        glGenBuffers(GL_ELEMENT_ARRAY_BUFFER, ibos);
-
-        instance.id = ibos[0];
-        instance.type = GL_ELEMENT_ARRAY_BUFFER;
     }
 
-    ~IndexBufferObject()
+    virtual ~IndexBufferObject()
     {
-        if(instance.id != 0)
+    }
+
+    virtual void Create() override
+    {
+        uint32 ibos[1] = { _resinstance.id };
+        glGenBuffers(GL_ELEMENT_ARRAY_BUFFER, ibos);
+
+        _resinstance.id = ibos[0];
+        _resinstance.type = GL_ELEMENT_ARRAY_BUFFER;
+    }
+    virtual void Destroy() override
+    {
+        if(_resinstance.id != 0)
         {
-            uint32 ibos[1] = { instance.id };
+            uint32 ibos[1] = { _resinstance.id };
             glDeleteBuffers(1, ibos);
         }
+    }
+    virtual void Bind() override
+    {
+        glBindBuffer(_resinstance.type, _resinstance.id);
     }
 };
 
 
 /*------------------------------FrameBuffer--------------------------*/
 
-struct FrameBufferObject
+class FrameBufferObject : public IHWObject
 {
-    RenderResInstance instance;
+public:
+    FrameBufferObject(){}
+    virtual ~FrameBufferObject() {}
+
+    virtual void Create() override {}
+    virtual void Destroy() override {}
+    virtual void Bind() override {}
 };
 
 
 
 /*------------------------------RenderBuffer--------------------------*/
 
-struct RenderBufferObject
+class RenderBufferObject : IHWObject
 {
-    RenderResInstance instance;
+public:
+    RenderBufferObject() {}
+    virtual ~RenderBufferObject() {}
+
+    virtual void Create() override {}
+    virtual void Destroy() override {}
+    virtual void Bind() override {}
 };
 
 /*------------------------------Render Context--------------------------*/
 
 /**
- * @brief Manage render resource.
+ * @brief Manage render resource & state.
  * 
  */
 class RenderContext

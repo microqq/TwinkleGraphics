@@ -63,7 +63,7 @@ void Sprite::Init(Texture::Ptr texture)
     _sprite_renderer = std::make_shared<SpriteRenderer>(texture);
     SetMeshRenderer(_sprite_renderer);
 
-    _flag = MeshDataFlag(9);
+    _flag = MeshDataFlag(8);
     glm::vec2 size = glm::vec2(texture->GetWidth(0), texture->GetHeight(0)) / (float32)_perpixelunit * 2.0f;
     Quad::SetSize(size);
     Quad::GenerateMesh();
@@ -81,7 +81,7 @@ void Sprite::Init(Texture::Ptr texture, glm::vec2 size)
     _sprite_renderer = std::make_shared<SpriteRenderer>(texture);
     SetMeshRenderer(_sprite_renderer);
 
-    _flag = MeshDataFlag(9);
+    _flag = MeshDataFlag(8);
     Quad::SetSize(size);
     Quad::GenerateMesh();
 

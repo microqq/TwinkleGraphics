@@ -50,7 +50,7 @@ class AntiAliasingView : public View
 public:
     AntiAliasingView()
         : View()
-        , _current_aa_option(-1)
+        , _current_aa_option(AAOption::NONE)
         {}
 
     virtual ~AntiAliasingView()
@@ -75,6 +75,7 @@ private:
 private:
     enum AAOption
     {
+        NONE = -1,
         MSAA_HW = 0,
         MSAA_SW = 1,
         SSAA = 2,

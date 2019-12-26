@@ -642,7 +642,7 @@ void TextureExploreView::CreateVolumnTexture()
     if(_volumn_quad == nullptr)
     {
         vec2 size(10.0f, 10.0f);
-        _volumn_quad = std::make_shared<Quad>(size, MeshDataFlag(9));
+        _volumn_quad = std::make_shared<Quad>(size, MeshDataFlag(8));
         _volumn_quad->GenerateMesh();
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
@@ -908,7 +908,7 @@ void TextureExploreView::CreateNURBSSurface()
         _nurbs_surface->SetMeshRenderer(renderer);
 
         vec2 size(10.0f, 10.0f);
-        _proj_tex_quad = std::make_shared<Quad>(size, MeshDataFlag(9));
+        _proj_tex_quad = std::make_shared<Quad>(size, MeshDataFlag(8));
         _proj_tex_quad->GenerateMesh();
 
         Transform::Ptr quad_trans = _proj_tex_quad->GetTransform();
