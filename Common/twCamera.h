@@ -8,7 +8,7 @@
 #include <GL/gl.h>
 
 #include "twCommon.h"
-#include "twTransform.h"
+#include "twSceneNode.h"
 
 namespace TwinkleGraphics
 {
@@ -88,7 +88,7 @@ protected:
     FrustumType _frustum_type;
 };
 
-class Camera final : public Object, public Frustum
+class Camera final : public Object, public Frustum, public ISceneNode
 {
 public:
     typedef std::shared_ptr<Camera> Ptr;
@@ -105,7 +105,6 @@ public:
     void Rotate(glm::quat quaternion) { _transform->Rotate(quaternion); }
     void ResetTransform() { _transform->Reset(); }
 
-    Transform::Ptr GetTransform() { return _transform; }
     glm::vec3 GetPosition() { return _transform->GetPosition(); }
     glm::quat GetOrientation() { return _transform->GetWorldToLocalOrientation(); }
 
@@ -152,7 +151,6 @@ public:
 
 private:
     Viewport _viewport;
-    Transform::Ptr _transform;
 
     bool _viewport_dirty;
     bool _rendertoraget;

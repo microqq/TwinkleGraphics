@@ -5,9 +5,10 @@ namespace TwinkleGraphics
 {
 Geometry::Geometry()
     : Object()
+    , ISceneNode(true)
+    , IRenderableObject()
     , _mesh(nullptr)
 {
-    _transform = std::make_shared<Transform>();
 }
 
 Geometry::~Geometry()

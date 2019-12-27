@@ -15,7 +15,7 @@ struct StateAttribute
 
 };
 
-/*------------------------------Drew Command--------------------------*/
+/*------------------------------Draw Command--------------------------*/
 
 struct DrawCommand
 {
@@ -398,8 +398,12 @@ class IHWObject : public Reference<IHWObject>
 public:
     typedef std::shared_ptr<IHWObject> Ptr;
 
-    IHWObject() {}
-    ~IHWObject() {}
+    IHWObject(int32 type)
+        : Reference<IHWObject>()
+    {
+        _resinstance.type = type;
+    }
+    virtual ~IHWObject() {}
 
     virtual void Create() = 0;
     virtual void Destroy() = 0;
@@ -407,6 +411,83 @@ public:
 
 protected:
     RenderResInstance _resinstance;
+};
+
+enum BufferMapTypes
+{
+    MAP_READ = GL_MAP_READ_BIT,
+    MAP_WRITE = GL_MAP_WRITE_BIT,
+    MAP_READ_WRITE = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT
+};
+
+class IHWBuffer : public IHWObject
+{
+public:
+    typedef std::shared_ptr<IHWBuffer> Ptr;
+
+    IHWBuffer(int32 type)
+        : IHWObject(type)
+    {}
+    virtual ~IHWBuffer() {}
+
+    virtual void Create() override
+    {
+        uint32 bufs[1];
+        glGenBuffers(_resinstance.type, bufs);
+
+        _resinstance.id = bufs[0];
+    }
+
+    virtual void InitBufferData(uint32 size, const void *data)
+    {
+        glBufferData(_resinstance.type, size, data, GL_DYNAMIC_DRAW);
+
+        _bufsize = size;
+    }
+
+    virtual void UpdateBufferData(uint32 offset, uint32 size, const void *data)
+    {
+        assert(data != nullptr && size + offset <= _bufsize);
+
+        if(offset == 0 && size == _bufsize)
+        {
+            glBufferData(_resinstance.type, size, data, GL_DYNAMIC_DRAW);
+            return;
+        }
+    
+        glBufferSubData(_resinstance.type, offset, size, data);
+    }
+
+    virtual void* MapBuffer()
+    {
+
+    }
+
+    virtual void UnMapBuffer()
+    {
+
+    }
+
+    virtual void Destroy() override
+    {
+        if(_resinstance.id != 0)
+        {
+            glBindBuffer(_resinstance.type, 0);
+
+            uint32 bufs[1] = { _resinstance.id };
+            glDeleteBuffers(1, bufs);
+        }
+    }
+
+    virtual void Bind() override
+    {
+        glBindBuffer(_resinstance.type, _resinstance.id);
+    }
+
+    virtual int32 GetBufferSize() { return _bufsize; }
+
+protected:
+    uint32 _bufsize;
 };
 
 
@@ -418,6 +499,7 @@ public:
     typedef std::shared_ptr<VertexArrayObject> Ptr;
 
     VertexArrayObject()
+        : IHWObject(GL_VERTEX_ARRAY)
     {
     }
 
@@ -431,7 +513,6 @@ public:
         glGenVertexArrays(1, vaos);
 
         _resinstance.id = vaos[0];
-        _resinstance.type = GL_VERTEX_ARRAY;
     }
     virtual void Destroy() override
     {
@@ -453,36 +534,16 @@ public:
 
 /*------------------------------Vertex Buffer--------------------------*/
 
-class VertexBufferObject : public IHWObject
+class VertexBufferObject : public IHWBuffer
 {
 public:
     VertexBufferObject()
+        : IHWBuffer(GL_ARRAY_BUFFER)
     {
     }
 
     virtual ~VertexBufferObject()
     {
-    }
-
-    virtual void Create() override
-    {
-        uint32 vbos[1];
-        glGenBuffers(GL_ARRAY_BUFFER, vbos);
-
-        _resinstance.id = vbos[0];
-        _resinstance.type = GL_ARRAY_BUFFER;
-    }
-    virtual void Destroy() override
-    {
-        if(_resinstance.id != 0)
-        {
-            uint32 vbos[1] = { _resinstance.id };
-            glDeleteBuffers(1, vbos);
-        }        
-    }
-    virtual void Bind() override
-    {
-        glBindBuffer(_resinstance.type, _resinstance.id);
     }
 };
 
@@ -490,66 +551,83 @@ public:
 
 /*------------------------------Index Buffer--------------------------*/
 
-class IndexBufferObject : public IHWObject
+class IndexBufferObject : public IHWBuffer
 {
 public:
     IndexBufferObject()
+        : IHWBuffer(GL_ELEMENT_ARRAY_BUFFER)
     {
     }
 
     virtual ~IndexBufferObject()
     {
     }
-
-    virtual void Create() override
-    {
-        uint32 ibos[1] = { _resinstance.id };
-        glGenBuffers(GL_ELEMENT_ARRAY_BUFFER, ibos);
-
-        _resinstance.id = ibos[0];
-        _resinstance.type = GL_ELEMENT_ARRAY_BUFFER;
-    }
-    virtual void Destroy() override
-    {
-        if(_resinstance.id != 0)
-        {
-            uint32 ibos[1] = { _resinstance.id };
-            glDeleteBuffers(1, ibos);
-        }
-    }
-    virtual void Bind() override
-    {
-        glBindBuffer(_resinstance.type, _resinstance.id);
-    }
 };
 
 
 /*------------------------------FrameBuffer--------------------------*/
 
-class FrameBufferObject : public IHWObject
+enum FBOStorageTypes
+{
+    TEXTURE,
+    RENDERBUFFER
+};
+
+class FrameBufferObject : public IHWBuffer
 {
 public:
-    FrameBufferObject(){}
+    FrameBufferObject(uint32 type = GL_DRAW_FRAMEBUFFER
+        , FBOStorageTypes storage = FBOStorageTypes::RENDERBUFFER)
+    : IHWBuffer(type)
+    {}
     virtual ~FrameBufferObject() {}
 
-    virtual void Create() override {}
-    virtual void Destroy() override {}
-    virtual void Bind() override {}
+    virtual void Create() override
+    {
+        uint32 bufs[1];
+        glGenFramebuffers(1, bufs);
+
+        _resinstance.id = bufs[0];
+    }
+    virtual void Destroy() override 
+    {
+        uint32 bufs[1] = { _resinstance.id };
+        glDeleteFramebuffers(1, bufs);
+    }
+    virtual void Bind() override
+    {
+        glBindFramebuffer(_resinstance.type, _resinstance.id);
+    }
 };
 
 
 
 /*------------------------------RenderBuffer--------------------------*/
 
-class RenderBufferObject : IHWObject
+class RenderBufferObject : IHWBuffer
 {
 public:
-    RenderBufferObject() {}
+    RenderBufferObject()
+        : IHWBuffer(GL_RENDERBUFFER)
+    {}
     virtual ~RenderBufferObject() {}
 
-    virtual void Create() override {}
-    virtual void Destroy() override {}
-    virtual void Bind() override {}
+    virtual void Create() override 
+    {
+        uint32 bufs[1];
+        glGenRenderbuffers(1, bufs);
+
+        _resinstance.id = bufs[0];
+    }
+    virtual void Destroy() override 
+    {
+        uint32 bufs[1] = { _resinstance.id };
+        glDeleteRenderbuffers(1, bufs);
+    }
+    virtual void Bind() override 
+    {
+        glBindRenderbuffer(_resinstance.type, _resinstance.id);
+    }
 };
 
 /*------------------------------Render Context--------------------------*/
@@ -564,6 +642,7 @@ public:
     RenderContext();
     ~RenderContext();
 
+    void CreateVertexBuffer();
 
 };
 

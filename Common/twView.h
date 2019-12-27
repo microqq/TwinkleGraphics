@@ -11,7 +11,7 @@
 
 #include "twCamera.h"
 #include "twCameraControl.h"
-#include "twScene.h"
+#include "twSceneManagement.h"
 
 namespace TwinkleGraphics
 {

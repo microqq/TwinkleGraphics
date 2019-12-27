@@ -7,6 +7,7 @@
 #include "twMesh.h"
 #include "twMeshRenderer.h"
 #include "twTransform.h"
+#include "twSceneNode.h"
 
 namespace TwinkleGraphics
 {
@@ -14,7 +15,7 @@ namespace TwinkleGraphics
  * @brief 
  * 
  */
-class Geometry : public Object
+class Geometry : public Object, public ISceneNode, public IRenderableObject
 {
 public:
     typedef std::shared_ptr<Geometry> Ptr;
@@ -23,20 +24,12 @@ public:
     virtual ~Geometry();
 
     virtual void GenerateMesh() {}
-    void SetMeshRenderer(MeshRenderer::Ptr renderer) { _renderer = renderer; }
-
     Mesh::Ptr GetMesh() { return _mesh; }
-    MeshRenderer::Ptr GetMeshRenderer() { return _renderer; }
     
-    Transform::Ptr GetTransform() { return _transform; }
-
     MeshDataFlag GetMeshDataFlag() { return _flag; }
 
 protected:
     Mesh::Ptr _mesh;
-    MeshRenderer::Ptr _renderer;
-    Transform::Ptr _transform;
-
     MeshDataFlag _flag;
 };
 

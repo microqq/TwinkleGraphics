@@ -28,7 +28,7 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twScene.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twSceneManagement.cpp
 )
 
 SET(Util_SRC

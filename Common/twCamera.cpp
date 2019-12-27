@@ -30,13 +30,13 @@ Frustum::Frustum(float32 left, float32 right, float32 bottom, float32 top, float
 }
 
 Camera::Camera(Viewport viewport, float32 fov, float32 near, float32 far, FrustumType type)
-    : Frustum(fov, viewport.AspectRatio(), near, far, type)
+    : Object()
+    , Frustum(fov, viewport.AspectRatio(), near, far, type)
+    , ISceneNode()
     , _viewport(viewport)
-    , _transform(nullptr)
     , _viewport_dirty(true)
     , _rendertoraget(false)
 {
-    _transform = std::make_shared<Transform>();
 }
 
 Camera::~Camera()

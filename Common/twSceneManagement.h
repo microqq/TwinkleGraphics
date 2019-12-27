@@ -1,7 +1,7 @@
 
 
-#ifndef TW_SCENE_H
-#define TW_SCENE_H
+#ifndef TW_SCENEMANAGEMENT_H
+#define TW_SCENEMANAGEMENT_H
 
 #include "twCommon.h"
 #include "twCamera.h"
@@ -10,6 +10,7 @@
 
 namespace TwinkleGraphics
 {
+
 class Scene final: public Object
 {
 public:
@@ -51,7 +52,7 @@ public:
 private:
     Camera::Ptr _maincamera;
     Camera::Ptr _cameralists[MAX_SCENE_CAMERA_COUNT];
-    Transform::Ptr _sceneroot;
+    ISceneNode _sceneroot;
 
     int32 _valid_camera_count;
 };  

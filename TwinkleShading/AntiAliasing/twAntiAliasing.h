@@ -12,7 +12,7 @@
 #include "twCamera.h"
 #include "twOrbitControl.h"
 #include "twUtil.h"
-#include "twScene.h"
+#include "twSceneManagement.h"
 
 namespace TwinkleGraphics
 {
