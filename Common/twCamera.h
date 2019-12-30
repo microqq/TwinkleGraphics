@@ -73,8 +73,8 @@ enum class FrustumType
 class Frustum
 {
 public:
-    Frustum(float32 fov, float32 aspect, float32 near, float32 far, FrustumType type = FrustumType::PERSPECTIVE);
-    Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, FrustumType type = FrustumType::ORTHOGRAPHIC);
+    Frustum(float32 fov, float32 aspect, float32 near, float32 far);
+    Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far);
     ~Frustum()
     {}
 
@@ -93,7 +93,8 @@ class Camera final : public Object, public Frustum, public ISceneNode
 public:
     typedef std::shared_ptr<Camera> Ptr;
 
-    Camera(Viewport viewport, float32 fov, float32 near, float32 far, FrustumType type = FrustumType::PERSPECTIVE);
+    Camera(Viewport viewport, float32 fov, float32 near, float32 far);
+    Camera(Viewport viewport, float32 near, float32 far);
     ~Camera();
 
     void LookAt(glm::vec3 center, glm::vec3 up) { _transform->LookAt(center, up); }
