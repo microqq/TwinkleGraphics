@@ -23,7 +23,7 @@ TEST(MaterialTests, UniformSetting)
     // if(image != nullptr)
     // {
     //     texture = std::make_shared<Texture2D>(true);
-    //     texture->SetImage(image);
+    //     texture->CreateFromImage(image);
     // }
 
     // ShaderManagerInst shaderMgr;

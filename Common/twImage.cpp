@@ -7,6 +7,10 @@ extern "C" bool vglLoadDDS(const char* filename, vglImageData* image);
 
 namespace TwinkleGraphics
 {
+Image::Image()
+	: Object()
+{
+}
 
 Image::Image(const char* filename, const ImageData& data)
 	: Object()

@@ -5,33 +5,21 @@
 
 namespace TwinkleGraphics
 {
-class RenderTexture2D : public Texture2D
+class RenderTexture : public Object
 {
 public:
-    typedef std::shared_ptr<RenderTexture2D> Ptr;
+    typedef std::shared_ptr<RenderTexture> Ptr;
 
-    RenderTexture2D(int32 width, int32 height);
-    ~RenderTexture2D();
-
-protected:
-    virtual void InitStorage() override; 
+    RenderTexture(int32 width, int32 height, GLenum internalformat, GLenum format
+        , bool antialiasing = false, int32 samples = 1, bool hasdepthstencil = false, int32 depth = 1, bool fixedsampledlocation = true);
+    virtual ~RenderTexture();
 
 private:
-    int32 _width, _height;
-
-};
-
-class RenderTexture2DMS : public Texture2DMultiSample
-{
-public:
-    RenderTexture2DMS(int32 width, int32 height);
-    ~RenderTexture2DMS();
-
-protected:
-    virtual void InitStorage() override; 
+    void InitStorage(int32 width, int32 height, GLenum internalformat, GLenum format
+        , bool antialiasing, int32 samples, bool hasdepthstencil, int32 depth, bool fixedsampledlocation);
 
 private:
-    int32 _width, _height;
+    Texture::Ptr _texture;
 };
 
 } // namespace TwinkleGraphics

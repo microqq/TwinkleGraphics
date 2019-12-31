@@ -53,15 +53,15 @@ void TextureExploreView::Initialize()
     camera_control->SetMinDistance(1.0f);
     this->SetCameraControl(camera_control);
 
+    //create vertex array object
+    _vaos = new uint32[16];
+    glGenVertexArrays(16, _vaos);
+
     //create vertex buffer object
     _vbos = new uint32[16];
     glGenBuffers(16, _vbos);
     _ebos = new uint32[16];
     glGenBuffers(16, _ebos);
-
-    //create vertex array object
-    _vaos = new uint32[16];
-    glGenVertexArrays(16, _vaos);
 
     Viewport pro_viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
     _proj_tex_camera = std::make_shared<Camera>(pro_viewport, 30.0f, 0.1f, 1000.0f);
@@ -590,7 +590,7 @@ void TextureExploreView::CreateSprite()
     if (image != nullptr)
     {
         texture = std::make_shared<Texture2D>(true);
-        texture->SetImage(image);
+        texture->CreateFromImage(image);
 
         // Sampler::Ptr sampler = std::make_shared<Sampler>();
         // texture->SetSampler(sampler);
@@ -628,8 +628,11 @@ void TextureExploreView::CreateSprite1D()
                                         };
         data.mip[0].data = bytes;
 
+        Image::Ptr image = std::make_shared<Image>();
+        image->SetImageSource(std::move(data));
+
         Texture1D::Ptr texture1D = std::make_shared<Texture1D>(true);
-        texture1D->SetImageData(data);
+        texture1D->CreateFromImage(image);
 
         _sprite_1d = std::make_shared<Sprite>(texture1D, glm::vec2(5, 5));
 
@@ -653,7 +656,7 @@ void TextureExploreView::CreateVolumnTexture()
         Image::Ptr image = imageMgr->ReadImage(images_info);
 
         Texture3D::Ptr volumntex = std::make_shared<Texture3D>(true);
-        volumntex->SetImage(image);
+        volumntex->CreateFromImage(image);
 
         mat->SetMainTexture(volumntex);
         renderer->SetMaterial(mat);
@@ -720,7 +723,7 @@ void TextureExploreView::CreateSkybox()
         // ImageReadInfo down_info = {"Assets/Textures/sor_sea/sea_dn.png"};
         // Image::Ptr down_image = imageMgr->ReadImage(down_info);
 
-        // cubemap->SetImage(image);
+        // cubemap->CreateFromImage(image);
 
         cubemap->SetPositiveX(right_image);
         cubemap->SetPositiveY(top_image);
@@ -760,7 +763,7 @@ void TextureExploreView::CreateCube(Image::Ptr image)
         CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
-        cubemap->SetImage(image);
+        cubemap->CreateFromImage(image);
 
         mat->SetMainTexture(cubemap);
 
@@ -786,7 +789,7 @@ void TextureExploreView::CreateIconSphere(Image::Ptr image)
         SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
-        cubemap->SetImage(image);
+        cubemap->CreateFromImage(image);
 
         mat->SetMainTexture(cubemap);
 
@@ -893,7 +896,7 @@ void TextureExploreView::CreateNURBSSurface()
 
         Texture2D::Ptr texture = nullptr;
         texture = std::make_shared<Texture2D>(true);
-        texture->SetImage(image);
+        texture->CreateFromImage(image);
 
         texture->SetWrap<WrapParam::WRAP_S>(WrapMode::CLAMP_TO_BORDER);
         texture->SetWrap<WrapParam::WRAP_T>(WrapMode::CLAMP_TO_BORDER);
@@ -975,12 +978,12 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
 {
     SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
 
+    //bind vertex array object
+    glBindVertexArray(_vaos[index]);
+
     //bind element array buffer, bind buffer data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_DYNAMIC_DRAW);
-
-    //bind vertex array object
-    glBindVertexArray(_vaos[index]);
 
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
@@ -1014,6 +1017,8 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
         glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
         glVertexAttribBinding(1, 1);
     }
+
+    glBindVertexArray(0);
 }
 
 void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face)
@@ -1052,8 +1057,6 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[index]);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
     glFrontFace(GL_CCW);

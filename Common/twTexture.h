@@ -305,7 +305,7 @@ public:
     Texture(bool immutable = true);
     virtual ~Texture();
 
-    void SetImage(Image::Ptr image)
+    void CreateFromImage(Image::Ptr image)
     { 
         if(_image == nullptr) 
         {
@@ -321,16 +321,17 @@ public:
         }
     }
 
-    void SetImageData(const ImageData& src)
+    void Create(int32 width, int32 height, GLenum internalformat = GL_RGBA8
+        , GLenum format = GL_RGBA, int32 miplevels = 1
+        , int32 depth = -1, int32 slices = -1)
     {
-        if(_image != nullptr) return;
+        _width = width;
+        _height = height;
+        _internalformat = internalformat;
+        _format = format;
+        _miplevels = miplevels;
+        _slices = slices;
 
-        if(_data != nullptr)
-        {
-            SAFE_DEL(_data);
-        }
-
-        _data = new ImageData(src);
         InitStorage();
     }
 
@@ -363,29 +364,59 @@ public:
     const TexParams& GetTexParams() { return _parameters; }
     int32 GetNumMipLevels() 
     { 
-        return _image == nullptr ? (_data == nullptr ? 0 : _data->mipLevels)
-            : _image->GetImageSource().mipLevels; 
+        if(_image == nullptr)
+        {
+            return _miplevels;
+        }
+        else
+        {
+            return _image->GetImageSource().mipLevels; 
+        }
     }
     InternalFormat GetInternalformat() 
     { 
-        return _image == nullptr ? (_data == nullptr ? GL_NONE : _data->internalFormat)
-        : _image->GetImageSource().internalFormat; 
+        if(_image == nullptr)
+        {
+            return _internalformat;   
+        }
+        else
+        {
+            return _image->GetImageSource().internalFormat; 
+        }
     }
 
     int32 GetWidth(int32 level = 0) 
     { 
-        return _image == nullptr ? (_data == nullptr ? 0 : _data->mip[level].width) 
-            : _image->GetImageSource().mip[level].width; 
+        if(_image == nullptr)
+        {
+            return _width;
+        }
+        else
+        {
+            return _image->GetImageSource().mip[level].width;
+        }
     }
     int32 GetHeight(int32 level = 0) 
-    { 
-        return _image == nullptr ? (_data == nullptr ? 0 : _data->mip[level].height) 
-            : _image->GetImageSource().mip[level].height; 
+    {
+        if (_image == nullptr)
+        {
+            return _height;
+        }
+        else
+        {
+            return _image->GetImageSource().mip[level].height;
+        }
     }
     int32 GetDepth(int32 level = 0) 
     { 
-        return _image == nullptr ? (_data == nullptr ? 0 : _data->mip[level].depth) 
-            : _image->GetImageSource().mip[level].depth; 
+        if(_image == nullptr)
+        {
+            return -1;
+        }
+        else
+        {
+            return _image->GetImageSource().mip[level].depth;
+        }
     }
 
     const RenderResInstance& GetRenderRes() { return _res; }
@@ -414,7 +445,14 @@ protected:
     TexParameterMask _mask;
     TexParameterDirtyFlag _dirty_flag;
 
-    ImageData* _data;
+    GLenum _internalformat;
+    GLenum _format;
+    int32 _miplevels;
+
+    int32 _width;
+    int32 _height;
+    int32 _depth;
+    int32 _slices;
 
     bool _immutable;
     bool _initialized;
@@ -521,8 +559,10 @@ class Texture2DMultiSample : public Texture
 public:
     typedef std::shared_ptr<Texture2DMultiSample> Ptr;
 
-    Texture2DMultiSample(bool immutable = true)
+    Texture2DMultiSample(uint32 samples, bool immutable = true)
             : Texture(immutable)
+            , _samples(samples)
+            , _fixedsampledlocation(true)
     {
         _res.type = GL_TEXTURE_2D_MULTISAMPLE;
 
@@ -536,20 +576,16 @@ public:
 protected:
     virtual void InitStorage() override;
 
-    virtual void ApplyWrapParameter() override
+    virtual void ApplyTexParameters() override
     {
-        // wrap
-        if (_parameters.wrap_modes[0] != WrapMode::NONE)
-        {
-            glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
-        }
-        if (_parameters.wrap_modes[1] != WrapMode::NONE)
-        {
-            glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrap_modes[1]));
-        }
+        ApplySwizzleParameter();
+        ApplyMipMapParameter();
+        ApplyDepthStencilMode();
     }
 
-
+private:
+    uint32 _samples;
+    bool _fixedsampledlocation;
 };
 
 class Texture3D : public Texture
@@ -600,23 +636,10 @@ protected:
 
     virtual void ApplyWrapParameter() override
     {
-        // wrap only support clamp_to_edge/clamp_to_border
-        // do not support mipmap
-        // if (_parameters.wrap_modes[0] != WrapMode::NONE)
-        // {
-        //     glTexParameteri(_res.type, GL_TEXTURE_WRAP_S, (int32)(_parameters.wrap_modes[0]));
-        // }
-        // if (_parameters.wrap_modes[1] != WrapMode::NONE)
-        // {
-        //     glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrap_modes[1]));
-        // }
     }
-
-
     virtual void ApplyFilterParameter() override
     {
         // filter only support nearest/linear
-
     }
 };
 
@@ -774,8 +797,10 @@ class Texture2DMultiSampleArray : public Texture
 public:
     typedef std::shared_ptr<Texture2DMultiSampleArray> Ptr;
 
-    Texture2DMultiSampleArray(bool immutable = true)
+    Texture2DMultiSampleArray(int32 samples, bool immutable = true)
             : Texture(immutable)
+            , _samples(samples)
+            , _fixedsampledlocation(true)
     {
         _res.type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 
@@ -788,6 +813,17 @@ public:
 
 protected:
     virtual void InitStorage() override;
+
+    virtual void ApplyTexParameters() override
+    {
+        ApplySwizzleParameter();
+        ApplyMipMapParameter();
+        ApplyDepthStencilMode();
+    }
+
+private:
+    int32 _samples;
+    bool _fixedsampledlocation;
 };
 
 

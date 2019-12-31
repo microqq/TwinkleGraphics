@@ -431,12 +431,12 @@ void BasicGeometryView::Destroy()
 
 void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
 {
+    //bind vertex array object
+    glBindVertexArray(_vaos[index]);
+
     //bind element array buffer, bind buffer data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_DYNAMIC_DRAW);
-
-    //bind vertex array object
-    glBindVertexArray(_vaos[index]);
 
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
@@ -445,6 +445,8 @@ void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
     //vertex attribute layout setting
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }
 
 void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front_face)
@@ -486,8 +488,6 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[index]);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
     // glDrawElements(GL_POINTS, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
@@ -535,8 +535,6 @@ void BasicGeometryView::RenderInfinitePlane()
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[6]);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[6]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
     glDisable(GL_BLEND);
@@ -581,7 +579,6 @@ void BasicGeometryView::RenderLine(Mesh::Ptr mesh, int32 index)
 
         //draw command use vertex array object
         glBindVertexArray(_vaos[index]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
         glDrawElements(GL_LINES_ADJACENCY, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
     }
 
@@ -678,7 +675,7 @@ void BasicGeometryView::CreateInfinitePlane()
 
     Texture2D::Ptr texture = nullptr;
     texture = std::make_shared<Texture2D>(true);
-    texture->SetImage(image);
+    texture->CreateFromImage(image);
 
     texture->SetWrap<WrapParam::WRAP_S>(WrapMode::REPEAT);
     texture->SetWrap<WrapParam::WRAP_T>(WrapMode::REPEAT);

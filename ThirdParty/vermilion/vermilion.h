@@ -110,19 +110,6 @@ struct vglImageData
             mip[i].mipStride = copy.mip[i].mipStride;
 
             mip[i].data = copy.mip[i].data;
-            // if(copy.mip[i].data != nullptr)
-            // {
-            //     if(i == 0)
-            //     {
-            //         mip[i].data = malloc(totalDataSize);
-            //     }
-            //     else
-            //     {
-            //         mip[i].data = (char*)(mip[i - 1].data) + mip[i - 1].mipStride;
-            //     }
-
-            //     memcpy(mip[i].data, copy.mip[i].data, mip[i].mipStride);
-            // }
         }
     }
 
@@ -139,7 +126,6 @@ struct vglImageData
 #ifdef _DEBUG
     std::cout << "Vermilion: move constructor executed." << std::endl;
 #endif
-
         swizzle[0] = copy.swizzle[0];
         swizzle[1] = copy.swizzle[1];
         swizzle[2] = copy.swizzle[2];
@@ -176,20 +162,6 @@ struct vglImageData
         for(int i = 0; i < mipLevels; i++)
         {
             mip[i].data = data.mip[i].data;
-            // if(data.mip[i].data != nullptr)
-            // {
-            //     if(i == 0)
-            //     {
-            //         mip[i].data = malloc(totalDataSize);
-            //     }
-            //     else
-            //     {
-            //         mip[i].data = (char*)(mip[i - 1].data) + mip[i - 1].mipStride;
-            //     }
-
-            //     memcpy(mip[i].data, data.mip[i].data, mip[i].mipStride);
-            // }
-
             mip[i].width = data.mip[i].width;
             mip[i].height = data.mip[i].height;
             mip[i].depth = data.mip[i].depth;

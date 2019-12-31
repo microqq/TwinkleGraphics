@@ -185,7 +185,7 @@ void AntiAliasingView::CreateScene()
         ImageReadInfo images_info = {"Assets/Textures/TantolundenCube.dds"};
         Image::Ptr image = imageMgr->ReadImage(images_info);
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
-        cubemap->SetImage(image);
+        cubemap->CreateFromImage(image);
 
         Material::Ptr mat = _sphere->GetMeshRenderer()->GetSharedMaterial();
         mat->SetMainTexture(cubemap);
@@ -337,16 +337,15 @@ void AntiAliasingView::CreateGeometry(Geometry::Ptr geom, uint32 index)
 {
     SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
 
+    //bind vertex array object
+    glBindVertexArray(_vaos[index]);
+
     //bind element array buffer, bind buffer data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, submesh->GetIndiceNum() * 4, submesh->GetIndice(), GL_DYNAMIC_DRAW);
 
-    //bind vertex array object
-    glBindVertexArray(_vaos[index]);
-
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
-
     int32 verticenum = submesh->GetVerticeNum();
     if(geom->GetMeshDataFlag() == MeshDataFlag::DEFAULT)
     {
@@ -360,22 +359,24 @@ void AntiAliasingView::CreateGeometry(Geometry::Ptr geom, uint32 index)
 
         if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
             glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticeUV());
-    }    
+    }
 
     // bind vertex position
-    glBindVertexBuffer(0, _vbos[index], 0, sizeof(vec3));
     glEnableVertexAttribArray(0);
+    glBindVertexBuffer(0, _vbos[index], 0, sizeof(vec3));
     glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
     glVertexAttribBinding(0, 0);
 
     // bind vertex uv
     if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
     {
-        glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));
         glEnableVertexAttribArray(1);
+        glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));
         glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
         glVertexAttribBinding(1, 1);
     }
+
+    glBindVertexArray(0);
 }
 
 void AntiAliasingView::RenderGeometry(Geometry::Ptr geom, int32 index)
@@ -415,8 +416,6 @@ void AntiAliasingView::RenderGeometry(Geometry::Ptr geom, int32 index)
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[index]);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[index]);
     glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
     for (auto tex_slot : pass->GetTextureSlots())

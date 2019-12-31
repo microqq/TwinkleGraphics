@@ -56,6 +56,11 @@ void TriangleView::Initialize()
         0, 1, 2
     };
 
+    //create vertex array object
+    _vaos = new uint32[1];
+    glGenVertexArrays(1, _vaos);
+    glBindVertexArray(_vaos[0]);
+
     //create vertex buffer object
     _vbos = new uint32[1];
     glGenBuffers(1, _vbos);
@@ -66,11 +71,6 @@ void TriangleView::Initialize()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[0]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12, elements, GL_STATIC_DRAW);
 
-    //create vertex array object
-    _vaos = new uint32[1];
-    glGenVertexArrays(1, _vaos);
-    glBindVertexArray(_vaos[0]);
-
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[0]);
     glBufferData(GL_ARRAY_BUFFER, 36, vertices, GL_STATIC_DRAW);
@@ -78,6 +78,8 @@ void TriangleView::Initialize()
     //vertex attribute layout setting
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
  
     //create shader
     ShaderReadInfo shaders_info[] = {
@@ -130,7 +132,6 @@ void TriangleView::RenderImpl()
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebos[0]);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
 }
 

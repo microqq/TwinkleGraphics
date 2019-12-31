@@ -59,10 +59,11 @@ class Image : public Object
 public:
     typedef std::shared_ptr<Image> Ptr;
 
+    Image();
     Image(const char* filename, const ImageData& data);
     virtual ~Image();
 
-    void SetImageSource(ImageData &data) { _data = data; }
+    void SetImageSource(ImageData &&data) { _data = data; }
     const ImageData& GetImageSource() { return _data; }
     ImageData* GetImageSourcePtr() { return &_data; }
 

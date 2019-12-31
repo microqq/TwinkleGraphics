@@ -413,17 +413,23 @@ protected:
     RenderResInstance _resinstance;
 };
 
-enum BufferMapTypes
-{
-    MAP_READ = GL_MAP_READ_BIT,
-    MAP_WRITE = GL_MAP_WRITE_BIT,
-    MAP_READ_WRITE = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT
-};
-
 class IHWBuffer : public IHWObject
 {
 public:
     typedef std::shared_ptr<IHWBuffer> Ptr;
+
+    enum MapAccessTypes
+    {
+        MAP_READ = GL_MAP_READ_BIT,
+        MAP_WRITE = GL_MAP_WRITE_BIT,
+        MAP_READ_WRITE = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT,
+        // Option flag
+        INVALIDATE_RANGE = GL_MAP_INVALIDATE_RANGE_BIT,
+        INVALIDATE_BUFFER = GL_MAP_INVALIDATE_BUFFER_BIT,
+        FLUSH_EXPLICIT = GL_MAP_FLUSH_EXPLICIT_BIT,
+        UNSYNCHRONIZED = GL_MAP_UNSYNCHRONIZED_BIT
+    };
+
 
     IHWBuffer(int32 type)
         : IHWObject(type)
@@ -458,14 +464,17 @@ public:
         glBufferSubData(_resinstance.type, offset, size, data);
     }
 
-    virtual void* MapBuffer()
+    virtual void* MapBuffer(uint32 offset, uint32 size, MapAccessTypes access)
     {
-
+        assert(size + offset <= _bufsize);
+        
+        glMapBufferRange(_resinstance.type, offset, size, access);
     }
 
     virtual void UnMapBuffer()
     {
-
+        glBindBuffer(_resinstance.type, _resinstance.id);
+        glUnmapBuffer(_resinstance.type);
     }
 
     virtual void Destroy() override
@@ -501,10 +510,12 @@ public:
     VertexArrayObject()
         : IHWObject(GL_VERTEX_ARRAY)
     {
+        Create();
     }
 
     virtual ~VertexArrayObject()
     {
+        Destroy();
     }
 
     virtual void Create() override
@@ -540,10 +551,12 @@ public:
     VertexBufferObject()
         : IHWBuffer(GL_ARRAY_BUFFER)
     {
+        Create();
     }
 
     virtual ~VertexBufferObject()
     {
+        Destroy();
     }
 };
 
@@ -557,10 +570,12 @@ public:
     IndexBufferObject()
         : IHWBuffer(GL_ELEMENT_ARRAY_BUFFER)
     {
+        Create();
     }
 
     virtual ~IndexBufferObject()
     {
+        Destroy();
     }
 };
 
@@ -579,8 +594,13 @@ public:
     FrameBufferObject(uint32 type = GL_DRAW_FRAMEBUFFER
         , FBOStorageTypes storage = FBOStorageTypes::RENDERBUFFER)
     : IHWBuffer(type)
-    {}
-    virtual ~FrameBufferObject() {}
+    {
+        Create();
+    }
+    virtual ~FrameBufferObject() 
+    {
+        Destroy();
+    }
 
     virtual void Create() override
     {
