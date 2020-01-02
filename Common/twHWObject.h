@@ -1,0 +1,34 @@
+#ifndef TW_HWOBJECT_H
+#define TW_HWOBJECT_H
+
+#include "twCommon.h"
+
+namespace TwinkleGraphics
+{
+
+class IHWObject : public Reference<IHWObject>
+{
+public:
+    typedef std::shared_ptr<IHWObject> Ptr;
+
+    IHWObject(int32 type)
+        : Reference<IHWObject>()
+    {
+        _resinstance.type = type;
+    }
+    virtual ~IHWObject() {}
+
+    virtual void Create() = 0;
+    virtual void Destroy() = 0;
+    virtual void Bind() = 0;
+    virtual void UnBind() = 0;
+
+    const RenderResInstance& GetResource() { return _resinstance; }
+
+protected:
+    RenderResInstance _resinstance;
+};
+
+} // namespace TwinkleGraphics
+
+#endif

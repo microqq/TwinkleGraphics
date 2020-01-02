@@ -19,6 +19,17 @@ protected:
     MeshRenderer::Ptr _renderer;
 };
 
+enum class SceneLayerType
+{
+    NONE = 0,
+    DEFAULT = 1,        //solid objects
+    TRANSPARENT = 2,
+    UI = 4,
+    POSTPROCESSING = 8,
+    EVERYTHING = DEFAULT | TRANSPARENT | UI | POSTPROCESSING
+};
+typedef SceneLayerType CullingMask;
+
 class ISceneNode
 {
 public:

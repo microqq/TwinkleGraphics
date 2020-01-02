@@ -335,6 +335,8 @@ public:
         InitStorage();
     }
 
+    const RenderResInstance& GetTexResource() { return _res; }
+
     void SetSampler(Sampler::Ptr sampler) { _sampler = sampler; }
     Sampler::Ptr GetSampler() { return _sampler; }
 
@@ -573,6 +575,8 @@ public:
 
     virtual ~Texture2DMultiSample() {}
 
+    uint32 GetSamples() { return _samples; }
+
 protected:
     virtual void InitStorage() override;
 
@@ -810,6 +814,8 @@ public:
     }
 
     virtual ~Texture2DMultiSampleArray() {}
+
+    uint32 GetSamples() { return _samples; }
 
 protected:
     virtual void InitStorage() override;

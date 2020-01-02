@@ -670,7 +670,7 @@ void BasicGeometryView::CreateInfinitePlane()
     _infinite_plane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info = {"Assets/Textures/grid.dds"};
+    ImageReadInfo images_info = {"Assets/Textures/grid.png"};
     Image::Ptr image = imageMgr->ReadImage(images_info);
 
     Texture2D::Ptr texture = nullptr;

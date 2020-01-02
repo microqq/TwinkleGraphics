@@ -5,39 +5,50 @@
 namespace TwinkleGraphics
 {
 RenderTexture::RenderTexture(int32 width, int32 height, GLenum internalformat, GLenum format
-        , bool antialiasing, int32 samples, bool hasdepthstencil, int32 depth, bool fixedsampledlocation)
+        , bool usedepth, bool depthwithstencil
+        , bool antialiasing, int32 samples
+        , bool fixedsampledlocation)
     : Object()
+    , _width(width)
+    , _height(height)
+    , _samples(samples)
+    , _usedepth(usedepth)
+    , _depthwithstencil(depthwithstencil)
+    , _antialiasing(antialiasing)
+    , _fixedsampledlocation(fixedsampledlocation)
 {
-    InitStorage(width, height, internalformat, format, antialiasing, samples
-        , hasdepthstencil, depth, fixedsampledlocation);
+    Create();
 }
 
 RenderTexture::~RenderTexture()
-{
+{}
 
-}
-
-void RenderTexture::InitStorage(int32 width, int32 height, GLenum internalformat, GLenum format
-        , bool antialiasing, int32 samples, bool hasdepthstencil, int32 depth, bool fixedsampledlocation)
+void RenderTexture::Create()
 {
-    if(!antialiasing)
+    if(!_antialiasing)
     {
         _texture = std::make_shared<Texture2D>();
-        _texture->Create(width, height, internalformat, format);
+        _texture->Create(_width, _height, _internalformat, _format);
     }
     else
     {
-        if(depth > 1)
+        _texture = std::make_shared<Texture2DMultiSample>(_samples);
+        _texture->Create(_width, _height, _internalformat, _format);
+    }
+    if(_usedepth)
+    {
+        if(_depthwithstencil)
         {
-            _texture = std::make_shared<Texture2DMultiSampleArray>(samples);
-            _texture->Create(width, height, internalformat, format, 1, depth, -1);
+
         }
-        else
-        {
-            _texture = std::make_shared<Texture2DMultiSample>(samples);
-            _texture->Create(width, height, internalformat, format, 1, depth, -1);
-        }
-    }    
+    }
+}
+
+void RenderTexture::AttachToFramebuffer(FrameBufferObject::Ptr framebuf
+        , AttachmentType type
+        ,  bool genframebuf)
+{
+
 }
 
 } // namespace TwinkleGraphics

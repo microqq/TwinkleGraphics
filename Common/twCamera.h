@@ -88,6 +88,7 @@ protected:
     FrustumType _frustum_type;
 };
 
+
 class Camera final : public Object, public Frustum, public ISceneNode
 {
 public:
@@ -149,9 +150,12 @@ public:
     }
 
     void SetRenderToTarget(bool rtt) { _rendertoraget = rtt; }
+    void SetCullingMask(CullingMask mask) { _cullingmask |= (int32)mask; }
+    void SetCullingMask(int32 mask) { _cullingmask |= mask; }
 
 private:
     Viewport _viewport;
+    int32 _cullingmask;
 
     bool _viewport_dirty;
     bool _rendertoraget;

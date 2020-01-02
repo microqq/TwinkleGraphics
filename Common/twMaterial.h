@@ -7,6 +7,7 @@
 
 #include "twCommon.h"
 #include "twShader.h"
+#include "twUniform.h"
 #include "twRenderContext.h"
 #include "twTexture.h"
 
