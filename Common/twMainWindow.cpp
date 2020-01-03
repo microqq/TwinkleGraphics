@@ -249,6 +249,14 @@ void GLFWMainWindow::Initialise()
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedtexunit_count);
     std::cout << "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:" << combinedtexunit_count << std::endl;
 
+    int32 max_colorattachment_count;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_colorattachment_count);
+    std::cout << "GL_MAX_COLOR_ATTACHMENTS:" << max_colorattachment_count << std::endl;
+
+    int32 max_drawbuffers_count;
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_drawbuffers_count);
+    std::cout << "GL_MAX_DRAW_BUFFERS:" << max_drawbuffers_count << std::endl;
+
 #endif
     
 

@@ -267,7 +267,7 @@ public:
         COLOR_ATTACHMENT = GL_COLOR_ATTACHMENT0,
         DEPTH_ATTACHMENT = GL_DEPTH_ATTACHMENT,
         STENCIL_ATTACHMENT = GL_STENCIL_ATTACHMENT,
-        DEPTH_STENCIL = GL_DEPTH_STENCIL_ATTACHMENT  
+        DEPTH_STENCIL = GL_DEPTH_STENCIL_ATTACHMENT
     };
 
     FrameBufferObject(uint32 type = GL_DRAW_FRAMEBUFFER)
@@ -333,14 +333,31 @@ public:
         const RenderResInstance& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::STENCIL_ATTACHMENT, res.type, res.id);
     }
+    void AttachDepthStencil(Texture::Ptr tex)
+    {
+        const RenderResInstance& res = tex->GetTexResource();
+        glFramebufferTexture2D(_resinstance.type, AttachmentType::DEPTH_STENCIL, res.type, res.id, 0);
+    }
     void AttachDepthStencil(RenderBufferObject::Ptr rbobj)
     {
         const RenderResInstance& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::DEPTH_STENCIL, res.type, res.id);
     }
 
-    int32 GetColorAttachmentsCount() { return _color_attachments; }
+    void DrawColorBuffers() 
+    {
+        if(_color_attachments > 1)
+        {
+            uint32 attachments[_color_attachments];
+            for(int32 i = 0; i < _color_attachments; i++)
+            {
+                attachments[i] = AttachmentType::COLOR_ATTACHMENT + i;
+            }
+            glDrawBuffers(_color_attachments, attachments);
+        }
+    }
     void CheckFramebuffer() {}
+    int32 GetColorAttachmentsCount() { return _color_attachments; }
 
 private:
     int32 _color_attachments;

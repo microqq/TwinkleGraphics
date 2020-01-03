@@ -11,7 +11,7 @@
 namespace TwinkleGraphics
 {
 
-class Scene final: public Object
+class Scene : public Object
 {
 public:
     typedef std::shared_ptr<Scene> Ptr;
@@ -19,12 +19,14 @@ public:
     Scene();
     virtual ~Scene();
 
-    void Init();
-    void Update();
-    void Render();
+    virtual void Init();
+    virtual void Update(float32 delta_time);
+    virtual void Render();
 
     void SetMainCamera(Camera::Ptr cam)
-    { _maincamera = cam; }
+    { 
+        _maincamera = cam;
+    }
 
     void AddCamera(Camera::Ptr cam)
     {
@@ -49,7 +51,9 @@ public:
         return _cameralists[index];
     }
 
-private:
+    void SortCamera() {}
+
+protected:
     Camera::Ptr _maincamera;
     Camera::Ptr _cameralists[MAX_SCENE_CAMERA_COUNT];
     ISceneNode _sceneroot;

@@ -153,9 +153,12 @@ public:
     void SetCullingMask(CullingMask mask) { _cullingmask |= (int32)mask; }
     void SetCullingMask(int32 mask) { _cullingmask |= mask; }
 
+    int32 GetDepth() { return _sortdepth; }
+
 private:
     Viewport _viewport;
     int32 _cullingmask;
+    int32 _sortdepth;
 
     bool _viewport_dirty;
     bool _rendertoraget;

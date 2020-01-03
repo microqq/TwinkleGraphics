@@ -30,38 +30,48 @@ public:
 
 private:
     AntiAliasingView* _view;
-    AntiAliasingView* _view2;
+    // AntiAliasingView* _view2;
 };
 
-class AntiAliasingScene
+class AntiAliasingScene : public Scene
 {
 public:
+    typedef std::shared_ptr<AntiAliasingScene> Ptr;
+
     AntiAliasingScene()
+        : Scene()
+        , _current_aa_option(-1)
     {}
     ~AntiAliasingScene()
     {}
 
-private:
-    Scene::Ptr _scene;
-};
+    virtual void Init() override
+    {
+        //create vertex buffer object
+        _vbos = new uint32[16];
+        glGenBuffers(16, _vbos);
+        _ebos = new uint32[16];
+        glGenBuffers(16, _ebos);
 
-class AntiAliasingView : public View
-{
-public:
-    AntiAliasingView()
-        : View()
-        , _current_aa_option(AAOption::NONE)
-        {}
+        //create vertex array object
+        _vaos = new uint32[16];
+        glGenVertexArrays(16, _vaos);
 
-    virtual ~AntiAliasingView()
-    {}
+        CreateScene();
+    }
 
-protected:
-    virtual void Initialize() override;
-    virtual void Destroy() override;
-    virtual void Advance(float64 delta_time) override;
-    virtual void RenderImpl() override;
-    virtual void OnGUI() override;
+    virtual void Update(float32 delta_time) override
+    {
+        UpdateScene();
+    }
+
+    virtual void Render() override
+    {
+        Scene::Render();
+        RenderScene();
+    }
+
+    int32& GetCurrentAAOption() { return _current_aa_option; }
 
 private:
     void CreateScene();
@@ -110,6 +120,27 @@ private:
 
     int32 _current_aa_option;
 
+    friend class AntiAliasingView;
+};
+
+class AntiAliasingView : public View
+{
+public:
+    using AAOption = AntiAliasingScene::AAOption;
+
+    AntiAliasingView()
+        : View()
+        {}
+
+    virtual ~AntiAliasingView()
+    {}
+
+protected:
+    virtual void Initialize() override;
+    virtual void Destroy() override;
+    virtual void OnGUI() override;
+
+private:
     friend class AntiAliasing;
 };
 

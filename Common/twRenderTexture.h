@@ -13,18 +13,28 @@ public:
     typedef std::shared_ptr<RenderTexture> Ptr;
     using AttachmentType = FrameBufferObject::AttachmentType;
 
-    RenderTexture(int32 width, int32 height, GLenum internalformat, GLenum format
+    RenderTexture(int32 width, int32 height, GLenum internalformat = GL_RGBA8
+        , GLenum format = GL_RGBA
         , bool usedepth = true, bool depthwithstencil = false
         , bool antialiasing = false, int32 samples = 1
         , bool fixedsampledlocation = true);
     virtual ~RenderTexture();
 
-    void Create();
+    /**
+     * @brief 
+     * 
+     * @param autogenFBO 
+     */
+    void Create(bool autogenFBO = true);
     void AttachToFramebuffer(FrameBufferObject::Ptr framebuf
-        , AttachmentType type = AttachmentType::COLOR_ATTACHMENT
-        ,  bool genframebuf = false);
+        , AttachmentType type = AttachmentType::COLOR_ATTACHMENT, int32 index = 0);
+    void Bind() { if(_framebuf != nullptr) _framebuf->Bind(); }
+    void UnBind() { if(_framebuf != nullptr) _framebuf->UnBind(); }
 
     Texture::Ptr GetTexture() { return _texture; }
+
+private:
+    void AttachToFramebuffer(AttachmentType type = AttachmentType::COLOR_ATTACHMENT, int32 index = 0);
 
 private:
     Texture::Ptr _texture;

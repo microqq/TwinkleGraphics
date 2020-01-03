@@ -33,6 +33,7 @@ public:
         }
     }
     void SetCameraControl(CameraControl::Ptr control) { _camera_control = control; }
+
     void AttachToScene(Scene::Ptr scene) 
     {
         _scene = scene;
@@ -110,7 +111,6 @@ protected:
     glm::ivec2 _window_size;
 
     bool _done;
-    bool _ismainview;
     bool _initialized;
 };
 

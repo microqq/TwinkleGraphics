@@ -8,7 +8,6 @@ View::View()
     , _camera_control(nullptr)
     , _window_size(1.0, 1.0)
     , _done(false)
-    , _ismainview(false)
     , _initialized(false)
 {
 }
@@ -40,37 +39,44 @@ void View::Run()
 
 void View::Advance(float64 delta_time)
 {
-
+    if(_scene != nullptr)
+    {
+        _scene->Update(delta_time);
+    }
 }
 
 void View::Render()
 {
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    const Viewport &viewport = _camera->GetViewport();
-    glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
-    glScissor(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
-    glEnable(GL_SCISSOR_TEST);
-
-    glClear(viewport.clear_mask);
-    if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
+    if(_scene != nullptr)
     {
-        const RGBA &color = viewport.clear_color;
-        glClearColor(color.r, color.g, color.b, color.a);
+        _scene->Render();
     }
-    if ((viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
+    else
     {
-        glClearDepth(viewport.clear_depth);
-    }
-    if ((viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
-    {
-        glClearStencil(viewport.clear_stencil);
-    }
+        const Viewport &viewport = _camera->GetViewport();
+        glEnable(GL_SCISSOR_TEST);
+        glScissor(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
+        glViewport(viewport.X(), viewport.Y(), viewport.Width(), viewport.Height());
 
-    RenderImpl();
+        glClear(viewport.clear_mask);
+        if ((viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
+        {
+            const RGBA &color = viewport.clear_color;
+            glClearColor(color.r, color.g, color.b, color.a);
+        }
+        if ((viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
+        {
+            glClearDepth(viewport.clear_depth);
+        }
+        if ((viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
+        {
+            glClearStencil(viewport.clear_stencil);
+        }
 
-    glDisable(GL_SCISSOR_TEST);
+        RenderImpl();
+
+        glDisable(GL_SCISSOR_TEST);
+    }
 }
 
 void View::HandleEvents()
