@@ -160,35 +160,35 @@ void BasicGeometryView::RenderImpl()
         }
         else if(_current_mesh_index == 5)
         {
-            RenderLine(_line);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
+            RenderLine(_line);
         }
         else if(_current_mesh_index == 7)
         {
-            RenderLine(_quadbezierline, 7);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
+            RenderLine(_quadbezierline, 7);
         }
         else if(_current_mesh_index == 8)
         {
-            RenderLine(_cubicbezierline, 8);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
+            RenderLine(_cubicbezierline, 8);
         }
         else if(_current_mesh_index == 9)
         {
-            RenderLine(_bspline->GetMesh(), 9);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
+            RenderLine(_bspline->GetMesh(), 9);
         }
         else if( _current_mesh_index != -1)
         {
@@ -197,11 +197,11 @@ void BasicGeometryView::RenderImpl()
             // {
             //     RenderLine(_nurbs_control_line, 19);
             // }
-            RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
             if(_display_infplane)
             {
                 RenderInfinitePlane();
             }
+            RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
         }
     }
 }
