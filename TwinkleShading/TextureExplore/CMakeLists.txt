@@ -54,7 +54,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
         )
         file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwTextureExplore.dll
+            ${PROJECT_SOURCE_DIR}/Output/libs/libtwTextureExplore.dll
         )
     endif()
 endif()

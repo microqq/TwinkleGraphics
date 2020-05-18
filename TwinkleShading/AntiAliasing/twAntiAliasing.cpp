@@ -28,7 +28,7 @@ void AntiAliasing::Install()
     _view = new AntiAliasingView();
     // _view2 = new AntiAliasingView();
 
-    Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.5f, 1.f));
+    Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.0f, 1.f));
     Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
     _view->SetViewCamera(camera);
 
@@ -86,6 +86,9 @@ void AntiAliasingView::OnGUI()
     {
         int32& current_aa_option = dynamic_cast<AntiAliasingScene*>(_scene.get())->GetCurrentAAOption();
 
+        if (ImGui::RadioButton(u8"NO AA", &(current_aa_option), AAOption::NONE))
+        {
+        }
         if (ImGui::RadioButton(u8"MSAA_HW", &(current_aa_option), AAOption::MSAA_HW))
         {
         }
@@ -291,6 +294,16 @@ void AntiAliasingScene::UpdateScene()
 
 void AntiAliasingScene::RenderScene()
 {
+    switch (_current_aa_option)
+    {
+    case AAOption::MSAA_HW:    
+        glEnable(GL_MULTISAMPLE);
+        break;
+    default:
+        glDisable(GL_MULTISAMPLE);
+        break;
+    }
+
     RenderGeometry(_plane_left, 0);
     RenderGeometry(_plane_top, 1);
     RenderGeometry(_plane_right, 2);
@@ -391,15 +404,6 @@ void AntiAliasingScene::RenderGeometry(Geometry::Ptr geom, int32 index)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-    if(_current_aa_option == AAOption::MSAA_HW)
-    {
-        glEnable(GL_MULTISAMPLE);
-    }
-    else
-    {
-        glDisable(GL_MULTISAMPLE);
-    }
-
     SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
 
     //draw command use vertex array object
@@ -410,8 +414,6 @@ void AntiAliasingScene::RenderGeometry(Geometry::Ptr geom, int32 index)
     {
         tex_slot.second.UnBind();
     }
-
-    glDisable(GL_BLEND);
 }
 
 } // namespace TwinkleGraphics

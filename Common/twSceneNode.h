@@ -23,10 +23,10 @@ enum class SceneLayerType
 {
     NONE = 0,
     DEFAULT = 1,        //solid objects
-    TRANSPARENT = 2,
+    TRANSPARENTS = 2,
     UI = 4,
     POSTPROCESSING = 8,
-    EVERYTHING = DEFAULT | TRANSPARENT | UI | POSTPROCESSING
+    EVERYTHING = 15
 };
 typedef SceneLayerType CullingMask;
 
