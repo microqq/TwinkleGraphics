@@ -304,19 +304,40 @@ public:
 
     void AttachColor(Texture::Ptr tex, int32 index = 0)
     {
-        const RenderResInstance& res = tex->GetTexResource();
-        glFramebufferTexture2D(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + index, res.type, res.id, 0);
+        assert(index >= 0 && index < 16);
 
+        int attachindex = 0;
         if(index >= _color_attachments)
+        {
+            attachindex = _color_attachments;
             _color_attachments += 1;
+        }
+        else
+        {
+            attachindex = index;
+        }
+
+        const RenderResInstance& res = tex->GetTexResource();
+        glFramebufferTexture2D(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + attachindex, res.type, res.id, 0);
+
     }
     void AttachColor(RenderBufferObject::Ptr rbobj, int32 index = 0)
     {
-        const RenderResInstance& res = rbobj->GetResource();
-        glFramebufferRenderbuffer(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + index, res.type, res.id);
+        assert(index >= 0 && index < 16);
 
+        int attachindex = 0;
         if(index >= _color_attachments)
+        {
+            attachindex = _color_attachments;
             _color_attachments += 1;
+        }
+        else
+        {
+            attachindex = index;
+        }
+
+        const RenderResInstance& res = rbobj->GetResource();
+        glFramebufferRenderbuffer(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + attachindex, res.type, res.id);
     }
     void AttachDepth(Texture::Ptr tex)
     {

@@ -64,7 +64,7 @@ ReadResult<Image::Ptr> ImageReader::ReadDDS(const char *filename, ReaderOption *
 		std::cout << "Image: Load image " << filename << " successed." << std::endl;
 #endif
 		Image::Ptr image = std::make_shared<Image>(filename, data);		
-		return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::FAILED);
+		return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::SUCCESS);
 	}
 
 #ifdef _DEBUG

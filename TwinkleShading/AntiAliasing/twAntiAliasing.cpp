@@ -200,7 +200,7 @@ void AntiAliasingScene::CreateScene()
 
     //
     RenderTexture::Ptr rt = std::make_shared<RenderTexture>(256, 256, GL_RGBA8
-        , GL_RGBA, false, false, true, 4, true);
+        , GL_RGBA, true, false, true, 4, true);
     rt->Create(true);
 }
 

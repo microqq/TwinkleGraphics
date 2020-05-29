@@ -4,7 +4,9 @@
 
 namespace TwinkleGraphics
 {
-RenderTexture::RenderTexture(int32 width, int32 height, GLenum internalformat, GLenum format
+RenderTexture::RenderTexture(int32 width, int32 height
+        // , RTType type = RTType::COLOR
+        , GLenum internalformat, GLenum format
         , bool usedepth, bool depthwithstencil
         , bool antialiasing, int32 samples
         , bool fixedsampledlocation)
@@ -54,33 +56,31 @@ void RenderTexture::Create(bool autogenFBO)
     if(autogenFBO)
     {
         _framebuf = std::make_shared<FrameBufferObject>();
+        AttachToFrameBuffer();
+    }
+}
+
+void RenderTexture::AttachToFrameBuffer()
+{
+    if(_framebuf != nullptr)
+    {
         switch (_format)
         {
         case GL_DEPTH_COMPONENT:
             AttachToFramebuffer(AttachmentType::DEPTH_ATTACHMENT);
             break;
-        case GL_DEPTH_STENCIL:        
+        case GL_DEPTH_STENCIL:
             AttachToFramebuffer(AttachmentType::DEPTH_STENCIL);
             break;
         case GL_STENCIL_INDEX:
             break;
         default:
-            AttachToFramebuffer();      //attch to color buffer
+            int index = _framebuf->GetColorAttachmentsCount();
+            AttachToFramebuffer(AttachmentType::COLOR_ATTACHMENT, index); //attch to color buffer
             break;
         }
     }
-}
 
-void RenderTexture::AttachToFramebuffer(FrameBufferObject::Ptr framebuf
-    , AttachmentType type
-    , int32 index)
-{
-    if(framebuf != nullptr && _framebuf == nullptr)
-    {
-        _framebuf = framebuf;
-
-        AttachToFramebuffer(type, index);
-    }
 }
 
 void RenderTexture::AttachToFramebuffer(AttachmentType type, int32 index)

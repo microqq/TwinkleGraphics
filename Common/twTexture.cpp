@@ -708,6 +708,8 @@ void Texture2DMultiSample::InitStorage()
 
     glTexStorage2DMultisample(_res.type, _samples, _internalformat, _width, _height,
         _fixedsampledlocation);
+
+    glBindTexture(_res.type, 0);   
 }
 
 

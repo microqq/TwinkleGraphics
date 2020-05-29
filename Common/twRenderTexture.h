@@ -13,6 +13,13 @@ public:
     typedef std::shared_ptr<RenderTexture> Ptr;
     using AttachmentType = FrameBufferObject::AttachmentType;
 
+    enum class RTType
+    {
+        COLOR,
+        DEPTH,
+        DEPTHSTENCIL
+    };
+
     RenderTexture(int32 width, int32 height, GLenum internalformat = GL_RGBA8
         , GLenum format = GL_RGBA
         , bool usedepth = true, bool depthwithstencil = false
@@ -26,15 +33,17 @@ public:
      * @param autogenFBO 
      */
     void Create(bool autogenFBO = true);
-    void AttachToFramebuffer(FrameBufferObject::Ptr framebuf
-        , AttachmentType type = AttachmentType::COLOR_ATTACHMENT, int32 index = 0);
+    Texture::Ptr GetTexture() { return _texture; }
+    RenderBufferObject::Ptr GetDepthBuffer() { return _depthbuf; }
+    FrameBufferObject::Ptr GetFrameBuffer() { return _framebuf; }
     void Bind() { if(_framebuf != nullptr) _framebuf->Bind(); }
     void UnBind() { if(_framebuf != nullptr) _framebuf->UnBind(); }
 
-    Texture::Ptr GetTexture() { return _texture; }
+    void AttachToFrameBuffer();
+
 
 private:
-    void AttachToFramebuffer(AttachmentType type = AttachmentType::COLOR_ATTACHMENT, int32 index = 0);
+    void AttachToFramebuffer(AttachmentType type, int32 index = 0);
 
 private:
     Texture::Ptr _texture;
@@ -45,6 +54,7 @@ private:
     int32 _height;
     int32 _samples;
 
+    RTType _rttype;;
     GLenum _internalformat;
     GLenum _format;
 
