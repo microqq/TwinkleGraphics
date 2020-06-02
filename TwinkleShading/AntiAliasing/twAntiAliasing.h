@@ -13,6 +13,7 @@
 #include "twOrbitControl.h"
 #include "twUtil.h"
 #include "twSceneManagement.h"
+#include "twRenderTexture.h"
 
 namespace TwinkleGraphics
 {
@@ -82,6 +83,10 @@ private:
     void CreateGeometry(Geometry::Ptr geom, uint32 index);
     void RenderGeometry(Geometry::Ptr geom, int32 index);
 
+    void RenderScreenQuad();
+
+    void RenderGeometrys();
+
 private:
     enum AAOption
     {
@@ -113,6 +118,11 @@ private:
     Triangle::Ptr _triangle_front;
 
     Transform::Ptr _root_trans;
+
+    // msaa resovle filter
+    RenderTexture::Ptr _rt_msaa;
+    RenderTexture::Ptr _rt_msaa_resolve;
+    Quad::Ptr _screen_quad_msaa;
 
     uint32 *_vaos;
     uint32 *_vbos;

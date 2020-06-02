@@ -31,6 +31,12 @@ RenderTexture::~RenderTexture()
 
 void RenderTexture::Create(bool autogenFBO)
 {
+    if(autogenFBO)
+    {
+        _framebuf = std::make_shared<FrameBufferObject>();
+    }
+    _framebuf->Bind();
+
     if(!_antialiasing)
     {
         _texture = std::make_shared<Texture2D>();
@@ -41,6 +47,8 @@ void RenderTexture::Create(bool autogenFBO)
         _texture = std::make_shared<Texture2DMultiSample>(_samples);
         _texture->Create(_width, _height, _internalformat, _format);
     }
+    _framebuf->AttachColor(_texture, 0);
+
     if(_usedepth)
     {
         if(_depthwithstencil)
@@ -51,41 +59,52 @@ void RenderTexture::Create(bool autogenFBO)
         {
             _depthbuf = std::make_shared<RenderBufferObject>(_width, _height, GL_DEPTH_COMPONENT, _samples, _antialiasing);
         }
+        _framebuf->AttachDepth(_depthbuf);
     }
 
-    if(autogenFBO)
-    {
-        _framebuf = std::make_shared<FrameBufferObject>();
-        AttachToFrameBuffer();
-    }
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+    _framebuf->UnBind();
 }
 
 void RenderTexture::AttachToFrameBuffer()
 {
-    if(_framebuf != nullptr)
-    {
-        switch (_format)
-        {
-        case GL_DEPTH_COMPONENT:
-            AttachToFramebuffer(AttachmentType::DEPTH_ATTACHMENT);
-            break;
-        case GL_DEPTH_STENCIL:
-            AttachToFramebuffer(AttachmentType::DEPTH_STENCIL);
-            break;
-        case GL_STENCIL_INDEX:
-            break;
-        default:
-            int index = _framebuf->GetColorAttachmentsCount();
-            AttachToFramebuffer(AttachmentType::COLOR_ATTACHMENT, index); //attch to color buffer
-            break;
-        }
-    }
+    assert(_framebuf != nullptr);
 
+    switch (_format)
+    {
+    case GL_DEPTH_COMPONENT:
+        AttachToFrameBuffer(AttachmentType::DEPTH_ATTACHMENT);
+        break;
+    case GL_DEPTH_STENCIL:
+        AttachToFrameBuffer(AttachmentType::DEPTH_STENCIL);
+        break;
+    case GL_STENCIL_INDEX:
+        break;
+    default:
+        int index = _framebuf->GetColorAttachmentsCount();
+        AttachToFrameBuffer(AttachmentType::COLOR_ATTACHMENT, index); //attch to color buffer
+        break;
+    }
 }
 
-void RenderTexture::AttachToFramebuffer(AttachmentType type, int32 index)
+void RenderTexture::BlitColor(RenderTexture::Ptr dest)
 {
-    _framebuf->Bind();
+    assert(_framebuf != nullptr);
+
+    _framebuf->BlitColorTo(_width, _height, dest->_framebuf, dest->_width, dest->_height, GL_NEAREST);
+}
+
+void RenderTexture::BlitDepth(RenderTexture::Ptr dest)
+{
+    assert(_framebuf != nullptr);
+
+    _framebuf->BlitDepthTo(_width, _height, dest->_framebuf, dest->_width, dest->_height, GL_NEAREST);
+}
+
+void RenderTexture::AttachToFrameBuffer(AttachmentType type, int32 index)
+{
     if (_texture != nullptr)
     {
         switch (type)
@@ -114,7 +133,6 @@ void RenderTexture::AttachToFramebuffer(AttachmentType type, int32 index)
             _framebuf->AttachDepth(_depthbuf);
         }
     }
-    _framebuf->UnBind();
 }
 
 } // namespace TwinkleGraphics

@@ -113,6 +113,7 @@ void AntiAliasingView::OnGUI()
 
 void AntiAliasingScene::CreateScene()
 {
+    // create conel box
     _plane_left.reset(CreatePlane(glm::vec3(1.0f, 0.0f, 0.0f), 30.0f));
     Transform::Ptr trans = _plane_left->GetTransform();
     {
@@ -150,6 +151,7 @@ void AntiAliasingScene::CreateScene()
 
     _root_trans = std::make_shared<Transform>();
 
+    // icosphere
     _sphere.reset(CreateIcosahedronSphere(3.0f, 10, MeshDataFlag(MeshDataFlag::HAS_UV)));
     {
         trans = _sphere->GetTransform();
@@ -168,6 +170,7 @@ void AntiAliasingScene::CreateScene()
         mat->SetMainTexture(cubemap);
     }
 
+    // cube
     _cube.reset(CreateCube(5.0f));
     {
         trans = _cube->GetTransform();
@@ -177,6 +180,7 @@ void AntiAliasingScene::CreateScene()
         CreateGeometry(_cube, 6);
     }
 
+    // two triangles
     glm::vec4 tintcolor(0.6f, 0.9f, 0.2f, 1.0f);
     glm::vec3 p0(-3.0f, 5.0f, 0.0f), p1(-4.0f, 0.0f, 0.0f), p2(3.0f, 5.2f, 0.0f);
     _triangle_back.reset(CreateTriangle(p0, p1, p2));
@@ -198,10 +202,51 @@ void AntiAliasingScene::CreateScene()
         CreateGeometry(_triangle_front, 8);
     }
 
-    //
-    RenderTexture::Ptr rt = std::make_shared<RenderTexture>(256, 256, GL_RGBA8
+    // rt for msaa resolve fitler 
+    _rt_msaa = std::make_shared<RenderTexture>(1024, 768, GL_RGBA8
         , GL_RGBA, true, false, true, 4, true);
-    rt->Create(true);
+    _rt_msaa->Create(true);
+
+    _rt_msaa_resolve = std::make_shared<RenderTexture>(1024, 768, GL_RGBA8
+        , GL_RGBA, false, false, false, 4, false);
+    _rt_msaa_resolve->Create(true);
+    _rt_msaa_resolve->GetTexture()->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR);
+    _rt_msaa_resolve->GetTexture()->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
+
+    vec2 size(2, 2);
+    _screen_quad_msaa = std::make_shared<Quad>(size, MeshDataFlag(8));
+    _screen_quad_msaa->GenerateMesh();
+    {
+        CreateGeometry(_screen_quad_msaa, 9);
+    }
+
+    ShaderManagerInst shaderMgr;
+    ShaderReadInfo shader_info[] = {
+        {std::string("Assets/Shaders/msaa_resolve.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/msaa_resolve.frag"), ShaderType::FRAGMENT_SHADER}};
+    ShaderProgram::Ptr program = shaderMgr->ReadShaders(shader_info, 2);
+    RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+
+    Material::Ptr quad_material = std::make_shared<Material>();
+    quad_material->AddRenderPass(pass);
+
+    // ImageManagerInst imageMgr;
+    // ImageReadInfo images_info = {"Assets/Textures/test3.png"};
+    // Image::Ptr image = imageMgr->ReadImage(images_info);
+
+    // Texture2D::Ptr texture = nullptr;
+    // if (image != nullptr)
+    // {
+    //     texture = std::make_shared<Texture2D>(true);
+    //     texture->CreateFromImage(image);
+    // }
+    // quad_material->SetMainTexture(texture);
+
+    quad_material->SetMainTexture(_rt_msaa_resolve->GetTexture());
+    MeshRenderer::Ptr quad_renderer = std::make_shared<MeshRenderer>();
+    quad_renderer->SetSharedMaterial(quad_material);
+    quad_renderer->SetMesh(_screen_quad_msaa->GetMesh());
+    _screen_quad_msaa->SetMeshRenderer(quad_renderer);
 }
 
 void AntiAliasingScene::UpdateScene()
@@ -298,12 +343,31 @@ void AntiAliasingScene::RenderScene()
     {
     case AAOption::MSAA_HW:    
         glEnable(GL_MULTISAMPLE);
-        break;
-    default:
+        RenderGeometrys();
         glDisable(GL_MULTISAMPLE);
         break;
-    }
+    case AAOption::MSAA_SW:
+        _rt_msaa->Bind();
+        {
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            RenderGeometrys();
+            _rt_msaa->BlitColor(_rt_msaa_resolve);
+        }
+        _rt_msaa->UnBind();
+
+        RenderScreenQuad();
+
+        break;
+    default:
+        RenderGeometrys();
+        break;
+    }
+}
+
+void AntiAliasingScene::RenderGeometrys()
+{
     RenderGeometry(_plane_left, 0);
     RenderGeometry(_plane_top, 1);
     RenderGeometry(_plane_right, 2);
@@ -317,6 +381,16 @@ void AntiAliasingScene::RenderScene()
     glPolygonOffset(-1.0f, 0.0f);
     RenderGeometry(_triangle_front, 8);
     glDisable(GL_POLYGON_OFFSET_FILL);
+}
+
+void AntiAliasingScene::RenderScreenQuad()
+{
+    // MeshRenderer::Ptr renderer = _screen_quad_msaa->GetMeshRenderer();
+    // Material::Ptr material = renderer->GetSharedMaterial();
+
+    // material->SetMainTexture(_rt_msaa_resolve->GetTexture());
+
+    RenderGeometry(_screen_quad_msaa, 9);
 }
 
 void AntiAliasingScene::DestroyScene()

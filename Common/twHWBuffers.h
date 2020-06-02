@@ -270,7 +270,7 @@ public:
         DEPTH_STENCIL = GL_DEPTH_STENCIL_ATTACHMENT
     };
 
-    FrameBufferObject(uint32 type = GL_DRAW_FRAMEBUFFER)
+    FrameBufferObject(uint32 type = GL_FRAMEBUFFER)
         : IHWBuffer(type)
         , _color_attachments(0)
     {
@@ -300,6 +300,22 @@ public:
     virtual void UnBind() override
     {
         glBindFramebuffer(_resinstance.type, 0);
+    }
+
+    void BlitColorTo(int src_width, int src_height,  FrameBufferObject::Ptr dest, int dest_width, int dest_height, GLenum filter)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, _resinstance.id);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest->_resinstance.id);
+
+        glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_COLOR_BUFFER_BIT, filter);        
+    }
+
+    void BlitDepthTo(int src_width, int src_height,  FrameBufferObject::Ptr dest, int dest_width, int dest_height, GLenum filter)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, _resinstance.id);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest->_resinstance.id);
+
+        glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_DEPTH_BUFFER_BIT, filter);        
     }
 
     void AttachColor(Texture::Ptr tex, int32 index = 0)

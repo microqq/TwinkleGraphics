@@ -690,10 +690,12 @@ void Texture2D::InitStorage()
     }
     else
     {
-        glTexStorage2D(_res.type, _miplevels,
-                       _internalformat,
-                       _width,
-                       _height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+        // glTexStorage2D(_res.type, _miplevels,
+        //                _internalformat,
+        //                _width,
+        //                _height);
     }
 
     glBindTexture(_res.type, 0);
@@ -706,8 +708,10 @@ void Texture2DMultiSample::InitStorage()
 
     assert(_width > 0 && _height > 0);
 
-    glTexStorage2DMultisample(_res.type, _samples, _internalformat, _width, _height,
-        _fixedsampledlocation);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, _width, _height, GL_TRUE);
+
+    // glTexStorage2DMultisample(_res.type, _samples, _internalformat, _width, _height,
+    //     _fixedsampledlocation);
 
     glBindTexture(_res.type, 0);   
 }

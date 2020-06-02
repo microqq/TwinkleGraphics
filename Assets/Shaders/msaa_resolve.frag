@@ -1,14 +1,13 @@
 #version 330 core
 
-in vec3 texcoord;
+in vec2 texcoord;
 
 out vec4 fragcolor;
 
-uniform samplerCube main_tex;
-uniform vec4 tint_color;
+uniform sampler2D main_tex;
 
 void main()
 {
-    vec4 tex_color = texture(main_tex, texcoord);
-    fragcolor = tex_color * tint_color;
+    // fragcolor = vec4(1.0, 0.0f, 0.0f, 1.0f);
+    fragcolor = texture(main_tex, texcoord);
 }

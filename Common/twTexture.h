@@ -203,7 +203,7 @@ enum TexParameterMask
                                 TEXPARAMETER_FILTER_MIN_MASK |
                                 TEXPARAMETER_FILTER_MAG_MASK |
                                 TEXPARAMETER_BORDERCOLOR_MASK,
-    TEXPARAMETER_DEFAULT_DIRTY_FLAG = 0
+    TEXPARAMETER_DEFAULT_DIRTY_FLAG = TEXPARAMETER_FILTER_MIN_MASK | TEXPARAMETER_FILTER_MAG_MASK
 };
 
 typedef TexParameterMask TexParameterDirtyFlag;
@@ -247,10 +247,8 @@ struct TexParams
         : swizzle_parameter(SwizzleParam::NONE)
         , lod_parameter(LodBiasParam::NONE)
     {
-        wrap_modes[0] = wrap_modes[1] = wrap_modes[2] = WrapMode::NONE;
-        filter_modes[0] = filter_modes[1] = FilterMode::NONE;
-
-
+        wrap_modes[0] = wrap_modes[1] = wrap_modes[2] = WrapMode::CLAMP_TO_EDGE;
+        filter_modes[0] = filter_modes[1] = FilterMode::LINEAR;
     }
 };
 
@@ -334,6 +332,9 @@ public:
 
         InitStorage();
     }
+
+    void Bind() { glBindTexture(_res.type, _res.id); }
+    void UnBind() { glBindTexture(_res.type, 0); }
 
     const RenderResInstance& GetTexResource() { return _res; }
 
