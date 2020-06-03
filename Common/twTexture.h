@@ -247,8 +247,8 @@ struct TexParams
         : swizzle_parameter(SwizzleParam::NONE)
         , lod_parameter(LodBiasParam::NONE)
     {
-        wrap_modes[0] = wrap_modes[1] = wrap_modes[2] = WrapMode::CLAMP_TO_EDGE;
-        filter_modes[0] = filter_modes[1] = FilterMode::LINEAR;
+        wrap_modes[0] = wrap_modes[1] = wrap_modes[2] = WrapMode::NONE;
+        filter_modes[0] = filter_modes[1] = FilterMode::NONE;
     }
 };
 

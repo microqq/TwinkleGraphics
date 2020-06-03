@@ -358,7 +358,6 @@ void AntiAliasingScene::RenderScene()
         _rt_msaa->UnBind();
 
         RenderScreenQuad();
-
         break;
     default:
         RenderGeometrys();
@@ -385,11 +384,6 @@ void AntiAliasingScene::RenderGeometrys()
 
 void AntiAliasingScene::RenderScreenQuad()
 {
-    // MeshRenderer::Ptr renderer = _screen_quad_msaa->GetMeshRenderer();
-    // Material::Ptr material = renderer->GetSharedMaterial();
-
-    // material->SetMainTexture(_rt_msaa_resolve->GetTexture());
-
     RenderGeometry(_screen_quad_msaa, 9);
 }
 
