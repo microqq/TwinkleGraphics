@@ -8,7 +8,7 @@ RenderTexture::RenderTexture(int32 width, int32 height
         // , RTType type = RTType::COLOR
         , GLenum internalformat, GLenum format
         , bool usedepth, bool depthwithstencil
-        , bool antialiasing, int32 samples
+        , bool multisample, int32 samples
         , bool fixedsampledlocation)
     : Object()
     , _texture(nullptr)
@@ -21,7 +21,7 @@ RenderTexture::RenderTexture(int32 width, int32 height
     , _format(format)
     , _usedepth(usedepth)
     , _depthwithstencil(depthwithstencil)
-    , _antialiasing(antialiasing)
+    , _multisample(multisample)
     , _fixedsampledlocation(fixedsampledlocation)
 {
 }
@@ -37,7 +37,7 @@ void RenderTexture::Create(bool autogenFBO)
     }
     _framebuf->Bind();
 
-    if(!_antialiasing)
+    if(!_multisample)
     {
         _texture = std::make_shared<Texture2D>();
         _texture->Create(_width, _height, _internalformat, _format);
@@ -53,17 +53,17 @@ void RenderTexture::Create(bool autogenFBO)
     {
         if(_depthwithstencil)
         {
-            _depthbuf = std::make_shared<RenderBufferObject>(_width, _height, GL_DEPTH24_STENCIL8, _samples, _antialiasing);
+            _depthbuf = std::make_shared<RenderBufferObject>(_width, _height, GL_DEPTH24_STENCIL8, _samples, _multisample);
         }
         else
         {
-            _depthbuf = std::make_shared<RenderBufferObject>(_width, _height, GL_DEPTH_COMPONENT, _samples, _antialiasing);
+            _depthbuf = std::make_shared<RenderBufferObject>(_width, _height, GL_DEPTH_COMPONENT, _samples, _multisample);
         }
         _framebuf->AttachDepth(_depthbuf);
     }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        std::cout << "FrameBuffer: Framebuffer is not complete!" << std::endl;
 
     _framebuf->UnBind();
 }

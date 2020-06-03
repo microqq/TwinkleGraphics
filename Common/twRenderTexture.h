@@ -16,7 +16,7 @@ public:
     RenderTexture(int32 width, int32 height, GLenum internalformat = GL_RGBA8
         , GLenum format = GL_RGBA
         , bool usedepth = true, bool depthwithstencil = false
-        , bool antialiasing = false, int32 samples = 1
+        , bool multisample = false, int32 samples = 1
         , bool fixedsampledlocation = true);
     virtual ~RenderTexture();
 
@@ -56,7 +56,7 @@ private:
 
     bool _usedepth;
     bool _depthwithstencil;
-    bool _antialiasing;
+    bool _multisample;
     bool _fixedsampledlocation;
 };
 

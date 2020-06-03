@@ -37,7 +37,7 @@ void AntiAliasing::Install()
     _view->SetCameraControl(camera_control);
 
     AntiAliasingScene::Ptr scene = std::make_shared<AntiAliasingScene>();
-    _view->AttachToScene(scene);
+    _view->AttachScene(scene);
 
     _views[_views_count++] = _view;
     // _views[_views_count++] = _view2;

@@ -197,13 +197,13 @@ class RenderBufferObject : public IHWBuffer
 public:
     typedef std::shared_ptr<RenderBufferObject> Ptr;
 
-    RenderBufferObject(int32 width, int32 height, GLenum internalformat, int32 samples = 1, bool antialiasing = false)
+    RenderBufferObject(int32 width, int32 height, GLenum internalformat, int32 samples = 1, bool multisample = false)
         : IHWBuffer(GL_RENDERBUFFER)
         , _width(width)
         , _height(height)
         , _samples(samples)
         , _internalformat(internalformat)
-        , _antialiasing(antialiasing)
+        , _multisample(multisample)
     {
         Create();
     }
@@ -221,7 +221,7 @@ public:
         _resinstance.id = bufs[0];
 
         Bind();
-        if(_antialiasing)
+        if(_multisample)
         {
             glRenderbufferStorageMultisample(GL_RENDERBUFFER, _samples, _internalformat, _width, _height);
         }
@@ -251,7 +251,7 @@ private:
     int32 _samples;
 
     GLenum _internalformat;
-    bool _antialiasing;
+    bool _multisample;
 };
 
 

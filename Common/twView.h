@@ -34,7 +34,7 @@ public:
     }
     void SetCameraControl(CameraControl::Ptr control) { _camera_control = control; }
 
-    void AttachToScene(Scene::Ptr scene) 
+    void AttachScene(Scene::Ptr scene) 
     {
         _scene = scene;
         if(_camera != nullptr)
