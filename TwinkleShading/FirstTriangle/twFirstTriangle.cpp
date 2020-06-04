@@ -42,7 +42,7 @@ void TriangleView::Initialize()
     if(_initialized)
         return;
 
-    Viewport viewport(Rect(0, 0, _window_size.x, _window_size.y), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
+    Viewport viewport(Rect(0, 0, _rect.z, _rect.w), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
     Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
     this->SetViewCamera(camera);
 

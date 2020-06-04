@@ -36,6 +36,9 @@ public:
     void BlitColor(RenderTexture::Ptr dest);
     void BlitDepth(RenderTexture::Ptr dest);
 
+    void BlitColorToBackBuffer(int backwidth, int backheight);
+    void BlitDepthToBackBuffer(int backwidth, int backheight);
+
     void AttachToFrameBuffer();
 
 

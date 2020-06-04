@@ -58,6 +58,10 @@ public:
         _vaos = new uint32[16];
         glGenVertexArrays(16, _vaos);
 
+        Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.0f, 1.f));
+        _msaa_camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+        _msaa_camera->Translate(glm::vec3(0.0f, 0.0f, 50));
+
         CreateScene();
     }
 
@@ -118,6 +122,7 @@ private:
     Triangle::Ptr _triangle_front;
 
     Transform::Ptr _root_trans;
+    Camera::Ptr _msaa_camera;
 
     // msaa resovle filter
     RenderTexture::Ptr _rt_msaa;

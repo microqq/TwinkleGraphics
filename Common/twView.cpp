@@ -6,7 +6,7 @@ namespace TwinkleGraphics
 View::View()
     : _camera(nullptr)
     , _camera_control(nullptr)
-    , _window_size(1.0, 1.0)
+    , _rect(0, 0, 1.0, 1.0)
     , _done(false)
     , _initialized(false)
 {
@@ -51,6 +51,7 @@ void View::Render()
     {
         _scene->Render();
     }
+    // [[deprecated]]
     else
     {
         const Viewport &viewport = _camera->GetViewport();

@@ -103,6 +103,16 @@ void RenderTexture::BlitDepth(RenderTexture::Ptr dest)
     _framebuf->BlitDepthTo(_width, _height, dest->_framebuf, dest->_width, dest->_height, GL_NEAREST);
 }
 
+void RenderTexture::BlitColorToBackBuffer(int backwidth, int backheight)
+{
+    _framebuf->BlitColorToBack(_width, _height, backwidth, backheight, GL_NEAREST);
+}
+
+void RenderTexture::BlitDepthToBackBuffer(int backwidth, int backheight)
+{
+    _framebuf->BlitDepthToBack(_width, _height, backwidth, backheight, GL_NEAREST);
+}
+
 void RenderTexture::AttachToFrameBuffer(AttachmentType type, int32 index)
 {
     if (_texture != nullptr)

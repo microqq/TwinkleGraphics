@@ -310,10 +310,26 @@ public:
         glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_COLOR_BUFFER_BIT, filter);        
     }
 
+    void BlitColorToBack(int src_width, int src_height, int dest_width, int dest_height, GLenum filter)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, _resinstance.id);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+        glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_COLOR_BUFFER_BIT, filter);        
+    }
+
     void BlitDepthTo(int src_width, int src_height,  FrameBufferObject::Ptr dest, int dest_width, int dest_height, GLenum filter)
     {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _resinstance.id);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest->_resinstance.id);
+
+        glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_DEPTH_BUFFER_BIT, filter);        
+    }
+
+    void BlitDepthToBack(int src_width, int src_height, int dest_width, int dest_height, GLenum filter)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, _resinstance.id);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
         glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_DEPTH_BUFFER_BIT, filter);        
     }

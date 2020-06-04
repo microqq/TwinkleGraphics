@@ -130,6 +130,26 @@ public:
     void SetViewport(const Viewport& viewport) { _viewport = viewport; _viewport_dirty = true; }
     const Viewport& GetViewport() { return _viewport; }
 
+    void ClearRenderContext()
+    {
+        glViewport(_viewport.X(), _viewport.Y(), _viewport.Width(), _viewport.Height());
+
+        glClear(_viewport.clear_mask);
+        if ((_viewport.clear_mask & GL_COLOR_BUFFER_BIT) != 0)
+        {
+            const RGBA &color = _viewport.clear_color;
+            glClearColor(color.r, color.g, color.b, color.a);
+        }
+        if ((_viewport.clear_mask & GL_DEPTH_BUFFER_BIT) != 0)
+        {
+            glClearDepth(_viewport.clear_depth);
+        }
+        if ((_viewport.clear_mask & GL_STENCIL_BUFFER_BIT) != 0)
+        {
+            glClearStencil(_viewport.clear_stencil);
+        }        
+    }
+
     glm::mat4 GetViewMatrix() { return _transform->GetWorldToLocalMatrix(); }
     const glm::mat4& GetProjectionMatrix() 
     { 

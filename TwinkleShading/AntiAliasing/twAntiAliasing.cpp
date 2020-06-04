@@ -53,8 +53,9 @@ void AntiAliasing::UnInstall()
 
 void AntiAliasing::UpdateViews()
 {
-    const glm::ivec2& size = _view->GetWindowSize();
-    _view->ResetViewport(Rect(0, 0, size.x, size.y));
+    const glm::ivec2& size = _view->GetViewSize();
+    Rect rect(0, 0, size.x, size.y);
+    _view->ResetViewport(rect);
     // float32 ratio = (float32)size.x / (float32)size.y;
     // int32 w = ratio * 200.0f;
     // _view2->ResetViewport(Rect(size.x - w, 0, w, 200.0f));
@@ -251,10 +252,13 @@ void AntiAliasingScene::CreateScene()
 
 void AntiAliasingScene::UpdateScene()
 {
-    const Viewport& viewport = _maincamera->GetViewport();
+    Camera::Ptr camera = _current_aa_option == AAOption::MSAA_SW ?
+        _msaa_camera : _maincamera;
+    const Viewport& viewport = camera->GetViewport();
+
     _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
-    _view_mat = _maincamera->GetViewMatrix();
-    _projection_mat = _maincamera->GetProjectionMatrix();
+    _view_mat = camera->GetViewMatrix();
+    _projection_mat = camera->GetProjectionMatrix();
     _mvp_mat = _projection_mat * _view_mat;
 
     Material::Ptr material_plane_left = _plane_left->GetMeshRenderer()->GetSharedMaterial();
@@ -349,17 +353,20 @@ void AntiAliasingScene::RenderScene()
     case AAOption::MSAA_SW:
         _rt_msaa->Bind();
         {
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            _msaa_camera->ClearRenderContext();
+            // glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             RenderGeometrys();
-            _rt_msaa->BlitColor(_rt_msaa_resolve);
+            // _rt_msaa->BlitColor(_rt_msaa_resolve);
+            _rt_msaa->BlitColorToBackBuffer(1024, 768);
         }
         _rt_msaa->UnBind();
 
-        RenderScreenQuad();
+        // RenderScreenQuad();
         break;
     default:
+        glDisable(GL_MULTISAMPLE);
         RenderGeometrys();
         break;
     }
