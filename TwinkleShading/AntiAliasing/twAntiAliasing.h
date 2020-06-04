@@ -60,7 +60,7 @@ public:
 
         Viewport viewport(Rect(0, 0, 1024, 768), 17664U, RGBA(0.0f, 0.f, 0.0f, 1.f));
         _msaa_camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
-        _msaa_camera->Translate(glm::vec3(0.0f, 0.0f, 50));
+        _msaa_camera->Translate(glm::vec3(0.0f, 0.0f, 25));
 
         CreateScene();
     }
@@ -103,6 +103,13 @@ private:
         FXAA = 5
     };
 
+    enum MSAASWOption
+    {
+        MSAA_SW_BACKBUFFER = 1,
+        MSAA_SW_SCREENFBO = 2,
+        MSAA_SW_RESOLVE = 3
+    };
+
     glm::mat4 _view_mat;
     glm::mat4 _projection_mat;    
     glm::mat4 _mvp_mat;
@@ -128,12 +135,17 @@ private:
     RenderTexture::Ptr _rt_msaa;
     RenderTexture::Ptr _rt_msaa_resolve;
     Quad::Ptr _screen_quad_msaa;
+    Material::Ptr _screen_quad_mat;
+    Material::Ptr _msaa_resolve_mat;
 
     uint32 *_vaos;
     uint32 *_vbos;
     uint32 *_ebos;
 
     int32 _current_aa_option;
+    int32 _current_msaa_sw_option = 1;
+
+    bool _enable_multisample = true;
 
     friend class AntiAliasingView;
 };
@@ -142,6 +154,7 @@ class AntiAliasingView : public View
 {
 public:
     using AAOption = AntiAliasingScene::AAOption;
+    using MSAASWOption = AntiAliasingScene::MSAASWOption;
 
     AntiAliasingView()
         : View()

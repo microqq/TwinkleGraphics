@@ -28,10 +28,10 @@ Camera::Camera(Viewport viewport, float32 fov, float32 near, float32 far)
     , Frustum(fov, viewport.AspectRatio(), near, far)
     , ISceneNode()
     , _viewport(viewport)
+    , _rendertarget(nullptr)
     , _cullingmask((int32)CullingMask::EVERYTHING)
     , _sortdepth(-1)
     , _viewport_dirty(true)
-    , _rendertoraget(false)
 {
 }
 
@@ -40,10 +40,10 @@ Camera::Camera(Viewport viewport, float32 near, float32 far)
     , Frustum(-viewport.Width() * 0.5f, viewport.Width() * 0.5f, -viewport.Height() * 0.5f, viewport.Height() * 0.5f, near, far)
     , ISceneNode()
     , _viewport(viewport)
+    , _rendertarget(nullptr)
     , _cullingmask((int32)CullingMask::EVERYTHING)
     , _sortdepth(-1)
     , _viewport_dirty(true)
-    , _rendertoraget(false)
 {
 }
 

@@ -8,6 +8,7 @@
 #include <GL/gl.h>
 
 #include "twCommon.h"
+#include "twRenderTexture.h"
 #include "twSceneNode.h"
 
 namespace TwinkleGraphics
@@ -169,7 +170,7 @@ public:
         return _projection_matrix; 
     }
 
-    void SetRenderToTarget(bool rtt) { _rendertoraget = rtt; }
+    void SetRenderToTarget(RenderTexture::Ptr rt) { _rendertarget = rt; }
     void SetCullingMask(CullingMask mask) { _cullingmask |= (int32)mask; }
     void SetCullingMask(int32 mask) { _cullingmask |= mask; }
 
@@ -177,11 +178,12 @@ public:
 
 private:
     Viewport _viewport;
+    RenderTexture::Ptr _rendertarget;
+
     int32 _cullingmask;
     int32 _sortdepth;
 
     bool _viewport_dirty;
-    bool _rendertoraget;
 };
 } // namespace TwinkleGraphics
 

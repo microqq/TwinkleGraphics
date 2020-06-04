@@ -20,6 +20,10 @@
     #define SAFE_DEL_ARR(ptr) if((ptr) != nullptr) { delete[] (ptr); (ptr) = nullptr; }
 #endif
 
+/**
+ * @brief Refer to ogre plugin system. (https://ogrecave.github.io/ogre/)
+ * 
+ */
 #if defined __linux__
   #define __TWExport __attribute__ ((__visibility__("default")))
 #elif defined _WIN32 || _WIN64

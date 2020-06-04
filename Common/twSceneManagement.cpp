@@ -22,10 +22,10 @@ void Scene::Update(float32 delta_time)
 void Scene::Render()
 {
     // [[deprecated]]
-    if(_maincamera != nullptr)
-    {
-        _maincamera->ClearRenderContext();
-    }        
+    // if(_maincamera != nullptr)
+    // {
+    //     _maincamera->ClearRenderContext();
+    // }        
 }
 
 } // namespace TwinkleGraphics

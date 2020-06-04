@@ -20,12 +20,7 @@ public:
         , bool fixedsampledlocation = true);
     virtual ~RenderTexture();
 
-    /**
-     * @brief 
-     * 
-     * @param autogenFBO 
-     */
-    void Create(bool autogenFBO = true);
+    void Create(FrameBufferObject::Ptr framebuf = nullptr);
     Texture::Ptr GetTexture() { return _texture; }
     RenderBufferObject::Ptr GetDepthBuffer() { return _depthbuf; }
     FrameBufferObject::Ptr GetFrameBuffer() { return _framebuf; }
@@ -38,12 +33,6 @@ public:
 
     void BlitColorToBackBuffer(int backwidth, int backheight);
     void BlitDepthToBackBuffer(int backwidth, int backheight);
-
-    void AttachToFrameBuffer();
-
-
-private:
-    void AttachToFrameBuffer(AttachmentType type, int32 index = 0);
 
 private:
     Texture::Ptr _texture;

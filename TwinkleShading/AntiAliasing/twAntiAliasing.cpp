@@ -85,29 +85,38 @@ void AntiAliasingView::OnGUI()
 {
     ImGui::Begin(u8"反走样");
     {
-        int32& current_aa_option = dynamic_cast<AntiAliasingScene*>(_scene.get())->GetCurrentAAOption();
+        AntiAliasingScene* scene = dynamic_cast<AntiAliasingScene*>(_scene.get());
+        int32& current_aa_option = scene->GetCurrentAAOption();
+        int32& current_msaa_sw_option = scene->_current_msaa_sw_option;
 
-        if (ImGui::RadioButton(u8"NO AA", &(current_aa_option), AAOption::NONE))
+        ImGui::RadioButton(u8"NO AA", &(current_aa_option), AAOption::NONE);
+        ImGui::RadioButton(u8"MSAA_HW", &(current_aa_option), AAOption::MSAA_HW);
+        ImGui::RadioButton(u8"MSAA_SW", &current_aa_option, AAOption::MSAA_SW);
+        if(current_aa_option == AAOption::MSAA_SW)
         {
+            ImGui::BeginGroup();
+            ImGui::Indent();
+            ImGui::Checkbox(u8"多重采样", &(scene->_enable_multisample));
+            ImGui::RadioButton(u8"Back Buffer", &(current_msaa_sw_option), MSAASWOption::MSAA_SW_BACKBUFFER);
+            ImGui::RadioButton(u8"Screen FBO", &(current_msaa_sw_option), MSAASWOption::MSAA_SW_SCREENFBO);
+            ImGui::RadioButton(u8"Resolve Filter", &(current_msaa_sw_option), MSAASWOption::MSAA_SW_RESOLVE);
+            if(current_msaa_sw_option == MSAASWOption::MSAA_SW_RESOLVE)
+            {
+                MeshRenderer::Ptr renderer = scene->_screen_quad_msaa->GetMeshRenderer();
+                renderer->SetSharedMaterial(scene->_msaa_resolve_mat);
+            }
+            else
+            {
+                MeshRenderer::Ptr renderer = scene->_screen_quad_msaa->GetMeshRenderer();
+                renderer->SetSharedMaterial(scene->_screen_quad_mat);
+            }
+            ImGui::EndGroup();
         }
-        if (ImGui::RadioButton(u8"MSAA_HW", &(current_aa_option), AAOption::MSAA_HW))
-        {
-        }
-        if (ImGui::RadioButton(u8"MSAA_SW", &current_aa_option, AAOption::MSAA_SW))
-        {
-        }
-        if (ImGui::RadioButton(u8"SSAA", &current_aa_option, AAOption::SSAA))
-        {
-        }
-        if (ImGui::RadioButton(u8"CSAA", &current_aa_option, AAOption::CSAA))
-        {
-        }
-        if (ImGui::RadioButton(u8"CFAA", &current_aa_option, AAOption::CFAA))
-        {
-        }
-        if (ImGui::RadioButton(u8"FXAA", &current_aa_option, AAOption::FXAA))
-        {
-        }
+
+        ImGui::RadioButton(u8"SSAA", &current_aa_option, AAOption::SSAA);
+        ImGui::RadioButton(u8"CSAA", &current_aa_option, AAOption::CSAA);
+        ImGui::RadioButton(u8"CFAA", &current_aa_option, AAOption::CFAA);
+        ImGui::RadioButton(u8"FXAA", &current_aa_option, AAOption::FXAA);
     }
     ImGui::End();
 }
@@ -181,7 +190,7 @@ void AntiAliasingScene::CreateScene()
         CreateGeometry(_cube, 6);
     }
 
-    // two triangles
+    // triangles
     glm::vec4 tintcolor(0.6f, 0.9f, 0.2f, 1.0f);
     glm::vec3 p0(-3.0f, 5.0f, 0.0f), p1(-4.0f, 0.0f, 0.0f), p2(3.0f, 5.2f, 0.0f);
     _triangle_back.reset(CreateTriangle(p0, p1, p2));
@@ -206,11 +215,11 @@ void AntiAliasingScene::CreateScene()
     // rt for msaa resolve fitler 
     _rt_msaa = std::make_shared<RenderTexture>(1024, 768, GL_RGBA8
         , GL_RGBA, true, false, true, 4, true);
-    _rt_msaa->Create(true);
+    _rt_msaa->Create(nullptr);
 
     _rt_msaa_resolve = std::make_shared<RenderTexture>(1024, 768, GL_RGBA8
         , GL_RGBA, false, false, false, 4, false);
-    _rt_msaa_resolve->Create(true);
+    _rt_msaa_resolve->Create(nullptr);
     _rt_msaa_resolve->GetTexture()->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR);
     _rt_msaa_resolve->GetTexture()->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
 
@@ -221,39 +230,41 @@ void AntiAliasingScene::CreateScene()
         CreateGeometry(_screen_quad_msaa, 9);
     }
 
+    // create screen quad material
     ShaderManagerInst shaderMgr;
     ShaderReadInfo shader_info[] = {
-        {std::string("Assets/Shaders/msaa_resolve.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/msaa_resolve.frag"), ShaderType::FRAGMENT_SHADER}};
+        {std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/screenquad.frag"), ShaderType::FRAGMENT_SHADER}};
     ShaderProgram::Ptr program = shaderMgr->ReadShaders(shader_info, 2);
     RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
 
-    Material::Ptr quad_material = std::make_shared<Material>();
-    quad_material->AddRenderPass(pass);
+    _screen_quad_mat = std::make_shared<Material>();
+    _screen_quad_mat->AddRenderPass(pass);
 
-    // ImageManagerInst imageMgr;
-    // ImageReadInfo images_info = {"Assets/Textures/test3.png"};
-    // Image::Ptr image = imageMgr->ReadImage(images_info);
-
-    // Texture2D::Ptr texture = nullptr;
-    // if (image != nullptr)
-    // {
-    //     texture = std::make_shared<Texture2D>(true);
-    //     texture->CreateFromImage(image);
-    // }
-    // quad_material->SetMainTexture(texture);
-
-    quad_material->SetMainTexture(_rt_msaa_resolve->GetTexture());
+    _screen_quad_mat->SetMainTexture(_rt_msaa_resolve->GetTexture());
     MeshRenderer::Ptr quad_renderer = std::make_shared<MeshRenderer>();
-    quad_renderer->SetSharedMaterial(quad_material);
+    quad_renderer->SetSharedMaterial(_screen_quad_mat);
     quad_renderer->SetMesh(_screen_quad_msaa->GetMesh());
     _screen_quad_msaa->SetMeshRenderer(quad_renderer);
+
+
+    // create material for custom msaa resolve filter
+    ShaderReadInfo resolve_shader_info[] = {
+        {std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/msaa_resolve.frag"), ShaderType::FRAGMENT_SHADER}};
+    program = shaderMgr->ReadShaders(resolve_shader_info, 2);
+    pass = std::make_shared<RenderPass>(program);
+
+    _msaa_resolve_mat = std::make_shared<Material>();
+    _msaa_resolve_mat->AddRenderPass(pass);
+    _msaa_resolve_mat->SetMainTexture(_rt_msaa->GetTexture());
 }
 
 void AntiAliasingScene::UpdateScene()
 {
-    Camera::Ptr camera = _current_aa_option == AAOption::MSAA_SW ?
-        _msaa_camera : _maincamera;
+    // Camera::Ptr camera = _current_aa_option == AAOption::MSAA_SW ?
+    //     _msaa_camera : _maincamera;
+    Camera::Ptr camera = _maincamera;
     const Viewport& viewport = camera->GetViewport();
 
     _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
@@ -345,7 +356,8 @@ void AntiAliasingScene::RenderScene()
 {
     switch (_current_aa_option)
     {
-    case AAOption::MSAA_HW:    
+    case AAOption::MSAA_HW:
+        _maincamera->ClearRenderContext();
         glEnable(GL_MULTISAMPLE);
         RenderGeometrys();
         glDisable(GL_MULTISAMPLE);
@@ -353,19 +365,39 @@ void AntiAliasingScene::RenderScene()
     case AAOption::MSAA_SW:
         _rt_msaa->Bind();
         {
-            _msaa_camera->ClearRenderContext();
-            // glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            // render with msaa fbo
+            _maincamera->ClearRenderContext();
+            if(_enable_multisample)
+                glEnable(GL_MULTISAMPLE);
+            else
+                glDisable(GL_MULTISAMPLE);
             RenderGeometrys();
-            // _rt_msaa->BlitColor(_rt_msaa_resolve);
-            _rt_msaa->BlitColorToBackBuffer(1024, 768);
+            if(_enable_multisample)
+                glDisable(GL_MULTISAMPLE);
+
+            // blit to backbuffer
+            if(_current_msaa_sw_option == MSAASWOption::MSAA_SW_BACKBUFFER)
+            {
+                _rt_msaa->BlitColorToBackBuffer(1024, 768);
+            }
+            // blit to screen fbo
+            else if(_current_msaa_sw_option == MSAASWOption::MSAA_SW_SCREENFBO)
+            {
+                _rt_msaa->BlitColor(_rt_msaa_resolve);
+            }
         }
         _rt_msaa->UnBind();
 
-        // RenderScreenQuad();
+        // render screen quad
+        if(_current_msaa_sw_option == MSAASWOption::MSAA_SW_SCREENFBO || 
+           _current_msaa_sw_option == MSAASWOption::MSAA_SW_RESOLVE)
+        {
+            _maincamera->ClearRenderContext();
+            RenderScreenQuad();
+        }
         break;
     default:
+        _maincamera->ClearRenderContext();
         glDisable(GL_MULTISAMPLE);
         RenderGeometrys();
         break;
