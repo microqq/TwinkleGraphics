@@ -117,9 +117,8 @@ public:
     {
         //get GUID with filename, read from cache
 
-
-        //if not found in cache
-        //should get reader from pool. use placement new
+        //Todo: if not found in cache, should get reader from pool. use placement new
+        //else
         R* r = new R(std::forward<Args>(args)...);
 
         //  http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html

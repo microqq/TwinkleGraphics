@@ -276,7 +276,7 @@ void AntiAliasingScene::UpdateScene()
     glm::mat4 model = _plane_left->GetTransform()->GetLocalToWorldMatrix();
     glm::mat4 mvp = _mvp_mat * model;
     material_plane_left->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-    glm::vec4 tint_color(0.5f, 0.0f, 0.0f, 1.0f);
+    glm::vec4 tint_color(0.7f, 0.0f, 0.0f, 1.0f);
     material_plane_left->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 
     Material::Ptr material_plane_top = _plane_top->GetMeshRenderer()->GetSharedMaterial();
@@ -284,7 +284,7 @@ void AntiAliasingScene::UpdateScene()
         model = _plane_top->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvp_mat * model;
         material_plane_top->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-        tint_color = glm::vec4(0.0f, 0.0f, 0.5f, 1.0f);
+        tint_color = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
         material_plane_top->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 
@@ -293,7 +293,7 @@ void AntiAliasingScene::UpdateScene()
         model = _plane_right->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvp_mat * model;
         material_plane_right->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-        tint_color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
+        tint_color = glm::vec4(0.0f, 0.7f, 0.0f, 1.0f);
         material_plane_right->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 
@@ -302,14 +302,14 @@ void AntiAliasingScene::UpdateScene()
         model = _plane_bottom->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvp_mat * model;
         material_plane_bottom->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-        tint_color = glm::vec4(0.6f, 0.6f, 0.6f, 1.0f);
+        tint_color = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
         material_plane_bottom->SetVecUniformValue<float32, 4>("tint_color", tint_color);
     }
 
     Material::Ptr material_plane_back = _plane_back->GetMeshRenderer()->GetSharedMaterial();
     {
         model = _plane_back->GetTransform()->GetLocalToWorldMatrix();
-        tint_color = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
+        tint_color = glm::vec4(0.7f, 0.7f, 0.0f, 1.0f);
         mvp = _mvp_mat * model;
         material_plane_back->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
         material_plane_back->SetVecUniformValue<float32, 4>("tint_color", tint_color);
@@ -366,6 +366,7 @@ void AntiAliasingScene::RenderScene()
         _rt_msaa->Bind();
         {
             // render with msaa fbo
+            // _msaa_camera->ClearRenderContext();
             _maincamera->ClearRenderContext();
             if(_enable_multisample)
                 glEnable(GL_MULTISAMPLE);
