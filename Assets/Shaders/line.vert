@@ -1,8 +1,9 @@
 #version 330 core
+#extension GL_ARB_shading_language_include : require
 
-layout (location = 0) in vec3 position;
+#include </GLSLIncludes/vertexLayout.glsl>
 
 void main()
 {
-    gl_Position = vec4(position, 1.0f);
+    gl_Position = vec4(vertexPos, 1.0f);
 }

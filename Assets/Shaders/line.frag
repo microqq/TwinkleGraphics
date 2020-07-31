@@ -4,26 +4,26 @@
 layout (location = 0) out vec4 fragcolor;
 
 //中心直线
-flat in vec2 l_start;
-flat in vec2 l_end;
+flat in vec2 lineStart;
+flat in vec2 lineEnd;
 
 uniform mat4 mvp;
-uniform vec4 line_params;
-uniform vec4 viewport_params;
-uniform vec3 line_color;
+uniform vec4 lineParams;
+uniform vec4 viewportParams;
+uniform vec3 lineColor;
 
 void main()
 {
-    float thickness = line_params.x * 0.25f;
-    float feather = line_params.y;
+    float thickness = lineParams.x * 0.25f;
+    float feather = lineParams.y;
 
     //计算片段（0,1）范围屏幕坐标
-    vec2 fragcoord = (gl_FragCoord.xy - 0.5f) / viewport_params.xy;
-    fragcoord.x *= viewport_params.z;
+    vec2 fragcoord = (gl_FragCoord.xy - 0.5f) / viewportParams.xy;
+    fragcoord.x *= viewportParams.z;
 
     //抗锯齿：计算片段与中心直线的距离，以此作为alpha参数blending
-    vec2 v0 = l_end - l_start;
-    vec2 v1 = fragcoord - l_start;
+    vec2 v0 = lineEnd - lineStart;
+    vec2 v1 = fragcoord - lineStart;
     //计算 v1 垂直于 v0 的垂直向量， v1_perp(v0) = v1 - v1_proj(v0)
     vec2 v1_perp = v1 - (dot(v1, v0) / dot(v0, v0)) * v0;
     float d = length(v1_perp);
@@ -31,5 +31,5 @@ void main()
     //(thickness - feather, thickness) smooth hermit interpolation between 0 and 1
     float a = 1.0f - smoothstep(thickness - feather, thickness, d);
 
-    fragcolor = vec4(line_color, a * line_params.w + (1.0f - line_params.w));
+    fragcolor = vec4(lineColor, a * lineParams.w + (1.0f - lineParams.w));
 }

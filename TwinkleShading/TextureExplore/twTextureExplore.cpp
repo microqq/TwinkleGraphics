@@ -26,7 +26,7 @@ void TextureExplore::Install()
 
     // Initilize view
     _view = new TextureExploreView();
-    _views[_views_count++] = _view;
+    _views[_viewsCount++] = _view;
 }
 
 void TextureExplore::UnInstall()
@@ -46,12 +46,13 @@ void TextureExploreView::Initialize()
         return;
 
     Viewport viewport(Rect(0, 0, _rect.z, _rect.w), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 1000.0f);
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 5000.0f);
     this->SetViewCamera(camera);
     
-    OrbitControl::Ptr camera_control = std::make_shared<OrbitControl>(camera);
-    camera_control->SetMinDistance(1.0f);
-    this->SetCameraControl(camera_control);
+    FirstPersonControl::Ptr cameraControl = std::make_shared<FirstPersonControl>(camera);
+    cameraControl->SetMinDistance(1.0f);
+    cameraControl->SetMaxDistance(5000.0f);
+    this->SetCameraControl(cameraControl);
 
     //create vertex array object
     _vaos = new uint32[16];
@@ -64,9 +65,9 @@ void TextureExploreView::Initialize()
     glGenBuffers(16, _ebos);
 
     Viewport pro_viewport(Rect(0, 0, _rect.z, _rect.w), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    _proj_tex_camera = std::make_shared<Camera>(pro_viewport, 30.0f, 0.1f, 1000.0f);
+    _projTexCamera = std::make_shared<Camera>(pro_viewport, 30.0f, 0.1f, 1000.0f);
     // _proj_tex_camera->SetOrientation(quat(1.0f, 0.0f, 0.0f, glm::pi<float32>() * 0.5f));
-    _proj_tex_camera->Translate(vec3(0.0f, 0.0f, 10.0f));
+    _projTexCamera->Translate(vec3(0.0f, 0.0f, 10.0f));
 
     View::Initialize();
 }
@@ -93,69 +94,69 @@ void TextureExploreView::Advance(float64 delta_time)
     View::Advance(delta_time);
 
     const Viewport& viewport = _camera->GetViewport();
-    _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
-    _view_mat = _camera->GetViewMatrix();
-    _projection_mat = _camera->GetProjectionMatrix();
-    _mvp_mat = _projection_mat * _view_mat;
+    _viewportParams = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
+    _viewMat = _camera->GetViewMatrix();
+    _projectionMat = _camera->GetProjectionMatrix();
+    _mvpMat = _projectionMat * _viewMat;
 
     // sprite setting
     {
         Sprite::Ptr sprite = nullptr;
-        if (_current_tex_option == 0)
-            sprite = _sprite_1d;
-        else if (_current_tex_option == 1)
+        if (_currentTexOption == 0)
+            sprite = _sprite1D;
+        else if (_currentTexOption == 1)
             sprite = _sprite;
 
         if (sprite != nullptr)
         {
             Material::Ptr mat = nullptr;
             mat = sprite->GetMaterial();
-            mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+            mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
             vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
-            mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
-            mat->SetTextureTiling("main_tex", _tex_tiling);
-            mat->SetTextureOffset("main_tex", _tex_offset);
+            mat->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+            mat->SetTextureTiling("mainTex", _texTiling);
+            mat->SetTextureOffset("mainTex", _texOffset);
 
             // set sprite texture parameters
             Texture::Ptr tex = sprite->GetTexture();
-            tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
+            tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
             if(sprite == _sprite)
-                tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
+                tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
 
-            tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
-            tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+            tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filterModes[0]);
+            tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filterModes[1]);
 
-            tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);
+            tex->SetTexBorderColor(_texparams.bordercolorParameter, _texparams.borderColor);
         }
     }
     // skybox setting
     {
         Geometry::Ptr geom = nullptr;
-        if (_current_tex_option == 3 || _enable_skybox)
+        if (_currentTexOption == 3 || _enableSkybox)
         {
             geom = _skybox;
             Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
             mat4 rotate_mat = glm::mat4_cast(_camera->GetOrientation());
             // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
-            mat4 mvp = _projection_mat * rotate_mat;
+            mat4 mvp = _projectionMat * rotate_mat;
             
             skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
             
             Texture::Ptr skyboxtex = skyboxmat->GetMainTexture();
-            skyboxtex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
-            skyboxtex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
-            skyboxtex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+            skyboxtex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
+            skyboxtex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
+            skyboxtex->SetWrap<WrapParam::WRAP_R>(_texparams.wrapModes[2]);
 
-            skyboxtex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
-            skyboxtex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+            skyboxtex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filterModes[0]);
+            skyboxtex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filterModes[1]);
 
-            if(_current_tex_option == 3)
+            if(_currentTexOption == 3)
             {
                 Transform::Ptr cubetrans = _cube->GetTransform();
                 cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 
                 Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
-                mvp = _mvp_mat * cubetrans->GetLocalToWorldMatrix();
+                mvp = _mvpMat * cubetrans->GetLocalToWorldMatrix();
                 cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
                 cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
 
@@ -163,24 +164,24 @@ void TextureExploreView::Advance(float64 delta_time)
                 spheretrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 
                 Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
-                mvp = _mvp_mat * spheretrans->GetLocalToWorldMatrix();
+                mvp = _mvpMat * spheretrans->GetLocalToWorldMatrix();
                 spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
                 Texture::Ptr spheretex = spheremat->GetMainTexture();
-                spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
-                spheretex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
-                spheretex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+                spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
+                spheretex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
+                spheretex->SetWrap<WrapParam::WRAP_R>(_texparams.wrapModes[2]);
 
-                spheretex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
-                spheretex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+                spheretex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filterModes[0]);
+                spheretex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filterModes[1]);
             }
         }
     }
     // volumn quad material setting
     {
         Geometry::Ptr geom = nullptr;
-        if(_current_tex_option == 2)
-            geom = _volumn_quad;
+        if(_currentTexOption == 2)
+            geom = _volumnQuad;
 
         if(geom != nullptr)
         {
@@ -189,62 +190,62 @@ void TextureExploreView::Advance(float64 delta_time)
             glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
             glm::vec3 y_axis(0.0f, 1.0f, 0.0f);
             glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
-            mat4 unifmat = glm::rotate(rotmat, _update_time * glm::radians<float32>(10.0f), x_axis) *
-                            glm::rotate(rotmat, _update_time * glm::radians<float32>(10.0f), y_axis) *
-                            glm::rotate(rotmat, _update_time * glm::radians<float32>(10.0f), z_axis);
+            mat4 unifmat = glm::rotate(rotmat, _updateTime * glm::radians<float32>(10.0f), x_axis) *
+                            glm::rotate(rotmat, _updateTime * glm::radians<float32>(10.0f), y_axis) *
+                            glm::rotate(rotmat, _updateTime * glm::radians<float32>(10.0f), z_axis);
 
             Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
-            mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+            mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
             vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
-            mat->SetVecUniformValue<float32, 4>("tint_color", tintColor);
-            mat->SetTextureTiling("main_tex", _tex_tiling);
-            mat->SetTextureOffset("main_tex", _tex_offset);
+            mat->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+            mat->SetTextureTiling("mainTex", _texTiling);
+            mat->SetTextureOffset("mainTex", _texOffset);
             mat->SetMatrixUniformValue<float32, 4, 4>("rotmat", unifmat);
 
             // set sprite texture parameters
-            Texture::Ptr tex = mat->GetTexture("main_tex");
-            tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrap_modes[0]);
-            tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrap_modes[1]);
-            tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrap_modes[2]);
+            Texture::Ptr tex = mat->GetTexture("mainTex");
+            tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
+            tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
+            tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrapModes[2]);
 
-            tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filter_modes[0]);
-            tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filter_modes[1]);
+            tex->SetFilter<FilterParam::MIN_FILTER>(_texparams.filterModes[0]);
+            tex->SetFilter<FilterParam::MAG_FILTER>(_texparams.filterModes[1]);
 
-            tex->SetTexBorderColor(_texparams.bordercolor_parameter, _texparams.border_color);            
+            tex->SetTexBorderColor(_texparams.bordercolorParameter, _texparams.borderColor);            
         }
     }
     {
         Geometry::Ptr geom = nullptr;
-        if(_current_tex_option == 6)
-            geom = _nurbs_surface;
+        if(_currentTexOption == 6)
+            geom = _nurbsSurface;
 
         if(geom != nullptr)
         {
-            mat4 mat_tex_view = _proj_tex_camera->GetViewMatrix();
-            mat4 mat_tex_proj = _proj_tex_camera->GetProjectionMatrix();
+            mat4 mat_tex_view = _projTexCamera->GetViewMatrix();
+            mat4 mat_tex_proj = _projTexCamera->GetProjectionMatrix();
             mat4 mat_tex_vp = mat_tex_proj * mat_tex_view;
 
-            Transform::Ptr nurbs_trans = _nurbs_surface->GetTransform();
+            Transform::Ptr nurbs_trans = _nurbsSurface->GetTransform();
             // nurbs_trans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
 
             mat4 world = nurbs_trans->GetLocalToWorldMatrix();
-            mat4 mvp = _mvp_mat * world;
+            mat4 mvp = _mvpMat * world;
 
-            Material::Ptr nurbs_mat = _nurbs_surface->GetMeshRenderer()->GetMaterial();
+            Material::Ptr nurbs_mat = _nurbsSurface->GetMeshRenderer()->GetMaterial();
             nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
             nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
-            Material::Ptr quad_mat = _proj_tex_quad->GetMeshRenderer()->GetMaterial();
-            Transform::Ptr quad_trans = _proj_tex_quad->GetTransform();
+            Material::Ptr quad_mat = _projTexQuad->GetMeshRenderer()->GetMaterial();
+            Transform::Ptr quad_trans = _projTexQuad->GetTransform();
             world = quad_trans->GetLocalToWorldMatrix();
-            mvp = _mvp_mat * world;
+            mvp = _mvpMat * world;
             quad_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
             quad_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
         }
     }
 
 #ifdef _WIN32 || _WIN64
-    _update_time += 0.02f;
+    _updateTime += 0.02f;
 #elif defined __linux__
     _update_time += 0.0002f;
 #endif
@@ -252,10 +253,10 @@ void TextureExploreView::Advance(float64 delta_time)
 
 void TextureExploreView::RenderImpl()
 {
-    switch (_current_tex_option)
+    switch (_currentTexOption)
     {
     default:
-        RenderGeometryEx(_current_tex_option);
+        RenderGeometryEx(_currentTexOption);
         break;
     }
 
@@ -264,22 +265,22 @@ void TextureExploreView::OnGUI()
 {
     ImGui::Begin(u8"纹理小观");
     {
-        if(ImGui::RadioButton(u8"一维纹理", &_current_tex_option, 0))
+        if(ImGui::RadioButton(u8"一维纹理", &_currentTexOption, 0))
         {
             ResetGUI();
             CreateSprite1D();
         }
-        if(ImGui::RadioButton(u8"二维纹理", &_current_tex_option, 1))
+        if(ImGui::RadioButton(u8"二维纹理", &_currentTexOption, 1))
         {
             ResetGUI();
             CreateSprite();
         }
-        if(ImGui::RadioButton(u8"三维纹理", &_current_tex_option, 2))
+        if(ImGui::RadioButton(u8"三维纹理", &_currentTexOption, 2))
         {
             ResetGUI();
             CreateVolumnTexture();
         }
-        if(ImGui::RadioButton(u8"立方体纹理", &_current_tex_option, 3))
+        if(ImGui::RadioButton(u8"立方体纹理", &_currentTexOption, 3))
         {
             ResetGUI();
             CreateSkybox();
@@ -299,7 +300,7 @@ void TextureExploreView::OnGUI()
         // {
         //     ResetGUI();
         // }
-        if(ImGui::RadioButton(u8"投影纹理", &_current_tex_option, 6))
+        if(ImGui::RadioButton(u8"投影纹理", &_currentTexOption, 6))
         {
             ResetGUI();
             CreateNURBSSurface();
@@ -314,56 +315,56 @@ void TextureExploreView::OnGUI()
     ImGui::Begin(u8"纹理设置");
     {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
-        _texparams_tabitem[0] = true;
-        _texparams_tabitem[1] = true;
-        _texparams_tabitem[2] = true;
-        _texparams_tabitem[3] = true;
+        _texparamsTabitem[0] = true;
+        _texparamsTabitem[1] = true;
+        _texparamsTabitem[2] = true;
+        _texparamsTabitem[3] = true;
         ImGui::BeginTabBar(u8"纹理参数", ImGuiTabBarFlags_None);
 
-        if (ImGui::BeginTabItem(u8"纹理环绕", &(_texparams_tabitem[0])))
+        if (ImGui::BeginTabItem(u8"纹理环绕", &(_texparamsTabitem[0])))
         {
             bool wrap_option_clicked = false;
             ImGui::BeginGroup();
             ImGui::Text(u8"参数:");
             ImGui::Indent();
-            wrap_option_clicked = ImGui::RadioButton(u8"Wrap_S", &_wrap_option, 0);
-            wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_T", &_wrap_option, 1);
-            wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_R", &_wrap_option, 2);
+            wrap_option_clicked = ImGui::RadioButton(u8"Wrap_S", &_wrapOption, 0);
+            wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_T", &_wrapOption, 1);
+            wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_R", &_wrapOption, 2);
             ImGui::EndGroup();
 
             ImGui::SameLine();
-            OnWrapModeGUI(_wrap_modes[_wrap_option]);
+            OnWrapModeGUI(_wrapModes[_wrapOption]);
 
             ImGui::EndTabItem();
         }
 
-        if(ImGui::BeginTabItem(u8"纹理过滤", &(_texparams_tabitem[1])))
+        if(ImGui::BeginTabItem(u8"纹理过滤", &(_texparamsTabitem[1])))
         {
             bool filter_option_clicked = false;
             ImGui::BeginGroup();
             ImGui::Text(u8"参数:");
             ImGui::Indent();
-            filter_option_clicked = ImGui::RadioButton(u8"Minification", &_filter_option, 0);
-            filter_option_clicked |= ImGui::RadioButton(u8"Magnification", &_filter_option, 1);
+            filter_option_clicked = ImGui::RadioButton(u8"Minification", &_filterOption, 0);
+            filter_option_clicked |= ImGui::RadioButton(u8"Magnification", &_filterOption, 1);
             ImGui::EndGroup();
 
             ImGui::SameLine();
-            OnFilterModeGUI(_filter_modes[_filter_option]);
+            OnFilterModeGUI(_filterModes[_filterOption]);
 
             ImGui::EndTabItem();
         }
 
-        if(ImGui::BeginTabItem(u8"纹理抖动", &(_texparams_tabitem[2])))
+        if(ImGui::BeginTabItem(u8"纹理抖动", &(_texparamsTabitem[2])))
         {
             bool swizzle_option_clicked = false;
             ImGui::BeginGroup();
             ImGui::Text(u8"参数:");
             ImGui::Indent();
-            swizzle_option_clicked = ImGui::RadioButton(u8"Swizzle_R", &_swizzle_option, 0);
-            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_G", &_swizzle_option, 1);
-            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_B", &_swizzle_option, 2);
-            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_A", &_swizzle_option, 3);
-            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_RGBA", &_swizzle_option, 4);
+            swizzle_option_clicked = ImGui::RadioButton(u8"Swizzle_R", &_swizzleOption, 0);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_G", &_swizzleOption, 1);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_B", &_swizzleOption, 2);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_A", &_swizzleOption, 3);
+            swizzle_option_clicked |= ImGui::RadioButton(u8"Swizzle_RGBA", &_swizzleOption, 4);
             ImGui::EndGroup();
 
             ImGui::SameLine();
@@ -372,24 +373,24 @@ void TextureExploreView::OnGUI()
             ImGui::EndTabItem();
         }
 
-        if(ImGui::BeginTabItem("其他", &(_texparams_tabitem[3])))
+        if(ImGui::BeginTabItem("其他", &(_texparamsTabitem[3])))
         {
-            ImGui::Checkbox(u8"Lod Bias", &_enable_lodbias);
-            if(_enable_lodbias)
+            ImGui::Checkbox(u8"Lod Bias", &_enableLodBias);
+            if(_enableLodBias)
             {
                 ImGui::SameLine();
-                ImGui::SliderFloat("Bias Value", &_lodbias_value, -10.0f, 10.0f);
+                ImGui::SliderFloat("Bias Value", &_lodbiasValue, -10.0f, 10.0f);
             }
 
-            ImGui::Checkbox(u8"Border Color", &_enable_border_color);
-            if(_enable_border_color)
+            ImGui::Checkbox(u8"Border Color", &_enableBorderColor);
+            if(_enableBorderColor)
             {
                 ImGui::SameLine();
                 ImGui::ColorEdit4("Color", glm::value_ptr<float32>(_bordercolor));
             }
 
-            ImGui::Checkbox(u8"显示天空盒", &_enable_skybox);
-            if (_enable_skybox)
+            ImGui::Checkbox(u8"显示天空盒", &_enableSkybox);
+            if (_enableSkybox)
             {
                 if(_skybox == nullptr)
                 {
@@ -406,8 +407,8 @@ void TextureExploreView::OnGUI()
 
     ImGui::Begin(u8"其他...");
     {
-        ImGui::DragFloat2("Tiling", glm::value_ptr(_tex_tiling), 0.1f, 0.1f, 10.0f);
-        ImGui::DragFloat2("Offset", glm::value_ptr(_tex_offset), 0.01f, -1.0f, 1.0f);
+        ImGui::DragFloat2("Tiling", glm::value_ptr(_texTiling), 0.1f, 0.1f, 10.0f);
+        ImGui::DragFloat2("Offset", glm::value_ptr(_texOffset), 0.01f, -1.0f, 1.0f);
         ImGui::ColorEdit4("Tint Color", _tintcolor);
     }
     ImGui::End();
@@ -464,40 +465,40 @@ void TextureExploreView::OnSwizzleModeGUI()
     ImGui::Indent();
 
     char const* items[6] = { "RED", "GREEN", "BLUE", "ALPHA", "ZERO", "ONE" };
-    if(_swizzle_option == 4 || _swizzle_option == 0)
-        ImGui::Combo(u8"Swizzle RED", &(_swizzle_masks[0]), items, 6);
+    if(_swizzleOption == 4 || _swizzleOption == 0)
+        ImGui::Combo(u8"Swizzle RED", &(_swizzleMasks[0]), items, 6);
 
-    if(_swizzle_option == 4 || _swizzle_option == 1)
-        ImGui::Combo(u8"Swizzle GREEN", &(_swizzle_masks[1]), items, 6);
+    if(_swizzleOption == 4 || _swizzleOption == 1)
+        ImGui::Combo(u8"Swizzle GREEN", &(_swizzleMasks[1]), items, 6);
 
-    if(_swizzle_option == 4 || _swizzle_option == 2)
-        ImGui::Combo(u8"Swizzle BLUE", &(_swizzle_masks[2]), items, 6);
+    if(_swizzleOption == 4 || _swizzleOption == 2)
+        ImGui::Combo(u8"Swizzle BLUE", &(_swizzleMasks[2]), items, 6);
 
-    if(_swizzle_option == 4 || _swizzle_option == 3)
-        ImGui::Combo(u8"Swizzle ALPHA", &(_swizzle_masks[3]), items, 6);
+    if(_swizzleOption == 4 || _swizzleOption == 3)
+        ImGui::Combo(u8"Swizzle ALPHA", &(_swizzleMasks[3]), items, 6);
 
     ImGui::EndGroup();
 }
 
 void TextureExploreView::ResetGUI()
 {
-    _wrap_option = -1;
-    _filter_option = -1;
-    _swizzle_option = -1;
-    _enable_lodbias = false;
-    _enable_border_color = false;
-    _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
-    _filter_modes[0] = _filter_modes[1] = -1;
-    _swizzle_masks[0] = 0;
-    _swizzle_masks[1] = 1;
-    _swizzle_masks[2] = 2;
-    _swizzle_masks[3] = 3;
+    _wrapOption = -1;
+    _filterOption = -1;
+    _swizzleOption = -1;
+    _enableLodBias = false;
+    _enableBorderColor = false;
+    _wrapModes[0] = _wrapModes[1] = _wrapModes[2] = -1;
+    _filterModes[0] = _filterModes[1] = -1;
+    _swizzleMasks[0] = 0;
+    _swizzleMasks[1] = 1;
+    _swizzleMasks[2] = 2;
+    _swizzleMasks[3] = 3;
 
     _tintcolor[0] = _tintcolor[1] = _tintcolor[2] = _tintcolor[3] = 1.0f;
     _bordercolor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    _tex_tiling = vec2(1.0f, 1.0f);
-    _tex_offset = vec2(0.0f, 0.0f);
+    _texTiling = vec2(1.0f, 1.0f);
+    _texOffset = vec2(0.0f, 0.0f);
 }
 
 void TextureExploreView::SetTexparams()
@@ -505,31 +506,31 @@ void TextureExploreView::SetTexparams()
     // set wrap mode
     for(int32 i = 0; i < 3; i++)
     {
-        WrapMode mode = GetWrapMode(_wrap_modes[i]);
-        _texparams.wrap_modes[i] = mode;
+        WrapMode mode = GetWrapMode(_wrapModes[i]);
+        _texparams.wrapModes[i] = mode;
     }
 
     // set filter
     for(int32 i = 0; i < 2; i++)
     {
-        FilterMode mode = GetFilterMode(_filter_modes[i]);
-        _texparams.filter_modes[i] = mode;
+        FilterMode mode = GetFilterMode(_filterModes[i]);
+        _texparams.filterModes[i] = mode;
     }
 
     // set swizzle
-    _texparams.swizzle_parameter = GetSwizzleParam(_swizzle_option);
+    _texparams.swizzleParameter = GetSwizzleParam(_swizzleOption);
     SwizzleMask masks[4];
     for(int32 i = 0; i < 4; i++)
     {
-        _texparams.swizzle[i] = GetSwizzleMask(_swizzle_masks[i]);
+        _texparams.swizzle[i] = GetSwizzleMask(_swizzleMasks[i]);
     }
 
     // set lod bias
-    _texparams.lod_parameter = _enable_lodbias ? LodBiasParam::LOD_BIAS : LodBiasParam::NONE;
-    _texparams.lodbias = _lodbias_value;
+    _texparams.lodParameter = _enableLodBias ? LodBiasParam::LOD_BIAS : LodBiasParam::NONE;
+    _texparams.lodbias = _lodbiasValue;
 
-    _texparams.bordercolor_parameter = _enable_border_color ? TextureBorderColorParam::BORDER_COLOR : TextureBorderColorParam::NONE;
-    _texparams.border_color = _bordercolor;
+    _texparams.bordercolorParameter = _enableBorderColor ? TextureBorderColorParam::BORDER_COLOR : TextureBorderColorParam::NONE;
+    _texparams.borderColor = _bordercolor;
 }
 
 WrapMode TextureExploreView::GetWrapMode(int32 wrap_mode_option)
@@ -599,8 +600,9 @@ void TextureExploreView::CreateSprite()
     // initialise sprite
     if (texture != nullptr)
     {
+        // glm::vec2 size = glm::vec2(texture->GetWidth(0), texture->GetHeight(0)) / (float32)100.0f * 2.0f;
         _sprite = std::make_shared<Sprite>(texture);
-        // Material::Ptr mat = _sprite->GetMaterial();
+        // _sprite = std::make_shared<Sprite>(texture, size);
     }
 
     CreateGeometry(_sprite, 1);
@@ -608,7 +610,7 @@ void TextureExploreView::CreateSprite()
 
 void TextureExploreView::CreateSprite1D()
 {
-    if(_sprite_1d == nullptr)
+    if(_sprite1D == nullptr)
     {
         ImageData data;
         data.target = GL_TEXTURE_1D;
@@ -634,19 +636,19 @@ void TextureExploreView::CreateSprite1D()
         Texture1D::Ptr texture1D = std::make_shared<Texture1D>(true);
         texture1D->CreateFromImage(image);
 
-        _sprite_1d = std::make_shared<Sprite>(texture1D, glm::vec2(5, 5));
+        _sprite1D = std::make_shared<Sprite>(texture1D, glm::vec2(5, 5));
 
-        CreateGeometry(_sprite_1d, 0);
+        CreateGeometry(_sprite1D, 0);
     }
 }
 
 void TextureExploreView::CreateVolumnTexture()
 {
-    if(_volumn_quad == nullptr)
+    if(_volumnQuad == nullptr)
     {
         vec2 size(10.0f, 10.0f);
-        _volumn_quad = std::make_shared<Quad>(size, MeshDataFlag(8));
-        _volumn_quad->GenerateMesh();
+        _volumnQuad = std::make_shared<Quad>(size, MeshDataFlag(8));
+        // _volumnQuad->GenerateMeshInternal();
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         VolumnQuadMaterial::Ptr mat = std::make_shared<VolumnQuadMaterial>();
@@ -660,11 +662,11 @@ void TextureExploreView::CreateVolumnTexture()
 
         mat->SetMainTexture(volumntex);
         renderer->SetMaterial(mat);
-        renderer->SetMesh(_volumn_quad->GetMesh());
+        renderer->SetMesh(_volumnQuad->GetMesh());
 
-        _volumn_quad->SetMeshRenderer(renderer);
+        _volumnQuad->SetMeshRenderer(renderer);
 
-        CreateGeometry(_volumn_quad, 2);
+        CreateGeometry(_volumnQuad, 2);
     }
 }
 
@@ -673,7 +675,7 @@ void TextureExploreView::CreateSkybox()
     if(_skybox == nullptr)
     {
         _skybox = std::make_shared<Cube>(2.0f, MeshDataFlag::DEFAULT);
-        _skybox->GenerateMesh();
+        // _skybox->GenerateMeshInternal();
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         SkyboxMaterial::Ptr mat = std::make_shared<SkyboxMaterial>();
@@ -752,7 +754,7 @@ void TextureExploreView::CreateCube(Image::Ptr image)
     if(_cube == nullptr)
     {
         _cube = std::make_shared<Cube>(5.0f, MeshDataFlag::DEFAULT);
-        _cube->GenerateMesh();
+        // _cube->GenerateMeshInternal();
 
         Transform::Ptr trans = _cube->GetTransform();
         trans->Translate(glm::vec3(0.0f, 0.0f, -15.0f));
@@ -780,7 +782,7 @@ void TextureExploreView::CreateIconSphere(Image::Ptr image)
     if(_sphere == nullptr)
     {
         _sphere = std::make_shared<IcosahedronSphere>(2.5f, 50, MeshDataFlag::DEFAULT);
-        _sphere->GenerateMesh();
+        // _sphere->GenerateMeshInternal();
 
         Transform::Ptr trans = _sphere->GetTransform();
         trans->Translate(glm::vec3(-3.5f, 0.0f, 0.0f));
@@ -804,13 +806,8 @@ void TextureExploreView::CreateIconSphere(Image::Ptr image)
 
 void TextureExploreView::CreateNURBSSurface()
 {
-    if(_nurbs_surface == nullptr)
+    if(_nurbsSurface == nullptr)
     {
-        _nurbs_surface = std::make_shared<NURBSSurface>(5, 3, 5, 3);
-
-        Transform::Ptr trans = _nurbs_surface->GetTransform();
-        trans->Translate(glm::vec3(-6.0f, 0.0f, 0.0f));
-
         glm::vec4* control_points = new glm::vec4[25];
 
         int32 n = 0;
@@ -851,8 +848,6 @@ void TextureExploreView::CreateNURBSSurface()
         control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
         control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
-        _nurbs_surface->SetControlPoints(control_points, 25);
-
         Knot* u_knots = new Knot[9];
         u_knots[0].u = 0.0f;
         u_knots[8].u = 1.0f;
@@ -866,7 +861,6 @@ void TextureExploreView::CreateNURBSSurface()
 
         u_knots[3].multiplity = 3;
         u_knots[8].multiplity = 3;
-        _nurbs_surface->SetUKnots(u_knots, 9);
 
         Knot* v_knots = new Knot[9];
         v_knots[0].u = 0.0f;
@@ -881,10 +875,17 @@ void TextureExploreView::CreateNURBSSurface()
 
         v_knots[3].multiplity = 3;
         v_knots[8].multiplity = 3;
-        _nurbs_surface->SetVKnots(v_knots, 9);
 
-        _nurbs_surface->GenerateMesh();
-        Mesh::Ptr mesh = _nurbs_surface->GetMesh();
+        _nurbsSurface = std::make_shared<NURBSSurface>(5, 3, 5, 3, control_points, u_knots, v_knots);
+        // _nurbsSurface->SetControlPoints(control_points, 25);
+        // _nurbsSurface->SetUKnots(u_knots, 9);
+        // _nurbsSurface->SetVKnots(v_knots, 9);
+        // _nurbsSurface->GenerateMeshInternal();
+
+        Transform::Ptr trans = _nurbsSurface->GetTransform();
+        trans->Translate(glm::vec3(-6.0f, 0.0f, 0.0f));
+
+        Mesh::Ptr mesh = _nurbsSurface->GetMesh();
         SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
@@ -906,15 +907,15 @@ void TextureExploreView::CreateNURBSSurface()
         mat->SetMainTexture(texture);
 
         renderer->SetSharedMaterial(mat);
-        renderer->SetMesh(_nurbs_surface->GetMesh());
+        renderer->SetMesh(_nurbsSurface->GetMesh());
 
-        _nurbs_surface->SetMeshRenderer(renderer);
+        _nurbsSurface->SetMeshRenderer(renderer);
 
         vec2 size(10.0f, 10.0f);
-        _proj_tex_quad = std::make_shared<Quad>(size, MeshDataFlag(8));
-        _proj_tex_quad->GenerateMesh();
+        _projTexQuad = std::make_shared<Quad>(size, MeshDataFlag(8));
+        // _projTexQuad->GenerateMeshInternal();
 
-        Transform::Ptr quad_trans = _proj_tex_quad->GetTransform();
+        Transform::Ptr quad_trans = _projTexQuad->GetTransform();
         quad_trans->Translate(glm::vec3(6.0f, 0.0f, 0.0f));
 
         MeshRenderer::Ptr quad_renderer = std::make_shared<MeshRenderer>();
@@ -922,12 +923,12 @@ void TextureExploreView::CreateNURBSSurface()
 
         quad_mat->SetMainTexture(texture);
         quad_renderer->SetSharedMaterial(quad_mat);
-        quad_renderer->SetMesh(_proj_tex_quad->GetMesh());
+        quad_renderer->SetMesh(_projTexQuad->GetMesh());
 
-        _proj_tex_quad->SetMeshRenderer(quad_renderer);
+        _projTexQuad->SetMeshRenderer(quad_renderer);
 
-        CreateGeometry(_nurbs_surface, 6);
-        CreateGeometry(_proj_tex_quad, 13);
+        CreateGeometry(_nurbsSurface, 6);
+        CreateGeometry(_projTexQuad, 13);
 
         SAFE_DEL_ARR(control_points);
         SAFE_DEL_ARR(u_knots);
@@ -937,7 +938,7 @@ void TextureExploreView::CreateNURBSSurface()
 
 void TextureExploreView::RenderGeometryEx(int index)
 {
-    if(index != 3 && _enable_skybox)
+    if(index != 3 && _enableSkybox)
     {
         RenderGeometry(_skybox, 3);
     }
@@ -946,13 +947,13 @@ void TextureExploreView::RenderGeometryEx(int index)
     switch (index)
     {
     case 0:
-        geom = _sprite_1d;
+        geom = _sprite1D;
         break;
     case 1:
         geom = _sprite;
         break;
     case 2:
-        geom = _volumn_quad;
+        geom = _volumnQuad;
         break;
     case 3:
         geom = _skybox;
@@ -962,8 +963,8 @@ void TextureExploreView::RenderGeometryEx(int index)
             RenderGeometry(_sphere, 14);
         break;
     case 6:
-        geom = _nurbs_surface;
-        RenderGeometry(_proj_tex_quad, 13);
+        geom = _nurbsSurface;
+        RenderGeometry(_projTexQuad, 13);
     default:
         break;
     }
@@ -976,7 +977,8 @@ void TextureExploreView::RenderGeometryEx(int index)
 
 void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
 {
-    SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
+    Mesh::Ptr mesh = geom->GetMesh();    
+    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 
     //bind vertex array object
     glBindVertexArray(_vaos[index]);
@@ -988,19 +990,19 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
 
-    int32 verticenum = submesh->GetVerticeNum();
+    int32 verticenum = mesh->GetVerticeNum();
     if(geom->GetMeshDataFlag() == MeshDataFlag::DEFAULT)
     {
-        glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->GetVerticeNum() * 12, mesh->GetVerticePos(), GL_DYNAMIC_DRAW);
     }
     else
     {
         // map vertexbuffer data(position & uv)
-        glBufferData(GL_ARRAY_BUFFER, submesh->GetDataSize(), nullptr, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, verticenum * 12, submesh->GetVerticePos());
+        glBufferData(GL_ARRAY_BUFFER, mesh->GetDataSize(), nullptr, GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, verticenum * 12, mesh->GetVerticePos());
 
         if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
-            glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, submesh->GetVerticeUV());
+            glBufferSubData(GL_ARRAY_BUFFER, verticenum * 12, verticenum * 16, mesh->GetVerticeUV());
     }    
 
     // bind vertex position
@@ -1013,9 +1015,9 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
     if((geom->GetMeshDataFlag() & MeshDataFlag::HAS_UV) != 0)
     {
         glBindVertexBuffer(1, _vbos[index], verticenum * 12, sizeof(vec4));
-        glEnableVertexAttribArray(1);
-        glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
-        glVertexAttribBinding(1, 1);
+        glEnableVertexAttribArray(4);
+        glVertexAttribFormat(4, 4, GL_FLOAT, GL_FALSE, 0);
+        glVertexAttribBinding(4, 1);
     }
 
     glBindVertexArray(0);

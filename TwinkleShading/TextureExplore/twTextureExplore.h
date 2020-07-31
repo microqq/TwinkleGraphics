@@ -10,7 +10,7 @@
 #include "twShader.h"
 #include "twMesh.h"
 #include "twCamera.h"
-#include "twOrbitControl.h"
+#include "twFirstPersonControl.h"
 #include "twTexture.h"
 #include "twSprite.h"
 
@@ -41,32 +41,32 @@ public:
         , _vbos(nullptr)
         , _ebos(nullptr)
         , _sprite(nullptr)
-        , _wrap_modes()
-        , _wrap_option(-1)
-        , _filter_modes()
-        , _filter_option(-1)
-        , _swizzle_option(-1)
-        , _current_tex_option(-1)
-        , _lodbias_value(1.0f)
-        , _update_time(0.0f)
-        , _swizzle_masks()
-        , _texparams_tabitem()
-        , _enable_lodbias(false)
-        , _enable_border_color(false)
-        , _enable_skybox(false)
+        , _wrapModes()
+        , _wrapOption(-1)
+        , _filterModes()
+        , _filterOption(-1)
+        , _swizzleOption(-1)
+        , _currentTexOption(-1)
+        , _lodbiasValue(1.0f)
+        , _updateTime(0.0f)
+        , _swizzleMasks()
+        , _texparamsTabitem()
+        , _enableLodBias(false)
+        , _enableBorderColor(false)
+        , _enableSkybox(false)
         {
-            _wrap_modes[0] = _wrap_modes[1] = _wrap_modes[2] = -1;
-            _filter_modes[0] = _filter_modes[1] = -1;
-            _swizzle_masks[0] = 0;
-            _swizzle_masks[1] = 1;
-            _swizzle_masks[2] = 2;
-            _swizzle_masks[3] = 3;
+            _wrapModes[0] = _wrapModes[1] = _wrapModes[2] = -1;
+            _filterModes[0] = _filterModes[1] = -1;
+            _swizzleMasks[0] = 0;
+            _swizzleMasks[1] = 1;
+            _swizzleMasks[2] = 2;
+            _swizzleMasks[3] = 3;
 
             _tintcolor[0] = _tintcolor[1] = _tintcolor[2] = _tintcolor[3] = 1.0f;
             _bordercolor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-            _tex_tiling = vec2(1.0f, 1.0f);
-            _tex_offset = vec2 (0.0f, 0.0f);
+            _texTiling = vec2(1.0f, 1.0f);
+            _texOffset = vec2 (0.0f, 0.0f);
         }
 
     virtual ~TextureExploreView()
@@ -106,10 +106,10 @@ private:
 
 
 private:
-    glm::mat4 _model_mat;
-    glm::mat4 _view_mat;
-    glm::mat4 _projection_mat;    
-    glm::mat4 _mvp_mat;
+    glm::mat4 _modelMat;
+    glm::mat4 _viewMat;
+    glm::mat4 _projectionMat;    
+    glm::mat4 _mvpMat;
 
     uint32 *_vaos;
     uint32 *_vbos;
@@ -118,39 +118,39 @@ private:
     TexParams _texparams;
 
     Sprite::Ptr _sprite;
-    Sprite::Ptr _sprite_1d;
+    Sprite::Ptr _sprite1D;
 
-    Quad::Ptr _volumn_quad;
+    Quad::Ptr _volumnQuad;
     Cube::Ptr _skybox;
     Cube::Ptr _cube;
     IcosahedronSphere::Ptr _sphere;
-    NURBSSurface::Ptr _nurbs_surface;
-    Quad::Ptr _proj_tex_quad;
+    NURBSSurface::Ptr _nurbsSurface;
+    Quad::Ptr _projTexQuad;
 
-    Camera::Ptr _proj_tex_camera;
+    Camera::Ptr _projTexCamera;
 
-    glm::vec4 _viewport_params;
+    glm::vec4 _viewportParams;
     float32 _tintcolor[4];
     glm::vec4 _bordercolor;
-    glm::vec2 _tex_tiling;
-    glm::vec2 _tex_offset;
+    glm::vec2 _texTiling;
+    glm::vec2 _texOffset;
 
-    int32 _current_tex_option;
-    int32 _wrap_modes[3];
-    int32 _wrap_option;
-    int32 _filter_modes[2];
-    int32 _filter_option;
-    int32 _swizzle_option;
-    int32 _swizzle_masks[4];
+    int32 _currentTexOption;
+    int32 _wrapModes[3];
+    int32 _wrapOption;
+    int32 _filterModes[2];
+    int32 _filterOption;
+    int32 _swizzleOption;
+    int32 _swizzleMasks[4];
 
-    float32 _lodbias_value;
+    float32 _lodbiasValue;
 
-    float32 _update_time;
+    float32 _updateTime;
 
-    bool _texparams_tabitem[4];
-    bool _enable_lodbias;
-    bool _enable_border_color;
-    bool _enable_skybox;
+    bool _texparamsTabitem[4];
+    bool _enableLodBias;
+    bool _enableBorderColor;
+    bool _enableSkybox;
 
     friend class TextureExplore;
 };

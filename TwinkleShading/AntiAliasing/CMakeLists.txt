@@ -18,7 +18,9 @@ endif()
 
 target_include_directories(twAntiAliasing PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
-    ${CMAKE_CURRENT_LIST_DIR}/../../Common
+    ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/ImGuiFileDialog
+    ${CMAKE_CURRENT_LIST_DIR}/../../Include/Common
+    ${CMAKE_CURRENT_LIST_DIR}/../../Include/UI
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
@@ -33,6 +35,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twAntiAliasing twCommon)
     target_link_libraries(twAntiAliasing twUtil)
     target_link_libraries(twAntiAliasing imgui)
+    target_link_libraries(twAntiAliasing twUiUtil)
 endif()
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

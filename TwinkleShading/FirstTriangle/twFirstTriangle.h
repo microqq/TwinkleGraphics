@@ -50,13 +50,13 @@ private:
 
     ShaderProgram::Ptr _program;
 
-    uint32 _model_mat_loc;
-    uint32 _view_mat_loc;
+    uint32 _modelMatLoc;
+    uint32 _viewMatLoc;
     uint32 _projection_mat_loc;
 
-    glm::mat4 _model_mat;
-    glm::mat4 _view_mat;
-    glm::mat4 _projection_mat;
+    glm::mat4 _modelMat;
+    glm::mat4 _viewMat;
+    glm::mat4 _projectionMat;
 };
 
 } // namespace TwinkleGraphics

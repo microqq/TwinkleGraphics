@@ -65,7 +65,9 @@ struct vglImageMipData
         height = mipdata.height;
         depth = mipdata.depth;
         mipStride = mipdata.mipStride;
-        data = mipdata.data;        
+        data = mipdata.data;
+
+        return *this;
     }
 };
 

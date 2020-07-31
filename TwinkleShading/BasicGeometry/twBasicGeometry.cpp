@@ -25,7 +25,7 @@ void BasicGeometry::Install()
 
     // Initilize view
     _view = new BasicGeometryView();
-    _views[_views_count++] = _view;
+    _views[_viewsCount++] = _view;
 }
 
 void BasicGeometry::UnInstall()
@@ -44,12 +44,13 @@ void BasicGeometryView::Initialize()
         return;
 
     Viewport viewport(Rect(0, 0, _rect.z, _rect.w), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 1000.0f);
+    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 5000.0f);
     this->SetViewCamera(camera);
 
-    _camera_control = std::make_shared<OrbitControl>(camera);
-    (dynamic_cast<OrbitControl*>(_camera_control.get()))->SetMinDistance(1.0f);
-    this->SetCameraControl(_camera_control);
+    _cameraControl = std::make_shared<FirstPersonControl>(camera);
+    (dynamic_cast<FirstPersonControl*>(_cameraControl.get()))->SetMinDistance(1.0f);
+    (dynamic_cast<FirstPersonControl*>(_cameraControl.get()))->SetMaxDistance(5000.0f);
+    this->SetCameraControl(_cameraControl);
 
     //create vertex buffer object
     _vbos = new uint32[20];
@@ -70,23 +71,23 @@ void BasicGeometryView::Initialize()
     CreateInfinitePlane();
 
     //camera view setting: frustum and its position, orientation
-    _view_mat = glm::mat4(_camera->GetViewMatrix());
-    _projection_mat = glm::mat4(_camera->GetProjectionMatrix());
-    _mvp_mat = _projection_mat * _view_mat;
+    _viewMat = glm::mat4(_camera->GetViewMatrix());
+    _projectionMat = glm::mat4(_camera->GetProjectionMatrix());
+    _mvpMat = _projectionMat * _viewMat;
 
     ShaderManagerInst shaderMgr;
 
     //create basic-geometry shader
     ShaderReadInfo shaders_info[] = {
-        {std::string("Assets/Shaders/basic_geometry.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/basic_geometry.frag"), ShaderType::FRAGMENT_SHADER}};
+        {std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}};
 
     _program = shaderMgr->ReadShaders(shaders_info, 2);
     {
         ShaderProgramUse use_program(_program);
         //get shader uniform location
-        _mvp_mat_loc = glGetUniformLocation(_program->GetRes().id, "mvp");
-        int32 tintcolor_loc = glGetUniformLocation(_program->GetRes().id, "tint_color");
+        _mvpMatLoc = glGetUniformLocation(_program->GetRes().id, "mvp");
+        int32 tintcolor_loc = glGetUniformLocation(_program->GetRes().id, "tintColor");
 
         glm::vec4 tintcolor(1.0f, 1.0f, 1.0f, 1.0f);
         glUniform4fv(tintcolor_loc, 1, glm::value_ptr(tintcolor));
@@ -94,13 +95,13 @@ void BasicGeometryView::Initialize()
 
     //create infinite-plane shader
     ShaderReadInfo infplane_shaders_info[] = {
-        {std::string("Assets/Shaders/infinite_plane.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/infinite_plane.frag"), ShaderType::FRAGMENT_SHADER}};
+        {std::string("Assets/Shaders/infinitePlane.vert"), ShaderType::VERTEX_SHADER},
+        {std::string("Assets/Shaders/infinitePlane.frag"), ShaderType::FRAGMENT_SHADER}};
 
-    _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
-    _line_params = glm::vec4(0.01f, 0.002f, 0.99f, 1.0f);
-    _line_color = glm::vec3(1.0f, 1.0f, 1.0f);
-    _line_points = new glm::vec3[5]{
+    _viewportParams = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
+    _lineParams = glm::vec4(0.01f, 0.002f, 0.99f, 1.0f);
+    _lineColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    _linePoints = new glm::vec3[5]{
         glm::vec3(-5.f, 2.5f, 0.0f),
         glm::vec3(0.0f, -5.0f, 0.0f),
         glm::vec3(-3.f, 2.0f, 0.0f),
@@ -114,13 +115,13 @@ void BasicGeometryView::Initialize()
         {std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
         {std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}
     };
-    _line_program = shaderMgr->ReadShaders(line_shader_info, 3);
+    _lineProgram = shaderMgr->ReadShaders(line_shader_info, 3);
     {
-        ShaderProgramUse use_program(_line_program);
-        _line_mvp_loc = glGetUniformLocation(_line_program->GetRes().id, "mvp");
-        _line_parameters_loc = glGetUniformLocation(_line_program->GetRes().id, "line_params");
-        _viewport_loc = glGetUniformLocation(_line_program->GetRes().id, "viewport_params");
-        _line_color_loc = glGetUniformLocation(_line_program->GetRes().id, "line_color");
+        ShaderProgramUse use_program(_lineProgram);
+        _lineMVPLoc = glGetUniformLocation(_lineProgram->GetRes().id, "mvp");
+        _lineParametersLoc = glGetUniformLocation(_lineProgram->GetRes().id, "lineParams");
+        _viewportLoc = glGetUniformLocation(_lineProgram->GetRes().id, "viewportParams");
+        _lineColorLoc = glGetUniformLocation(_lineProgram->GetRes().id, "lineColor");
     }
 
     View::Initialize();
@@ -131,13 +132,13 @@ void BasicGeometryView::Advance(float64 delta_time)
     View::Advance(delta_time);
 
     const Viewport& viewport = _camera->GetViewport();
-    _viewport_params = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
-    _view_mat = _camera->GetViewMatrix();
-    _projection_mat = _camera->GetProjectionMatrix();
-    _mvp_mat = _projection_mat * _view_mat;
+    _viewportParams = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
+    _viewMat = _camera->GetViewMatrix();
+    _projectionMat = _camera->GetProjectionMatrix();
+    _mvpMat = _projectionMat * _viewMat;
 
-    Material::Ptr material = _infinite_plane->GetMeshRenderer()->GetSharedMaterial();
-    material->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvp_mat);
+    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
+    material->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
 }
 
 void BasicGeometryView::RenderImpl()
@@ -152,56 +153,56 @@ void BasicGeometryView::RenderImpl()
 
     // RenderCube();
 
-    if(_current_mesh != nullptr)
+    if(_currentMesh != nullptr)
     {
-        if(_current_mesh_index == 6)
+        if(_currentMeshIndex == 6)
         {
             RenderInfinitePlane();
         }
-        else if(_current_mesh_index == 5)
+        else if(_currentMeshIndex == 5)
         {
-            if(_display_infplane)
+            if(_displayInfiniteplane)
             {
                 RenderInfinitePlane();
             }
             RenderLine(_line);
         }
-        else if(_current_mesh_index == 7)
+        else if(_currentMeshIndex == 7)
         {
-            if(_display_infplane)
+            if(_displayInfiniteplane)
             {
                 RenderInfinitePlane();
             }
             RenderLine(_quadbezierline, 7);
         }
-        else if(_current_mesh_index == 8)
+        else if(_currentMeshIndex == 8)
         {
-            if(_display_infplane)
+            if(_displayInfiniteplane)
             {
                 RenderInfinitePlane();
             }
             RenderLine(_cubicbezierline, 8);
         }
-        else if(_current_mesh_index == 9)
+        else if(_currentMeshIndex == 9)
         {
-            if(_display_infplane)
+            if(_displayInfiniteplane)
             {
                 RenderInfinitePlane();
             }
             RenderLine(_bspline->GetMesh(), 9);
         }
-        else if( _current_mesh_index != -1)
+        else if( _currentMeshIndex != -1)
         {
             // //nurbs surface control line
             // if(_current_mesh_index == 10)
             // {
             //     RenderLine(_nurbs_control_line, 19);
             // }
-            if(_display_infplane)
+            if(_displayInfiniteplane)
             {
                 RenderInfinitePlane();
             }
-            RenderGeometry(_current_mesh, _current_mesh_index, _front_face);
+            RenderGeometry(_currentMesh, _currentMeshIndex, _frontFace);
         }
     }
 }
@@ -224,104 +225,104 @@ void BasicGeometryView::OnGUI()
 
     ImGui::Begin(u8"创建几何形体");
     {
-        if(ImGui::RadioButton(u8"球体(UV Sphere)", &_current_mesh_index, 0))
+        if(ImGui::RadioButton(u8"球体(UV Sphere)", &_currentMeshIndex, 0))
         {
             if(_uvsphere == nullptr)
             {
                 CreateUVSphere();
             }
-            _front_face = GL_CW;
-            _current_mesh = _uvsphere;
+            _frontFace = GL_CW;
+            _currentMesh = _uvsphere;
         }
-        if(ImGui::RadioButton(u8"球体(Nor Cube Sphere)", &_current_mesh_index, 1))
+        if(ImGui::RadioButton(u8"球体(Nor Cube Sphere)", &_currentMeshIndex, 1))
         {
             if(_norcubesphere == nullptr)
             {
                 CreateNorCubeSphere();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _norcubesphere;
+            _frontFace = GL_CCW;
+            _currentMesh = _norcubesphere;
         }
-        if(ImGui::RadioButton(u8"球体(Ico Sphere)", &_current_mesh_index, 2))
+        if(ImGui::RadioButton(u8"球体(Ico Sphere)", &_currentMeshIndex, 2))
         {
             if(_icosphere == nullptr)
             {
                 CreateIcoSphere();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _icosphere;
+            _frontFace = GL_CCW;
+            _currentMesh = _icosphere;
         }
-        if(ImGui::RadioButton(u8"四边形", &_current_mesh_index, 4))
+        if(ImGui::RadioButton(u8"四边形", &_currentMeshIndex, 4))
         {
             if(_quad == nullptr)
             {
                 CreateQuad();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _quad;
+            _frontFace = GL_CCW;
+            _currentMesh = _quad;
         }
-        if(ImGui::RadioButton(u8"立方体", &_current_mesh_index, 3))
+        if(ImGui::RadioButton(u8"立方体", &_currentMeshIndex, 3))
         {
             if(_cube == nullptr)
             {
                 CreateCube();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _cube;
+            _frontFace = GL_CCW;
+            _currentMesh = _cube;
         }
-        if(ImGui::RadioButton(u8"线", &_current_mesh_index, 5))
+        if(ImGui::RadioButton(u8"线", &_currentMeshIndex, 5))
         {
             if(_line == nullptr)
             {
                 CreateLine();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _line;
+            _frontFace = GL_CCW;
+            _currentMesh = _line;
         }
-        if(ImGui::RadioButton(u8"无限平面", &_current_mesh_index, 6))
+        if(ImGui::RadioButton(u8"无限平面", &_currentMeshIndex, 6))
         {
-            if(_infinite_plane == nullptr)
+            if(_infinitePlane == nullptr)
             {
                 CreateInfinitePlane();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _infinite_plane->GetMesh();
+            _frontFace = GL_CCW;
+            _currentMesh = _infinitePlane->GetMesh();
         }
-        if(ImGui::RadioButton(u8"二阶贝塞尔曲线", &_current_mesh_index, 7))
+        if(ImGui::RadioButton(u8"二阶贝塞尔曲线", &_currentMeshIndex, 7))
         {
             if(_quadbezierline == nullptr)
             {
                 CreateQuadBezierLine();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _quadbezierline;
+            _frontFace = GL_CCW;
+            _currentMesh = _quadbezierline;
         }
-        if(ImGui::RadioButton(u8"三阶贝塞尔曲线", &_current_mesh_index, 8))
+        if(ImGui::RadioButton(u8"三阶贝塞尔曲线", &_currentMeshIndex, 8))
         {
             if(_cubicbezierline == nullptr)
             {
                 CreateCubicBezierLine();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _cubicbezierline;
+            _frontFace = GL_CCW;
+            _currentMesh = _cubicbezierline;
         }
-        if(ImGui::RadioButton(u8"B-样条曲线", &_current_mesh_index, 9))
+        if(ImGui::RadioButton(u8"B-样条曲线", &_currentMeshIndex, 9))
         {
             if(_bspline == nullptr)
             {
                 CreateBSpline();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _bspline->GetMesh();
+            _frontFace = GL_CCW;
+            _currentMesh = _bspline->GetMesh();
         }
-        if(ImGui::RadioButton(u8"NURBS-曲面", &_current_mesh_index, 10))
+        if(ImGui::RadioButton(u8"NURBS-曲面", &_currentMeshIndex, 10))
         {
-            if(_nurbs_surface == nullptr)
+            if(_nurbsSurface == nullptr)
             {
                 CreateNURBSSurface();
             }
-            _front_face = GL_CCW;
-            _current_mesh = _nurbs_surface->GetMesh();
+            _frontFace = GL_CCW;
+            _currentMesh = _nurbsSurface->GetMesh();
         }
     }
     ImGui::End();
@@ -331,77 +332,77 @@ void BasicGeometryView::OnGUI()
 
 void BasicGeometryView::OnParametersGUI()
 {
-    if(_current_mesh_index != -1)
+    if(_currentMeshIndex != -1)
     {
         ImGui::Begin(u8"参数设置");
-        ImGui::Checkbox(u8"剔除背面", &_cull_face);
-        ImGui::Checkbox(u8"线框模式", &_polygon_linemode);
-        ImGui::Checkbox(u8"显示平面", &_display_infplane);
+        ImGui::Checkbox(u8"剔除背面", &_cullFace);
+        ImGui::Checkbox(u8"线框模式", &_polygonLineMode);
+        ImGui::Checkbox(u8"显示平面", &_displayInfiniteplane);
 
-        if(_current_mesh_index == 5 ||
-            _current_mesh_index == 7 ||
-            _current_mesh_index == 8 ||
-            _current_mesh_index == 9)
+        if(_currentMeshIndex == 5 ||
+            _currentMeshIndex == 7 ||
+            _currentMeshIndex == 8 ||
+            _currentMeshIndex == 9)
         {
             //if(_current_mesh == _line)
             {
-                ImGui::InputFloat(u8"线宽", &(_line_params.x), 0.01f);
-                ImGui::Checkbox(u8"抗锯齿", &_line_antialiasing);
+                ImGui::InputFloat(u8"线宽", &(_lineParams.x), 0.01f);
+                ImGui::Checkbox(u8"抗锯齿", &_lineAntialiasing);
                 {
-                    if(_line_antialiasing)
+                    if(_lineAntialiasing)
                     {
-                        ImGui::InputFloat(u8"羽化", &(_line_params.y), 0.001f);
-                        _line_params.w = 1.0f;
+                        ImGui::InputFloat(u8"羽化", &(_lineParams.y), 0.001f);
+                        _lineParams.w = 1.0f;
                     }
                     else
                     {
-                        _line_params.w = 0.0f;
+                        _lineParams.w = 0.0f;
                     }
                 }
-                ImGui::InputFloat(u8"连接点限制参数", &(_line_params.z), 0.001f);
-                ImGui::Checkbox(u8"虚线", &_line_isdashed);
+                ImGui::InputFloat(u8"连接点限制参数", &(_lineParams.z), 0.001f);
+                ImGui::Checkbox(u8"虚线", &_lineIsdashed);
                 {
 
                 }
-                ImGui::Checkbox(u8"圆角直线", &_line_type);
+                ImGui::Checkbox(u8"圆角直线", &_lineType);
                 {
 
                 }
 
-                ImGui::DragFloat3(u8"颜色", glm::value_ptr(_line_color), 0.01f, 0.0f, 1.0f);
+                ImGui::DragFloat3(u8"颜色", glm::value_ptr(_lineColor), 0.01f, 0.0f, 1.0f);
             }
         }
-        else if(_current_mesh_index == 0)
+        else if(_currentMeshIndex == 0)
         {
             bool recreate = false;
-            recreate = ImGui::InputFloat(u8"球半径", &_sphere_radius, 0.5f, 0.0f);
-            recreate |= ImGui::InputInt(u8"经线数", &_uvsphere_longitude, 1, 0);
-            recreate |= ImGui::InputInt(u8"纬线数", &_uvsphere_latitude, 1, 0);
+            recreate = ImGui::InputFloat(u8"球半径", &_sphereRadius, 0.5f, 0.0f);
+            recreate |= ImGui::InputInt(u8"经线数", &_uvsphereLongitude, 1, 0);
+            recreate |= ImGui::InputInt(u8"纬线数", &_uvsphereLatitude, 1, 0);
 
             if(recreate)
             {
                 CreateUVSphere();
-                _current_mesh = _uvsphere;
+                _currentMesh = _uvsphere;
             }
         }
-        else if(_current_mesh_index == 1 ||
-            _current_mesh_index == 2)
+        else if(_currentMeshIndex == 1 ||
+            _currentMeshIndex == 2)
         {
             bool recreate = false;
-            recreate = ImGui::InputFloat(u8"球半径", &_sphere_radius, 0.5f, 0.0f);
-            recreate |= ImGui::InputInt(u8"细分次数", &_sphere_subdivide, 1, 0);
+            recreate = ImGui::InputFloat(u8"球半径", &_sphereRadius, 0.5f, 0.0f);
+            recreate |= ImGui::InputInt(u8"细分次数", &_sphereSubdivide, 1, 0);
 
             if(recreate)
             {
-                if(_current_mesh_index == 1)
+                if(_currentMeshIndex == 1)
                 {
                     CreateNorCubeSphere();
-                    _current_mesh = _norcubesphere;
+                    _currentMesh = _norcubesphere;
                 }
-                else if(_current_mesh_index == 2)
+                else if(_currentMeshIndex == 2)
                 {
                     CreateIcoSphere();
-                    _current_mesh = _icosphere;
+                    _currentMesh = _icosphere;
                 }
             }
         }
@@ -423,14 +424,15 @@ void BasicGeometryView::Destroy()
     glDeleteBuffers(20, _vbos);
     glDeleteBuffers(20, _ebos);
 
-    SAFE_DEL_ARR(_line_points);
+    SAFE_DEL_ARR(_linePoints);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
+void BasicGeometryView::CreateGeometry(Mesh::Ptr mesh, uint32 index)
 {
+    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
     //bind vertex array object
     glBindVertexArray(_vaos[index]);
 
@@ -441,7 +443,7 @@ void BasicGeometryView::CreateGeometry(SubMesh::Ptr submesh, uint32 index)
     //bind vertex array buffer, bind buffer data
     glBindBuffer(GL_ARRAY_BUFFER, _vbos[index]);
 
-    glBufferData(GL_ARRAY_BUFFER, submesh->GetVerticeNum() * 12, submesh->GetVerticePos(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh->GetVerticeNum() * 12, mesh->GetVerticePos(), GL_DYNAMIC_DRAW);
     //vertex attribute layout setting
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(0);
@@ -455,7 +457,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
     glDepthFunc(GL_LEQUAL);
 
     glFrontFace(front_face);
-    if(_polygon_linemode)
+    if(_polygonLineMode)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
@@ -464,7 +466,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    if(_cull_face)
+    if(_cullFace)
     {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -482,7 +484,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
     ShaderProgramUse use_program(_program);
 
     //shader uniform setting
-    glUniformMatrix4fv(_mvp_mat_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
+    glUniformMatrix4fv(_mvpMatLoc, 1, GL_FALSE, glm::value_ptr(_mvpMat));
 
     SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 
@@ -503,7 +505,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
  */
 void BasicGeometryView::RenderInfinitePlane()
 {
-    Material::Ptr mat = _infinite_plane->GetMeshRenderer()->GetMaterial();
+    Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
     ShaderProgram::Ptr shader = pass->GetShader();
 
@@ -531,7 +533,7 @@ void BasicGeometryView::RenderInfinitePlane()
     // glBlendFunc(GL_ONE, GL_ONE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    SubMesh::Ptr submesh = _infinite_plane->GetMesh()->GetSubMesh(0);
+    SubMesh::Ptr submesh = _infinitePlane->GetMesh()->GetSubMesh(0);
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[6]);
@@ -559,7 +561,7 @@ void BasicGeometryView::RenderLine(Mesh::Ptr mesh, int32 index)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDisable(GL_CULL_FACE);
-    if(_polygon_linemode)
+    if(_polygonLineMode)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
@@ -568,12 +570,12 @@ void BasicGeometryView::RenderLine(Mesh::Ptr mesh, int32 index)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    ShaderProgramUse use_program(_line_program);
+    ShaderProgramUse use_program(_lineProgram);
     {
-        glUniformMatrix4fv(_line_mvp_loc, 1, GL_FALSE, glm::value_ptr(_mvp_mat));
-        glUniform4fv(_line_parameters_loc, 1, glm::value_ptr(_line_params));
-        glUniform4fv(_viewport_loc, 1, glm::value_ptr(_viewport_params));
-        glUniform3fv(_line_color_loc, 1, glm::value_ptr(_line_color));
+        glUniformMatrix4fv(_lineMVPLoc, 1, GL_FALSE, glm::value_ptr(_mvpMat));
+        glUniform4fv(_lineParametersLoc, 1, glm::value_ptr(_lineParams));
+        glUniform4fv(_viewportLoc, 1, glm::value_ptr(_viewportParams));
+        glUniform3fv(_lineColorLoc, 1, glm::value_ptr(_lineColor));
 
         SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 
@@ -597,10 +599,8 @@ void BasicGeometryView::RenderUVSphere()
 
 void BasicGeometryView::CreateUVSphere() 
 {
-    _uvsphere = Mesh::CreateSphereMeshStandard(_sphere_radius, _uvsphere_longitude, _uvsphere_latitude);
-    SubMesh::Ptr submesh = _uvsphere->GetSubMesh(0);
-
-    CreateGeometry(submesh, 0);
+    _uvsphere = Mesh::CreateSphereMeshStandard(_sphereRadius, _uvsphereLongitude, _uvsphereLatitude);
+    CreateGeometry(_uvsphere, 0);
 }
 
 
@@ -615,10 +615,8 @@ void BasicGeometryView::RenderNorCubeSphere()
 
 void BasicGeometryView::CreateNorCubeSphere() 
 {
-    _norcubesphere = Mesh::CreateSphereMeshNormalizedCube(_sphere_radius, _sphere_subdivide);
-    SubMesh::Ptr submesh = _norcubesphere->GetSubMesh(0);
-
-    CreateGeometry(submesh, 1);
+    _norcubesphere = Mesh::CreateSphereMeshNormalizedCube(_sphereRadius, _sphereSubdivide);
+    CreateGeometry(_norcubesphere, 1);
 }
 
 void BasicGeometryView::RenderIcoSphere()
@@ -628,10 +626,8 @@ void BasicGeometryView::RenderIcoSphere()
 
 void BasicGeometryView::CreateIcoSphere() 
 {
-    _icosphere = Mesh::CreateSphereMeshIcosahedron(_sphere_radius, _sphere_subdivide);
-    SubMesh::Ptr submesh = _icosphere->GetSubMesh(0);
-
-    CreateGeometry(submesh, 2);
+    _icosphere = Mesh::CreateSphereMeshIcosahedron(_sphereRadius, _sphereSubdivide);
+    CreateGeometry(_icosphere, 2);
 }
 
 void BasicGeometryView::RenderCube()
@@ -642,8 +638,7 @@ void BasicGeometryView::RenderCube()
 void BasicGeometryView::CreateCube() 
 {
     _cube = Mesh::CreateCubeMesh(5.0f);
-    SubMesh::Ptr submesh = _cube->GetSubMesh(0);
-    CreateGeometry(submesh, 3);
+    CreateGeometry(_cube, 3);
 }
 
 void BasicGeometryView::RenderQuad()
@@ -654,27 +649,25 @@ void BasicGeometryView::RenderQuad()
 void BasicGeometryView::CreateQuad() 
 {
     _quad = Mesh::CreateQuadMesh(5.0f, 5.0f);
-    SubMesh::Ptr submesh = _quad->GetSubMesh(0);
-    CreateGeometry(submesh, 4);
+    CreateGeometry(_quad, 4);
 }
 
 void BasicGeometryView::CreateLine()
 {
-    _line = Mesh::CreateLineMesh(_line_points, 5);
-    SubMesh::Ptr SubMesh = _line->GetSubMesh(0);
-    CreateGeometry(SubMesh, 5);
+    _line = Mesh::CreateLineMesh(_linePoints, 5);
+    CreateGeometry(_line, 5);
 }
 
 void BasicGeometryView::CreateInfinitePlane()
 {
-    _infinite_plane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
+    _infinitePlane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
     ImageManagerInst imageMgr;
     ImageReadInfo images_info = {"Assets/Textures/grid.png"};
     Image::Ptr image = imageMgr->ReadImage(images_info);
 
     Texture2D::Ptr texture = nullptr;
-    texture = std::make_shared<Texture2D>(true);
+    texture = std::make_shared<Texture2D>(true, true);
     texture->CreateFromImage(image);
 
     texture->SetWrap<WrapParam::WRAP_S>(WrapMode::REPEAT);
@@ -682,12 +675,12 @@ void BasicGeometryView::CreateInfinitePlane()
 
     texture->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
     texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
+    texture->SetAnistropic();
 
-    Material::Ptr material = _infinite_plane->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
     material->SetMainTexture(texture);
 
-    SubMesh::Ptr submesh = _infinite_plane->GetMesh()->GetSubMesh(0);
-    CreateGeometry(submesh, 6);
+    CreateGeometry(_infinitePlane->GetMesh(), 6);
 }
 
 void BasicGeometryView::CreateQuadBezierLine()
@@ -698,8 +691,7 @@ void BasicGeometryView::CreateQuadBezierLine()
     control_points[2] = glm::vec3(5.f, 0.5f, 0.0f);
 
     _quadbezierline = Mesh::CreateQuadraticBezierLine(control_points);
-    SubMesh::Ptr submesh = _quadbezierline->GetSubMesh(0);
-    CreateGeometry(submesh, 7);
+    CreateGeometry(_quadbezierline, 7);
 
     SAFE_DEL_ARR(control_points);
 }
@@ -712,8 +704,7 @@ void BasicGeometryView::CreateCubicBezierLine()
     control_points[3] = glm::vec3(5.f, 4.0f, 0.0f);
 
     _cubicbezierline = Mesh::CreateCubicBezierLine(control_points);
-    SubMesh::Ptr submesh = _cubicbezierline->GetSubMesh(0);
-    CreateGeometry(submesh, 8);
+    CreateGeometry(_cubicbezierline, 8);
 
     SAFE_DEL_ARR(control_points);
 }
@@ -722,16 +713,12 @@ void BasicGeometryView::CreateBSpline()
 {
     if(_bspline == nullptr)
     {
-        _bspline = std::make_shared<BSplineCurve>(5, 3);
-
-        glm::vec3 *control_points = new glm::vec3[5];
-        control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
-        control_points[1] = glm::vec3(-2.5f, 4.0f, 0.0f);
-        control_points[2] = glm::vec3(2.5f, 0.5f, 0.0f);
-        control_points[3] = glm::vec3(5.f, 4.0f, 0.0f);
-        control_points[4] = glm::vec3(3.f, 8.0f, 0.0f);
-
-        _bspline->SetControlPoints(control_points, 5);
+        glm::vec4 *control_points = new glm::vec4[5];
+        control_points[0] = glm::vec4(-5.f, 0.5f, 0.0f, 1.0f);
+        control_points[1] = glm::vec4(-2.5f, 4.0f, 0.0f, 1.0f);
+        control_points[2] = glm::vec4(2.5f, 0.5f, 0.0f, 1.0f);
+        control_points[3] = glm::vec4(5.f, 4.0f, 0.0f, 1.0f);
+        control_points[4] = glm::vec4(3.f, 8.0f, 0.0f, 1.0f);
 
         Knot* knots = new Knot[9];
         // knots[0].u = 0.0f;
@@ -757,13 +744,10 @@ void BasicGeometryView::CreateBSpline()
         knots[3].multiplity = 3;
         knots[8].multiplity = 3;
 
-        _bspline->SetKnots(knots, 9);
-
-        _bspline->GenerateCurve();
+        _bspline = std::make_shared<BSplineCurve>(5, 3, 9, knots, control_points);
 
         Mesh::Ptr mesh = _bspline->GetMesh();
-        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
-        CreateGeometry(submesh, 9);
+        CreateGeometry(mesh, 9);
 
         SAFE_DEL_ARR(control_points);
         SAFE_DEL_ARR(knots);
@@ -775,10 +759,8 @@ void BasicGeometryView::CreateBezierSuface() {}
 
 void BasicGeometryView::CreateNURBSSurface()
 {
-    if(_nurbs_surface == nullptr)
+    if(_nurbsSurface == nullptr)
     {
-        _nurbs_surface = std::make_shared<NURBSSurface>(5, 3, 5, 3);
-
         glm::vec4* control_points = new glm::vec4[25];
 
         int32 n = 0;
@@ -819,8 +801,6 @@ void BasicGeometryView::CreateNURBSSurface()
         control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
         control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
-        _nurbs_surface->SetControlPoints(control_points, 25);
-
         Knot* u_knots = new Knot[9];
         u_knots[0].u = 0.0f;
         u_knots[8].u = 1.0f;
@@ -834,7 +814,6 @@ void BasicGeometryView::CreateNURBSSurface()
 
         u_knots[3].multiplity = 3;
         u_knots[8].multiplity = 3;
-        _nurbs_surface->SetUKnots(u_knots, 9);
 
         Knot* v_knots = new Knot[9];
         v_knots[0].u = 0.0f;
@@ -849,13 +828,16 @@ void BasicGeometryView::CreateNURBSSurface()
 
         v_knots[3].multiplity = 3;
         v_knots[8].multiplity = 3;
-        _nurbs_surface->SetVKnots(v_knots, 9);
 
-        _nurbs_surface->GenerateMesh();
-        Mesh::Ptr mesh = _nurbs_surface->GetMesh();
-        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+        _nurbsSurface = std::make_shared<NURBSSurface>(5, 3, 5, 3, control_points, u_knots, v_knots);
 
-        CreateGeometry(submesh, 10);
+        // _nurbsSurface->SetControlPoints(control_points, 25);
+        // _nurbsSurface->SetUKnots(u_knots, 9);
+        // _nurbsSurface->SetVKnots(v_knots, 9);
+        // _nurbsSurface->GenerateMeshInternal();
+
+        Mesh::Ptr mesh = _nurbsSurface->GetMesh();
+        CreateGeometry(mesh, 10);
 
         SAFE_DEL_ARR(control_points);
         SAFE_DEL_ARR(u_knots);

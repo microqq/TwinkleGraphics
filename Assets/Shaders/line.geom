@@ -5,22 +5,22 @@ layout (lines_adjacency) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 //flat: 中心直线不需要插值运算
-flat out vec2 l_start;
-flat out vec2 l_end;
+flat out vec2 lineStart;
+flat out vec2 lineEnd;
 
 uniform mat4 mvp;
-uniform vec4 line_params;   //x:thickness, y:feather, z:miterlimit, w:aspect
-uniform vec4 viewport_params;
+uniform vec4 lineParams;   //x:thickness, y:feather, z:miterlimit, w:aspect
+uniform vec4 viewportParams;
 
-vec4 generate_vertex(vec4 p1, vec4 p2, vec4 p, float orientation)
+vec4 generateVertex(vec4 p1, vec4 p2, vec4 p, float orientation)
 {
     //控制透视投影线的宽度是否固定（后面再将该变量提出去）
     float var_line_width = 0.0f;
 
-    float thickness = line_params.x;
-    float feather = line_params.y;
-    float miterlimit = line_params.z;
-    float aspect = viewport_params.z;
+    float thickness = lineParams.x;
+    float feather = lineParams.y;
+    float miterlimit = lineParams.z;
+    float aspect = viewportParams.z;
 
     //计算投影后点的坐标：透视修正，并根据屏幕宽高比拉伸
     vec4 p_cvv = mvp * p;
@@ -111,7 +111,7 @@ void main()
     vec4 p2 = gl_in[2].gl_Position;
     vec4 p3 = gl_in[3].gl_Position;
 
-    float aspect = viewport_params.z;
+    float aspect = viewportParams.z;
     vec4 p1_cvv = mvp * p1;
     vec2 p1_screen = (p1_cvv.xy / p1_cvv.w) * 0.5f + 0.5f;
     p1_screen.x *= aspect;
@@ -121,25 +121,25 @@ void main()
     p2_screen.x *= aspect;
 
     //计算中心直线
-    l_start = p1_screen;
-    l_end = p2_screen;
+    lineStart = p1_screen;
+    lineEnd = p2_screen;
     //计算直线三角化的新顶点
-    gl_Position = generate_vertex(p0, p2, p1, 1.0f);
+    gl_Position = generateVertex(p0, p2, p1, 1.0f);
     EmitVertex();
 
-    l_start = p1_screen;
-    l_end = p2_screen;
-    gl_Position = generate_vertex(p1, p3, p2, 1.0f);
+    lineStart = p1_screen;
+    lineEnd = p2_screen;
+    gl_Position = generateVertex(p1, p3, p2, 1.0f);
     EmitVertex();
 
-    l_start = p1_screen;
-    l_end = p2_screen;
-    gl_Position = generate_vertex(p0, p2, p1, -1.0f);
+    lineStart = p1_screen;
+    lineEnd = p2_screen;
+    gl_Position = generateVertex(p0, p2, p1, -1.0f);
     EmitVertex();
 
-    l_start = p1_screen;
-    l_end = p2_screen;
-    gl_Position = generate_vertex(p1, p3, p2, -1.0f);
+    lineStart = p1_screen;
+    lineEnd = p2_screen;
+    gl_Position = generateVertex(p1, p3, p2, -1.0f);
     EmitVertex();
 
     EndPrimitive();

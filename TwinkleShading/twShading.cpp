@@ -26,6 +26,7 @@ void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos);
 void CursorEnterPosCallback(GLFWwindow* window, int32 entered);
 void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy);
 void WindowSizeCallback(GLFWwindow* window, int, int);
+void KeyCallback(GLFWwindow* window, int, int, int, int);
 
 int main(int, char **)
 {
@@ -49,6 +50,7 @@ int main(int, char **)
     mainWindow.SetCursorPosEnterCallback(CursorEnterPosCallback);
     mainWindow.SetScrollCallback(ScrollCallback);
     mainWindow.SetWindowSizeCallback(WindowSizeCallback);
+    mainWindow.SetKeyCallback(KeyCallback);
 
     //main loop
     mainWindow.Run();
@@ -131,4 +133,9 @@ void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy)
 void WindowSizeCallback(GLFWwindow* window, int w, int h)
 {
     mainWindow.WindowSizeCallback(w, h);
+}
+
+void KeyCallback(GLFWwindow* window, int key, int scannode, int action, int mods)
+{
+    mainWindow.KeyCallBack(key, scannode, action, mods);
 }

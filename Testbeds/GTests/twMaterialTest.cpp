@@ -40,8 +40,13 @@ TEST(MaterialTests, UniformSetting)
     // material->SetMainTexture(texture);
 
     // material->SetSimpleUniformValue<bool, 1>("light_on", true);
+<<<<<<< HEAD
     // vec4 tint_color;
     // material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
+=======
+    // vec4 tintColor;
+    // material->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+>>>>>>> twinkle_shading
 
     SimpleUniform<float32, 1> simpleuniform("test");
     simpleuniform.u0 = 5.0f;
@@ -63,12 +68,21 @@ TEST(MaterialTests, UniformSetting)
     Material::Ptr material = std::make_shared<Material>();
     material->AddRenderPass(pass0);
 
+<<<<<<< HEAD
     vec4 tint_color(2.0f, 3.0f, 4.0f, 5.0f);
     material->SetVecUniformValue<float32, 4>("tint_color", tint_color);
 
     //material2
     Material::Ptr material2 = std::make_shared<Material>(*(material.get()));
     const VecUniform<float32, 4> *cast_vec4 = dynamic_cast<const VecUniform<float32, 4>* >(material2->GetUniform("tint_color"));
+=======
+    vec4 tintColor(2.0f, 3.0f, 4.0f, 5.0f);
+    material->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+
+    //material2
+    Material::Ptr material2 = std::make_shared<Material>(*(material.get()));
+    const VecUniform<float32, 4> *cast_vec4 = dynamic_cast<const VecUniform<float32, 4>* >(material2->GetUniform("tintColor"));
+>>>>>>> twinkle_shading
     ASSERT_EQ(cast_vec4->vector, vec4(2.0f, 3.0f, 4.0f, 5.0f));
 
     ImageData data = GetImageData();

@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(TwinkleGraphics VERSION 0.1.0)
 
+option(USE_DEBUG "Enter debug mode" OFF)
+option(ENABLE_TEMPORARY "Enter debug mode" OFF)
+
+if(USE_DEBUG)
+    add_definitions(-D_DEBUG)
+endif()
+
+if(ENABLE_TEMPORARY)
+    add_definitions(-DTEMPORARY_USE)
+endif()
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(LLVM REQUIRED CONFIG)
     message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
@@ -38,15 +49,19 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 # including path
 include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/ThirdParty
+    ${PROJECT_SOURCE_DIR}/ThirdParty/dirent/include
     ${PROJECT_SOURCE_DIR}/ThirdParty/vermilion
-    ${PROJECT_SOURCE_DIR}/Common
+    ${PROJECT_SOURCE_DIR}/Iinclude/Common
+    ${PROJECT_SOURCE_DIR}/Include/UI
     ${PROJECT_SOURCE_DIR}/TwinkleShading
 )
 
 # add subdirectory
 add_subdirectory(ThirdParty/imgui)
+add_subdirectory(ThirdParty/ImGuiFileDialog)
 add_subdirectory(ThirdParty/vermilion)
-add_subdirectory(Common)
+add_subdirectory(Source/Common)
+add_subdirectory(Source/UI)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
 

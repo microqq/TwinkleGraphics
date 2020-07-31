@@ -1,6 +1,7 @@
 #version 330 core
+#extension GL_ARB_shading_language_include : require
 
-layout (location = 0) in vec3 position;
+#include </GLSLIncludes/vertexLayout.glsl>
 
 out vec3 texcoord;
 
@@ -8,6 +9,6 @@ uniform mat4 mvp;
 
 void main()
 {
-    texcoord = position;
-    gl_Position = (mvp * vec4(position, 1.0f)).xyww;
+    texcoord = vertexPos;
+    gl_Position = (mvp * vec4(vertexPos, 1.0f)).xyww;
 }
