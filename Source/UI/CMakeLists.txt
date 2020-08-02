@@ -3,10 +3,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 SET(UiUtil_SRC
     ${CMAKE_CURRENT_LIST_DIR}/twUiUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twHierarchy.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twInspector.cpp
 )
 
 add_library(twUiUtil SHARED ${UiUtil_SRC})
 target_include_directories(twUiUtil PUBLIC 
+    ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/imgui
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Common
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/UI
 )
