@@ -29,7 +29,7 @@ public:
         , _localMatrix(glm::identity<glm::mat4>())
         , _worldMatrix(glm::identity<glm::mat4>())
         , _orientation(glm::identity<glm::quat>())
-        , _position()
+        , _position(glm::vec3(0.0f, 0.0f, 0.0f))
         , _scale(glm::vec3(1.0f, 1.0f, 1.0f))
         , _parent(nullptr)
         , _localDirty(true)

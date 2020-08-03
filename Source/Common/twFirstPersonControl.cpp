@@ -58,5 +58,4 @@ namespace TwinkleGraphics
     void FirstPersonControl::HandleKeyRelease(int32 key, int32 scannode, int32 action, int32 mods)
     {
     }
-
 } // namespace TwinkleGraphics

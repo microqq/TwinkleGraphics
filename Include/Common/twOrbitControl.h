@@ -18,7 +18,7 @@ public:
 
     void SetMaxDistance(float32 max_distance) { _maxDistance = max_distance; _dirty = true; }
     void SetMinDistance(float32 min_distance) { _minDistance = min_distance; _dirty = true; }
-    void SetDistance(float32 distance) { _distance = distance; _dirty = true; }
+    void SetDistance(float32 distance) { _distance = distance; _camera->Translate(glm::vec3(0.0f, 0.0f, _distance)); _dirty = true; }
     void SetCenter(glm::vec3 center) { _center = center; _dirty = true; }
     void SetZoomSpeed(float32 speed) { _zoomSpeed = speed; _dirty = true; }
     void SetRadius(float32 radius) { _radius = radius; _dirty = true; }
@@ -40,9 +40,9 @@ public:
 
 protected:
     void Initialize();
-    void Zoom(glm::vec2 factor);
-    void Pan(glm::vec2 p1, glm::vec2 p2);
-    void Trackball(glm::vec2 p1, glm::vec2 p2);
+    virtual void Zoom(glm::vec2 factor);
+    virtual void Pan(glm::vec2 p1, glm::vec2 p2);
+    virtual void Trackball(glm::vec2 p1, glm::vec2 p2);
 
     Transform::Ptr _transform;
     Transform::Ptr _target;

@@ -50,8 +50,9 @@ void TextureExploreView::Initialize()
     this->SetViewCamera(camera);
     
     FirstPersonControl::Ptr cameraControl = std::make_shared<FirstPersonControl>(camera);
-    cameraControl->SetMinDistance(1.0f);
+    cameraControl->SetMinDistance(-5000.0f);
     cameraControl->SetMaxDistance(5000.0f);
+    cameraControl->SetDistance(25.0f);
     this->SetCameraControl(cameraControl);
 
     //create vertex array object
