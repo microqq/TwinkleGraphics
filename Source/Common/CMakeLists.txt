@@ -36,6 +36,7 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twSceneManagement.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRenderTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twHWBuffers.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twConsoleLog.cpp
 )
 
 SET(Util_SRC

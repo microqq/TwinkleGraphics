@@ -4,6 +4,7 @@
 #include <array>
 
 #include "twShader.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -380,6 +381,7 @@ namespace TwinkleGraphics
 #ifdef _DEBUG
         std::cout << "Shader: Shader Program " << _res.id << "(hash: " << _res.hash << ")"
                   << " deconstruct.\n";
+        // Console::LogError("Shader: Shader Program ", glm::uint32(_res.id), "(hash: ", _res.hash, ") deconstruct.\n");
 #endif
 
         _shaders.clear();

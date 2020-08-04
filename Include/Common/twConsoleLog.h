@@ -2,7 +2,7 @@
 #define TW_CONSOLELOG_H
 
 #ifdef _WIN32
-    #include <windows.h>
+#include <windows.h>
 #endif
 
 #include <iostream>
@@ -53,7 +53,14 @@ namespace TwinkleGraphics
             Log(std::forward<Args>(args)...);
         }
 
-        extern "C" void SetStdoutColor(Color color);
+#ifdef __cplusplus
+        extern "C"
+        {
+#endif
+            void SetStdoutColor(Color color);
+#ifdef __cplusplus
+        }
+#endif
 
         template <class... Args>
         void LogInfo(Args &&... args)
