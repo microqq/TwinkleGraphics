@@ -105,10 +105,6 @@ namespace TwinkleGraphics
                         tex_slot.second.UnBind();
                     }
                 }
-                // else
-                // {
-                //     std::cout << "nothing rendererd..." << std::endl;
-                // }
             }
         }
     }

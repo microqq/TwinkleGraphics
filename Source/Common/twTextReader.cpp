@@ -1,5 +1,6 @@
 
 #include "twTextReader.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -20,9 +21,7 @@ ReadResult<TextSource::Ptr> TextReader::Read(const char *filename, ReaderOption 
     fp = fopen(filename, "rb");
     if (fp)
     {
-#ifdef _DEBUG
-        std::cout << "Text: TextReader open text file " << filename << " successed" << std::endl;
-#endif
+        Console::LogInfo("Text: TextReader open text file ", filename, " successed.\n");
 
         //opengl programing guide 8th source code
         //read source
@@ -42,6 +41,8 @@ ReadResult<TextSource::Ptr> TextReader::Read(const char *filename, ReaderOption 
 
         return ReadResult<TextSource::Ptr>(textSource, ReadResult<TextSource::Ptr>::Status::SUCCESS);
     }
+
+    Console::LogWarning("Text: TextReader open text file ", filename, " failed.\n");
 
     return ReadResult<TextSource::Ptr>(ReadResult<TextSource::Ptr>::Status::FAILED);
 }

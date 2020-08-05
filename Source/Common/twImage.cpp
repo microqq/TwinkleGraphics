@@ -1,13 +1,13 @@
 #include "FreeImage.h"
 
 #include "twImage.h"
+#include "twConsoleLog.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	bool
-	vglLoadDDS(const char *filename, vglImageData *image);
+	bool vglLoadDDS(const char *filename, vglImageData *image);
 #ifdef __cplusplus
 }
 #endif
@@ -64,16 +64,12 @@ namespace TwinkleGraphics
 		vglImageData data;
 		if (vglLoadDDS(filename, &data))
 		{
-#ifdef _DEBUG
-			std::cout << "Image: Load image " << filename << " successed." << std::endl;
-#endif
+			Console::LogInfo("Image: Load image ", filename, " successed.\n");
 			Image::Ptr image = std::make_shared<Image>(filename, data);
 			return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::SUCCESS);
 		}
 
-#ifdef _DEBUG
-		std::cout << "Image: Load image " << filename << " failed" << std::endl;
-#endif
+		Console::LogWarning("Image: Load image ", filename, " failed.\n");
 
 		return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
 	}
@@ -104,9 +100,7 @@ namespace TwinkleGraphics
 		//if the image failed to load, return failure
 		if (!dib)
 		{
-#ifdef _DEBUG
-			std::cout << "Image: Load image " << filename << " failed." << std::endl;
-#endif
+			Console::LogWarning("Image: Load image ", filename, " failed.\n");
 			return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
 		}
 
@@ -121,9 +115,7 @@ namespace TwinkleGraphics
 		//if this somehow one of these failed (they shouldn't), return failure
 		if ((bits == 0) || (width == 0) || (height == 0))
 		{
-#ifdef _DEBUG
-			std::cout << "Image: Load image " << filename << " failed(...)." << std::endl;
-#endif
+			Console::LogWarning("Image: Load image ", filename, " failed(...).\n");
 			return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
 		}
 
@@ -145,9 +137,7 @@ namespace TwinkleGraphics
 		//Free FreeImage's copy of the data
 		FreeImage_Unload(dib);
 
-#ifdef _DEBUG
-		std::cout << "Image: Load image " << filename << " successed." << std::endl;
-#endif
+		Console::LogInfo("Image: Load image ", filename, " successed.\n");
 
 		//return success
 		return ReadResult<Image::Ptr>(ret_image, ReadResult<Image::Ptr>::Status::SUCCESS);

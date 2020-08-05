@@ -97,7 +97,7 @@ void DynLib::Load()
     bool name_correct = false;
 #ifdef __linux__
     name_correct = _name.find(".so") != std::string::npos;
-#elif _WIN32 || _WIN64
+#elif _WIN32
     name_correct = _name.substr(_name.find_last_of(".") + 1) == "dll";
 #endif
 
@@ -123,7 +123,7 @@ void DynLib::Unload()
 
     bool success = !(DYNLIB_UNLOAD(_handle));
 #ifdef __linux__  
-#elif _WIN32 || _WIN64
+#elif _WIN32
 #endif    
 
     if(!success)

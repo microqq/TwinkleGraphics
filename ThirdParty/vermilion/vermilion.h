@@ -5,11 +5,9 @@
 #include <string.h>
 #include <glew/glew.h>
 
-
 #ifdef _DEBUG
     #include <iostream>
 #endif
-
 
 #define BUFFER_OFFSET(a) ((void*)(a))
 

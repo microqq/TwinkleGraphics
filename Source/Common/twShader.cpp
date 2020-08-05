@@ -113,10 +113,7 @@ namespace TwinkleGraphics
 
     Shader::~Shader()
     {
-#ifdef _DEBUG
-        std::cout << "Shader: Shader " << _res.id << "(hash: " << _res.hash << ")"
-                  << " deconstruct.\n";
-#endif
+        Console::LogInfo("Shader: Shader ", _res.id, "(hash: ", _res.hash, ") deconstruct.\n");
 
         if (_res.id != GL_NONE)
         {
@@ -249,7 +246,7 @@ namespace TwinkleGraphics
 
             GLchar *log = new GLchar[len + 1];
             glGetShaderInfoLog(_res.id, len, &len, log);
-            std::cerr << "Shader: Shader " << _res.id << "  compilation failed: " << log << std::endl;
+            Console::LogError("Shader: Shader ", _res.id, "  compilation failed: ", log, "\n");
             SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
@@ -287,7 +284,6 @@ namespace TwinkleGraphics
                 position = input.tellg();
                 versionMatch = true;
                 continue;
-                // std::cout << &out[0] << "   " << strlen(&out[0]) << "   " << input.tellg() <<  std::endl;
             }
 
             if(std::regex_search(extString, sm, extensionRegex))
@@ -308,7 +304,6 @@ namespace TwinkleGraphics
 
             }
             _source->content = preStr + postStr;
-            // std::cout << _source->content << std::endl;
         }
     }
 
@@ -347,10 +342,7 @@ namespace TwinkleGraphics
                 ParseShaderIncludes(includeSource->content.c_str());
                 _includeSouces.push_back(includeSource);
 
-#ifdef _DEBUG
-                // std::cout << &out[0] << "   " << strlen(&out[0]) << "   " << input.tellg() <<  std::endl;
-                std::cout << "ShaderInclude: " << "Shader " << _res.id << " include " << sm.str() <<  std::endl;
-#endif
+                Console::LogInfo("ShaderInclude: Shader ", _res.id, " include ", sm.str(), "\n");
             }
         }
     }
@@ -378,11 +370,7 @@ namespace TwinkleGraphics
 
     ShaderProgram::~ShaderProgram()
     {
-#ifdef _DEBUG
-        std::cout << "Shader: Shader Program " << _res.id << "(hash: " << _res.hash << ")"
-                  << " deconstruct.\n";
-        // Console::LogError("Shader: Shader Program ", glm::uint32(_res.id), "(hash: ", _res.hash, ") deconstruct.\n");
-#endif
+        Console::LogInfo("Shader: Shader Program ", _res.id, "(hash: ", _res.hash, ") deconstruct\n");
 
         _shaders.clear();
         glDeleteProgram(_res.id);
@@ -414,7 +402,7 @@ namespace TwinkleGraphics
 
             GLchar *log = new GLchar[len + 1];
             glGetProgramInfoLog(_res.id, len, &len, log);
-            std::cerr << "Shader: Shader linking failed: " << log << std::endl;
+            Console::LogError("Shader: Shader linking failed: ", log, "\n");
             SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
@@ -533,9 +521,7 @@ namespace TwinkleGraphics
         fp = fopen(filename, "rb");
         if (fp)
         {
-#ifdef _DEBUG
-            std::cout << "Shader: ShaderReader open shader file " << filename << " successed" << std::endl;
-#endif
+            Console::LogInfo("Shader: ShaderReader open shader file ", filename, " successed.\n");
 
             //opengl programing guide 8th source code
             //read source
@@ -572,7 +558,7 @@ namespace TwinkleGraphics
         else
         {
 #ifdef _DEBUG
-            std::cerr << "Shader: ShaderReader open shader file " << filename << " failed" << std::endl;
+            Console::LogError("Shader: ShaderReader open shader file ", filename, " failed\n");
 #endif
             return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
         }

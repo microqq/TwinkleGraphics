@@ -71,12 +71,14 @@ enum class FrustumType
     ORTHOGRAPHIC
 };
 
-class Frustum
+class Frustum : public Object
 {
 public:
+    typedef std::shared_ptr<Frustum> Ptr;
+
     Frustum(float32 fov, float32 aspect, float32 near, float32 far);
     Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far);
-    ~Frustum()
+    virtual ~Frustum()
     {}
 
 protected:
@@ -90,14 +92,14 @@ protected:
 };
 
 
-class Camera final : public Object, public Frustum, public ISceneNode
+class Camera : public Frustum, public ISceneNode
 {
 public:
     typedef std::shared_ptr<Camera> Ptr;
 
     Camera(Viewport viewport, float32 fov, float32 near, float32 far);
     Camera(Viewport viewport, float32 near, float32 far);
-    ~Camera();
+    virtual ~Camera();
 
     void LookAt(glm::vec3 center, glm::vec3 up) { _transform->LookAt(center, up); }
     void SetPosition(glm::vec3 position) { _transform->SetPosition(position); }

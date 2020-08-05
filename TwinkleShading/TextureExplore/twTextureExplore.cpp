@@ -245,7 +245,7 @@ void TextureExploreView::Advance(float64 delta_time)
         }
     }
 
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
     _updateTime += 0.02f;
 #elif defined __linux__
     _update_time += 0.0002f;
@@ -604,9 +604,8 @@ void TextureExploreView::CreateSprite()
         // glm::vec2 size = glm::vec2(texture->GetWidth(0), texture->GetHeight(0)) / (float32)100.0f * 2.0f;
         _sprite = std::make_shared<Sprite>(texture);
         // _sprite = std::make_shared<Sprite>(texture, size);
+        CreateGeometry(_sprite, 1);
     }
-
-    CreateGeometry(_sprite, 1);
 }
 
 void TextureExploreView::CreateSprite1D()

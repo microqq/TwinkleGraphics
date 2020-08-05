@@ -4,6 +4,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "twMainWindow.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -197,9 +198,12 @@ void GLFWMainWindow::Initialise()
     if (GLEW_OK != err)
     {
         /* Problem: glewInit failed, something is seriously wrong. */
-        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+        // fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+
+        Console::LogError("Error:", glewGetErrorString(err), "\n");
     }
-    fprintf(stdout, "Status:Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    // fprintf(stdout, "Status:Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    Console::LogInfo("Status:Using GLEW-", glewGetString(GLEW_VERSION), "\n");
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -239,29 +243,29 @@ void GLFWMainWindow::Initialise()
         GLExtensions.push_back(std::string(reinterpret_cast<const char*>(bytes)));
     }
 
-    std::cout << "Vendor:" << vendor <<std::endl;
-    std::cout << "Render:" << renderer <<std::endl;
-    std::cout << "OGL Version:" << version <<std::endl;
+    Console::LogInfo("Vendor:" + std::string(vendor) + "\n");
+    Console::LogInfo("Render:", renderer, "\n");
+    Console::LogInfo("OGL Version:", version, "\n");
 
     int attrib_counts;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attrib_counts);
-    std::cout << "GL_MAX_VERTEX_ATTRIBS:" << attrib_counts << std::endl;
+    Console::LogInfo("GL_MAX_VERTEX_ATTRIBS:", attrib_counts, "\n");
 
     int32 texunit_count;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texunit_count);
-    std::cout << "GL_MAX_TEXTURE_IMAGE_UNITS:" << texunit_count << std::endl;
+    Console::LogInfo("GL_MAX_TEXTURE_IMAGE_UNITS:", texunit_count, "\n");
 
     int32 combinedtexunit_count;
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedtexunit_count);
-    std::cout << "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:" << combinedtexunit_count << std::endl;
+    Console::LogInfo("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:", combinedtexunit_count, "\n");
 
     int32 max_colorattachment_count;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_colorattachment_count);
-    std::cout << "GL_MAX_COLOR_ATTACHMENTS:" << max_colorattachment_count << std::endl;
+    Console::LogInfo("GL_MAX_COLOR_ATTACHMENTS:", max_colorattachment_count, "\n");
 
     int32 max_drawbuffers_count;
     glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_drawbuffers_count);
-    std::cout << "GL_MAX_DRAW_BUFFERS:" << max_drawbuffers_count << std::endl;
+    Console::LogInfo("GL_MAX_DRAW_BUFFERS:", max_drawbuffers_count, "\n");
 #endif
     
 

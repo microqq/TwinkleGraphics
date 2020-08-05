@@ -4,28 +4,29 @@
 namespace TwinkleGraphics
 {
 
-Frustum::Frustum(float32 fov, float32 aspect, float32 near, float32 far)
-    : _frustumType(FrustumType::PERSPECTIVE)
+Frustum::Frustum(float32 fov, float32 aspect, float32 n, float32 f)
+    : Object()
+    , _frustumType(FrustumType::PERSPECTIVE)
     , _fov(fov)
     , _aspect(aspect)
-    , _near(near)
-    , _far(far)
+    , _near(n)
+    , _far(f)
 {
-    _projectionMatrix = glm::perspective(fov, aspect, near, far);
+    _projectionMatrix = glm::perspective(fov, aspect, _near, _far);
 }
 
-Frustum::Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far)
-    : _frustumType(FrustumType::ORTHOGRAPHIC)
-    , _aspect((right - left) / (top - bottom))
-    , _near(near)
-    , _far(far)
-{
-    _projectionMatrix = glm::ortho(left, right, bottom, top, near, far);
-}
-
-Camera::Camera(Viewport viewport, float32 fov, float32 near, float32 far)
+Frustum::Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 n, float32 f)
     : Object()
-    , Frustum(fov, viewport.AspectRatio(), near, far)
+    , _frustumType(FrustumType::ORTHOGRAPHIC)
+    , _aspect((right - left) / (top - bottom))
+    , _near(n)
+    , _far(n)
+{
+    _projectionMatrix = glm::ortho(left, right, bottom, top, _near, _far);
+}
+
+Camera::Camera(Viewport viewport, float32 fov, float32 n, float32 f)
+    : Frustum(fov, viewport.AspectRatio(), n, f)
     , ISceneNode()
     , _viewport(viewport)
     , _rendertarget(nullptr)
@@ -35,9 +36,12 @@ Camera::Camera(Viewport viewport, float32 fov, float32 near, float32 far)
 {
 }
 
-Camera::Camera(Viewport viewport, float32 near, float32 far)
-    : Object()
-    , Frustum(-viewport.Width() * 0.5f, viewport.Width() * 0.5f, -viewport.Height() * 0.5f, viewport.Height() * 0.5f, near, far)
+Camera::Camera(Viewport viewport, float32 n, float32 f)
+    : Frustum(-viewport.Width() * 0.5f
+            , viewport.Width() * 0.5f
+            , -viewport.Height() * 0.5f
+            , viewport.Height() * 0.5f
+            , n, f)
     , ISceneNode()
     , _viewport(viewport)
     , _rendertarget(nullptr)

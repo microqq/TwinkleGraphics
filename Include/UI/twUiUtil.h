@@ -14,15 +14,15 @@ namespace TwinkleGraphics
     };
     extern FileDialogSelectInfo SceneNodeFileSelectInfo;
 
-#ifdef __cplusplus
-    extern "C"
-    {
-#endif
+// #ifdef __cplusplus
+//     extern "C"
+//     {
+// #endif
         __TWExport void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo);
         __TWExport void MainMenuBar();
-#ifdef __cplusplus
-    }
-#endif
+// #ifdef __cplusplus
+//     }
+// #endif
 
 } // namespace TwinkleGraphics
 #endif

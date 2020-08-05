@@ -1,4 +1,13 @@
-
+#if defined _WIN32
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    #include <windows.h>
+#ifdef __cplusplus
+}
+#endif
+#endif
 
 #include "twConsoleLog.h"
 
@@ -6,16 +15,23 @@ namespace TwinkleGraphics
 {
     namespace Console
     {
-        void SetStdoutColor(Color color)
+
+        void SetConsoleColor(Color& c)
         {
-#if defined _WIN32 || _WIN64
+#ifdef _WIN32            
             HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-            SetConsoleTextAttribute(hStdout, (WORD)(color));
+            SetConsoleTextAttribute(hStdout, (WORD)c);
 #elif defined __linux__
 
 #endif
         }
 
+        void ResetConsoleColor()
+        {
+            Color c = Color::WHITE;
+            SetConsoleColor(c);
+        }
     } // namespace Console
-
+    
 } // namespace TwinkleGraphics
+    
