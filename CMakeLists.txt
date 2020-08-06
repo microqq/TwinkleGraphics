@@ -53,6 +53,7 @@ include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/ThirdParty/vermilion
     ${PROJECT_SOURCE_DIR}/Iinclude/Common
     ${PROJECT_SOURCE_DIR}/Include/UI
+    ${PROJECT_SOURCE_DIR}/Include/Event
     ${PROJECT_SOURCE_DIR}/TwinkleShading
 )
 
@@ -62,6 +63,7 @@ add_subdirectory(ThirdParty/ImGuiFileDialog)
 add_subdirectory(ThirdParty/vermilion)
 add_subdirectory(Source/Common)
 add_subdirectory(Source/UI)
+add_subdirectory(Source/Event)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
 

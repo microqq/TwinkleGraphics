@@ -9,10 +9,10 @@
 
 namespace TwinkleGraphics
 {
-        // #ifdef __cplusplus
-        //     extern "C"
-        //     {
-        // #endif
+#ifdef __cplusplus
+        extern "C"
+        {
+#endif
 
 #pragma region CreateSceneNode
         __TWExport Triangle *CreateTriangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2);
@@ -35,22 +35,11 @@ namespace TwinkleGraphics
 #pragma endregion CreateSceneNode
 
 #pragma region HashFunction // https://www.partow.net/programming/hashfunctions/#DJBHashFunction
-        __TWExport unsigned int DJBHash(const char *str, unsigned int length)
-        {
-                unsigned int hash = 5381;
-                unsigned int i = 0;
-
-                for (i = 0; i < length; ++str, ++i)
-                {
-                        hash = ((hash << 5) + hash) + (*str);
-                }
-
-                return hash;
-        }
+        __TWExport unsigned int DJBHash(const char *str, unsigned int length);
 #pragma endregion HashFunction
-        // #ifdef __cplusplus
-        //     }
-        // #endif
+#ifdef __cplusplus
+        }
+#endif
 } // namespace TwinkleGraphics
 
 #endif
