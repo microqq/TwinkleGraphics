@@ -2,8 +2,6 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 SET(EVENT_SRC
-    ${CMAKE_CURRENT_LIST_DIR}/twEvent.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twEventHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twEventManager.cpp
 )
 
