@@ -7,8 +7,6 @@
 // //include gl after glew
 // #include <GL/gl.h>
 
-// #include "twCommon.h"
-
 #include "twCamera.h"
 #include "twCameraControl.h"
 #include "twSceneManager.h"

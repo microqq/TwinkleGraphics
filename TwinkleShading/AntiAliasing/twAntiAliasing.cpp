@@ -7,6 +7,9 @@
 #include "twRenderTexture.h"
 #include "twMaterialInstance.h"
 
+#include "twEventHandler.h"
+#include "twConsoleLog.h"
+
 namespace TwinkleGraphics
 {
 AntiAliasing::AntiAliasing(std::string& name)
@@ -74,6 +77,23 @@ void AntiAliasingView::Initialize()
     }
 
     View::Initialize();
+
+    EventHandler<BaseEventArgs::Ptr>::Ptr handler = std::make_shared<EventHandler<BaseEventArgs::Ptr>>(
+    [](Object::Ptr sender, BaseEventArgs::Ptr args)
+    {
+        Console::LogInfo("Initialise EventHandler.");
+    });
+
+    EventHandler<BaseEventArgs::Ptr>::HandlerFunc func = [](Object::Ptr sender, BaseEventArgs::Ptr args)
+    {
+        Console::LogInfo("Add Another EventHandler.");
+    };
+    EventHandler<BaseEventArgs::Ptr>& handlerRef = *handler;
+    handlerRef += func;
+
+    
+    Object::Ptr objectPtr = std::make_shared<Object>();
+    handler->Invoke(objectPtr, std::make_shared<BaseEventArgs>());
 }
 
 void AntiAliasingView::Destroy()

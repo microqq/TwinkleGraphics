@@ -1,32 +1,50 @@
-#ifndef TW_EVENT_H
-#define TW_EVENT_h
+#ifndef TW_EVENT_HPP
+#define TW_EVENT_HPP
+
+#include <utility>
 
 #include "twObject.h"
+#include "twEventArgs.h"
+#include "twEventHandler.h"
 
 namespace TwinkleGraphics
 {
-    typedef unsigned int EventId;
 
-    template <class... Args>
     class Event : public Object
     {
     public:
         typedef std::shared_ptr<Event> Ptr;
 
-        Event()
-        {}
+        Event(Object::Ptr sender, BaseEventArgs::Ptr args)
+            : Object()
+            , _sender(sender)
+            , _eventArgs(args)
+        {
+        }
 
-        Event(const Event& src)
-        {}
+        Event(const Event &src)
+            : Object()
+        {
+            _sender = src._sender;
+            _eventArgs = src._args;
+        }
 
-        Event(Event&& src)
-        {}
+        Event(Event &&src)
+            : Object()
+        {
+            std::swap(_sender, src._sender);     
+            std::swap(_eventArgs, src._eventArgs);     
+        }
 
-        ~Event()
-        {}
+        virtual ~Event()
+        {
+            _sender = nullptr;
+            _eventArgs = nullptr;
+        }
 
     private:
-        EventId _id;
+        Object::Ptr _sender;
+        BaseEventArgs::Ptr _eventArgs;
     };
 } // namespace TwinkleGraphics
 

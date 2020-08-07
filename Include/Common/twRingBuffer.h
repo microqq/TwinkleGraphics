@@ -12,8 +12,8 @@ namespace TwinkleGraphics
             RingBuffer();
             ~RingBuffer();
 
-        private:
-            std::list<T> _contents;
+        protected:
+            std::list<T> _list;
     };
 } // namespace TwinkleGraphics
 

@@ -8,14 +8,22 @@
 namespace TwinkleGraphics
 {
     class EventManager;
-    typedef RingBuffer<Event<int>> EventQueue;
-    typedef Singleton<EventManager> ShaderManagerInst;
+    typedef RingBuffer<Event::Ptr> EventQueue;
+    typedef Singleton<EventManager> EventManagerInst;
 
     class EventManager
     {
     public:
         EventManager();
         ~EventManager();
+
+        void Subscribe(EventId id, EventHandler<BaseEventArgs> handler);
+        void UnSubscribe(EventId id, EventHandler<BaseEventArgs> handler);
+
+        void Fire(EventId id, BaseEventArgs::Ptr args);
+        void FireImmediately(EventId id, BaseEventArgs::Ptr args);
+
+        void Update();
 
     private:
         EventQueue _queue;
