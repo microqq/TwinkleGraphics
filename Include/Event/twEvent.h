@@ -26,7 +26,7 @@ namespace TwinkleGraphics
             : Object()
         {
             _sender = src._sender;
-            _eventArgs = src._args;
+            _eventArgs = src._eventArgs;
         }
 
         Event(Event &&src)
@@ -41,6 +41,23 @@ namespace TwinkleGraphics
             _sender = nullptr;
             _eventArgs = nullptr;
         }
+
+        Event& operator=(const Event& src)
+        {
+            _sender = src._sender;
+            _eventArgs = src._eventArgs;
+
+            return *this;
+        }
+
+        Event& operator=(Event&& src)
+        {
+            std::swap(_sender, src._sender);     
+            std::swap(_eventArgs, src._eventArgs);     
+
+            return *this;
+        }
+
 
     private:
         Object::Ptr _sender;

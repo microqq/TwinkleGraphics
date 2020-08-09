@@ -5,17 +5,20 @@
 
 namespace TwinkleGraphics
 {
-    template<class T>
+    template <class T>
     class RingBuffer
     {
-        public:
-            RingBuffer();
-            ~RingBuffer();
+    public:
+        RingBuffer()
+        {}
+        ~RingBuffer()
+        {}
 
-        protected:
-            std::list<T> _list;
+    protected:
+        std::list<T> _list;
+        int _length;
+        int _capacity;
     };
 } // namespace TwinkleGraphics
-
 
 #endif

@@ -9,8 +9,8 @@ namespace TwinkleGraphics
 {
     namespace Console
     {
-        // https://docs.microsoft.com/en-us/windows/console/using-the-high-level-input-and-output-functions
 #if defined _WIN32
+        // https://docs.microsoft.com/en-us/windows/console/using-the-high-level-input-and-output-functions
         enum class Color
         {
             GRAY = 7,
@@ -61,6 +61,12 @@ namespace TwinkleGraphics
         {
             Log(color, t);
             Log(color, args...);
+        }
+
+        template <Color C, class... Args>
+        void LogWithColor(Args... args)
+        {
+            Log(C, args...);
         }
 
         template <class... Args>

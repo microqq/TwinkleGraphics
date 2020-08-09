@@ -17,7 +17,6 @@
 #include "twModelReader.h"
 #include "twUiUtil.h"
 
-
 namespace TwinkleGraphics
 {
 class AntiAliasingView;
