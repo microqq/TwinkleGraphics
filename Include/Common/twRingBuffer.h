@@ -2,6 +2,7 @@
 #define TW_RINGBUFFER_H
 
 #include <array>
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -11,6 +12,8 @@ namespace TwinkleGraphics
     public:
         RingBuffer()
             : _array()
+            , _head(-1)
+            , _tail(-1)
         {}
         ~RingBuffer()
         {}
@@ -18,7 +21,7 @@ namespace TwinkleGraphics
         inline unsigned int Capacity() { return _capacity; }
         inline unsigned int Length() 
         {
-            if(_head == -1 && _tail == 1)
+            if(_head == -1 && _tail == -1)
             {
                 return 0;
             }
@@ -31,11 +34,12 @@ namespace TwinkleGraphics
             return _tail - _head + 1;
         }
 
-        void PushBack()
+        T* PushBack()
         {
             if(Length() == _capacity)
             {
-                return;
+                Console::LogWarning("RingBuffer: There is no free space push back.\n");
+                return nullptr;
             }
 
             if(_head == -1)
@@ -45,6 +49,9 @@ namespace TwinkleGraphics
 
             ++_tail;
             _tail %= _capacity;
+
+            T* ele = new (&(_array[_tail]))T();
+            return ele;
         }
 
         void PopFront()

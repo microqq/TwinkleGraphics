@@ -98,7 +98,7 @@ struct vglImageData
         , totalDataSize(copy.totalDataSize)
     {
 #ifdef _DEBUG
-    std::cout << "Vermilion: copy constructor executed." << std::endl;
+        // std::cout << "Vermilion: copy constructor executed." << std::endl;
 #endif        
         swizzle[0] = copy.swizzle[0];
         swizzle[1] = copy.swizzle[1];
@@ -127,7 +127,7 @@ struct vglImageData
         , totalDataSize(copy.totalDataSize)
     {
 #ifdef _DEBUG
-    std::cout << "Vermilion: move constructor executed." << std::endl;
+        // std::cout << "Vermilion: move constructor executed." << std::endl;
 #endif
         // swizzle[0] = copy.swizzle[0];
         // swizzle[1] = copy.swizzle[1];
@@ -149,7 +149,7 @@ struct vglImageData
     vglImageData& operator =(const vglImageData& data)
     {
 #ifdef _DEBUG
-    std::cout << "Vermilion: operator= executed." << std::endl;
+        // std::cout << "Vermilion: operator= executed." << std::endl;
 #endif        
         target = data.target;
         internalFormat = data.internalFormat;

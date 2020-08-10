@@ -76,6 +76,14 @@ namespace TwinkleGraphics
         }
 
         template <class... Args>
+        void LogGTestInfo(Args... args)
+        {
+#ifdef _DEBUG
+            Internal::Log(Color::GREEN, "[ INFO     ] ", args...);
+#endif
+        }
+
+        template <class... Args>
         void LogInfo(Args... args)
         {
 #ifdef _DEBUG

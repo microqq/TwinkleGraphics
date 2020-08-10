@@ -18,7 +18,7 @@ public:
 
     void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e)
     {
-        Console::LogWithColor<Console::Color::CYAN>("Add OnBaseEvent EventHandler.\n");
+        Console::LogGTestInfo("Add OnBaseEvent EventHandler.\n");
     }
 };
 
@@ -52,14 +52,14 @@ TEST(EventTests, AddEventHandler)
     EventHandler::Ptr handler = std::make_shared<EventHandler>(
         std::make_shared<EventHandler::HandlerFunc>(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
-                Console::LogWithColor<Console::Color::BLUE>("Initialise EventHandler.\n");
+                Console::LogGTestInfo("Initialise EventHandler.\n");
             }
         )
     );
 
     EventHandler::HandlerFuncPtr func = std::make_shared<EventHandler::HandlerFunc>(
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
-            Console::LogWithColor<Console::Color::MAGENTA>("Add Another EventHandler.\n");
+            Console::LogGTestInfo("Add Another EventHandler.\n");
         }
     );
     EventHandler &handlerRef = *handler;
@@ -85,9 +85,9 @@ TEST(EventTests, AddEventHandler)
     ASSERT_EQ(sampleEventA->GetEventId() != sampleEvent1->GetEventId(), true);
     ASSERT_EQ(sampleEvent2->GetEventId() != sampleEvent1->GetEventId(), false);
 
-    Console::LogWithColor<Console::Color::MAGENTA>("SampleEvent Instance 1 EventId: ", sampleEvent1->GetEventId(), "\n");
-    Console::LogWithColor<Console::Color::MAGENTA>("SampleEvent Instance 2 EventId: ", sampleEvent2->GetEventId(), "\n");
-    Console::LogWithColor<Console::Color::MAGENTA>("SampleEventA EventId: ", sampleEventA->GetEventId(), "\n");
+    Console::LogGTestInfo("SampleEvent Instance 1 EventId: ", sampleEvent1->GetEventId(), "\n");
+    Console::LogGTestInfo("SampleEvent Instance 2 EventId: ", sampleEvent2->GetEventId(), "\n");
+    Console::LogGTestInfo("SampleEventA EventId: ", sampleEventA->GetEventId(), "\n");
 
     handler->Invoke(objectPtr, sampleEvent1);
 };
@@ -97,15 +97,14 @@ TEST(EventTests, FireEvent)
     EventHandler::Ptr handler = std::make_shared<EventHandler>(
         std::make_shared<EventHandler::HandlerFunc>(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
-                Console::LogWithColor<Console::Color::BLUE>("Initialise EventHandler.\n");
+                Console::LogGTestInfo("Initialise EventHandler.\n");
             }
         )
     );
 
-    SampleEventArgs::Ptr sampleEvent = std::make_shared<SampleEventArgs>();
-
     EventManagerInst eventMgrInst;
-    eventMgrInst->Fire(100, sampleEvent);
+    SampleEventArgs::Ptr sampleEvent = std::make_shared<SampleEventArgs>();
+    eventMgrInst->Fire(sampleEvent->GetEventId(), sampleEvent);
 
     // BaseEventArgs::Ptr baseEvent = std::make_shared<BaseEventArgs>();
 }

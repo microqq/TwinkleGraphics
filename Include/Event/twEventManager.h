@@ -13,8 +13,7 @@ namespace TwinkleGraphics
 {
     class EventManager;
     typedef Singleton<EventManager> EventManagerInst;
-    // typedef RingBuffer<Event::Ptr> EventQueue;
-    typedef std::array<Event::Ptr, 1000> EventQueue;
+    typedef RingBuffer<Event> EventQueue;
     typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
 
     class EventManager
