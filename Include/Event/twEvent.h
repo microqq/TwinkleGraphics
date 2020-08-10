@@ -1,5 +1,5 @@
-#ifndef TW_EVENT_HPP
-#define TW_EVENT_HPP
+#ifndef TW_EVENT_H
+#define TW_EVENT_H
 
 #include <utility>
 
@@ -14,6 +14,10 @@ namespace TwinkleGraphics
     {
     public:
         typedef std::shared_ptr<Event> Ptr;
+
+        Event()
+            : Object()
+        {}
 
         Event(Object::Ptr sender, BaseEventArgs::Ptr args)
             : Object()
@@ -58,6 +62,8 @@ namespace TwinkleGraphics
             return *this;
         }
 
+        void SetSender(Object::Ptr sender) { _sender = sender; }
+        void SetEventArgs(BaseEventArgs::Ptr args) { _eventArgs = args; }
 
     private:
         Object::Ptr _sender;

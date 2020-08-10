@@ -1,21 +1,51 @@
 
+#include <functional>
+#include <string>
 #include <gtest/gtest.h>
+
 #include "twEventHandler.h"
 #include "twEventManager.h"
 #include "twConsoleLog.h"
+// #include "twGTestLog.h"
 
 using namespace TwinkleGraphics;
 
-class Listener1
+class SampleListener
 {
 public:
-    Listener1(){}
-    ~Listener1(){}
+    SampleListener(){}
+    ~SampleListener(){}
+
     void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e)
     {
         Console::LogWithColor<Console::Color::CYAN>("Add OnBaseEvent EventHandler.\n");
     }
 };
+
+class SampleEventArgs : public BaseEventArgs
+{
+public:
+    typedef std::shared_ptr<SampleEventArgs> Ptr;
+
+    SampleEventArgs()
+        : BaseEventArgs()
+    {
+    }
+    virtual ~SampleEventArgs() {}
+};
+
+class SampleEventArgsA : public BaseEventArgs
+{
+public:
+    typedef std::shared_ptr<SampleEventArgsA> Ptr;
+
+    SampleEventArgsA()
+        : BaseEventArgs()
+    {
+    }
+    virtual ~SampleEventArgsA() {}
+};
+
 
 TEST(EventTests, AddEventHandler)
 {
@@ -34,27 +64,32 @@ TEST(EventTests, AddEventHandler)
     );
     EventHandler &handlerRef = *handler;
     handlerRef += func;
-    // handlerRef -= func;
+    ASSERT_EQ(handlerRef[1], func);
+    handlerRef -= func;
+    ASSERT_EQ(handlerRef[1], nullptr);
 
-    Listener1 listner1;
+    SampleListener listner1;
 
     EventHandler::HandlerFunc baseFunc =
-        std::bind(&Listener1::OnBaseEvent, &listner1, std::placeholders::_1, std::placeholders::_2);
+        std::bind(&SampleListener::OnBaseEvent, &listner1, std::placeholders::_1, std::placeholders::_2);
     handlerRef += std::make_shared<EventHandler::HandlerFunc>(baseFunc);
 
     Object::Ptr objectPtr = std::make_shared<Object>();
-    BaseEventArgs::Ptr baseEvent = std::make_shared<BaseEventArgs>();
-    handler->Invoke(objectPtr, baseEvent);
-};
+    SampleEventArgs::Ptr sampleEvent1 = std::make_shared<SampleEventArgs>();
+    SampleEventArgs::Ptr sampleEvent2 = std::make_shared<SampleEventArgs>();
+    SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
 
-class SampleEventArgs : public BaseEventArgs
-{
-public:
-    typedef std::shared_ptr<SampleEventArgs> Ptr;
-    SampleEventArgs() {}
-    virtual ~SampleEventArgs() {}
+    ASSERT_EQ(sampleEvent1->GetEventId() != -1, true);
+    ASSERT_EQ(sampleEvent2->GetEventId() != -1, true);
+    ASSERT_EQ(sampleEventA->GetEventId() != -1, true);
+    ASSERT_EQ(sampleEventA->GetEventId() != sampleEvent1->GetEventId(), true);
+    ASSERT_EQ(sampleEvent2->GetEventId() != sampleEvent1->GetEventId(), false);
 
+    Console::LogWithColor<Console::Color::MAGENTA>("SampleEvent Instance 1 EventId: ", sampleEvent1->GetEventId(), "\n");
+    Console::LogWithColor<Console::Color::MAGENTA>("SampleEvent Instance 2 EventId: ", sampleEvent2->GetEventId(), "\n");
+    Console::LogWithColor<Console::Color::MAGENTA>("SampleEventA EventId: ", sampleEventA->GetEventId(), "\n");
 
+    handler->Invoke(objectPtr, sampleEvent1);
 };
 
 TEST(EventTests, FireEvent)
@@ -68,15 +103,9 @@ TEST(EventTests, FireEvent)
     );
 
     SampleEventArgs::Ptr sampleEvent = std::make_shared<SampleEventArgs>();
+
     EventManagerInst eventMgrInst;
     eventMgrInst->Fire(100, sampleEvent);
+
+    // BaseEventArgs::Ptr baseEvent = std::make_shared<BaseEventArgs>();
 }
-
-
-int main(int argc, char *argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-
-

@@ -71,18 +71,11 @@ TEST(MaterialTests, UniformSetting)
     const VecUniform<float32, 4> *cast_vec4 = dynamic_cast<const VecUniform<float32, 4>* >(material2->GetUniform("tintColor"));
     ASSERT_EQ(cast_vec4->vector, vec4(2.0f, 3.0f, 4.0f, 5.0f));
 
-    ImageData data = GetImageData();
-
     ImageData imagedatacopy = GetImageData();
-    ASSERT_EQ(imagedatacopy.mip[0].data != nullptr, true);
+    ASSERT_EQ(imagedatacopy.mip != nullptr && imagedatacopy.mip[0].data != nullptr, false);
 
     // std::vector<int> vec{1, 2, 3, 4, 5};
     // int sum = std::accumulate(vec.begin(), vec.end(), 0);
     // EXPECT_EQ(sum, 15);
 }
 
-int main(int argc, char *argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

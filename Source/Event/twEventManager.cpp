@@ -13,7 +13,9 @@ namespace TwinkleGraphics
     }
 
     void EventManager::Subscribe(EventId id, EventHandler::HandlerFunc func)
-    {}
+    {
+        
+    }
 
     void EventManager::Subscribe(EventId id, EventHandler::HandlerFuncPtr funcPtr)
     {

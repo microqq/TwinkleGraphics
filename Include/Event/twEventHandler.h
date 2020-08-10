@@ -1,8 +1,7 @@
-#ifndef TW_EVENTHANDLER_HPP
-#define TW_EVENTHANDLER_HPP
+#ifndef TW_EVENTHANDLER_H
+#define TW_EVENTHANDLER_H
 
 #include <functional>
-#include <list>
 #include <vector>
 #include <algorithm>
 
@@ -40,6 +39,16 @@ namespace TwinkleGraphics
         virtual ~EventHandler()
         {
             _handlerFuncList.clear();
+        }
+
+        HandlerFuncPtr operator[](int index)
+        {
+            if(index < 0 || index >= _handlerFuncList.size())
+            {
+                return nullptr;
+            }
+
+            return _handlerFuncList[index];
         }
 
         EventHandler& operator=(const EventHandler& src)
@@ -83,7 +92,7 @@ namespace TwinkleGraphics
     private:
         void Add(const HandlerFuncPtr& func)
         {
-            // std::list<std::function<***>> makes compile error : "no match for 'operator=='"
+            // std::vector<std::function<***>> makes compile error : "no match for 'operator=='"
             // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
             auto iter = std::find(_handlerFuncList.begin(), _handlerFuncList.end(), func);
             if(iter != _handlerFuncList.end())
@@ -103,7 +112,7 @@ namespace TwinkleGraphics
         }
 
     private:
-        std::list<HandlerFuncPtr> _handlerFuncList;
+        std::vector<HandlerFuncPtr> _handlerFuncList;
         EventId _eventId;
     };
 } // namespace TwinkleGraphics

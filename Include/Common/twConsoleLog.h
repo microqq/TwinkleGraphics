@@ -37,51 +37,57 @@ namespace TwinkleGraphics
         };
 #endif
 
-        extern void SetConsoleColor(Color& c);
-        extern void ResetConsoleColor();
-
-        // https://www.codeproject.com/articles/16431/add-color-to-your-std-cout
-        template <class _Elem, class _Traits>
-        std::basic_ostream<_Elem, _Traits> &
-        operator << (std::basic_ostream<_Elem, _Traits> & os, Color &c)
+        namespace Internal
         {
-            SetConsoleColor(c);
-            return os;
-        }
+            extern void SetConsoleColor(Color &c);
+            extern void ResetConsoleColor();
 
-        template <class CharT>
-        void Log(Color color, CharT t)
-        {
-            std::cout << color << t;
-            ResetConsoleColor();
-        }
+            // https://www.codeproject.com/articles/16431/add-color-to-your-std-cout
+            template <class _Elem, class _Traits>
+            std::basic_ostream<_Elem, _Traits> &
+            operator<<(std::basic_ostream<_Elem, _Traits> &os, Color &c)
+            {
+                SetConsoleColor(c);
+                return os;
+            }
 
-        template <class CharT, class... Args>
-        void Log(Color color, CharT t, Args ... args)
-        {
-            Log(color, t);
-            Log(color, args...);
-        }
+            template <class CharT>
+            void Log(Color color, CharT t)
+            {
+                std::cout << color << t;
+                ResetConsoleColor();
+            }
+
+            template <class CharT, class... Args>
+            void Log(Color color, CharT t, Args... args)
+            {
+                Log(color, t);
+                Log(color, args...);
+            }
+
+        } // namespace Internal
 
         template <Color C, class... Args>
         void LogWithColor(Args... args)
         {
-            Log(C, args...);
+#ifdef _DEBUG
+            Internal::Log(C, args...);
+#endif
         }
 
         template <class... Args>
         void LogInfo(Args... args)
         {
-#ifdef _DEBUG            
-            Log(Color::WHITE, args...);
+#ifdef _DEBUG
+            Internal::Log(Color::WHITE, args...);
 #endif
         }
 
         template <class... Args>
         void LogWarning(Args... args)
         {
-#ifdef _DEBUG            
-            Log(Color::YELLOW, args...);
+#ifdef _DEBUG
+            Internal::Log(Color::YELLOW, args...);
 #endif
         }
 
@@ -89,7 +95,7 @@ namespace TwinkleGraphics
         void LogError(Args... args)
         {
 #ifdef _DEBUG
-            Log(Color::RED, args...);
+            Internal::Log(Color::RED, args...);
 #endif
         }
 

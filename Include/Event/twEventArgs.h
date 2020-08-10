@@ -1,6 +1,8 @@
 #ifndef TW_EVENTARGS_H
 #define TW_EVENTARGS_H
 
+#include <functional>
+
 #include "twObject.h"
 
 namespace TwinkleGraphics
@@ -13,11 +15,20 @@ namespace TwinkleGraphics
         typedef std::shared_ptr<BaseEventArgs> Ptr;
 
         BaseEventArgs() : Object() {}
-        virtual ~BaseEventArgs() {}
+        virtual ~BaseEventArgs() = 0;
 
-        // virtual EventId GetEventId() = 0;
-        virtual EventId GetEventId() { return 0; }
-    };    
+        inline EventId GetEventId() 
+        { 
+            if(-1 == _eventid)
+            {
+                _eventid = std::hash<std::string>{}(typeid(*this).name());
+            }
+            return _eventid; 
+        }
+
+    protected:
+        EventId _eventid = -1;
+    };
 } // namespace TwinkleGraphics
 
 

@@ -3,7 +3,7 @@
 extern "C"
 {
 #endif
-    #include <windows.h>
+#include <windows.h>
 #ifdef __cplusplus
 }
 #endif
@@ -16,22 +16,25 @@ namespace TwinkleGraphics
     namespace Console
     {
 
-        void SetConsoleColor(Color& c)
+        namespace Internal
         {
-#ifdef _WIN32            
-            HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-            SetConsoleTextAttribute(hStdout, (WORD)c);
+
+            void SetConsoleColor(Color &c)
+            {
+#ifdef _WIN32
+                HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetConsoleTextAttribute(hStdout, (WORD)c);
 #elif defined __linux__
 
 #endif
-        }
+            }
 
-        void ResetConsoleColor()
-        {
-            Color c = Color::WHITE;
-            SetConsoleColor(c);
-        }
-    } // namespace Console
-    
+            void ResetConsoleColor()
+            {
+                Color c = Color::WHITE;
+                SetConsoleColor(c);
+            }
+        } // namespace Internal
+    }     // namespace Console
+
 } // namespace TwinkleGraphics
-    

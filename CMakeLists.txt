@@ -28,6 +28,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     SET(GLEWLIBDIR $ENV{GLEW_LIB_PATH})
     SET(GLFWLIBDIR $ENV{GLFW_LIB_PATH})
+    SET(GTESTINCLUDEDIR $ENV{GTESTINCLUDE})
+    SET(GTESTLIBDIR $ENV{GTESTLIB})
     set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
@@ -57,21 +59,17 @@ add_subdirectory(TwinkleRayTracing)
 
 OPTION(BUILD_GTESTS "build gtests" OFF)
 IF(BUILD_GTESTS)
-
     add_subdirectory(Testbeds/GTests)
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    SET(GTESTINCLUDEDIR $ENV{GTESTINCLUDE})
-    SET(GTESTLIBDIR $ENV{GTESTLIB})
-endif()
     
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(GTest REQUIRED)
     find_package(Threads REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
-
-    add_test(UniformSetting ${EXECUTABLE_OUTPUT_PATH}/MaterialTests)
-    enable_testing()
 endif()
 
+    add_test(UniformSetting ${EXECUTABLE_OUTPUT_PATH}/MaterialTests)
+    add_test(AddEventHandler ${EXECUTABLE_OUTPUT_PATH}/EventTests)
+    add_test(FireEvent ${EXECUTABLE_OUTPUT_PATH}/EventTests)
+
+    enable_testing()
 ENDIF(BUILD_GTESTS)

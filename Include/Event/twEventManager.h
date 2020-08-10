@@ -15,7 +15,7 @@ namespace TwinkleGraphics
     typedef Singleton<EventManager> EventManagerInst;
     // typedef RingBuffer<Event::Ptr> EventQueue;
     typedef std::array<Event::Ptr, 1000> EventQueue;
-    typedef std::map<EventId, EventHandler> EventHandlerCollection;
+    typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
 
     class EventManager
     {
@@ -34,8 +34,11 @@ namespace TwinkleGraphics
         void Update();
 
     private:
+        void HandleEvent(EventId id);
+
+    private:
         EventQueue _queue;
-        EventHandlerCollection _handlerCollection;
+        MultiEventHandlerCollection _handlerCollection;
     };
 } // namespace TwinkleGraphics
 
