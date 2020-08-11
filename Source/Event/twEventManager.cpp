@@ -41,14 +41,29 @@ namespace TwinkleGraphics
         _handlerCollection.insert(std::make_pair(id, handler));
     }
 
-    void EventManager::UnSubscribe(EventId id, EventHandler::HandlerFunc func)
+    void EventManager::UnSubscribe(EventId id, const EventHandler::HandlerFunc& func)
     {
+        using MIterator = MultiEventHandlerCollection::iterator;
+        MIterator iter = _handlerCollection.lower_bound(id);
+        MIterator end = _handlerCollection.upper_bound(id);
 
+        while(iter != end)
+        {
+            bool find = false;
+            iter->second.FindHandlerFunc(func, find);
+            if(find)
+            {
+                break;
+            }
+            ++iter;
+        }
+
+        _handlerCollection.erase(iter);
     }
 
-    void EventManager::UnSubscribe(EventId id, EventHandler::HandlerFuncPtr funcPtr)
+    void EventManager::UnSubscribe(EventId id, const EventHandler::HandlerFuncPtr& funcPtr)
     {
-
+        UnSubscribe(id, (*funcPtr));
     }
 
     void EventManager::UnSubscribe(EventId id, const EventHandler& handler)

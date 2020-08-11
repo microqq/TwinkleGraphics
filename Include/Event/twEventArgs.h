@@ -17,17 +17,9 @@ namespace TwinkleGraphics
         BaseEventArgs() : Object() {}
         virtual ~BaseEventArgs() = 0;
 
-        inline EventId GetEventId() 
-        { 
-            if(-1 == _eventid)
-            {
-                _eventid = std::hash<std::string>{}(typeid(*this).name());
-            }
-            return _eventid; 
-        }
+        virtual EventId GetEventId() = 0;
 
     protected:
-        EventId _eventid = -1;
     };
 } // namespace TwinkleGraphics
 

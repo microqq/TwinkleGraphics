@@ -15,10 +15,12 @@ namespace TwinkleGraphics
     class EventHandler : public Object
     {
     public:
-        // typedef void(*HandlerFunc)(Object::Ptr, T);
+        typedef void(HandlerFuncPointer)(Object::Ptr, BaseEventArgs::Ptr);
         typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> HandlerFunc;
         typedef std::shared_ptr<HandlerFunc> HandlerFuncPtr;
         typedef std::shared_ptr<EventHandler> Ptr;
+
+        using HFuncIterator = std::vector<HandlerFuncPtr>::iterator;
 
         EventHandler()
             : Object()
@@ -82,6 +84,12 @@ namespace TwinkleGraphics
 
         EventHandler& operator+=(const HandlerFuncPtr& func)
         {
+            HFuncIterator iter = FindHandlerFunc(func);
+            if(iter != _handlerFuncList.end())
+            {
+                return *this;
+            }
+
             if(func != nullptr)
             {
                 Add(func);
@@ -92,16 +100,24 @@ namespace TwinkleGraphics
 
         EventHandler& operator-=(const HandlerFuncPtr& func)
         {
-            if(func != nullptr)
+            HFuncIterator iter = FindHandlerFunc(func);
+            if(iter != _handlerFuncList.end())
             {
-                Remove(func);
+                Remove(iter);
             }
+
             return *this;
         }
 
         bool operator==(const EventHandler& other)
         {
             return _handlerId == other._handlerId;
+        }
+
+        void FindHandlerFunc(const HandlerFunc& func, bool& finded)
+        {
+            HFuncIterator iter = FindHandlerFunc(func);
+            finded = (iter != _handlerFuncList.end());
         }
 
         void operator()(Object::Ptr sender, BaseEventArgs::Ptr args)
@@ -122,21 +138,65 @@ namespace TwinkleGraphics
         {
             // std::vector<std::function<***>> makes compile error : "no match for 'operator=='"
             // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
-            auto iter = std::find(_handlerFuncList.begin(), _handlerFuncList.end(), func);
-            if(iter != _handlerFuncList.end())
-            {
-                return;                
-            }
 
             _handlerFuncList.push_back(func);
         }
-        void Remove(const HandlerFuncPtr& func)
+        void Remove(HFuncIterator iter)
         {
-            auto iter = std::find(_handlerFuncList.begin(), _handlerFuncList.end(), func);
             if(iter != _handlerFuncList.end())
             {
                 _handlerFuncList.erase(iter);
             }
+        }
+
+        HFuncIterator FindHandlerFunc(const HandlerFunc& func)
+        {
+            HFuncIterator iter = std::find_if(_handlerFuncList.begin(), 
+                _handlerFuncList.end(),
+                [func](const HandlerFuncPtr& fPtr)
+            {
+                HandlerFuncPointer** lPointer = (*fPtr).target<HandlerFuncPointer*>();
+                HandlerFuncPointer*const* rPointer = func.target<HandlerFuncPointer*>();
+
+                if(lPointer == nullptr || rPointer == nullptr)
+                {
+                    return false;
+                }
+
+                return *lPointer == *rPointer;
+            });
+
+            if(iter != _handlerFuncList.end())
+            {
+                return iter;
+            }
+
+            return _handlerFuncList.end();
+        }
+
+        HFuncIterator FindHandlerFunc(const HandlerFuncPtr& funcPtr)
+        {
+            HFuncIterator iter = std::find_if(_handlerFuncList.begin(), 
+                _handlerFuncList.end(),
+                [funcPtr](const HandlerFuncPtr& fPtr)
+            {
+                HandlerFuncPointer** lPointer = (*fPtr).target<HandlerFuncPointer*>();
+                HandlerFuncPointer** rPointer = (*funcPtr).target<HandlerFuncPointer*>();
+
+                if(lPointer == nullptr || rPointer == nullptr)
+                {
+                    return false;
+                }
+
+                return *lPointer == *rPointer;
+            });
+
+            if(iter != _handlerFuncList.end())
+            {
+                return iter;
+            }
+
+            return _handlerFuncList.end();
         }
 
     private:

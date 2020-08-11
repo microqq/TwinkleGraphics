@@ -26,24 +26,43 @@ class SampleEventArgs : public BaseEventArgs
 public:
     typedef std::shared_ptr<SampleEventArgs> Ptr;
 
+    static EventId ID;
+
     SampleEventArgs()
         : BaseEventArgs()
     {
     }
     virtual ~SampleEventArgs() {}
+
+    virtual EventId GetEventId() override
+    {
+        return SampleEventArgs::ID;
+    }
 };
+
+EventId SampleEventArgs::ID = std::hash<std::string>{}("SampleEventArgs");
+
 
 class SampleEventArgsA : public BaseEventArgs
 {
 public:
     typedef std::shared_ptr<SampleEventArgsA> Ptr;
 
+    static EventId ID;
+
     SampleEventArgsA()
         : BaseEventArgs()
     {
     }
     virtual ~SampleEventArgsA() {}
+
+    virtual EventId GetEventId() override
+    {
+        return SampleEventArgsA::ID;
+    }
 };
+
+EventId SampleEventArgsA::ID = std::hash<std::string>{}("SampleEventArgsA");
 
 
 TEST(EventTests, AddEventHandler)
@@ -93,7 +112,10 @@ TEST(EventTests, AddEventHandler)
 
 TEST(EventTests, FireEvent)
 {
-    EventHandler::Ptr handler = std::make_shared<EventHandler>(
+    EventManagerInst eventMgrInst;
+    SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
+
+    EventHandler handler(
         std::make_shared<EventHandler::HandlerFunc>(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
                 Console::LogGTestInfo("Initialise EventHandler.\n");
@@ -101,9 +123,22 @@ TEST(EventTests, FireEvent)
         )
     );
 
-    EventManagerInst eventMgrInst;
-    SampleEventArgs::Ptr sampleEvent = std::make_shared<SampleEventArgs>();
-    eventMgrInst->Fire(nullptr, sampleEvent);
+    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    Console::LogGTestInfo("Fire SampleEventArgsA\n");
+    eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
-    // BaseEventArgs::Ptr baseEvent = std::make_shared<BaseEventArgs>();
+    eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
+    Console::LogGTestInfo("Fire SampleEventArgsA\n");
+    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+
+    SampleListener listener;
+    EventHandler::HandlerFunc func =
+        std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
+    handler += std::make_shared<EventHandler::HandlerFunc>(func);
+
+    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    Console::LogGTestInfo("Fire SampleEventArgsA\n");
+    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+
+    
 }
