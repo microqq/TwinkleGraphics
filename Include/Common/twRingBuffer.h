@@ -34,7 +34,14 @@ namespace TwinkleGraphics
             return _tail - _head + 1;
         }
 
-        T* PushBack()
+        inline T& Head() { return _array[_head]; }
+        inline T& Tail() { return _array[_tail]; }
+
+        inline int HeadIndex() { return _head; }
+        inline int TailIndex() { return _tail; }
+
+        template<class... Args>
+        T* PushBack(Args... args)
         {
             if(Length() == _capacity)
             {
@@ -50,26 +57,39 @@ namespace TwinkleGraphics
             ++_tail;
             _tail %= _capacity;
 
-            T* ele = new (&(_array[_tail]))T();
+            T* ele = new (&(_array[_tail]))T(std::forward<Args>(args)...);
             return ele;
         }
 
-        void PopFront()
+        T* PopFront()
         {
-            if(1 == Length())
+            int length = Length();
+            int retIndex = _head;
+            if(length == 0)
             {
-                _head = _tail = -1;                
-                return;
+                Console::LogWarning("RingBuffer: There is no more elements pop front.\n");
+                return nullptr;
+            }
+            else if(1 == length)
+            {
+                _head = _tail = -1;
+            }
+            else
+            {
+                ++_head;
+                _head %= _capacity;
             }
 
-            ++_head;
-            _head %= _capacity;
+            return &(_array[retIndex]);
         }
 
         T& operator[](unsigned int index)
         {
+            int length = Length();
+            assert(index >= 0 && index < length);
 
-            return _array[index];
+            int realIndex = (_head + index) % _capacity;
+            return _array[realIndex];
         }
 
     protected:

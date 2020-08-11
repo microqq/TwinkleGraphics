@@ -4,12 +4,14 @@
 #include <functional>
 #include <vector>
 #include <algorithm>
+#include <atomic>
 
 #include "twObject.h"
 #include "twEventArgs.h"
 
 namespace TwinkleGraphics
 {
+    typedef unsigned int HandlerId;
     class EventHandler : public Object
     {
     public:
@@ -18,28 +20,39 @@ namespace TwinkleGraphics
         typedef std::shared_ptr<HandlerFunc> HandlerFuncPtr;
         typedef std::shared_ptr<EventHandler> Ptr;
 
+        EventHandler()
+            : Object()
+        {
+            _handlerId = ++HandlerIdCounter;
+        }
+
         EventHandler(const HandlerFuncPtr& func)
             : Object()
         {
             _handlerFuncList.push_back(func);
+            _handlerId = ++HandlerIdCounter;
         }
 
         EventHandler(const EventHandler &src)
             : Object()
         {
             _handlerFuncList = src._handlerFuncList;
+            _handlerId = src._handlerId;
         }
 
         EventHandler(EventHandler &&src)
             : Object()
         {
             _handlerFuncList = std::move(src._handlerFuncList);
+            _handlerId = src._handlerId;
         }
 
         virtual ~EventHandler()
         {
             _handlerFuncList.clear();
         }
+
+        inline HandlerId GetHandlerId() { return _handlerId; }
 
         HandlerFuncPtr operator[](int index)
         {
@@ -54,6 +67,7 @@ namespace TwinkleGraphics
         EventHandler& operator=(const EventHandler& src)
         {
             _handlerFuncList = src._handlerFuncList;
+            _handlerId = src._handlerId;
 
             return *this;
         }
@@ -61,19 +75,33 @@ namespace TwinkleGraphics
         EventHandler& operator=(EventHandler&& src)
         {
             std::swap(_handlerFuncList, src._handlerFuncList);
+            _handlerId = src._handlerId;
+
             return *this;
         }
 
         EventHandler& operator+=(const HandlerFuncPtr& func)
         {
-            Add(func);
+            if(func != nullptr)
+            {
+                Add(func);
+            }
+
             return *this;
         }
 
         EventHandler& operator-=(const HandlerFuncPtr& func)
         {
-            Remove(func);
+            if(func != nullptr)
+            {
+                Remove(func);
+            }
             return *this;
+        }
+
+        bool operator==(const EventHandler& other)
+        {
+            return _handlerId == other._handlerId;
         }
 
         void operator()(Object::Ptr sender, BaseEventArgs::Ptr args)
@@ -113,7 +141,8 @@ namespace TwinkleGraphics
 
     private:
         std::vector<HandlerFuncPtr> _handlerFuncList;
-        EventId _eventId;
+        HandlerId _handlerId;
+        static std::atomic_uint HandlerIdCounter;
     };
 } // namespace TwinkleGraphics
 

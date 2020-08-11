@@ -25,7 +25,7 @@
             ]
         },
         {
-            "name": "(gdb) TWTest",
+            "name": "(gdb) TWTests",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Output/TWTests.exe",

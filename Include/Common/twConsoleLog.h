@@ -79,7 +79,8 @@ namespace TwinkleGraphics
         void LogGTestInfo(Args... args)
         {
 #ifdef _DEBUG
-            Internal::Log(Color::GREEN, "[ INFO     ] ", args...);
+            Internal::Log(Color::GREEN, "[----------] ");
+            Internal::Log(Color::WHITE, args...);
 #endif
         }
 

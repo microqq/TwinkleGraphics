@@ -6,7 +6,6 @@
 #include "twEventHandler.h"
 #include "twEventManager.h"
 #include "twConsoleLog.h"
-// #include "twGTestLog.h"
 
 using namespace TwinkleGraphics;
 
@@ -104,7 +103,7 @@ TEST(EventTests, FireEvent)
 
     EventManagerInst eventMgrInst;
     SampleEventArgs::Ptr sampleEvent = std::make_shared<SampleEventArgs>();
-    eventMgrInst->Fire(sampleEvent->GetEventId(), sampleEvent);
+    eventMgrInst->Fire(nullptr, sampleEvent);
 
     // BaseEventArgs::Ptr baseEvent = std::make_shared<BaseEventArgs>();
 }

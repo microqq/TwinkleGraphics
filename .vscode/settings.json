@@ -1,5 +1,5 @@
 {
-    "editor.fontSize": 16,
+    "editor.fontSize": 14,
     "files.associations": {
         "filesystem": "cpp",
         "xhash": "cpp",
@@ -95,7 +95,7 @@
         ]
     },
     "gtest-adapter.debugConfig": [
-        "(gdb) TWTest"
+        "(gdb) TWTests"
     ],
     "gtest-adapter.supportLocation": true
 }
