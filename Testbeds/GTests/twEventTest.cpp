@@ -12,6 +12,7 @@ using namespace TwinkleGraphics;
 class SampleListener
 {
 public:
+
     SampleListener(){}
     ~SampleListener(){}
 
@@ -65,8 +66,30 @@ public:
 EventId SampleEventArgsA::ID = std::hash<std::string>{}("SampleEventArgsA");
 
 
+// en.cppreference.com/w/cpp/utility/functional/function.html
+void f(Object::Ptr, BaseEventArgs::Ptr) {  }
+void g(Object::Ptr, BaseEventArgs::Ptr) {  }
+void test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)> arg)
+{ 
+    void (*const* ptr)(Object::Ptr, BaseEventArgs::Ptr) = 
+        arg.target<void(*)(Object::Ptr, BaseEventArgs::Ptr)>();
+    if (ptr && *ptr == f)
+    {
+        Console::LogGTestInfo("it is the function f\n");
+    }
+    else if (ptr && *ptr == g)
+    {
+        Console::LogGTestInfo("it is the function g\n");
+    }
+    else if(ptr)
+    {
+        Console::LogGTestInfo("it is not nullptr\n");
+    }    
+}
+
 TEST(EventTests, AddEventHandler)
 {
+    //EventHandler(const HandlerFuncPtr& func)
     EventHandler::Ptr handler = std::make_shared<EventHandler>(
         std::make_shared<EventHandler::HandlerFunc>(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
@@ -75,21 +98,24 @@ TEST(EventTests, AddEventHandler)
         )
     );
 
-    EventHandler::HandlerFuncPtr func = std::make_shared<EventHandler::HandlerFunc>(
+    //Lambda handler function
+    EventHandler::HandlerFuncPtr funcPtr = std::make_shared<EventHandler::HandlerFunc>(
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
-            Console::LogGTestInfo("Add Another EventHandler.\n");
+            Console::LogGTestInfo("Add Lambda EventHandler.\n");
         }
     );
+    //EventHandler::operator+=
     EventHandler &handlerRef = *handler;
-    handlerRef += func;
-    ASSERT_EQ(handlerRef[1], func);
-    handlerRef -= func;
-    ASSERT_EQ(handlerRef[1], nullptr);
+    // handlerRef += funcPtr;
+    // ASSERT_EQ(handlerRef[1] != nullptr, true);
 
-    SampleListener listner1;
+    // //EventHandler::operator-=
+    // handlerRef -= funcPtr;
+    // ASSERT_EQ(handlerRef[1] == nullptr, true);
 
+    SampleListener listener;
     EventHandler::HandlerFunc baseFunc =
-        std::bind(&SampleListener::OnBaseEvent, &listner1, std::placeholders::_1, std::placeholders::_2);
+        std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
     handlerRef += std::make_shared<EventHandler::HandlerFunc>(baseFunc);
 
     Object::Ptr objectPtr = std::make_shared<Object>();
@@ -115,6 +141,7 @@ TEST(EventTests, FireEvent)
     EventManagerInst eventMgrInst;
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
 
+    //EventHandler(const HandlerFuncPtr& func)
     EventHandler handler(
         std::make_shared<EventHandler::HandlerFunc>(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
@@ -123,22 +150,49 @@ TEST(EventTests, FireEvent)
         )
     );
 
+    EventHandler::HandlerFuncPointer lambda = [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+            Console::LogGTestInfo("Add Lambda EventHandler.\n");
+    };
+
+    EventHandler::HandlerFuncPointer lambda2 = nullptr;
+    Console::LogGTestInfo("Lambda function address: ", size_t(lambda), "\n");
+
+    //Lambda handler function
+    EventHandler::HandlerFuncPtr funcPtr = std::make_shared<EventHandler::HandlerFunc>(lambda);
+    //EventHandler::operator+=
+    handler += funcPtr;
+    // ASSERT_EQ(handler[1] != nullptr, true);
+
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
-    Console::LogGTestInfo("Fire SampleEventArgsA\n");
+    Console::LogGTestInfo("Fire SampleEventArgsA--------1\n");
+    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+
+    //EventHandler::operator-=
+    // handler -= funcPtr;
+    // ASSERT_EQ(handler[1], nullptr);
+
+    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    Console::LogGTestInfo("Fire SampleEventArgsA--------2\n");
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
     eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
-    Console::LogGTestInfo("Fire SampleEventArgsA\n");
+    Console::LogGTestInfo("Fire SampleEventArgsA--------3\n");
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
+    //Bind class member function
     SampleListener listener;
-    EventHandler::HandlerFunc func =
-        std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
-    handler += std::make_shared<EventHandler::HandlerFunc>(func);
+    EventHandler::HandlerFunc func = std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
+
+    //EventHandler::operator+=
+    handler.AddMemberFunction<SampleListener>(func);
+    handler.AddMemberFunction<SampleListener>(func);
+    // handler -= func;
 
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
-    Console::LogGTestInfo("Fire SampleEventArgsA\n");
+    Console::LogGTestInfo("Fire SampleEventArgsA--------4\n");
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
-    
+    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(f));
+    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(g));
+    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(func));    
 }

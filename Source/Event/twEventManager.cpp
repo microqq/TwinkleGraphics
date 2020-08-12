@@ -38,6 +38,12 @@ namespace TwinkleGraphics
 
     void EventManager::Subscribe(EventId id, const EventHandler& handler)
     {
+        using MIterator = MultiEventHandlerCollection::iterator;
+        MIterator iter = _handlerCollection.find(id);
+        if(iter != _handlerCollection.end())
+        {
+             return;           
+        }
         _handlerCollection.insert(std::make_pair(id, handler));
     }
 

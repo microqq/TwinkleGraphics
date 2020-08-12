@@ -3,8 +3,7 @@
 # cmake build: 
 # cd $project_dir
 # mkdir build & cd build
-# cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG=ON -DCMAKE_TOOLCHAIN_FILE=../win.toolchain.cmake ..
-
+# cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG=ON -DBUILD_GTESTS=ON -DCMAKE_TOOLCHAIN_FILE=../win.toolchain.cmake ..
 cmake_minimum_required( VERSION 2.6.3 )
 SET(CMAKE_SYSTEM_NAME Windows)
 
