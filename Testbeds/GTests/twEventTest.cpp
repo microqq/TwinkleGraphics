@@ -67,12 +67,19 @@ EventId SampleEventArgsA::ID = std::hash<std::string>{}("SampleEventArgsA");
 
 
 // en.cppreference.com/w/cpp/utility/functional/function.html
-void f(Object::Ptr, BaseEventArgs::Ptr) {  }
+void f(Object::Ptr, BaseEventArgs::Ptr) 
+{
+    Console::LogGTestInfo("Initialise Global f(******) EventHandler.\n");
+}
 void g(Object::Ptr, BaseEventArgs::Ptr) {  }
 void test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)> arg)
 { 
-    void (*const* ptr)(Object::Ptr, BaseEventArgs::Ptr) = 
-        arg.target<void(*)(Object::Ptr, BaseEventArgs::Ptr)>();
+    typedef void (*FPTR)(Object::Ptr, BaseEventArgs::Ptr);
+    // void (*const* ptr)(Object::Ptr, BaseEventArgs::Ptr) = 
+    //     arg.target<void(*)(Object::Ptr, BaseEventArgs::Ptr)>();
+
+    FPTR* ptr= arg.target<FPTR>();
+
     if (ptr && *ptr == f)
     {
         Console::LogGTestInfo("it is the function f\n");
@@ -150,26 +157,29 @@ TEST(EventTests, FireEvent)
         )
     );
 
-    EventHandler::HandlerFuncPointer lambda = [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+    EventHandler::HandlerFuncPointer lambda = 
+        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Add Lambda EventHandler.\n");
     };
-
-    EventHandler::HandlerFuncPointer lambda2 = nullptr;
     Console::LogGTestInfo("Lambda function address: ", size_t(lambda), "\n");
 
     //Lambda handler function
-    EventHandler::HandlerFuncPtr funcPtr = std::make_shared<EventHandler::HandlerFunc>(lambda);
+    EventHandler::HandlerFuncPtr lambdaFuncPtr = std::make_shared<EventHandler::HandlerFunc>(lambda);
     //EventHandler::operator+=
-    handler += funcPtr;
-    // ASSERT_EQ(handler[1] != nullptr, true);
+    handler += lambdaFuncPtr;
+    ASSERT_EQ(handler[1] != nullptr, true);
+    handler -= lambdaFuncPtr;
+    ASSERT_EQ(handler[1] == nullptr, true);
+    handler += lambdaFuncPtr;
+    ASSERT_EQ(handler[1] != nullptr, true);
 
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------1\n");
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
     //EventHandler::operator-=
-    // handler -= funcPtr;
-    // ASSERT_EQ(handler[1], nullptr);
+    handler -= lambdaFuncPtr;
+    ASSERT_EQ(handler[1], nullptr);
 
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------2\n");
@@ -181,18 +191,27 @@ TEST(EventTests, FireEvent)
 
     //Bind class member function
     SampleListener listener;
-    EventHandler::HandlerFunc func = std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
+    // EventHandler::HandlerFunc sampleListenerHFunc = std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
+    EventHandler::HandlerFunc sampleListenerHFunc = std::mem_fn(&SampleListener::OnBaseEvent);
+    EventHandler::HandlerFuncPtr sampleListenerHFuncPtr = std::make_shared<EventHandler::HandlerFunc>(sampleListenerHFunc);
 
     //EventHandler::operator+=
-    handler.AddMemberFunction<SampleListener>(func);
-    handler.AddMemberFunction<SampleListener>(func);
-    // handler -= func;
+    // handler += sampleListenerHFuncPtr;
+    // handler += sampleListenerHFuncPtr;
+    // handler -= sampleListenerHFuncPtr;
+    handler.AddMemberFunction<SampleListener>(sampleListenerHFunc);
+    handler.AddMemberFunction<SampleListener>(sampleListenerHFunc);
+
+    EventHandler::HandlerFunc globalF(f);
+    handler += std::make_shared<EventHandler::HandlerFunc>(globalF);
+    handler += std::make_shared<EventHandler::HandlerFunc>(globalF);
+    handler += std::make_shared<EventHandler::HandlerFunc>(globalF);
 
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------4\n");
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
-    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(f));
-    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(g));
-    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(func));    
+    test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(f));
+    test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(g));
+    // test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(func));
 }

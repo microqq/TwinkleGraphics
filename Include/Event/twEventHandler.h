@@ -8,6 +8,7 @@
 
 #include "twObject.h"
 #include "twEventArgs.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -180,13 +181,13 @@ namespace TwinkleGraphics
 
         HFuncIterator FindHandlerFunc(const HandlerFunc &func)
         {
-            HandlerFuncPointer*const* findPointer = func.target<HandlerFuncPointer *>();
+            HandlerFuncPointer const* findPointer = func.target<HandlerFuncPointer>();
 
             HFuncIterator begin = _handlerFuncList.begin();
             HFuncIterator end = _handlerFuncList.end();
             while (begin != end)
             {
-                HandlerFuncPointer **pointer = (*begin)->target<HandlerFuncPointer *>();
+                HandlerFuncPointer *pointer = (*begin)->target<HandlerFuncPointer>();
                 if (pointer == nullptr)
                 {
                     ++begin;
@@ -212,13 +213,14 @@ namespace TwinkleGraphics
         {
             typedef void(T::*FuncType)(Object::Ptr, BaseEventArgs::Ptr);
 
-            FuncType*const* findPointer = func.template target<FuncType*>();
+            // Console::LogInfo("Member function type: ", func.target_type().name(), "\n");
+            FuncType const* findPointer = func.template target<FuncType>();
 
             HFuncIterator begin = _handlerFuncList.begin();            
             HFuncIterator end = _handlerFuncList.end();
             while(begin != end)
             {
-                FuncType** pointer = (*begin)->template target<FuncType*>();
+                FuncType const* pointer = (*begin)->template target<FuncType>();
                 if(pointer == nullptr)
                 {
                     ++begin;
