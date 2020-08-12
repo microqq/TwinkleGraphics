@@ -18,7 +18,7 @@ public:
 
     void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e)
     {
-        Console::LogGTestInfo("Add OnBaseEvent EventHandler.\n");
+        Console::LogGTestInfo("Add SampleListener OnBaseEvent EventHandler.\n");
     }
 };
 
@@ -190,17 +190,28 @@ TEST(EventTests, FireEvent)
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
     //Bind class member function
-    SampleListener listener;
+    // SampleListener listener;
     // EventHandler::HandlerFunc sampleListenerHFunc = std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
-    EventHandler::HandlerFunc sampleListenerHFunc = std::mem_fn(&SampleListener::OnBaseEvent);
-    EventHandler::HandlerFuncPtr sampleListenerHFuncPtr = std::make_shared<EventHandler::HandlerFunc>(sampleListenerHFunc);
+    // EventHandler::HandlerFuncPtr sampleListenerHFuncPtr = std::make_shared<EventHandler::HandlerFunc>(sampleListenerHFunc);
 
     //EventHandler::operator+=
     // handler += sampleListenerHFuncPtr;
     // handler += sampleListenerHFuncPtr;
     // handler -= sampleListenerHFuncPtr;
-    handler.AddMemberFunction<SampleListener>(sampleListenerHFunc);
-    handler.AddMemberFunction<SampleListener>(sampleListenerHFunc);
+    // handler.AddMemberFunction<SampleListener>(sampleListenerHFunc);
+    // handler.AddMemberFunction<SampleListener>(sampleListenerHFunc);
+
+    EventHandler::HandlerFuncPointer lambda2 = 
+        [](Object::Ptr sender, BaseEventArgs::Ptr args){
+            SampleListener* listener = dynamic_cast<SampleListener*>(sender.get());
+            listener->OnBaseEvent(sender, args);
+    };
+    EventHandler::HandlerFuncPtr lambda2FuncPtr = std::make_shared<EventHandler::HandlerFunc>(lambda2);
+    //EventHandler::operator+=
+    handler += lambda2FuncPtr;
+    handler += lambda2FuncPtr;
+    handler += lambda2FuncPtr;
+    handler -= lambda2FuncPtr;
 
     EventHandler::HandlerFunc globalF(f);
     handler += std::make_shared<EventHandler::HandlerFunc>(globalF);

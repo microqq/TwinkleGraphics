@@ -112,21 +112,21 @@ namespace TwinkleGraphics
             return *this;
         }
 
-        template <class T>
-        void AddMemberFunction(const HandlerFunc func)
-        {
-            HFuncIterator iter = FindMemberHandlerFunc<T>(func);
-            if(iter != _handlerFuncList.end())
-            {
-                return;
-            }
+        // template <class T>
+        // void AddMemberFunction(const HandlerFunc func)
+        // {
+        //     HFuncIterator iter = FindMemberHandlerFunc<T>(func);
+        //     if(iter != _handlerFuncList.end())
+        //     {
+        //         return;
+        //     }
 
-            HandlerFuncPtr funcPtr = std::make_shared<HandlerFunc>(func);
-            if(funcPtr != nullptr)
-            {
-                Add(funcPtr);
-            }
-        }
+        //     HandlerFuncPtr funcPtr = std::make_shared<HandlerFunc>(func);
+        //     if(funcPtr != nullptr)
+        //     {
+        //         Add(funcPtr);
+        //     }
+        // }
 
         EventHandler& operator-=(const HandlerFuncPtr& funcPtr)
         {
@@ -208,39 +208,39 @@ namespace TwinkleGraphics
             return FindHandlerFunc(*funcPtr);
         }
 
-        template <class T>
-        HFuncIterator FindMemberHandlerFunc(const HandlerFunc& func)
-        {
-            typedef void(T::*FuncType)(Object::Ptr, BaseEventArgs::Ptr);
+        // template <class T>
+        // HFuncIterator FindMemberHandlerFunc(const HandlerFunc& func)
+        // {
+        //     typedef void(T::*FuncType)(Object::Ptr, BaseEventArgs::Ptr);
 
-            // Console::LogInfo("Member function type: ", func.target_type().name(), "\n");
-            FuncType const* findPointer = func.template target<FuncType>();
+        //     // Console::LogInfo("Member function type: ", func.target_type().name(), "\n");
+        //     FuncType const* findPointer = func.template target<FuncType>();
 
-            HFuncIterator begin = _handlerFuncList.begin();            
-            HFuncIterator end = _handlerFuncList.end();
-            while(begin != end)
-            {
-                FuncType const* pointer = (*begin)->template target<FuncType>();
-                if(pointer == nullptr)
-                {
-                    ++begin;
-                    continue;
-                }
+        //     HFuncIterator begin = _handlerFuncList.begin();            
+        //     HFuncIterator end = _handlerFuncList.end();
+        //     while(begin != end)
+        //     {
+        //         FuncType const* pointer = (*begin)->template target<FuncType>();
+        //         if(pointer == nullptr)
+        //         {
+        //             ++begin;
+        //             continue;
+        //         }
 
-                if(*pointer == *findPointer)
-                {
-                    return begin;
-                }
-                ++begin;
-            }
-            return end;
-        }
+        //         if(*pointer == *findPointer)
+        //         {
+        //             return begin;
+        //         }
+        //         ++begin;
+        //     }
+        //     return end;
+        // }
 
-        template <class T>
-        HFuncIterator FindMemberHandlerFunc(const HandlerFuncPtr& funcPtr)
-        {            
-            return FindMemberHandlerFunc<T>(*funcPtr);
-        }
+        // template <class T>
+        // HFuncIterator FindMemberHandlerFunc(const HandlerFuncPtr& funcPtr)
+        // {            
+        //     return FindMemberHandlerFunc<T>(*funcPtr);
+        // }
 
     private:
         std::vector<HandlerFuncPtr> _handlerFuncList;
