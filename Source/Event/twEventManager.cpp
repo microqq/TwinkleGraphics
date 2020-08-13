@@ -15,35 +15,48 @@ namespace TwinkleGraphics
         _handlerCollection.clear();
     }
 
-    void EventManager::Subscribe(EventId id, EventHandler::HandlerFunc func)
+    /**
+     *   
+     */
+    void EventManager::Subscribe(EventId id, const EventHandler::HandlerFunc& func)
     {
-        // EventHandler* handler = FindFirstEventHandler(id);
-        EventHandler::HandlerFuncPtr funcPtr = std::make_shared<EventHandler::HandlerFunc>(func);
-        Subscribe(id, funcPtr);
+        using MIterator = MultiEventHandlerCollection::iterator;
+        MIterator iter = _handlerCollection.lower_bound(id);
+        MIterator end = _handlerCollection.upper_bound(id);
+
+        while(iter != end)
+        {
+            bool find = false;
+            iter->second.FindHandlerFunc(func, find);
+            if(find)
+            {
+                return;
+            }
+            ++iter;
+        }
+
+        EventHandler h(func);
+        _handlerCollection.insert(std::make_pair(id, h));
     }
 
-    void EventManager::Subscribe(EventId id, EventHandler::HandlerFuncPtr funcPtr)
-    {
-        EventHandler* handler = FindFirstEventHandler(id);
-        if(handler != nullptr)
-        {
-            (*handler) += funcPtr;
-        }
-        else
-        {
-            EventHandler h(funcPtr);
-            _handlerCollection.insert(std::make_pair(id, h));
-        }
-    }
-
+    /**
+     * Duplicate handler are not allowed.
+     */
     void EventManager::Subscribe(EventId id, const EventHandler& handler)
     {
         using MIterator = MultiEventHandlerCollection::iterator;
-        MIterator iter = _handlerCollection.find(id);
-        if(iter != _handlerCollection.end())
+        MIterator iter = _handlerCollection.lower_bound(id);
+        MIterator end = _handlerCollection.upper_bound(id);
+
+        while(iter != end)
         {
-             return;           
+            if(iter->second == handler)
+            {
+                return;
+            }
+            ++iter;
         }
+
         _handlerCollection.insert(std::make_pair(id, handler));
     }
 
@@ -64,12 +77,10 @@ namespace TwinkleGraphics
             ++iter;
         }
 
-        _handlerCollection.erase(iter);
-    }
-
-    void EventManager::UnSubscribe(EventId id, const EventHandler::HandlerFuncPtr& funcPtr)
-    {
-        UnSubscribe(id, (*funcPtr));
+        if(iter != end)
+        {
+            _handlerCollection.erase(iter);
+        }
     }
 
     void EventManager::UnSubscribe(EventId id, const EventHandler& handler)
@@ -87,7 +98,10 @@ namespace TwinkleGraphics
             ++iter;
         }
 
-        _handlerCollection.erase(iter);
+        if(iter != end)
+        {
+            _handlerCollection.erase(iter);
+        }
     }
 
     void EventManager::Fire(Object::Ptr sender, BaseEventArgs::Ptr args)

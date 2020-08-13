@@ -1,5 +1,5 @@
 {
-    "editor.fontSize": 16,
+    "editor.fontSize": 14,
     "files.associations": {
         "filesystem": "cpp",
         "xhash": "cpp",
@@ -70,7 +70,10 @@
         "xstddef": "cpp",
         "xtr1common": "cpp",
         "regex": "cpp",
-        "resumable": "cpp"
+        "resumable": "cpp",
+        "codecvt": "cpp",
+        "fstream": "cpp",
+        "xmemory0": "cpp"
     },
     "editor.tokenColorCustomizations": {
         "textMateRules": [
