@@ -22,9 +22,9 @@ namespace TwinkleGraphics
         EventManager();
         ~EventManager();
 
-        void Subscribe(EventId id, const EventHandler::HandlerFunc& func);
+        void Subscribe(EventId id, const HandlerFunction& func);
         void Subscribe(EventId id, const EventHandler& handler);
-        void UnSubscribe(EventId id, const EventHandler::HandlerFunc& func);
+        void UnSubscribe(EventId id, const HandlerFunction& func);
         void UnSubscribe(EventId id, const EventHandler& handler);
 
         void Fire(Object::Ptr sender, BaseEventArgs::Ptr args);

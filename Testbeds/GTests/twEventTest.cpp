@@ -9,19 +9,6 @@
 
 using namespace TwinkleGraphics;
 
-class SampleListener
-{
-public:
-    SampleListener(){}
-    ~SampleListener(){}
-
-    void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e) const
-    {
-        Console::LogGTestInfo("Add SampleListener OnBaseEvent EventHandler.\n");
-    }
-};
-DefMemFuncType(SampleListener);
-
 
 class SampleEventArgs : public BaseEventArgs
 {
@@ -67,6 +54,56 @@ public:
 EventId SampleEventArgsA::ID = std::hash<std::string>{}("SampleEventArgsA");
 
 
+
+class SampleListener
+{
+public:
+    SampleListener()
+        : _handler()
+        , _wrapOnBaseEvent(this, &SampleListener::OnBaseEvent)
+    {
+        Subscribe();
+        _sequence = counter;
+        ++counter;
+    }
+    ~SampleListener(){}
+
+    void Subscribe()
+    {
+        _handler += _wrapOnBaseEvent;
+        _handler += _wrapOnBaseEvent;
+        _handler += _wrapOnBaseEvent;
+
+        EventManagerInst eventMgrInst;
+        eventMgrInst->Subscribe(SampleEventArgsA::ID, _handler);
+
+        auto bindFunc = std::bind(&SampleListener::OnBaseEvent, this, std::placeholders::_1, std::placeholders::_2);
+        using BindFuncType = decltype(bindFunc);
+    }
+
+    void UnSubscribe()
+    {
+        EventManagerInst eventMgrInst;
+        eventMgrInst->UnSubscribe(SampleEventArgsA::ID, _handler);
+    }
+
+    void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e) const
+    {
+        Console::LogGTestInfo("SampleListener Instance ", _sequence, "'s Handler(Id) ", _handler.GetHandlerId(), " Add OnBaseEvent EventHandler.\n");
+    }
+
+
+    EventHandler _handler;
+    HandlerFunctionWrapper<SampleListener> _wrapOnBaseEvent;
+    int _sequence = 0;
+
+    static int counter;
+};
+DefMemFuncType(SampleListener);
+int SampleListener::counter = 0;
+
+
+
 // en.cppreference.com/w/cpp/utility/functional/function/target.html
 void f(Object::Ptr, BaseEventArgs::Ptr) 
 {
@@ -92,7 +129,21 @@ void test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)> arg)
     else if(ptr)
     {
         Console::LogGTestInfo("it is not nullptr\n");
-    }    
+    }
+
+    if(ptr == nullptr)
+    {
+        typedef void (SampleListener::*MEMFPTR)(Object::Ptr, BaseEventArgs::Ptr) const;
+        MEMFPTR fnPtr = &SampleListener::OnBaseEvent;
+        
+        using BindFunctionType = decltype(std::bind((MEMFPTR)nullptr, (SampleListener*)nullptr, std::placeholders::_1, std::placeholders::_2));
+
+        auto pptr= arg.target<BindFunctionType>();
+        if(pptr != nullptr)
+        {
+            Console::LogGTestInfo("it is a class member function, and is not nullptr\n");
+        }
+    }
 }
 
 
@@ -105,9 +156,9 @@ struct Foo {
 
 TEST(EventTests, AddEventHandler)
 {
-    //EventHandler(const HandlerFunc& func)
+    //EventHandler(const HandlerFunction& func)
     EventHandler handler(
-            EventHandler::HandlerFunc(
+            HandlerFunction(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
                 Console::LogGTestInfo("Initialise EventHandler.\n");
             }
@@ -115,12 +166,12 @@ TEST(EventTests, AddEventHandler)
     );
 
     //Lambda handler function
-    EventHandler::HandlerFuncPointer lambda = 
+    HandlerFuncPointer lambda = 
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
     };
 
-    EventHandler::HandlerFunc lambdaFunc(lambda);
+    HandlerFunction lambdaFunc(lambda);
     //EventHandler::operator+=
     handler += lambdaFunc;
     ASSERT_EQ(handler[1] != nullptr, true);
@@ -131,7 +182,7 @@ TEST(EventTests, AddEventHandler)
 
     // We won't use std::bind binding class member function
     SampleListener listener;
-    // EventHandler::HandlerFunc baseFunc =
+    // HandlerFunction baseFunc =
     //     std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
     // handlerRef += baseFunc;
 
@@ -158,9 +209,9 @@ TEST(EventTests, FireEvent)
     EventManagerInst eventMgrInst;
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
 
-    //EventHandler(const HandlerFunc& func)
+    //EventHandler(const HandlerFunction& func)
     EventHandler handler(
-        EventHandler::HandlerFunc(
+        HandlerFunction(
             [](Object::Ptr sender, BaseEventArgs::Ptr args) {
                 Console::LogGTestInfo("Initialise EventHandler.\n");
             }
@@ -168,12 +219,14 @@ TEST(EventTests, FireEvent)
     );
 
     //Lambda handler function
-    EventHandler::HandlerFuncPointer lambda = 
+    HandlerFuncPointer lambda = 
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
     };
     Console::LogGTestInfo("Lambda function address: ", size_t(lambda), "\n");
-    EventHandler::HandlerFunc lambdaFunc(lambda);
+    HandlerFunction lambdaFunc(lambda);
+
+    // HandlerFunction lambdaFunc_1 = std::bind(lambda, std::placeholders::_1, std::placeholders::_2);
 
     //EventHandler::operator+=
     handler += lambdaFunc;
@@ -209,29 +262,50 @@ TEST(EventTests, FireEvent)
     eventMgrInst->FireImmediately(nullptr, sampleEventA);
 
     //Bind class member function
-    // SampleListener listener;
-    // EventHandler::HandlerFunc sampleListenerHFunc = std::bind(&SampleListener::OnBaseEvent, &listener, std::placeholders::_1, std::placeholders::_2);
-    EventHandler::HandlerFuncPointer lambda2 = 
-        [](Object::Ptr sender, BaseEventArgs::Ptr args){
-            SampleListener* listener = dynamic_cast<SampleListener*>(sender.get());
-            listener->OnBaseEvent(sender, args);
-    };
-    EventHandler::HandlerFunc lambda2Func(lambda2);
-    handler += lambda2Func;
-    handler += lambda2Func;
-    handler += lambda2Func;
-    handler -= lambda2Func;
+    SampleListener* listener = new SampleListener;
+    SampleListener* listener2 = new SampleListener;
+    listener2->UnSubscribe();
+    SampleListener* listener3 = new SampleListener;
 
-    EventHandlerCallBack(lambda3, SampleListener, OnBaseEvent);
-    RegisterEventHandlerCallBack(handler, lambda3);
-    UnRegisterEventHandlerCallBack(handler, lambda3);
-    RegisterEventHandlerCallBack(handler, lambda3);
+    HandlerFunction sampleListenerHFunc = std::bind(&SampleListener::OnBaseEvent, listener, std::placeholders::_1, std::placeholders::_2);
+    // handler += sampleListenerHFunc;
+
+    typedef void (SampleListener::*MEMFPTR)(Object::Ptr, BaseEventArgs::Ptr) const;
+
+    void* callback = (void*)(&SampleListener::OnBaseEvent);
+    MEMFPTR* trueCallback = static_cast<MEMFPTR*>(callback);
+    Console::LogGTestInfo(typeid(trueCallback).name(), "\n");
+
+    // EventHandler::HandlerFunctionWrapper<SampleListener> wrapper;
+    // wrapper.t = listener;
+    // wrapper.memFunc = &SampleListener::OnBaseEvent;
+    // handler += wrapper;
+
+    // EventHandler::HandlerFunctionWrapper<SampleListener> wrapper2;
+    // wrapper2.t = listener2;
+    // wrapper2.memFunc = &SampleListener::OnBaseEvent;
+    // handler += wrapper2;
+
+    // HandlerFuncPointer lambda2 = 
+    //     [](Object::Ptr sender, BaseEventArgs::Ptr args){
+    //         SampleListener* listener = dynamic_cast<SampleListener*>(sender.get());
+    //         listener->OnBaseEvent(sender, args);
+    // };
+    // HandlerFunction lambda2Func(lambda2);
+    // handler += lambda2Func; 
+    // handler += lambda2Func;
+    // handler += lambda2Func;
+    // handler -= lambda2Func;
+
+    // EventHandlerCallBack(lambda3, SampleListener, OnBaseEvent);
+    // RegisterEventHandlerCallBack(handler, lambda3);
+    // UnRegisterEventHandlerCallBack(handler, lambda3);
+    // RegisterEventHandlerCallBack(handler, lambda3);
     
-    EventHandler::HandlerFunc lambda3Func(f);
-    handler += lambda3Func;
-    handler += lambda3Func;
-    handler += lambda3Func;
-
+    // HandlerFunction lambda3Func(f);
+    // handler += lambda3Func;
+    // handler += lambda3Func;
+    // handler += lambda3Func;
 
     eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
@@ -250,5 +324,5 @@ TEST(EventTests, FireEvent)
     // en.cppreference.com/w/cpp/utility/functional/function/target.html
     test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(f));
     test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(g));
-    test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(lambda3));
+    test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(sampleListenerHFunc));
 }
