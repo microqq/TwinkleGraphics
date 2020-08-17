@@ -17,51 +17,19 @@
 #define DefMemFuncType(T) MemFuncTypePart1 MemFuncTypePart2(T)MemFuncTypePart3
 #define MemFuncType(T) T##MemFuncType
 
-#define EventHandlerCallBack(CALLBACK, CLASS_NAME, MEMBER_FUNC)              \
-    HandlerFuncPointer CALLBACK =                                            \
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {                    \
-            CLASS_NAME *listener = dynamic_cast<CLASS_NAME *>(sender.get()); \
-            listener->MEMBER_FUNC(sender, args);                             \
-        };
-
-#define RegisterEventHandlerCallBack(HANDLER, CALLBACK) \
-    {                                                   \
-        HandlerFunction func(CALLBACK);                 \
-        HANDLER += func;                                \
-    }
-
-#define UnRegisterEventHandlerCallBack(HANDLER, CALLBACK) \
-    {                                                     \
-        HandlerFunction func(CALLBACK);                   \
-        HANDLER -= func;                                  \
-    }
-
 namespace TwinkleGraphics
 {
     typedef unsigned int HandlerId;
     typedef void (*HandlerFuncPointer)(Object::Ptr, BaseEventArgs::Ptr);
     typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> HandlerFunction;
-
-    template <class T>
-    struct HandlerFunctionWrapper
-    {
-        typedef void (T::*TFuncType)(Object::Ptr, BaseEventArgs::Ptr) const;
-
-        HandlerFunctionWrapper(T* t, TFuncType func)
-            : handlerFunction(std::bind(func, t, std::placeholders::_1, std::placeholders::_2))
-        {
-        }
-
-        HandlerFunction handlerFunction;
-    };
+    typedef std::shared_ptr<HandlerFunction> HandlerFunctionPtr;
 
     class EventHandler : public Object
     {
     public:
-        typedef std::shared_ptr<HandlerFunction> HandlerFuncPtr;
         typedef std::shared_ptr<EventHandler> Ptr;
 
-        using HFuncIterator = std::vector<HandlerFunction>::iterator;
+        using HFuncIterator = std::vector<HandlerFunctionPtr>::iterator;
 
         EventHandler()
             : Object()
@@ -69,7 +37,7 @@ namespace TwinkleGraphics
             _handlerId = ++HandlerIdCounter;
         }
 
-        EventHandler(const HandlerFunction& func)
+        EventHandler(const HandlerFunctionPtr& func)
             : Object()
         {
             _handlerFuncList.push_back(func);
@@ -95,7 +63,7 @@ namespace TwinkleGraphics
             _handlerFuncList.clear();
         }
 
-        const HandlerFunction& operator[](int index)
+        const HandlerFunctionPtr& operator[](int index)
         {
             int size = _handlerFuncList.size();
             assert(index >= 0 && index < size);
@@ -119,25 +87,7 @@ namespace TwinkleGraphics
             return *this;
         }
 
-        template <class T>
-        EventHandler& operator+=(const HandlerFunctionWrapper<T>& wrapper)
-        {
-            typedef void (T::*TFuncType)(Object::Ptr, BaseEventArgs::Ptr) const;
-            using BindFunctionType = decltype(std::bind((TFuncType)nullptr, (T*)nullptr, std::placeholders::_1, std::placeholders::_2));
-
-            const HandlerFunction& func = wrapper.handlerFunction;
-            HFuncIterator iter = FindHandlerFunc<BindFunctionType>(func);
-            if (iter != _handlerFuncList.end())
-            {
-                return *this;
-            }
-
-            Add(func);
-
-            return *this;
-        }
-
-        EventHandler& operator+=(const HandlerFunction& func)
+        EventHandler& operator+=(const HandlerFunctionPtr& func)
         {
             HFuncIterator iter = FindHandlerFunc(func);
             if (iter != _handlerFuncList.end())
@@ -150,30 +100,20 @@ namespace TwinkleGraphics
             return *this;
         }
 
-        template <class T>
-        EventHandler& operator-=(const HandlerFunctionWrapper<T>& wrapper)
-        {
-            typedef void (T::*TFuncType)(Object::Ptr, BaseEventArgs::Ptr) const;
-            using BindFunctionType = decltype(std::bind((TFuncType)nullptr, (T*)nullptr, std::placeholders::_1, std::placeholders::_2));
-
-            const HandlerFunction& func = wrapper.handlerFunction;
-            HFuncIterator iter = FindHandlerFunc<BindFunctionType>(func);
-            if (iter != _handlerFuncList.end())
-            {
-                Remove(iter);
-            }
-
-            return *this;
-        }
-
-
-        EventHandler& operator-=(const HandlerFunction& func)
+        EventHandler& operator-=(const HandlerFunctionPtr& func)
         {
             HFuncIterator iter = FindHandlerFunc(func);
             if(iter != _handlerFuncList.end())
             {
                 Remove(iter);
             }
+
+            return *this;
+        }
+
+        EventHandler &operator-=(int index)
+        {
+            Remove(index);
 
             return *this;
         }
@@ -191,7 +131,7 @@ namespace TwinkleGraphics
         inline HandlerId GetHandlerId() const { return _handlerId; }
         inline int GetHandlerFuncSize() { return _handlerFuncList.size(); }
 
-        void FindHandlerFunc(const HandlerFunction& func, bool& finded)
+        void FindHandlerFunc(const HandlerFunctionPtr& func, bool& finded)
         {
             HFuncIterator iter = FindHandlerFunc(func);
             finded = (iter != _handlerFuncList.end());
@@ -221,12 +161,41 @@ namespace TwinkleGraphics
         {
             for(auto func : _handlerFuncList)
             {
-                func(sender, args);
+                (*func)(sender, args);
             }
         }
 
+        HFuncIterator FindHandlerFunc(const HandlerFunctionPtr &func)
+        {
+            HFuncIterator begin = _handlerFuncList.begin();
+            HFuncIterator end = _handlerFuncList.end();
+
+            if(func == nullptr)
+            {
+                return end;
+            }
+            // HandlerFunction* funcPointer = *func;
+
+            while (begin != end)
+            {
+                if (*begin == nullptr)
+                {
+                    ++begin;
+                    continue;
+                }
+
+                HandlerFunctionPtr pointer = *begin;
+                if (pointer == func)
+                {
+                    return begin;
+                }
+                ++begin;
+            }
+            return end;
+        }
+
     private:
-        void Add(const HandlerFunction& func)
+        void Add(const HandlerFunctionPtr& func)
         {
             _handlerFuncList.push_back(func);
         }
@@ -238,99 +207,11 @@ namespace TwinkleGraphics
             }
         }
 
-        template <class TargetType>
-        HFuncIterator FindHandlerFunc(const HandlerFunction &func)
-        {
-            HFuncIterator begin = _handlerFuncList.begin();
-            HFuncIterator end = _handlerFuncList.end();
-
-            const auto &findPointer = func.target<TargetType*>();
-            if(findPointer == nullptr)
-            {
-                return end;
-            }
-
-            while (begin != end)
-            {
-                const auto& pointer = (*begin).target<TargetType*>();
-                if (pointer == nullptr)
-                {
-                    ++begin;
-                    continue;
-                }
-
-                if (pointer == findPointer)
-                {
-                    return begin;
-                }
-                ++begin;
-            }
-            return end;
-        }
-
-
-        HFuncIterator FindHandlerFunc(const HandlerFunction &func)
-        {
-            HFuncIterator begin = _handlerFuncList.begin();
-            HFuncIterator end = _handlerFuncList.end();
-
-            HandlerFuncPointer const* findPointer = func.target<HandlerFuncPointer>();
-            if(findPointer == nullptr)
-            {
-                return end;
-            }
-
-            while (begin != end)
-            {
-                HandlerFuncPointer *pointer = (*begin).target<HandlerFuncPointer>();
-                if (pointer == nullptr)
-                {
-                    ++begin;
-                    continue;
-                }
-
-                if (*pointer == *findPointer)
-                {
-                    return begin;
-                }
-                ++begin;
-            }
-            return end;
-        }
-
-        // template <class T>
-        // HFuncIterator FindMemberHandlerFunc(const HandlerFunction& func)
-        // {
-        //     typedef void(T::*FuncType)(Object::Ptr, BaseEventArgs::Ptr);
-
-        //     // Console::LogInfo("Member function type: ", func.target_type().name(), "\n");
-        //     FuncType const* findPointer = func.template target<FuncType>();
-
-        //     HFuncIterator begin = _handlerFuncList.begin();            
-        //     HFuncIterator end = _handlerFuncList.end();
-        //     while(begin != end)
-        //     {
-        //         FuncType const* pointer = (*begin)->template target<FuncType>();
-        //         if(pointer == nullptr)
-        //         {
-        //             ++begin;
-        //             continue;
-        //         }
-
-        //         if(*pointer == *findPointer)
-        //         {
-        //             return begin;
-        //         }
-        //         ++begin;
-        //     }
-        //     return end;
-        // }
-
     private:
         // try to traverse std::vector<std::function<***>> find element makes compile error : "no match for 'operator=='"
         // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
 
-        std::vector<HandlerFunction> _handlerFuncList;
+        std::vector<HandlerFunctionPtr> _handlerFuncList;
         HandlerId _handlerId;
         static std::atomic_uint HandlerIdCounter;
     };

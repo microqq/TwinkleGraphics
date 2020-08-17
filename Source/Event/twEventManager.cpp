@@ -18,7 +18,7 @@ namespace TwinkleGraphics
     /**
      *   
      */
-    void EventManager::Subscribe(EventId id, const HandlerFunction& func)
+    void EventManager::Subscribe(EventId id, const HandlerFunctionPtr& func)
     {
         using MIterator = MultiEventHandlerCollection::iterator;
         MIterator iter = _handlerCollection.lower_bound(id);
@@ -26,15 +26,13 @@ namespace TwinkleGraphics
 
         while(iter != end)
         {
-            bool find = false;
-            iter->second.FindHandlerFunc(func, find);
-            if(find)
+            if(*(iter->second.FindHandlerFunc(func)) != nullptr)
             {
-                return;
+                break;
             }
             ++iter;
         }
-
+        
         EventHandler h(func);
         _handlerCollection.insert(std::make_pair(id, h));
     }
@@ -60,7 +58,7 @@ namespace TwinkleGraphics
         _handlerCollection.insert(std::make_pair(id, handler));
     }
 
-    void EventManager::UnSubscribe(EventId id, const HandlerFunction& func)
+    void EventManager::UnSubscribe(EventId id, const HandlerFunctionPtr& func)
     {
         using MIterator = MultiEventHandlerCollection::iterator;
         MIterator iter = _handlerCollection.lower_bound(id);
@@ -68,9 +66,7 @@ namespace TwinkleGraphics
 
         while(iter != end)
         {
-            bool find = false;
-            iter->second.FindHandlerFunc(func, find);
-            if(find)
+            if(*(iter->second.FindHandlerFunc(func)) != nullptr)
             {
                 break;
             }
