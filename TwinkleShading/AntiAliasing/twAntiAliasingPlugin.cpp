@@ -3,27 +3,36 @@
 #include "twCommon.h"
 #include "twPluginManager.h"
 
-#include  "twAntiAliasing.h"
+#include "twAntiAliasing.h"
 
 namespace TwinkleGraphics
 {
-    static AntiAliasing* plugin = nullptr;
-    extern "C" __TWExport Plugin *InstallPlugin(PluginManager *);
-    extern "C" __TWExport void UnInstallPlugin(PluginManager*);
+    static AntiAliasing *plugin = nullptr;
 
-    extern "C" __TWExport Plugin* InstallPlugin(PluginManager* pluginMgr)
+#ifdef __cplusplus
+    extern "C"
     {
-        std::string name = "4.AntiAliasing";
-        plugin = new AntiAliasing(name);
+#endif
+        __TWExport Plugin *InstallPlugin(PluginManager *);
+        __TWExport void UnInstallPlugin(PluginManager *);
 
-        pluginMgr->InstallPlugin(plugin);
+        __TWExport Plugin *InstallPlugin(PluginManager *pluginMgr)
+        {
+            std::string name = "4.AntiAliasing";
+            plugin = new AntiAliasing(name);
 
-        return plugin;
+            pluginMgr->InstallPlugin(plugin);
+
+            return plugin;
+        }
+
+        __TWExport void UnInstallPlugin(PluginManager *pluginMgr)
+        {
+            pluginMgr->UnInstallPlugin(plugin);
+            SAFE_DEL(plugin);
+        }
+#ifdef __cplusplus
     }
+#endif
 
-    extern "C" __TWExport void UnInstallPlugin(PluginManager* pluginMgr)
-    {
-        pluginMgr->UnInstallPlugin(plugin);
-        SAFE_DEL(plugin);
-    }
 } // namespace TwinkleGraphics

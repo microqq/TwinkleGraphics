@@ -3,6 +3,7 @@
 #include "twDynLib.h"
 
 #include "twPluginManager.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -77,7 +78,7 @@ void PluginManager::InstallPlugin(Plugin *plugin)
     }
 
     plugin->Install();
-    std::cout << plugin->GetName() << std::endl;
+    Console::LogInfo(plugin->GetName(), "\n");
     _plugins.insert(MapPlugins::value_type(plugin->GetName(), plugin));
 }
 

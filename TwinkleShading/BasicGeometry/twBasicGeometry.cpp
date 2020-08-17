@@ -48,8 +48,9 @@ void BasicGeometryView::Initialize()
     this->SetViewCamera(camera);
 
     _cameraControl = std::make_shared<FirstPersonControl>(camera);
-    (dynamic_cast<FirstPersonControl*>(_cameraControl.get()))->SetMinDistance(1.0f);
+    (dynamic_cast<FirstPersonControl*>(_cameraControl.get()))->SetMinDistance(-5000.0f);
     (dynamic_cast<FirstPersonControl*>(_cameraControl.get()))->SetMaxDistance(5000.0f);
+    (dynamic_cast<FirstPersonControl*>(_cameraControl.get()))->SetDistance(25.0f);
     this->SetCameraControl(_cameraControl);
 
     //create vertex buffer object

@@ -29,7 +29,7 @@
  */
 #if defined __linux__
   #define __TWExport __attribute__ ((__visibility__("default")))
-#elif defined _WIN32 || _WIN64
+#elif defined _WIN32
     #define __TWExport __declspec(dllexport)
 //   #ifdef BUILDING_DLL
 //     #define __TWExport __declspec(dllexport)

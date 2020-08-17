@@ -3,6 +3,7 @@
 
 #include "twModelReader.h"
 #include "twMaterialInstance.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -27,7 +28,7 @@ namespace TwinkleGraphics
         // check for errors
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
-            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+            Console::LogError("ERROR::ASSIMP:: ", importer.GetErrorString(), "\n");
             return ReadResult<Model::Ptr>(ReadResult<Model::Ptr>::Status::FAILED);
         }
 
@@ -330,9 +331,7 @@ namespace TwinkleGraphics
 
         char* vertMarco = const_cast<char*>(vertLayoutMacros.c_str());
 
-#ifdef _DEBUG
-        std::cout << "ModelReader: Process material vertex shader macros\n" << vertMarco << std::endl;
-#endif
+        Console::LogInfo("ModelReader: Process material vertex shader macros\n", vertMarco, "\n");
 
         char* vertMacros[] = { vertMarco };
         ShaderReadInfo shaderReadInfos[] = 

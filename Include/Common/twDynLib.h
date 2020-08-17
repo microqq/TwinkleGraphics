@@ -12,7 +12,7 @@
 
 #ifdef __linux__
 #include <dlfcn.h>
-#elif _WIN32 || _WIN64
+#elif _WIN32
 #include <windows.h>
 #endif
 
@@ -23,7 +23,7 @@
 #    define DYNLIB_LOAD( a ) dlopen( a, RTLD_LAZY | RTLD_GLOBAL)
 #    define DYNLIB_GETSYM( a, b ) dlsym( a, b )
 #    define DYNLIB_UNLOAD( a ) dlclose( a )
-#elif defined _WIN32 || _WIN64
+#elif defined _WIN32
 struct HINSTANCE__;
 typedef struct HINSTANCE__* hInstance;
 #    define DYNLIB_HANDLE hInstance

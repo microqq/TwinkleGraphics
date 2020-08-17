@@ -1,6 +1,7 @@
 
 
 #include "twRenderTexture.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -83,7 +84,9 @@ void RenderTexture::Create(FrameBufferObject::Ptr framebuf)
     }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "FrameBuffer: Framebuffer is not complete!" << std::endl;
+    {
+        Console::LogError("FrameBuffer: Framebuffer is not complete!\n");
+    }
 
     _framebuf->UnBind();
 }

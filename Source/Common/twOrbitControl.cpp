@@ -78,8 +78,9 @@ void OrbitControl::Zoom(glm::vec2 factor)
 
     offset = _distance - offset;
 
-    glm::mat3 rotateMat = glm::mat3_cast(_camera->GetTransform()->GetLocalToWorldOrientation());
-    _camera->Translate(rotateMat * glm::vec3(0.0f, 0.0f, offset));
+    // glm::mat3 rotateMat = glm::mat3_cast(_camera->GetTransform()->GetLocalToWorldOrientation());
+    // _camera->Translate(rotateMat * glm::vec3(0.0f, 0.0f, offset));
+    _camera->Translate(glm::vec3(0.0f, 0.0f, offset));
 
     _dirty = true;
 }
@@ -104,8 +105,8 @@ void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2)
     glm::vec2 p = spherical_p2 - spherical_p1;
     glm::vec3 d = glm::vec3(-p.x, p.y, 0.0f);
 
-    glm::mat3 rotateMat = glm::mat3_cast(_camera->GetTransform()->GetLocalToWorldOrientation());
-    d = rotateMat * d;
+    // glm::mat3 rotateMat = glm::mat3_cast(_camera->GetTransform()->GetLocalToWorldOrientation());
+    // d = rotateMat * d;
 
     _camera->Translate(d);
 
@@ -151,8 +152,8 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
         _rotateY += theta_y * factor;
     }
 
-    _camera->SetOrientation(glm::identity<glm::quat>());
-    _camera->Rotate(glm::vec3(_rotateY, -_rotateX, 0.0f));
+    _transform->SetOrientation(glm::identity<glm::quat>());
+    _transform->Rotate(glm::vec3(+_rotateY, -_rotateX, 0.0f));
 
     _dirty = true;
 }

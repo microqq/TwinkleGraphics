@@ -33,9 +33,11 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twUniform.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twSceneManagement.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twSceneManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRenderTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twHWBuffers.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twConsoleLog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twRingBuffer.cpp
 )
 
 SET(Util_SRC

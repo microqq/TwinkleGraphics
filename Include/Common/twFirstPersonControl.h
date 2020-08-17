@@ -32,8 +32,10 @@ public:
         , int32 action
         , int32 mods) override;
 
+protected:
+
 private:
-    float _stepX;
+    float _stepX; 
     float _stepZ;
 }; 
 } // namespace TwinkleGraphics

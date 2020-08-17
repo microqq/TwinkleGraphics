@@ -21,6 +21,7 @@ target_include_directories(twAntiAliasing PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/ImGuiFileDialog
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Common
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/UI
+    ${CMAKE_CURRENT_LIST_DIR}/../../Include/Event
     ${CMAKE_CURRENT_LIST_DIR}
 )
 

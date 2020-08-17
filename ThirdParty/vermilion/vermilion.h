@@ -5,11 +5,9 @@
 #include <string.h>
 #include <glew/glew.h>
 
-
 #ifdef _DEBUG
     #include <iostream>
 #endif
-
 
 #define BUFFER_OFFSET(a) ((void*)(a))
 
@@ -99,6 +97,9 @@ struct vglImageData
         , sliceStride(copy.sliceStride)
         , totalDataSize(copy.totalDataSize)
     {
+#ifdef _DEBUG
+        // std::cout << "Vermilion: copy constructor executed." << std::endl;
+#endif        
         swizzle[0] = copy.swizzle[0];
         swizzle[1] = copy.swizzle[1];
         swizzle[2] = copy.swizzle[2];
@@ -126,27 +127,30 @@ struct vglImageData
         , totalDataSize(copy.totalDataSize)
     {
 #ifdef _DEBUG
-    std::cout << "Vermilion: move constructor executed." << std::endl;
+        // std::cout << "Vermilion: move constructor executed." << std::endl;
 #endif
-        swizzle[0] = copy.swizzle[0];
-        swizzle[1] = copy.swizzle[1];
-        swizzle[2] = copy.swizzle[2];
-        swizzle[3] = copy.swizzle[3];
+        // swizzle[0] = copy.swizzle[0];
+        // swizzle[1] = copy.swizzle[1];
+        // swizzle[2] = copy.swizzle[2];
+        // swizzle[3] = copy.swizzle[3];
 
-        for(int i = 0; i < mipLevels; i++)
-        {
-            mip[i].data = copy.mip[i].data;
-            mip[i].width = copy.mip[i].width;
-            mip[i].height = copy.mip[i].height;
-            mip[i].depth = copy.mip[i].depth;
-            mip[i].mipStride = copy.mip[i].mipStride;
+        // for(int i = 0; i < mipLevels; i++)
+        // {
+        //     mip[i].data = copy.mip[i].data;
+        //     mip[i].width = copy.mip[i].width;
+        //     mip[i].height = copy.mip[i].height;
+        //     mip[i].depth = copy.mip[i].depth;
+        //     mip[i].mipStride = copy.mip[i].mipStride;
 
-            copy.mip[i].data = nullptr;
-        }
+        //     copy.mip[i].data = nullptr;
+        // }
     }
 
     vglImageData& operator =(const vglImageData& data)
     {
+#ifdef _DEBUG
+        // std::cout << "Vermilion: operator= executed." << std::endl;
+#endif        
         target = data.target;
         internalFormat = data.internalFormat;
         format = data.format;

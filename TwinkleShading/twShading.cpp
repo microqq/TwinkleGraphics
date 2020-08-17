@@ -36,7 +36,7 @@ int main(int, char **)
     PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.so"));
     PluginPaths.insert(MapPlugins::value_type("3.TextureExplore", "Output/libs/twShading/libtwTextureExplore.so"));
     PluginPaths.insert(MapPlugins::value_type("4.AntiAliasing", "Output/libs/twShading/libtwAntiAliasing.so"));
-#elif defined _WIN32 || _WIN64
+#elif defined _WIN32
     PluginPaths.insert(MapPlugins::value_type("1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.dll"));
     PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.dll"));
     PluginPaths.insert(MapPlugins::value_type("3.TextureExplore", "Output/libs/twShading/libtwTextureExplore.dll"));

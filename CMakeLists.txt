@@ -26,24 +26,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # CHECK_CXX_SYMBOL_EXISTS(std::filesystem::path::preferred_separator filesystem cxx17fs)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-endif()
-
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     SET(GLEWLIBDIR $ENV{GLEW_LIB_PATH})
     SET(GLFWLIBDIR $ENV{GLFW_LIB_PATH})
+    SET(GTESTINCLUDEDIR $ENV{GTESTINCLUDE})
+    SET(GTESTLIBDIR $ENV{GTESTLIB})
+    set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
-
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-endif()
-
-
-# set output push
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
-endif()
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 
 # including path
@@ -53,6 +43,7 @@ include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/ThirdParty/vermilion
     ${PROJECT_SOURCE_DIR}/Iinclude/Common
     ${PROJECT_SOURCE_DIR}/Include/UI
+    ${PROJECT_SOURCE_DIR}/Include/Event
     ${PROJECT_SOURCE_DIR}/TwinkleShading
 )
 
@@ -62,16 +53,23 @@ add_subdirectory(ThirdParty/ImGuiFileDialog)
 add_subdirectory(ThirdParty/vermilion)
 add_subdirectory(Source/Common)
 add_subdirectory(Source/UI)
+add_subdirectory(Source/Event)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
 
 OPTION(BUILD_GTESTS "build gtests" OFF)
 IF(BUILD_GTESTS)
+    add_subdirectory(Testbeds/GTests)
+    
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(GTest REQUIRED)
     find_package(Threads REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
+endif()
 
-    add_subdirectory(Testbeds/GTests)
     add_test(UniformSetting ${EXECUTABLE_OUTPUT_PATH}/MaterialTests)
+    add_test(AddEventHandler ${EXECUTABLE_OUTPUT_PATH}/EventTests)
+    add_test(FireEvent ${EXECUTABLE_OUTPUT_PATH}/EventTests)
+
     enable_testing()
 ENDIF(BUILD_GTESTS)

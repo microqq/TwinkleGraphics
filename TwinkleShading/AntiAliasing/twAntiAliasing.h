@@ -12,11 +12,10 @@
 #include "twCamera.h"
 #include "twFirstPersonControl.h"
 #include "twUtil.h"
-#include "twSceneManagement.h"
+#include "twSceneManager.h"
 #include "twRenderTexture.h"
 #include "twModelReader.h"
 #include "twUiUtil.h"
-
 
 namespace TwinkleGraphics
 {

@@ -5,17 +5,24 @@
 
 namespace TwinkleGraphics
 {
-    struct FileDialogSelectInfo
+        struct FileDialogSelectInfo
+        {
+            std::string filePathName;
+            std::string filePath;
+            std::string fileName;
+            bool selectChanged = false;
+        };
+        extern FileDialogSelectInfo SceneNodeFileSelectInfo;
+
+#ifdef __cplusplus
+    extern "C"
     {
-        std::string filePathName;
-        std::string filePath;
-        std::string fileName;
-        bool selectChanged = false;
-    };
-    extern FileDialogSelectInfo SceneNodeFileSelectInfo;
+#endif
+        __TWExport void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo);
+        __TWExport void MainMenuBar();
+#ifdef __cplusplus
+    }
+#endif
 
-    extern "C" __TWExport void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo);
-
-    extern "C" __TWExport void MainMenuBar();
 } // namespace TwinkleGraphics
 #endif

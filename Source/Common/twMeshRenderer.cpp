@@ -49,7 +49,6 @@ void MeshRenderer::SetupVAOs()
     _vbo = std::make_shared<VertexBufferObject>();
 
     int32 count = _mesh->GetSubMeshCount();
-    // std::cout << "submesh count: " << count << std::endl;
     for(int i = 0; i < count; i++)
     {
         SubMesh::Ptr submesh = _mesh->GetSubMesh(i);

@@ -7,6 +7,8 @@
 #include "twRenderTexture.h"
 #include "twMaterialInstance.h"
 
+#include "twConsoleLog.h"
+
 namespace TwinkleGraphics
 {
 AntiAliasing::AntiAliasing(std::string& name)
@@ -74,6 +76,8 @@ void AntiAliasingView::Initialize()
     }
 
     View::Initialize();
+  
+
 }
 
 void AntiAliasingView::Destroy()

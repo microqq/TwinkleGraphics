@@ -6,6 +6,7 @@
 #include <string>
 
 #include "twView.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -21,13 +22,17 @@ public:
 
     virtual void Install() 
     {
-        std::cout << "-------------------------------" << "Plugin Install:" 
-            << _name << "-------------------------------" << "\n";
+        Console::LogInfo("------------------------------Plugin Install:", 
+             _name, 
+             "------------------------------\n"
+            );
     }
     virtual void UnInstall() 
     {
-        std::cout << "------------------------------" << "Plugin UnInstall:"
-            << _name << "------------------------------" << "\n";
+        Console::LogInfo("------------------------------Plugin UnInstall:", 
+             _name, 
+             "------------------------------\n"
+            );
     }
 
 protected:

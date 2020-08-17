@@ -1,5 +1,6 @@
 
 #include "twMesh.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -14,6 +15,25 @@ void SubMesh::Initialize(int32 indice_num)
     }
 }
 
+Mesh::~Mesh()
+{
+    Console::LogInfo("Mesh: Mesh Deconstruct.\n");
+
+    _submeshes.clear();
+
+    SAFE_DEL(_verticePos);
+    SAFE_DEL(_verticeColor);
+    SAFE_DEL(_verticeBinormal);
+    SAFE_DEL(_verticeNormal);
+    SAFE_DEL(_verticeUV);
+    SAFE_DEL(_verticeUV1);
+    SAFE_DEL(_verticeUV2);
+    SAFE_DEL(_verticeUV3);
+    SAFE_DEL(_verticeUV4);
+    SAFE_DEL(_verticeUV5);
+    SAFE_DEL(_verticeUV6);
+    SAFE_DEL(_verticeUV7);
+}
 
 /**
  * @brief 创建球面网格的基础算法（https://zh.wikipedia.org/wiki/%E7%90%83%E5%BA%A7%E6%A8%99%E7%B3%BB）

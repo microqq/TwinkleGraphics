@@ -3,6 +3,7 @@
 #ifndef TW_MESH_H
 #define TW_MESH_H
 
+
 #include <vector>
 #include <iostream>
 
@@ -146,27 +147,8 @@ namespace TwinkleGraphics
             : _verticePos(nullptr), _verticeColor(nullptr), _verticeBinormal(nullptr), _verticeNormal(nullptr), _verticeUV(nullptr), _verticeUV1(nullptr), _verticeUV2(nullptr), _verticeUV3(nullptr), _verticeUV4(nullptr), _verticeUV5(nullptr), _verticeUV6(nullptr), _verticeUV7(nullptr), _dataFlag(MeshDataFlag::DEFAULT), _verticeNum(0)
         {
         }
-        virtual ~Mesh()
-        {
-#ifdef _DEBUG
-            std::cout << "Mesh: Mesh Deconstruct.\n";
-#endif
-            _submeshes.clear();
-
-            SAFE_DEL(_verticePos);
-            SAFE_DEL(_verticeColor);
-            SAFE_DEL(_verticeBinormal);
-            SAFE_DEL(_verticeNormal);
-            SAFE_DEL(_verticeUV);
-            SAFE_DEL(_verticeUV1);
-            SAFE_DEL(_verticeUV2);
-            SAFE_DEL(_verticeUV3);
-            SAFE_DEL(_verticeUV4);
-            SAFE_DEL(_verticeUV5);
-            SAFE_DEL(_verticeUV6);
-            SAFE_DEL(_verticeUV7);
-        }
-
+        virtual ~Mesh();
+        
         void Initialize(int32 num, MeshDataFlag flag = MeshDataFlag(13))
         {
             if (num <= 0)

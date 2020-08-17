@@ -7,11 +7,9 @@
 // //include gl after glew
 // #include <GL/gl.h>
 
-// #include "twCommon.h"
-
 #include "twCamera.h"
 #include "twCameraControl.h"
-#include "twSceneManagement.h"
+#include "twSceneManager.h"
 
 namespace TwinkleGraphics
 {

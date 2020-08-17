@@ -7,7 +7,6 @@
 #include "vermilion.h"
 
 #include "twCommon.h"
-
 #include "twResource.h"
 
 namespace TwinkleGraphics
