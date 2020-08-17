@@ -131,12 +131,6 @@ namespace TwinkleGraphics
         inline HandlerId GetHandlerId() const { return _handlerId; }
         inline int GetHandlerFuncSize() { return _handlerFuncList.size(); }
 
-        void FindHandlerFunc(const HandlerFunctionPtr& func, bool& finded)
-        {
-            HFuncIterator iter = FindHandlerFunc(func);
-            finded = (iter != _handlerFuncList.end());
-        }
-
         void Remove(int index)
         {
             int size = _handlerFuncList.size();
@@ -152,7 +146,7 @@ namespace TwinkleGraphics
             }
         }
 
-        void RemoveAll()
+        void Clear()
         {
             _handlerFuncList.clear();
         }
