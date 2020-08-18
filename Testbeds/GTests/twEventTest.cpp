@@ -61,7 +61,7 @@ public:
     SampleListener()
         : _handler()
     {
-        HandlerFunctionPtr funcOnBaseEvent = std::make_shared<HandlerFunction>(
+        EventHandlerFunctionPtr funcOnBaseEvent = std::make_shared<EventHandlerFunction>(
             std::bind(&SampleListener::OnBaseEvent
                 , this
                 , std::placeholders::_1
@@ -75,7 +75,7 @@ public:
 
         _handler -= funcOnBaseEvent;
 
-        HandlerFunctionPtr funcOnHitEvent = std::make_shared<HandlerFunction>(
+        EventHandlerFunctionPtr funcOnHitEvent = std::make_shared<EventHandlerFunction>(
             std::bind(&SampleListener::OnHitEvent
                 , this
                 , std::placeholders::_1
@@ -117,7 +117,7 @@ public:
 
     static int counter;
 };
-DefMemFuncType(SampleListener);
+DefMemEventHandlerType(SampleListener);
 int SampleListener::counter = 0;
 
 
@@ -173,15 +173,15 @@ struct Foo {
 
 TEST(EventTests, AddEventHandler)
 {
-    //EventHandler(const HandlerFunction& func)
-    EventHandler handler(std::make_shared<HandlerFunction>(
+    //EventHandler(const EventHandlerFunction& func)
+    EventHandler handler(std::make_shared<EventHandlerFunction>(
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Initialise EventHandler.\n");
         })
     );
 
     //Lambda handler function
-    HandlerFunctionPtr lambdaPtr = std::make_shared<HandlerFunction>(
+    EventHandlerFunctionPtr lambdaPtr = std::make_shared<EventHandlerFunction>(
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
         }
@@ -195,7 +195,7 @@ TEST(EventTests, AddEventHandler)
     ASSERT_EQ(handler.GetHandlerFuncSize(), 1);
 
     SampleListener listener;
-    HandlerFunctionPtr baseFuncPtr = std::make_shared<HandlerFunction>(
+    EventHandlerFunctionPtr baseFuncPtr = std::make_shared<EventHandlerFunction>(
         std::bind(&SampleListener::OnBaseEvent, &listener
         , std::placeholders::_1
         , std::placeholders::_2)
@@ -225,15 +225,15 @@ TEST(EventTests, FireEvent)
     EventManagerInst eventMgrInst;
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
 
-    //EventHandler(const HandlerFunction& func)
-    EventHandler handler(std::make_shared<HandlerFunction>(
+    //EventHandler(const EventHandlerFunction& func)
+    EventHandler handler(std::make_shared<EventHandlerFunction>(
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Initialise EventHandler.\n");
         })
     );
 
     //Lambda handler function
-    HandlerFunctionPtr lambdaPtr = std::make_shared<HandlerFunction>(
+    EventHandlerFunctionPtr lambdaPtr = std::make_shared<EventHandlerFunction>(
         [](Object::Ptr sender, BaseEventArgs::Ptr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
         }
@@ -297,7 +297,7 @@ TEST(EventTests, FireEvent)
     test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(g));
 
     SampleListener* listener4 = new SampleListener;
-    HandlerFunction bindOnBaseEvent = std::bind(&SampleListener::OnBaseEvent
+    EventHandlerFunction bindOnBaseEvent = std::bind(&SampleListener::OnBaseEvent
         , listener4
         , std::placeholders::_1
         , std::placeholders::_2

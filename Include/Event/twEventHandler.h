@@ -10,26 +10,26 @@
 #include "twEventArgs.h"
 #include "twConsoleLog.h"
 
-#define MemFuncTypePart1 typedef void
-#define MemFuncTypePart2(T) (T::*T ##MemFuncType)
-#define MemFuncTypePart3 (Object::Ptr, BaseEventArgs::Ptr)
+#define MemEventHandlerPart1 typedef void
+#define MemEventHandlerPart2(T) (T::*T ##MemFuncType)
+#define MemEventHandlerPart3 (Object::Ptr, BaseEventArgs::Ptr)
 
-#define DefMemFuncType(T) MemFuncTypePart1 MemFuncTypePart2(T)MemFuncTypePart3
-#define MemFuncType(T) T##MemFuncType
+#define DefMemEventHandlerType(T) MemEventHandlerPart1 MemEventHandlerPart2(T)MemEventHandlerPart3
+#define MemEventHandlerType(T) T##MemFuncType
 
 namespace TwinkleGraphics
 {
     typedef unsigned int HandlerId;
-    typedef void (*HandlerFuncPointer)(Object::Ptr, BaseEventArgs::Ptr);
-    typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> HandlerFunction;
-    typedef std::shared_ptr<HandlerFunction> HandlerFunctionPtr;
+    typedef void (*EventHandlerFuncPointer)(Object::Ptr, BaseEventArgs::Ptr);
+    typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> EventHandlerFunction;
+    typedef std::shared_ptr<EventHandlerFunction> EventHandlerFunctionPtr;
 
     class EventHandler : public Object
     {
     public:
         typedef std::shared_ptr<EventHandler> Ptr;
 
-        using HFuncIterator = std::vector<HandlerFunctionPtr>::iterator;
+        using HFuncIterator = std::vector<EventHandlerFunctionPtr>::iterator;
 
         EventHandler()
             : Object()
@@ -37,7 +37,7 @@ namespace TwinkleGraphics
             _handlerId = ++HandlerIdCounter;
         }
 
-        EventHandler(const HandlerFunctionPtr& func)
+        EventHandler(const EventHandlerFunctionPtr& func)
             : Object()
         {
             _handlerFuncList.push_back(func);
@@ -63,7 +63,7 @@ namespace TwinkleGraphics
             _handlerFuncList.clear();
         }
 
-        const HandlerFunctionPtr& operator[](int index)
+        const EventHandlerFunctionPtr& operator[](int index)
         {
             int size = _handlerFuncList.size();
             assert(index >= 0 && index < size);
@@ -87,7 +87,7 @@ namespace TwinkleGraphics
             return *this;
         }
 
-        EventHandler& operator+=(const HandlerFunctionPtr& func)
+        EventHandler& operator+=(const EventHandlerFunctionPtr& func)
         {
             HFuncIterator iter = FindHandlerFunc(func);
             if (iter != _handlerFuncList.end())
@@ -100,7 +100,7 @@ namespace TwinkleGraphics
             return *this;
         }
 
-        EventHandler& operator-=(const HandlerFunctionPtr& func)
+        EventHandler& operator-=(const EventHandlerFunctionPtr& func)
         {
             HFuncIterator iter = FindHandlerFunc(func);
             if(iter != _handlerFuncList.end())
@@ -159,7 +159,7 @@ namespace TwinkleGraphics
             }
         }
 
-        HFuncIterator FindHandlerFunc(const HandlerFunctionPtr &func)
+        HFuncIterator FindHandlerFunc(const EventHandlerFunctionPtr &func)
         {
             HFuncIterator begin = _handlerFuncList.begin();
             HFuncIterator end = _handlerFuncList.end();
@@ -168,7 +168,6 @@ namespace TwinkleGraphics
             {
                 return end;
             }
-            // HandlerFunction* funcPointer = *func;
 
             while (begin != end)
             {
@@ -178,7 +177,7 @@ namespace TwinkleGraphics
                     continue;
                 }
 
-                HandlerFunctionPtr pointer = *begin;
+                EventHandlerFunctionPtr pointer = *begin;
                 if (pointer == func)
                 {
                     return begin;
@@ -189,7 +188,7 @@ namespace TwinkleGraphics
         }
 
     private:
-        void Add(const HandlerFunctionPtr& func)
+        void Add(const EventHandlerFunctionPtr& func)
         {
             _handlerFuncList.push_back(func);
         }
@@ -205,7 +204,7 @@ namespace TwinkleGraphics
         // try to traverse std::vector<std::function<***>> find element makes compile error : "no match for 'operator=='"
         // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
 
-        std::vector<HandlerFunctionPtr> _handlerFuncList;
+        std::vector<EventHandlerFunctionPtr> _handlerFuncList;
         HandlerId _handlerId;
         static std::atomic_uint HandlerIdCounter;
     };
