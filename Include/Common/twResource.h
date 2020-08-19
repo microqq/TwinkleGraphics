@@ -12,10 +12,18 @@
 
 namespace TwinkleGraphics
 {
+struct ResourceHandle;
 class Resource;
 class ResourceReader;
 class ResourceManager;
 typedef Singleton<ResourceManager> ResourceManagerInst;
+
+struct ResourceHandle
+{
+    typedef std::shared_ptr<ResourceHandle> Ptr;
+
+    uint hash;
+};
 
 class Resource : public Object
 {
@@ -29,7 +37,7 @@ public:
     virtual ~Resource() {}
 
 protected:
-    uint32 _hash;
+
 };
 
 
@@ -91,6 +99,7 @@ public:
 enum class ResourceCacheHint
 {
 };
+
 class ResourceCache
 {
 };
@@ -126,6 +135,22 @@ public:
         // return r->Read<TPtr>(filename, option);
         return r->template Read<TPtr>(filename, option);
     }
+
+    template<class R, class TPtr, class... Args>
+    ReadResult<TPtr> ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
+    {
+        //get GUID with filename, read from cache
+
+        //Todo: if not found in cache, should get reader from pool. use placement new
+        //else
+        R* r = new R(std::forward<Args>(args)...);
+
+        //  http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
+        // error: use 'template' keyword to treat 'Read' as a dependent template name
+        // return r->Read<TPtr>(filename, option);
+        return r->template Read<TPtr>(filename, option);
+    }
+
 
 private:
     typedef std::map<std::string, ResourceReader*> MapLoaders;
