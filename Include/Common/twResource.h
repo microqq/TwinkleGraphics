@@ -22,7 +22,7 @@ struct ResourceHandle
 {
     typedef std::shared_ptr<ResourceHandle> Ptr;
 
-    uint hash;
+    uint guid;
 };
 
 class Resource : public Object
