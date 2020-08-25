@@ -19,33 +19,42 @@ std::mutex intVecMutex_;
 void func1()
 {
     std::lock_guard<std::mutex> lock(intVecMutex_);
+    Console::LogGTestInfo("Current Thread Id: ", std::this_thread::get_id(), "\n");
+
+    int size = intVector_.size();
     for(int i = 0; i < 20; i++)
     {
-        int size = intVector_.size();
-        intVector_.emplace_back(size);
+        intVector_.emplace_back(size + i);
+    }
 
-        Console::LogGTestInfo("intVector index ", i, intVector_[i], "\n");
+    for(int i = size; i < size + 20; i++)
+    {
+        Console::LogGTestInfo("intVector index ", i, " value ", intVector_[i], "\n");
     }
 } 
 
 void func2()
 {
     std::lock_guard<std::mutex> lock(intVecMutex_);
+    Console::LogGTestInfo("Current Thread Id: ", std::this_thread::get_id(), "\n");
+
+    int size = intVector_.size();
     for(int i = 0; i < 10; i++)
     {
-        int size = intVector_.size();
-        intVector_.emplace_back(size);
+        intVector_.emplace_back(size + i);
+    }
 
-        Console::LogGTestInfo("intVector index ", i, intVector_[i], "\n");
+    for(int i = size; i < size + 10; i++)
+    {
+        Console::LogGTestInfo("intVector index ", i, " value ", intVector_[i], "\n");
     }
 }
 
 TEST(ThreadTests, PushTasks)
 {
-    ThreadPool pool(2);
+    ThreadPool pool(4);
 
     pool.PushTask(func1);
-    // pool.PushTask(func2);
-
-
+    pool.PushTask(func2);
+    pool.PushTask(func1);
 }

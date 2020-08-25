@@ -131,7 +131,7 @@ inline ThreadPool::ThreadPool(uint size)
 
 inline ThreadPool::~ThreadPool()
 {
-    Stop();
+    Stop(true);
 }
 
 template <class Func, class... Args>
@@ -140,11 +140,11 @@ auto ThreadPool::PushTask(Func&& f, Args&&... args)
 {
     if(_stoped.load())
     {
-        throw std::runtime_error("ThreadPool stoped.");
+        Console::LogWarning("ThreadPool stoped, we can't push task in.\n");
+        throw std::runtime_error("Push Task While ThreadPool Has Stoped.");
     }
 
     using ReturnType = typename std::result_of<Func(Args...)>::type;
-
 
     auto packedTask = std::make_shared<std::packaged_task<ReturnType()>>(
         std::bind(std::forward<Func>(f), std::forward<Args>(args)...));
@@ -154,13 +154,14 @@ auto ThreadPool::PushTask(Func&& f, Args&&... args)
         (*packedTask)();
     });
 
+    std::future<ReturnType> future = packedTask->get_future();
     {
         std::lock_guard<std::mutex> lock(_mutex);
         _tasks.Push(std::move(*task));
     }
     _condition.notify_one();
 
-    return packedTask->get_future();
+    return future;
 }
 
 inline void ThreadPool::Stop(bool delay)
@@ -170,7 +171,10 @@ inline void ThreadPool::Stop(bool delay)
         _stoped.store(true);
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            Clear();
+            if(!delay)
+            {
+                Clear();
+            }
         }
         _condition.notify_all();
     }
