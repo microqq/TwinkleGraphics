@@ -17,6 +17,11 @@
 #define DefMemEventHandlerType(T) MemEventHandlerPart1 MemEventHandlerPart2(T)MemEventHandlerPart3
 #define MemEventHandlerType(T) T##MemFuncType
 
+#define MakeClassEventHandlerFunPtr(TFUNC, TPTR) std::make_shared<EventHandlerFunction>( \
+    std::bind(TFUNC, TPTR, std::placeholders::_1, std::placeholders::_2))
+
+#define MakeEventHandlerFunPtr(FUNC) std::make_shared<EventHandlerFunction>(FUNC)
+
 namespace TwinkleGraphics
 {
     typedef unsigned int HandlerId;

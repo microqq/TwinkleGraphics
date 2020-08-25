@@ -61,12 +61,17 @@ public:
     SampleListener()
         : _handler()
     {
-        EventHandlerFunctionPtr funcOnBaseEvent = std::make_shared<EventHandlerFunction>(
-            std::bind(&SampleListener::OnBaseEvent
-                , this
-                , std::placeholders::_1
-                , std::placeholders::_2
-            )
+        // EventHandlerFunctionPtr funcOnBaseEvent = std::make_shared<EventHandlerFunction>(
+        //     std::bind(&SampleListener::OnBaseEvent
+        //         , this
+        //         , std::placeholders::_1
+        //         , std::placeholders::_2
+        //     )
+        // );
+
+        EventHandlerFunctionPtr funcOnBaseEvent = MakeClassEventHandlerFunPtr(
+            &SampleListener::OnBaseEvent, 
+            this
         );
 
         _handler += funcOnBaseEvent;
@@ -239,11 +244,18 @@ TEST(EventTests, FireEvent)
         }
     );
 
+    EventHandlerFunctionPtr lambdaPtr2 = MakeEventHandlerFunPtr(
+                [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+            Console::LogGTestInfo("Add Lambda Num(2) EventHandler.\n");
+        }
+    );
+
     //EventHandler::operator+=
     handler += lambdaPtr;
     ASSERT_EQ(handler[1] != nullptr, true);
     handler += lambdaPtr;
     ASSERT_EQ(handler.GetHandlerFuncSize(), 2);
+    handler += lambdaPtr2;
 
     eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------1\n");
@@ -251,6 +263,7 @@ TEST(EventTests, FireEvent)
 
     //EventHandler::operator-=
     handler -= lambdaPtr;
+    handler -= lambdaPtr2;
     ASSERT_EQ(handler.GetHandlerFuncSize(), 1);
 
     // handler updated, so first unsubscribe and then subscribe again
