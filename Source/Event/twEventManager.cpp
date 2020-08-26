@@ -12,7 +12,12 @@ namespace TwinkleGraphics
 
     EventManager::~EventManager()
     {
-        _handlerCollection.clear();
+        {
+#ifdef _EVT_MULTTHREAD
+            std::lock_guard<std::mutex> lock(_handlers_mutex);
+#endif
+            _handlerCollection.clear();
+        }
     }
 
     /**
@@ -20,6 +25,9 @@ namespace TwinkleGraphics
      */
     void EventManager::Subscribe(EventId id, const EventHandlerFunctionPtr& func)
     {
+#ifdef _EVT_MULTTHREAD
+        std::lock_guard<std::mutex> lock(_handlers_mutex);
+#endif
         using MIterator = MultiEventHandlerCollection::iterator;
         MIterator iter = _handlerCollection.lower_bound(id);
         MIterator end = _handlerCollection.upper_bound(id);
@@ -42,6 +50,10 @@ namespace TwinkleGraphics
      */
     void EventManager::Subscribe(EventId id, const EventHandler& handler)
     {
+#ifdef _EVT_MULTTHREAD
+        std::lock_guard<std::mutex> lock(_handlers_mutex);
+#endif
+
         using MIterator = MultiEventHandlerCollection::iterator;
         MIterator iter = _handlerCollection.lower_bound(id);
         MIterator end = _handlerCollection.upper_bound(id);
@@ -60,6 +72,10 @@ namespace TwinkleGraphics
 
     void EventManager::UnSubscribe(EventId id, const EventHandlerFunctionPtr& func)
     {
+#ifdef _EVT_MULTTHREAD
+        std::lock_guard<std::mutex> lock(_handlers_mutex);
+#endif
+
         using MIterator = MultiEventHandlerCollection::iterator;
         MIterator iter = _handlerCollection.lower_bound(id);
         MIterator end = _handlerCollection.upper_bound(id);
@@ -81,6 +97,10 @@ namespace TwinkleGraphics
 
     void EventManager::UnSubscribe(EventId id, const EventHandler& handler)
     {
+#ifdef _EVT_MULTTHREAD        
+        std::lock_guard<std::mutex> lock(_handlers_mutex);
+#endif
+
         using MIterator = MultiEventHandlerCollection::iterator;
         MIterator iter = _handlerCollection.lower_bound(id);
         MIterator end = _handlerCollection.upper_bound(id);
@@ -101,12 +121,15 @@ namespace TwinkleGraphics
     }
 
     void EventManager::Fire(Object::Ptr sender, BaseEventArgs::Ptr args)
-    {
+    {                
         if(args == nullptr)
         {
             return;
         }
 
+#ifdef _EVT_MULTTHREAD
+        std::lock_guard<std::mutex> lock(_queue_mutex);
+#endif
         // Create Event, push back into event queue
         Event* event = _queue.PushBack();
         event->SetSender(sender);
@@ -122,8 +145,7 @@ namespace TwinkleGraphics
     void EventManager::Update()
     {
         // Pop event and handle it
-
-
+        HandleEvent();
     }
 
     EventHandler* EventManager::FindFirstEventHandler(EventId id)
@@ -139,6 +161,20 @@ namespace TwinkleGraphics
         return nullptr;
     }
 
+    void EventManager::HandleEvent()
+    {
+        Event* event = nullptr;
+        {
+#ifdef _EVT_MULTTHREAD
+            std::lock_guard<std::mutex> lock(_queue_mutex);
+#endif
+            while(event = _queue.PopFront())
+            {
+                HandleEvent(event->Sender(), event->EventArgs());
+            }
+        }
+    }
+
     void EventManager::HandleEvent(Object::Ptr sender, BaseEventArgs::Ptr args)
     {
         if(args == nullptr)
@@ -147,14 +183,19 @@ namespace TwinkleGraphics
         }
 
         EventId id = args->GetEventId();        
-        using MIterator = MultiEventHandlerCollection::iterator;
-        MIterator iter = _handlerCollection.lower_bound(id);
-        MIterator end = _handlerCollection.upper_bound(id);
-
-        while(iter != end)
         {
-            iter->second.Invoke(sender, args);
-            ++iter;
+#ifdef _EVT_MULTTHREAD
+            std::lock_guard<std::mutex> lock(_handlers_mutex);
+#endif
+            using MIterator = MultiEventHandlerCollection::iterator;
+            MIterator iter = _handlerCollection.lower_bound(id);
+            MIterator end = _handlerCollection.upper_bound(id);
+
+            while(iter != end)
+            {
+                iter->second.Invoke(sender, args);
+                ++iter;
+            }
         }
     }
 } // namespace TwinkleGraphics

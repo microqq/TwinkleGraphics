@@ -84,6 +84,16 @@ namespace TwinkleGraphics
 #endif
         }
 
+        template <Color TAGCOLOR, Color INFOCOLOR, class... Args>
+        void LogGTestInfo(Args... args)
+        {
+#ifdef _DEBUG
+            Internal::Log(TAGCOLOR, "[----------] ");
+            Internal::Log(INFOCOLOR, args...);
+#endif
+        }
+
+
         template <class... Args>
         void LogInfo(Args... args)
         {

@@ -3,6 +3,11 @@ project(TwinkleGraphics VERSION 0.1.0)
 
 option(USE_DEBUG "Enter debug mode" OFF)
 option(ENABLE_TEMPORARY "Enter debug mode" OFF)
+Option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
+
+if(ENALBE_EVENT_MULTTHREAD)
+    add_definitions(-D_EVT_MULTTHREAD)
+endif()
 
 if(USE_DEBUG)
     add_definitions(-D_DEBUG)

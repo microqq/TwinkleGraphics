@@ -32,7 +32,7 @@ namespace TwinkleGraphics
         void Push(const T& value)
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            _queue.push(value);
+            _queue.emplace(value);
         }
 
         bool Pop(T& outValue)
@@ -184,6 +184,8 @@ inline void ThreadPool::Stop(bool delay)
         if(worker.joinable())
         {
             worker.join();
+            
+            Console::LogInfo("WorkThread---", worker.get_id(), " stoped.\n");
         }
     }
 }

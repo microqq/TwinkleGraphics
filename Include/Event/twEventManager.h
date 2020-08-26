@@ -3,6 +3,7 @@
 
 #include <array>
 #include <map>
+#include <mutex>
 
 #include "twSingleton.h"
 #include "twRingBuffer.h"
@@ -34,11 +35,16 @@ namespace TwinkleGraphics
 
     private:
         EventHandler* FindFirstEventHandler(EventId id);
+        void HandleEvent();
         void HandleEvent(Object::Ptr sender, BaseEventArgs::Ptr args);
 
     private:
         EventQueue _queue;
         MultiEventHandlerCollection _handlerCollection;
+#ifdef _EVT_MULTTHREAD
+        std::mutex _queue_mutex;
+        std::mutex _handlers_mutex;
+#endif
     };
 } // namespace TwinkleGraphics
 

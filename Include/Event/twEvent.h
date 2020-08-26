@@ -62,6 +62,8 @@ namespace TwinkleGraphics
             return *this;
         }
 
+        Object::Ptr Sender() { return _sender; }
+        BaseEventArgs::Ptr EventArgs() { return _eventArgs; }
         void SetSender(Object::Ptr sender) { _sender = sender; }
         void SetEventArgs(BaseEventArgs::Ptr args) { _eventArgs = args; }
 

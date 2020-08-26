@@ -12,49 +12,105 @@
 #include "twThreadPool.h"
 
 using namespace TwinkleGraphics;
+using namespace std::chrono_literals;
 
-std::vector<int> intVector_;
-std::mutex intVecMutex_;
+std::vector<int> IntVector_;
+std::mutex IntVecMutex_;
+std::condition_variable IntVecCV_;
+int ConsumerID_{0};
+std::atomic_int ConsumedProductCount_{0};
+int ProducerID_{0};
+int ProductLimit_{20};
+std::atomic_int CurrentProductCount_{0};
 
-void func1()
+void Producer()
 {
-    std::lock_guard<std::mutex> lock(intVecMutex_);
-    Console::LogGTestInfo("Current Thread Id: ", std::this_thread::get_id(), "\n");
-
-    int size = intVector_.size();
-    for(int i = 0; i < 20; i++)
+    int id = ProducerID_++;
+    std::unique_lock<std::mutex> lock(IntVecMutex_, std::defer_lock);
+    // lock.unlock();
+    while (true)
     {
-        intVector_.emplace_back(size + i);
-    }
+        if(CurrentProductCount_.load() >= ProductLimit_)
+        {
+            std::this_thread::sleep_for(1000ms);
+            continue;
+        }
 
-    for(int i = size; i < size + 20; i++)
-    {
-        Console::LogGTestInfo("intVector index ", i, " value ", intVector_[i], "\n");
-    }
-} 
+        lock.lock();
+        {
+            CurrentProductCount_++;
+            IntVector_.emplace_back(IntVector_.size());
+            Console::LogGTestInfo<Console::Color::GREEN, Console::Color::MAGENTA>("Current Producer---", id
+                , " current product count: "
+                , CurrentProductCount_.load(), "\n");
+        }
+        lock.unlock();
 
-void func2()
+        IntVecCV_.notify_one();
+        std::this_thread::sleep_for(1000ms);
+    }
+}
+
+void Consumer()
 {
-    std::lock_guard<std::mutex> lock(intVecMutex_);
-    Console::LogGTestInfo("Current Thread Id: ", std::this_thread::get_id(), "\n");
-
-    int size = intVector_.size();
-    for(int i = 0; i < 10; i++)
+    int id = ConsumerID_++;
+    std::unique_lock<std::mutex> lock(IntVecMutex_, std::defer_lock);
+    while (true)
     {
-        intVector_.emplace_back(size + i);
-    }
+        std::this_thread::sleep_for(1200ms);
+        lock.lock();
+        {
+            IntVecCV_.wait(lock, []() -> bool {
+                return !IntVector_.empty();
+            });
 
-    for(int i = size; i < size + 10; i++)
-    {
-        Console::LogGTestInfo("intVector index ", i, " value ", intVector_[i], "\n");
-    }
+            CurrentProductCount_--;
+            ConsumedProductCount_++;
+            IntVector_.pop_back();
+            Console::LogGTestInfo("Current Consumer---", id
+                , " consumed product count: "
+                , ConsumedProductCount_.load(), "\n");
+        }
+        lock.unlock();
+    }    
 }
 
 TEST(ThreadTests, PushTasks)
 {
+    ThreadPool pool(2);
+
+    pool.PushTask(Producer);
+    pool.PushTask(Consumer);
+};
+
+TEST(ThreadTests, ProducerConsumers)
+{
     ThreadPool pool(4);
 
-    pool.PushTask(func1);
-    pool.PushTask(func2);
-    pool.PushTask(func1);
+    pool.PushTask(Producer);
+    pool.PushTask(Consumer);
+    pool.PushTask(Consumer);
+    pool.PushTask(Consumer);
+};
+
+TEST(ThreadTests, ProducersConsumer)
+{
+    ThreadPool pool(4);
+
+    pool.PushTask(Producer);
+    pool.PushTask(Producer);
+    pool.PushTask(Producer);
+    pool.PushTask(Consumer);
+};
+
+TEST(ThreadTests, ProducersConsumers)
+{
+    ThreadPool pool(6);
+
+    pool.PushTask(Producer);
+    pool.PushTask(Producer);
+    pool.PushTask(Producer);
+    pool.PushTask(Consumer);
+    pool.PushTask(Consumer);
+    pool.PushTask(Consumer);
 }

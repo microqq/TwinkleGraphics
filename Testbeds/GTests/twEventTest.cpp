@@ -6,9 +6,10 @@
 #include "twEventHandler.h"
 #include "twEventManager.h"
 #include "twConsoleLog.h"
+#include "twThreadPool.h"
 
 using namespace TwinkleGraphics;
-
+using namespace std::chrono_literals;
 
 class SampleEventArgs : public BaseEventArgs
 {
@@ -317,4 +318,84 @@ TEST(EventTests, FireEvent)
     );
 
     test(bindOnBaseEvent);
+};
+
+void ThreadFunc(EventHandler* handler, SampleListener* listener)
+{
+    Console::LogGTestInfo("Thread id ", std::this_thread::get_id(), "\n");
+
+    EventManagerInst eventMgrInst;
+    eventMgrInst->Subscribe(SampleEventArgsA::ID, *handler);
+    // listener->UnSubscribe();
 }
+
+std::mutex UpdateMutex_;
+
+void ThreadFunc2()
+{
+    std::this_thread::sleep_for(1000ms);
+    SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
+    EventManagerInst eventMgrInst;
+
+    // std::unique_lock<std::mutex> lock(UpdateMutex_, std::defer_lock);
+    while(true)
+    {
+        Console::LogGTestInfo("Thread id ", std::this_thread::get_id(), "\n");
+        // lock.lock();
+        eventMgrInst->Fire(nullptr, sampleEventA);
+        // lock.unlock();
+        std::this_thread::sleep_for(5000ms);
+    }
+}
+
+TEST(EventTests, FireInThreadingMode)
+{
+    SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
+
+    //EventHandler(const EventHandlerFunction& func)
+    EventHandler handler(std::make_shared<EventHandlerFunction>(
+        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+            Console::LogGTestInfo("Initialise EventHandler.\n");
+        })
+    );
+
+    //Lambda handler function
+    EventHandlerFunctionPtr lambdaPtr = std::make_shared<EventHandlerFunction>(
+        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+            Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
+        }
+    );
+
+    EventHandlerFunctionPtr lambdaPtr2 = MakeEventHandlerFunPtr(
+                [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+            Console::LogGTestInfo("Add Lambda Num(2) EventHandler.\n");
+        }
+    );
+
+    //EventHandler::operator+=
+    handler += lambdaPtr;
+    ASSERT_EQ(handler[1] != nullptr, true);
+    handler += lambdaPtr;
+    ASSERT_EQ(handler.GetHandlerFuncSize(), 2);
+    handler += lambdaPtr2;
+
+    SampleListener* listener = new SampleListener;
+    SampleListener* listener2 = new SampleListener;
+    // SampleListener* listener3 = new SampleListener;
+
+    ThreadPool pool(2);
+    pool.PushTask(ThreadFunc, &handler, listener);
+    pool.PushTask(ThreadFunc, &handler, listener2);
+    pool.PushTask(ThreadFunc2);
+
+    std::this_thread::sleep_for(3000ms);
+    EventManagerInst eventMgrInst;
+    while(true)
+    {
+        // std::unique_lock<std::mutex> lock(UpdateMutex_);
+        eventMgrInst->Update();
+        // lock.unlock();
+
+        std::this_thread::sleep_for(1000ms);
+    }
+};

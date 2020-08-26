@@ -195,7 +195,7 @@ namespace TwinkleGraphics
     private:
         void Add(const EventHandlerFunctionPtr& func)
         {
-            _handlerFuncList.push_back(func);
+            _handlerFuncList.emplace_back(func);
         }
         void Remove(HFuncIterator iter)
         {
