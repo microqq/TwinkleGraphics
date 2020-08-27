@@ -5,41 +5,85 @@
 
 #include <iostream>
 #include <string>
-#include <map>
 #include <memory>
+#include <map>
 
 #include "twCommon.h"
+#include "twRingBuffer.h"
 
 namespace TwinkleGraphics
 {
-struct ResourceHandle;
-class Resource;
 class ResourceReader;
 class ResourceManager;
 typedef Singleton<ResourceManager> ResourceManagerInst;
+typedef uint64_t RederId;
 
-struct ResourceHandle
+enum class CacheHint
 {
-    typedef std::shared_ptr<ResourceHandle> Ptr;
-
-    uint guid;
+    NONE_CACHE = 0,
+    CACHE_SOURCE = 1,
+    CACHE_OBJECT = 2
 };
 
-class Resource : public Object
+class ReaderOption
 {
 public:
-    typedef std::shared_ptr<Resource> Ptr;
-    typedef std::weak_ptr<Resource> WeakPtr;
-
-    Resource()
-        : Object()
+    ReaderOption()
+        : _cacheHint(CacheHint::CACHE_SOURCE)
     {}
-    virtual ~Resource() {}
+    ReaderOption(const ReaderOption& src)
+    {
+        _cacheHint = src._cacheHint;
+    }
+    ~ReaderOption()
+    {}
 
-protected:
+    const ReaderOption& operator=(const ReaderOption& src)
+    {
+        _cacheHint = src._cacheHint;
+        return *this;
+    }
 
+    inline void SetCacheHint(CacheHint hint) { _cacheHint = hint; }
+    CacheHint GetCacheHint() { return _cacheHint; }
+
+private:
+    CacheHint _cacheHint = CacheHint::CACHE_SOURCE;
 };
 
+
+class ResourceReader
+{
+public:
+    typedef std::shared_ptr<ResourceReader> Ptr;
+
+    ResourceReader()
+        : _option(nullptr)
+    {}
+    virtual ~ResourceReader() 
+    {
+        SAFE_DEL(_option);
+    }
+
+    void SetReaderOption(ReaderOption* option) 
+    {
+        if(option == nullptr)
+        {
+            return;
+        } 
+
+        if(_option == nullptr)
+        {
+            _option = new ReaderOption;
+        }
+
+        *_option = *option; 
+    }
+    const ReaderOption* const GetReaderOption() {  return this->_option; }
+
+protected:
+    ReaderOption* _option = nullptr;
+};
 
 /**
  * @brief 
@@ -87,21 +131,20 @@ private:
     Status _status;
 };
 
-class ReaderOption
-{
-public:
-    ReaderOption()
-    {}
-    ~ReaderOption()
-    {}
-};
-
-enum class ResourceCacheHint
-{
-};
-
 class ResourceCache
 {
+public:
+    typedef std::shared_ptr<ResourceCache> Ptr;
+
+    ResourceCache()
+    {
+    }
+    ~ResourceCache()
+    {
+    }
+
+private:
+
 };
 
 class ResourceManager
@@ -153,9 +196,9 @@ public:
 
 
 private:
-    typedef std::map<std::string, ResourceReader*> MapLoaders;
+    typedef std::multimap<RederId, ResourceReader::Ptr> MultMapReaders;
 
-    std::map<std::string, ResourceReader*> _readers;
+
 };
 
 

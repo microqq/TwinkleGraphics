@@ -272,10 +272,10 @@ namespace TwinkleGraphics
         bool versionMatch = false;
         int32 position = -1;
         std::istringstream input(_source->content.c_str());
+        std::regex extensionRegex("\\s*#extension\\s+");
+        std::regex versionRegex("\\s*#version\\s*[0-9]*\\score\\s*");
         for (std::array<char, 256> out; input.getline(&out[0], 256);)
         {
-            std::regex extensionRegex("\\s*#extension\\s+");
-            std::regex versionRegex("\\s*#version\\s*[0-9]*\\score\\s*");
             std::smatch sm;
             std::string extString(&out[0]);
 
@@ -315,13 +315,13 @@ namespace TwinkleGraphics
         }
 
         std::istringstream input(source);
+        std::regex includeRegex("\\s*#include\\s*</([a-zA-Z0-9_-]+/{1})*[a-zA-Z0-9_-]+.glsl>\\s*");
+        std::regex pathRegex("/([a-zA-Z0-9_-]+/{1})*[a-zA-Z0-9_-]+.glsl");
         for (std::array<char, 256> out; input.getline(&out[0], 256);)
         {
-            std::regex includeRegex("\\s*#include\\s*</([a-zA-Z0-9_-]+/{1})*[a-zA-Z0-9_-]+.glsl>\\s*");
             bool match = std::regex_match(&out[0], includeRegex);
             if(match)
             {
-                std::regex pathRegex("/([a-zA-Z0-9_-]+/{1})*[a-zA-Z0-9_-]+.glsl");
                 std::smatch sm;
                 std::string pathString(&out[0]);
                 std::regex_search(pathString, sm, pathRegex);
@@ -479,18 +479,6 @@ namespace TwinkleGraphics
         return glGetAttribLocation(_res.id, name);
     }
 
-    /**
- * @brief Construct a new Shader Resource:: Shader Resource object
- * 
- */
-    ShaderResource::ShaderResource()
-        : Resource()
-    {
-    }
-
-    ShaderResource::~ShaderResource()
-    {
-    }
 
     /**
  * @brief Construct a new Shader Reader:: Shader Reader object

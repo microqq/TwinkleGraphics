@@ -20,8 +20,10 @@ namespace TwinkleGraphics
 	}
 
 	Image::Image(const char *filename, const ImageData &data)
-		: Object(), _data(data), _filename(filename)
+		: Object()
 	{
+		_source._data = data;
+		_source._filename = filename;
 	}
 	Image::~Image()
 	{

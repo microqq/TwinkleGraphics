@@ -44,12 +44,6 @@ namespace TwinkleGraphics
     typedef TextSource ShaderSource;
     typedef TextSource ShaderIncludeSource;
 
-    class ShaderInclude : public Object
-    {
-    public:
-        typedef std::shared_ptr<ShaderInclude> Ptr;
-    };
-
     class Shader final : public Object
     {
     public:
@@ -138,21 +132,12 @@ namespace TwinkleGraphics
         }
     };
 
-    class ShaderResource final : public Resource
-    {
-    public:
-        typedef std::shared_ptr<ShaderResource> Ptr;
-        typedef std::weak_ptr<ShaderResource> WeakPtr;
 
-        ShaderResource();
-        virtual ~ShaderResource();
-    };
-
-    class ShaderReader
+    class ShaderReader : public ResourceReader
     {
     public:
         ShaderReader(ShaderReadInfo &read_info);
-        ~ShaderReader();
+        virtual ~ShaderReader();
 
         template <typename TPtr>
         ReadResult<TPtr> Read(const char *filename, ReaderOption *option);

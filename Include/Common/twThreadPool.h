@@ -19,7 +19,7 @@ namespace TwinkleGraphics
     typedef std::thread Worker;
 
     template <class T>
-    class TSQueue
+    class TSQueue final
     {
     public:
         TSQueue() {}
@@ -59,7 +59,16 @@ namespace TwinkleGraphics
         std::mutex _mutex;
     };
 
-    class ThreadPool
+    class WorkThread final
+    {
+        public:
+            WorkThread() {}
+            ~WorkThread() {}
+
+        private:
+    };
+
+    class ThreadPool final
     {
     public:
         ThreadPool(uint size);

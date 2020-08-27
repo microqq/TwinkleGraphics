@@ -3,9 +3,10 @@
 #ifndef TW_IMAGE_H
 #define TW_IMAGE_H
 
+#include <memory>
 #include <vector>
-#include "vermilion.h"
 
+#include "vermilion.h"
 #include "twCommon.h"
 #include "twResource.h"
 
@@ -40,17 +41,13 @@ typedef Singleton<ImageManager> ImageManagerInst;
 //     SubImageData _data;
 // };
 
-class ImageResource : public Resource
+struct ImageSource
 {
-public:
-    ImageResource()
-        : Resource()
-    {}
-    virtual ~ImageResource()
-    {}
+    typedef std::shared_ptr<ImageSource> Ptr;
+    typedef std::weak_ptr<ImageSource> WeakPtr;
 
-private:
-
+    ImageData _data;
+    std::string _filename;
 };
 
 class Image : public Object
@@ -62,16 +59,17 @@ public:
     Image(const char* filename, const ImageData& data);
     virtual ~Image();
 
-    void SetImageSource(ImageData &&data) { _data = data; }
-    const ImageData& GetImageSource() { return _data; }
-    ImageData* GetImageSourcePtr() { return &_data; }
+    void SetImageSource(ImageData &&data) { _source._data = data; }
+    const ImageData& GetImageSource() { return _source._data; }
+    ImageData* GetImageSourcePtr() { return &_source._data; }
 
-    void SetFilename(const char* filename) { _filename = filename; }
-    const std::string& GetFilename() { return _filename; }
+    void SetFilename(const char* filename) { _source._filename = filename; }
+    const std::string& GetFilename() { return _source._filename; }
 
 private:
-    ImageData _data;
-    std::string _filename;
+    ImageSource _source;
+    // ImageData _data;
+    // std::string _filename;
 };
 
 struct ImageReadInfo
@@ -79,11 +77,11 @@ struct ImageReadInfo
     std::string filename;
 };
 
-class ImageReader
+class ImageReader final : public ResourceReader
 {
 public:
     ImageReader(ImageReadInfo& info);
-    ~ImageReader();
+    virtual ~ImageReader();
 
     template <typename TPtr>
     ReadResult<TPtr> Read(const char *filename, ReaderOption *option);

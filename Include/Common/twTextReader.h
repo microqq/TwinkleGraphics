@@ -23,13 +23,13 @@ namespace TwinkleGraphics
         std::string content;
     };
 
-    class TextReader
+    class TextReader : public ResourceReader
     {
     public:
         typedef std::shared_ptr<TextReader> Ptr;
 
         TextReader(TextReadInfo &read_info);
-        ~TextReader();
+        virtual ~TextReader();
 
         template <typename TPtr>
         ReadResult<TPtr> Read(const char *filename, ReaderOption *option);

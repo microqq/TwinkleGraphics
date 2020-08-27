@@ -11,15 +11,25 @@
 
 namespace TwinkleGraphics
 {
+    struct ModelSource;
     class Model;
     class ModelManager;
     typedef Singleton<ModelManager> ModelManagerInst;
 
-    class ModelReader
+    struct ModelSource
+    {
+        typedef std::shared_ptr<ModelSource> Ptr;
+        typedef std::weak_ptr<ModelSource> WeakPtr;
+
+        std::string filename;
+        Assimp::Importer* importer = nullptr;
+    };
+
+    class ModelReader final : public ResourceReader
     {
     public:
         ModelReader();
-        ~ModelReader();
+        virtual ~ModelReader();
 
         template <typename TPtr>
         ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
