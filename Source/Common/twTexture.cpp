@@ -944,7 +944,7 @@ void TextureCube::InitStorage()
 
     // if (srcimage != nullptr)
     {
-        const ImageData& image_source = _image->GetImageSource();
+        // const ImageData& image_source = _image->GetImageSource();
         if(_immutable)
         {
             if(!useOthers && srcimage != nullptr)

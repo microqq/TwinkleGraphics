@@ -17,13 +17,15 @@ namespace TwinkleGraphics
 	Image::Image()
 		: Object()
 	{
+		_source = std::make_shared<ImageSource>();
 	}
 
 	Image::Image(const char *filename, const ImageData &data)
 		: Object()
 	{
-		_source._data = data;
-		_source._filename = filename;
+		_source = std::make_shared<ImageSource>();
+		_source->imagedata = data;
+		_source->filename = filename;
 	}
 	Image::~Image()
 	{
@@ -32,10 +34,13 @@ namespace TwinkleGraphics
 	ImageReader::ImageReader(ImageReadInfo &info)
 		: _info(info)
 	{
+		INITIALISE_READERID
 	}
 	ImageReader::~ImageReader()
 	{
 	}
+	DEFINE_READERID(ImageReader)
+
 
 	template <>
 	ReadResult<Image::Ptr> ImageReader::Read<Image::Ptr>(const char *filename, ReaderOption *option)

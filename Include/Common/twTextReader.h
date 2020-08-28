@@ -35,6 +35,8 @@ namespace TwinkleGraphics
         ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
 
     private:
+        DECLARE_READERID;
+
         TextReadInfo _readInfo;
     };
 

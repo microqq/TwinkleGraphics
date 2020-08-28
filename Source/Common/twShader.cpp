@@ -488,11 +488,13 @@ namespace TwinkleGraphics
     ShaderReader::ShaderReader(ShaderReadInfo &read_info)
         : _readInfo(read_info)
     {
+        INITIALISE_READERID
     }
 
     ShaderReader::~ShaderReader()
     {
     }
+    DEFINE_READERID(ShaderReader)
 
     /**
      * @brief 

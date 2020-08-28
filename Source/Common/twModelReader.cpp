@@ -8,13 +8,14 @@
 namespace TwinkleGraphics
 {
     ModelReader::ModelReader()
-
     {
+        INITIALISE_READERID
     }
 
     ModelReader::~ModelReader()
     {
     }
+    DEFINE_READERID(ModelReader)
 
     /**
      * 

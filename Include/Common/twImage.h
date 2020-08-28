@@ -1,5 +1,3 @@
-
-
 #ifndef TW_IMAGE_H
 #define TW_IMAGE_H
 
@@ -21,33 +19,13 @@ class ImageReader;
 class ImageManager;
 typedef Singleton<ImageManager> ImageManagerInst;
 
-
-// class SubImage : public Object
-// {
-// public:
-//     typedef std::shared_ptr<SubImage> Ptr;
-
-//     SubImage()
-//         : Object()
-//     {}
-//     virtual ~SubImage()
-//     {
-//     }
-
-//     void SetData(SubImageData &data) { _data = data; }
-//     const SubImageData& GetSubImageData() { return _data; }
-
-// private:
-//     SubImageData _data;
-// };
-
 struct ImageSource
 {
     typedef std::shared_ptr<ImageSource> Ptr;
     typedef std::weak_ptr<ImageSource> WeakPtr;
 
-    ImageData _data;
-    std::string _filename;
+    ImageData imagedata;
+    std::string filename;
 };
 
 class Image : public Object
@@ -59,17 +37,15 @@ public:
     Image(const char* filename, const ImageData& data);
     virtual ~Image();
 
-    void SetImageSource(ImageData &&data) { _source._data = data; }
-    const ImageData& GetImageSource() { return _source._data; }
-    ImageData* GetImageSourcePtr() { return &_source._data; }
+    void SetImageSource(ImageData &&data) { _source->imagedata = data; }
+    const ImageData& GetImageSource() { return _source->imagedata; }
+    ImageData* GetImageSourcePtr() { return &_source->imagedata; }
 
-    void SetFilename(const char* filename) { _source._filename = filename; }
-    const std::string& GetFilename() { return _source._filename; }
+    void SetFilename(const char* filename) { _source->filename = filename; }
+    const std::string& GetFilename() { return _source->filename; }
 
 private:
-    ImageSource _source;
-    // ImageData _data;
-    // std::string _filename;
+    ImageSource::Ptr _source;
 };
 
 struct ImageReadInfo
@@ -91,9 +67,10 @@ private:
     ReadResult<Image::Ptr> ReadOthers(const char *filename, ReaderOption *option);
 
 private:
+    DECLARE_READERID;
+
     ImageReadInfo _info;
 };
-
 
 class ImageManager
 {
