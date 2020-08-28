@@ -16,7 +16,7 @@ namespace TwinkleGraphics
     class ModelManager;
     typedef Singleton<ModelManager> ModelManagerInst;
 
-    struct ModelSource
+    struct ModelSource : public SourceHandle
     {
         typedef std::shared_ptr<ModelSource> Ptr;
         typedef std::weak_ptr<ModelSource> WeakPtr;
@@ -34,13 +34,14 @@ namespace TwinkleGraphics
         template <typename TPtr>
         ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
 
+        // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
+
         Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[]);
         SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);
         Material::Ptr ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFalg);
         std::vector<Texture::Ptr> LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir);
         void SetMaterialTextures(std::vector<Texture::Ptr>& textures, Material::Ptr material, std::string texNamePrefix);
 
-    private:
         DECLARE_READERID;
     };
 

@@ -7,24 +7,26 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <tuple>
 
 #include "twCommon.h"
 #include "twRingBuffer.h"
 #include "twThreadPool.h"
 
-#define DECLARE_READERID static ReaderId ID
+#define DECLARE_READERID public: static ReaderId ID
 #define DEFINE_READERID(T) ReaderId T::ID = std::hash<std::string>{}( \
     #T   \
     );
 
-#define INITIALISE_READERID _id = ID;
+// #define INITIALISE_READERID _id = ID;
 
 namespace TwinkleGraphics
 {
 class ResourceReader;
 class ResourceManager;
 typedef Singleton<ResourceManager> ResourceManagerInst;
-typedef int16_t ReaderId;
+typedef uint16_t ReaderId;
+typedef uint64_t CacheId;
 
 enum class CacheHint
 {
@@ -36,6 +38,10 @@ enum class CacheHint
 struct SourceHandle
 {
     typedef std::shared_ptr<SourceHandle> Ptr;
+
+    inline virtual CacheId GetCacheId() { return id; }
+
+    CacheId id = 0;
 };
 
 class ReaderOption
@@ -48,7 +54,7 @@ public:
     {
         _cacheHint = src._cacheHint;
     }
-    ~ReaderOption()
+    virtual ~ReaderOption()
     {}
 
     const ReaderOption& operator=(const ReaderOption& src)
@@ -60,7 +66,7 @@ public:
     inline void SetCacheHint(CacheHint hint) { _cacheHint = hint; }
     CacheHint GetCacheHint() { return _cacheHint; }
 
-private:
+protected:
     CacheHint _cacheHint = CacheHint::CACHE_SOURCE;
 };
 
@@ -72,6 +78,9 @@ public:
 
     ResourceReader()
         : _option(nullptr)
+    {}
+    ResourceReader(ReaderOption* option)
+        : _option(option)
     {}
     virtual ~ResourceReader() 
     {
@@ -94,11 +103,11 @@ public:
     }
     const ReaderOption* const GetReaderOption() {  return this->_option; }
 
-    ReaderId GetReaderId() { return _id; };
+    // ReaderId GetReaderId() { return _id; };
 
 protected:
     ReaderOption* _option = nullptr;
-    ReaderId _id = -1;;
+    // ReaderId _id = 0;;
 };
 
 /**
@@ -113,6 +122,8 @@ public:
     enum class Status
     {
         NONE,
+        WAITLOAD,
+        LOADING,
         SUCCESS,
         FAILED
     };
@@ -121,13 +132,13 @@ public:
         : _sharedObject(nullptr)
         , _status(status)
     {}
-    ReadResult(TPtr shared_obj, Status status = Status::NONE)
-        : _sharedObject(shared_obj)
+    ReadResult(TPtr obj, Status status = Status::NONE)
+        : _sharedObject(obj)
         , _status(status)
     {}
-    ReadResult(const ReadResult& copyop)
-        : _sharedObject(copyop._sharedObject)
-        , _status(copyop._status)
+    ReadResult(const ReadResult& src)
+        : _sharedObject(src._sharedObject)
+        , _status(src._status)
     {}
     ~ReadResult()
     {}
@@ -147,6 +158,8 @@ private:
     Status _status;
 };
 
+typedef void* VoidPtr;
+
 class ResourceCache
 {
 public:
@@ -164,7 +177,10 @@ public:
 private:
     SourceHandle::Ptr _sourceCache;
     Object::Ptr _objectCache;
+
+    friend class ResourceManager;
 };
+
 
 class ResourceManager
 {
@@ -176,6 +192,15 @@ public:
     ~ResourceManager() 
     {
         _threadPool.Stop(true);
+    }
+
+    void Update()
+    {
+        ReadTask task;
+        while (!_readTasks.EmptyNoLock())
+        {
+            _readTasks.Pop(task);
+        }
     }
 
     /**
@@ -192,23 +217,95 @@ public:
     template<class R, class TPtr, class... Args>
     ReadResult<TPtr> Read(const char* filename, ReaderOption* option, Args&&...args)
     {
-        //get GUID with filename, read from cache
+        // get GUID with filename, read from cache
 
-        //Todo: if not found in cache, should get reader from pool. use placement new
-        //else
         R* r = new R(std::forward<Args>(args)...);
 
-        //  http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-        // error: use 'template' keyword to treat 'Read' as a dependent template name
-        // return r->Read<TPtr>(filename, option);
+        // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
         return r->template Read<TPtr>(filename, option);
+    }
+
+
+    template<class R, class... Args>
+    ReadResult<VoidPtr> ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
+    {
+        // get GUID with filename, read from cache
+
+        ReadTask task;
+        task.filename = filename;
+        task.option = option;
+        ResourceReader::Ptr reader = GetIdleReader(R::ID);
+        if(reader != nullptr)
+        {
+            reader = new (reader.get())R(std::forward<Args>(args)...);
+        }
+        else
+        {
+            R* r = new R(std::forward<Args>(args)...);
+            reader = std::make_shared(r);
+        }
+        task.reader = reader;
+        _readTasks.Push(task);
+
+        return ReadResult<VoidPtr>(ReadResult<VoidPtr>::Status::WAITLOAD);
+    }
+
+    template <class R>
+    void RecycleReader(typename R::Ptr reader)
+    {
+        if(reader != nullptr)
+        {
+            std::lock_guard<std::mutex> lock(_idleReaderMutex);
+            {
+                _idleReaders.insert(std::make_pair(R::ID, reader));
+            }
+        }
+    }
+
+private:
+    ResourceReader::Ptr GetIdleReader(ReaderId id)
+    {
+        std::lock_guard<std::mutex> lock(_idleReaderMutex);
+        {
+            using MIterator = MultMapReaders::iterator;
+            MIterator iter = _idleReaders.find(id);
+            MIterator end = _idleReaders.end();
+            if(iter != end)
+            {
+                ResourceReader::Ptr reader = iter->second;
+                _idleReaders.erase(iter);
+
+                return iter->second;
+            }
+        }
+
+        return nullptr;
     }
 
 
 private:
     typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
+    typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
+    typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
 
-    MultMapReaders _readers;
+    struct ReadTask
+    {
+        std::string filename;
+        ReaderOption *option = nullptr;
+        ResourceReader::Ptr reader = nullptr;
+    };
+
+    TSQueue<ReadTask> _readTasks;
+
+    MultCacheMap _objectCacheMap;
+    UnorderedCacheMap _sourceCacheMap;
+
+    // MultMapReaders _loadingReaders;
+    MultMapReaders _idleReaders;
+
+    // std::mutex _loadingReaderMutex;
+    std::mutex _idleReaderMutex;
+
     ThreadPool _threadPool;
 };
 

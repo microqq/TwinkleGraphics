@@ -39,7 +39,7 @@ class RenderPass : public Object
 public:
     typedef std::shared_ptr<RenderPass> Ptr;
 
-    static RenderPass::Ptr CreateRenderPassInstance(ShaderReadInfo readInfos[], int32 num);
+    static RenderPass::Ptr CreateRenderPassInstance(ShaderOption options[], int32 num);
 
     RenderPass(ShaderProgram::Ptr shader = nullptr);
     RenderPass(const RenderPass& copy);

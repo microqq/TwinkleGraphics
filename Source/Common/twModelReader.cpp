@@ -9,7 +9,7 @@ namespace TwinkleGraphics
 {
     ModelReader::ModelReader()
     {
-        INITIALISE_READERID
+        // INITIALISE_READERID
     }
 
     ModelReader::~ModelReader()
@@ -46,6 +46,11 @@ namespace TwinkleGraphics
 
         return ReadResult<Model::Ptr>(model, ReadResult<Model::Ptr>::Status::SUCCESS);
     }
+
+    // void ModelReader::ReadAsync(const char *filename, ReaderOption *option)
+	// {
+		
+	// }
 
     /**
     *   https://learnopengl.com/
@@ -335,13 +340,13 @@ namespace TwinkleGraphics
         Console::LogInfo("ModelReader: Process material vertex shader macros\n", vertMarco, "\n");
 
         char* vertMacros[] = { vertMarco };
-        ShaderReadInfo shaderReadInfos[] = 
+        ShaderOption options[] = 
         {
-            {std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
-            {std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros, true}
+            ShaderOption::OptionData{std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros, true}
         };
 
-        StandardMaterial::Ptr material = std::make_shared<StandardMaterial>(shaderReadInfos, 2);
+        StandardMaterial::Ptr material = std::make_shared<StandardMaterial>(options, 2);
 
         // process materials
         aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];    
@@ -427,8 +432,8 @@ namespace TwinkleGraphics
             // }
 
             ImageManagerInst imageMgr;
-            ImageReadInfo images_info = {dir + "/" + std::string(str.C_Str())};
-            Image::Ptr image = imageMgr->ReadImage(images_info);
+            std::string imgFilename{dir + "/" + std::string(str.C_Str())};
+            Image::Ptr image = imageMgr->ReadImage(imgFilename.c_str());
             if(image == nullptr)
             {
                 continue;

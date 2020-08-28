@@ -287,8 +287,8 @@ void TextureExploreView::OnGUI()
             CreateSkybox();
 
             ImageManagerInst imageMgr;
-            ImageReadInfo images_info = {"Assets/Textures/TantolundenCube.dds"};
-            Image::Ptr image = imageMgr->ReadImage(images_info);
+            std::string imageFilename = {"Assets/Textures/TantolundenCube.dds"};
+            Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
 
             CreateCube(image);
             CreateIconSphere(image);
@@ -585,8 +585,8 @@ void TextureExploreView::CreateSprite()
     if(_sprite != nullptr) return;
                 
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info = {"Assets/Textures/test3.png"};
-    Image::Ptr image = imageMgr->ReadImage(images_info);
+    std::string imageFilename = {"Assets/Textures/test3.png"};
+    Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
 
     Texture2D::Ptr texture = nullptr;
     if (image != nullptr)
@@ -654,8 +654,8 @@ void TextureExploreView::CreateVolumnTexture()
         VolumnQuadMaterial::Ptr mat = std::make_shared<VolumnQuadMaterial>();
 
         ImageManagerInst imageMgr;
-        ImageReadInfo images_info = {"Assets/Textures/cloud.dds"};
-        Image::Ptr image = imageMgr->ReadImage(images_info);
+        std::string imageFilename = {"Assets/Textures/cloud.dds"};
+        Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
 
         Texture3D::Ptr volumntex = std::make_shared<Texture3D>(true);
         volumntex->CreateFromImage(image);
@@ -683,8 +683,8 @@ void TextureExploreView::CreateSkybox()
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
 
         ImageManagerInst imageMgr;
-        // ImageReadInfo images_info = {"Assets/Textures/TantolundenCube.dds"};
-        // Image::Ptr image = imageMgr->ReadImage(images_info);
+        // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
+        // Image::Ptr image = imageMgr->ReadImage(imageFilename);
 
         // ImageReadInfo front_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"};
         // Image::Ptr front_image = imageMgr->ReadImage(front_info);
@@ -699,18 +699,18 @@ void TextureExploreView::CreateSkybox()
         // ImageReadInfo down_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"};
         // Image::Ptr down_image = imageMgr->ReadImage(down_info);
 
-        ImageReadInfo front_info = {"Assets/Textures/skybox/front.png"};
-        Image::Ptr front_image = imageMgr->ReadImage(front_info);
-        ImageReadInfo back_info = {"Assets/Textures/skybox/back.png"};
-        Image::Ptr back_image = imageMgr->ReadImage(back_info);
-        ImageReadInfo left_info = {"Assets/Textures/skybox/left.png"};
-        Image::Ptr left_image = imageMgr->ReadImage(left_info);
-        ImageReadInfo right_info = {"Assets/Textures/skybox/right.png"};
-        Image::Ptr right_image = imageMgr->ReadImage(right_info);
-        ImageReadInfo top_info = {"Assets/Textures/skybox/top.png"};
-        Image::Ptr top_image = imageMgr->ReadImage(top_info);
-        ImageReadInfo down_info = {"Assets/Textures/skybox/bottom.png"};
-        Image::Ptr down_image = imageMgr->ReadImage(down_info);
+        std::string front_info = {"Assets/Textures/skybox/front.png"};
+        Image::Ptr front_image = imageMgr->ReadImage(front_info.c_str());
+        std::string back_info = {"Assets/Textures/skybox/back.png"};
+        Image::Ptr back_image = imageMgr->ReadImage(back_info.c_str());
+        std::string left_info = {"Assets/Textures/skybox/left.png"};
+        Image::Ptr left_image = imageMgr->ReadImage(left_info.c_str());
+        std::string right_info = {"Assets/Textures/skybox/right.png"};
+        Image::Ptr right_image = imageMgr->ReadImage(right_info.c_str());
+        std::string top_info = {"Assets/Textures/skybox/top.png"};
+        Image::Ptr top_image = imageMgr->ReadImage(top_info.c_str());
+        std::string down_info = {"Assets/Textures/skybox/bottom.png"};
+        Image::Ptr down_image = imageMgr->ReadImage(down_info.c_str());
 
         // ImageReadInfo front_info = {"Assets/Textures/sor_sea/sea_ft.png"};
         // Image::Ptr front_image = imageMgr->ReadImage(front_info);
@@ -892,8 +892,8 @@ void TextureExploreView::CreateNURBSSurface()
         ProjectionMappingMaterial::Ptr mat = std::make_shared<ProjectionMappingMaterial>();
 
         ImageManagerInst imageMgr;
-        ImageReadInfo images_info = {"Assets/Textures/test3.png"};
-        Image::Ptr image = imageMgr->ReadImage(images_info);
+        std::string imageFilename = {"Assets/Textures/test3.png"};
+        Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
 
         Texture2D::Ptr texture = nullptr;
         texture = std::make_shared<Texture2D>(true);

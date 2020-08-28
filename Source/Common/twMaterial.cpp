@@ -4,10 +4,10 @@ namespace TwinkleGraphics
 {
 /*------------------------------RenderPass--------------------------*/
 
-RenderPass::Ptr RenderPass::CreateRenderPassInstance(ShaderReadInfo readInfos[], int32 num)
+RenderPass::Ptr RenderPass::CreateRenderPassInstance(ShaderOption options[], int32 num)
 {
     ShaderManagerInst shaderMgr;
-    ShaderProgram::Ptr program = shaderMgr->ReadShaders(readInfos, num);
+    ShaderProgram::Ptr program = shaderMgr->ReadShaders(options, num);
 
     RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
     return pass;

@@ -31,10 +31,9 @@ namespace TwinkleGraphics
 	{
 	}
 
-	ImageReader::ImageReader(ImageReadInfo &info)
-		: _info(info)
+	ImageReader::ImageReader()
 	{
-		INITIALISE_READERID
+		// INITIALISE_READERID
 	}
 	ImageReader::~ImageReader()
 	{
@@ -64,6 +63,12 @@ namespace TwinkleGraphics
 		{
 			return ReadOthers(filename, option);
 		}
+	}
+
+    template <>
+    ReadResult<Image::Ptr> ImageReader::ReadAsync(const char *filename, ReaderOption *option)
+	{
+		return ReadResult<Image::Ptr>();
 	}
 
 	ReadResult<Image::Ptr> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
@@ -166,20 +171,10 @@ namespace TwinkleGraphics
 #endif
 	}
 
-	void ImageManager::ReadImages(ImageReadInfo images_info[], Image::Ptr images[], int num)
-	{
-		for (int i = 0; i < num; i++)
-		{
-			images[i] = ReadImage(images_info[i]);
-		}
-
-		return;
-	}
-
-	Image::Ptr ImageManager::ReadImage(ImageReadInfo &image_info)
+	Image::Ptr ImageManager::ReadImage(const char* filename)
 	{
 		ResourceManagerInst resMgr;
-		ReadResult<Image::Ptr> result = resMgr->Read<ImageReader, Image::Ptr>(image_info.filename.c_str(), nullptr, image_info);
+		ReadResult<Image::Ptr> result = resMgr->Read<ImageReader, Image::Ptr>(filename, nullptr);
 		Image::Ptr image = result.GetSharedObject();
 
 		return image;

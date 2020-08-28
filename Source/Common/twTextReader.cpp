@@ -4,9 +4,9 @@
 
 namespace TwinkleGraphics
 {
-    TextReader::TextReader(TextReadInfo &info)
+    TextReader::TextReader()
     {
-        INITIALISE_READERID
+        // INITIALISE_READERID
     }
 
     TextReader::~TextReader()
@@ -47,10 +47,15 @@ namespace TwinkleGraphics
         return ReadResult<TextSource::Ptr>(ReadResult<TextSource::Ptr>::Status::FAILED);
     }
 
-    TextSource::Ptr TextManager::ReadText(TextReadInfo &readInfo)
+    // void TextReader::ReadAsync(const char *filename, ReaderOption *option)
+	// {
+		
+	// }
+
+    TextSource::Ptr TextManager::ReadText(const char* filename)
     {
         ResourceManagerInst resMgr;
-        ReadResult<TextSource::Ptr> result = resMgr->Read<TextReader, TextSource::Ptr>(readInfo.filename.c_str(), nullptr, readInfo);
+        ReadResult<TextSource::Ptr> result = resMgr->Read<TextReader, TextSource::Ptr>(filename, nullptr);
         TextSource::Ptr text = result.GetSharedObject();
 
         return text;

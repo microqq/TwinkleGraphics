@@ -17,16 +17,16 @@ namespace TwinkleGraphics
     {
     }
 
-    Shader::Ptr ShaderManager::ReadShader(ShaderReadInfo &shaderInfo)
+    Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
         ResourceManagerInst resMgr;
-        ReadResult<Shader::Ptr> result = resMgr->Read<ShaderReader, Shader::Ptr>(shaderInfo.filename.c_str(), nullptr, shaderInfo);
+        ReadResult<Shader::Ptr> result = resMgr->Read<ShaderReader, Shader::Ptr>(filename, option);
         Shader::Ptr sharedShader = result.GetSharedObject();
 
         return sharedShader;
     }
 
-    ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderReadInfo shaderInfos[], int32 num)
+    ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderOption options[], int32 num)
     {
         //Todo: read program from cache first
 
@@ -35,7 +35,7 @@ namespace TwinkleGraphics
         Shader::Ptr* shaders = new Shader::Ptr[num];
         for (int i = 0; i < num; i++)
         {
-            Shader::Ptr shader = ReadShader(shaderInfos[i]);
+            Shader::Ptr shader = ReadShader(options[i].optionData.filename.c_str(), &options[i]);
             if(shader != nullptr)
             {
                 shaders[i] = shader;
@@ -334,8 +334,8 @@ namespace TwinkleGraphics
 
                 std::string directory = _source->filename.substr(0, position) + "/";
                 TextManagerInst textMgr;
-                TextReadInfo textReadInfo({ directory + sm.str() });
-                ShaderIncludeSource::Ptr includeSource = textMgr->ReadText(textReadInfo);
+                std::string textFilename{ directory + sm.str() };
+                ShaderIncludeSource::Ptr includeSource = textMgr->ReadText(textFilename.c_str());
 
                 assert(includeSource != nullptr);
                 includeSource->filename = sm.str();
@@ -485,10 +485,10 @@ namespace TwinkleGraphics
  * 
  * @param read_info 
  */
-    ShaderReader::ShaderReader(ShaderReadInfo &read_info)
-        : _readInfo(read_info)
+    ShaderReader::ShaderReader()
+        : ResourceReader()
     {
-        INITIALISE_READERID
+        // INITIALISE_READERID
     }
 
     ShaderReader::~ShaderReader()
@@ -531,11 +531,13 @@ namespace TwinkleGraphics
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
-            Shader::Ptr sharedShader = std::make_shared<Shader>(_readInfo.type, sourcePtr);
-            sharedShader->SetDefineMacros(const_cast<const char**>(_readInfo.macros), _readInfo.numMacros);
+            ShaderOption* soption = dynamic_cast<ShaderOption*>(option);
+
+            Shader::Ptr sharedShader = std::make_shared<Shader>(soption->optionData.type, sourcePtr);
+            sharedShader->SetDefineMacros(const_cast<const char**>(soption->optionData.macros), soption->optionData.numMacros);
             sharedShader->SetupCompile();
 
-            if(_readInfo.compileImmediate)
+            if(soption->optionData.compileImmediate)
             {
                 if (!(sharedShader->Compile()))
                 {
@@ -555,5 +557,11 @@ namespace TwinkleGraphics
 
         return ReadResult<Shader::Ptr>();
     }
+
+    // void ShaderReader::ReadAsync(const char *filename, ReaderOption *option)
+	// {
+		
+	// }
+
 
 } // namespace TwinkleGraphics

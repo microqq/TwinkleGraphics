@@ -18,6 +18,7 @@ namespace TwinkleGraphics
     class Shader;
     class ShaderProgram;
     class ShaderResource;
+    class ShaderOption;
     class ShaderReader;
     class ShaderManager;
     typedef Singleton<ShaderManager> ShaderManagerInst;
@@ -32,13 +33,69 @@ namespace TwinkleGraphics
         COMPUTE_SHADER = GL_COMPUTE_SHADER
     };
 
-    struct ShaderReadInfo
+    class ShaderOption final : public ReaderOption
     {
-        std::string filename;
-        ShaderType type;
-        int32 numMacros = 0;
-        char** macros = nullptr;
-        bool compileImmediate = true;
+    public:
+        struct OptionData
+        {
+            std::string filename;
+            ShaderType type;
+            int32 numMacros = 0;
+            char **macros = nullptr;
+            bool compileImmediate = true;
+        };
+           
+        ShaderOption(const OptionData& data)
+            : ReaderOption()
+            , optionData(data)
+        {
+            optionData.macros = new char*[data.numMacros];
+            for(uint i = 0; i < data.numMacros; i++)
+            {
+                optionData.macros[i] = data.macros[i];
+            }
+        }
+        ShaderOption(const ShaderOption &src)
+            : ReaderOption(src)
+        {   
+            optionData.filename = src.optionData.filename;
+            optionData.type = src.optionData.type;
+            optionData.numMacros = src.optionData.numMacros;
+            optionData.macros = new char*[optionData.numMacros];
+            for(uint i = 0; i < optionData.numMacros; i++)
+            {
+                optionData.macros[i] = src.optionData.macros[i];
+            }
+            optionData.compileImmediate = src.optionData.compileImmediate;
+        }
+
+        const ShaderOption &operator=(const ShaderOption &src)
+        {
+            _cacheHint = src._cacheHint;
+
+            optionData.filename = src.optionData.filename;
+            optionData.type = src.optionData.type;
+            optionData.numMacros = src.optionData.numMacros;
+            optionData.macros = new char*[optionData.numMacros];
+            for(uint i = 0; i < optionData.numMacros; i++)
+            {
+                optionData.macros[i] = src.optionData.macros[i];
+            }
+            optionData.compileImmediate = src.optionData.compileImmediate;
+
+            return *this;
+        }
+
+
+        virtual ~ShaderOption()
+        {
+            SAFE_DEL(optionData.macros);
+        }
+
+        OptionData optionData; 
+
+        friend class ShaderReader;
+        friend class ShaderManager;
     };
 
     typedef TextSource ShaderSource;
@@ -136,15 +193,15 @@ namespace TwinkleGraphics
     class ShaderReader : public ResourceReader
     {
     public:
-        ShaderReader(ShaderReadInfo &read_info);
+        ShaderReader();
         virtual ~ShaderReader();
 
         template <typename TPtr>
         ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
 
-    private:
+        // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
+
         DECLARE_READERID;
-        ShaderReadInfo _readInfo;
     };
 
     class ShaderManager
@@ -153,8 +210,8 @@ namespace TwinkleGraphics
         ShaderManager();
         ~ShaderManager();
 
-        Shader::Ptr ReadShader(ShaderReadInfo &shader_info);
-        ShaderProgram::Ptr ReadShaders(ShaderReadInfo shaders_info[], int32 num);
+        Shader::Ptr ReadShader(const char* filename, ShaderOption* option);
+        ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
 
     private:
         std::map<uint32, Shader::Ptr> _shaders;

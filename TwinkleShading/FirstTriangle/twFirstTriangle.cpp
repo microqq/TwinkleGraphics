@@ -82,12 +82,13 @@ void TriangleView::Initialize()
     glBindVertexArray(0);
  
     //create shader
-    ShaderReadInfo shaders_info[] = {
-        {std::string("Assets/Shaders/firstTriangle.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/firstTriangle.frag"), ShaderType::FRAGMENT_SHADER}};
+    ShaderOption options[] = {
+        ShaderOption::OptionData{std::string("Assets/Shaders/firstTriangle.vert"), ShaderType::VERTEX_SHADER},
+        ShaderOption::OptionData{std::string("Assets/Shaders/firstTriangle.frag"), ShaderType::FRAGMENT_SHADER}
+    };
 
     ShaderManagerInst shaderMgr;
-    _program = shaderMgr->ReadShaders(shaders_info, 2);
+    _program = shaderMgr->ReadShaders(options, 2);
 
     //camera view setting: frustum and its position, orientation 
     _camera->Translate(glm::vec3(0.0f, 0.0f, 10.0f));

@@ -79,11 +79,12 @@ void BasicGeometryView::Initialize()
     ShaderManagerInst shaderMgr;
 
     //create basic-geometry shader
-    ShaderReadInfo shaders_info[] = {
-        {std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}};
+    ShaderOption options[] = {
+        ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
+        ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}
+    };
 
-    _program = shaderMgr->ReadShaders(shaders_info, 2);
+    _program = shaderMgr->ReadShaders(options, 2);
     {
         ShaderProgramUse use_program(_program);
         //get shader uniform location
@@ -95,9 +96,10 @@ void BasicGeometryView::Initialize()
     }
 
     //create infinite-plane shader
-    ShaderReadInfo infplane_shaders_info[] = {
-        {std::string("Assets/Shaders/infinitePlane.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/infinitePlane.frag"), ShaderType::FRAGMENT_SHADER}};
+    ShaderOption infplane_shader_options[] = {
+        ShaderOption::OptionData{std::string("Assets/Shaders/infinitePlane.vert"), ShaderType::VERTEX_SHADER},
+        ShaderOption::OptionData{std::string("Assets/Shaders/infinitePlane.frag"), ShaderType::FRAGMENT_SHADER}
+    };
 
     _viewportParams = glm::vec4((float32)(viewport.Width()), (float32)(viewport.Height()), viewport.AspectRatio(), 1.0f);
     _lineParams = glm::vec4(0.01f, 0.002f, 0.99f, 1.0f);
@@ -111,12 +113,12 @@ void BasicGeometryView::Initialize()
     };
     CreateLine();
 
-    ShaderReadInfo line_shader_info[] = {
-        {std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
-        {std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
-        {std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}
+    ShaderOption line_shader_options[] = {
+        ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
+        ShaderOption::OptionData{std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
+        ShaderOption::OptionData{std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}
     };
-    _lineProgram = shaderMgr->ReadShaders(line_shader_info, 3);
+    _lineProgram = shaderMgr->ReadShaders(line_shader_options, 3);
     {
         ShaderProgramUse use_program(_lineProgram);
         _lineMVPLoc = glGetUniformLocation(_lineProgram->GetRes().id, "mvp");
@@ -664,8 +666,8 @@ void BasicGeometryView::CreateInfinitePlane()
     _infinitePlane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
     ImageManagerInst imageMgr;
-    ImageReadInfo images_info = {"Assets/Textures/grid.png"};
-    Image::Ptr image = imageMgr->ReadImage(images_info);
+    std::string imageFilename = {"Assets/Textures/grid.png"};
+    Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
 
     Texture2D::Ptr texture = nullptr;
     texture = std::make_shared<Texture2D>(true, true);

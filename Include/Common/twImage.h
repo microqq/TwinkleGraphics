@@ -19,10 +19,12 @@ class ImageReader;
 class ImageManager;
 typedef Singleton<ImageManager> ImageManagerInst;
 
-struct ImageSource
+struct ImageSource : public SourceHandle
 {
     typedef std::shared_ptr<ImageSource> Ptr;
     typedef std::weak_ptr<ImageSource> WeakPtr;
+
+
 
     ImageData imagedata;
     std::string filename;
@@ -48,28 +50,25 @@ private:
     ImageSource::Ptr _source;
 };
 
-struct ImageReadInfo
-{
-    std::string filename;
-};
-
 class ImageReader final : public ResourceReader
 {
 public:
-    ImageReader(ImageReadInfo& info);
+    ImageReader();
     virtual ~ImageReader();
 
     template <typename TPtr>
     ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
 
+    template <typename TPtr>
+    ReadResult<TPtr> ReadAsync(const char *filename, ReaderOption *option);
+
+    // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
+
 private:
     ReadResult<Image::Ptr> ReadDDS(const char *filename, ReaderOption *option);
     ReadResult<Image::Ptr> ReadOthers(const char *filename, ReaderOption *option);
 
-private:
     DECLARE_READERID;
-
-    ImageReadInfo _info;
 };
 
 class ImageManager
@@ -78,8 +77,7 @@ public:
     ImageManager();
     ~ImageManager();
 
-    void ReadImages(ImageReadInfo images_info[], Image::Ptr images[], int num);
-    Image::Ptr ReadImage(ImageReadInfo& image_info);
+    Image::Ptr ReadImage(const char* filename);
 
 private:
     

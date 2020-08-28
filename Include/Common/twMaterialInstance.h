@@ -10,10 +10,10 @@ class StandardMaterial : public Material
 public:
     typedef std::shared_ptr<StandardMaterial> Ptr;
 
-    StandardMaterial(ShaderReadInfo* readInfos, int32 num)
+    StandardMaterial(ShaderOption* options, int32 num)
         : Material()
     {
-        Initialize(readInfos, num);
+        Initialize(options, num);
     }
     StandardMaterial(const StandardMaterial &copy)
         : Material(copy)
@@ -22,10 +22,10 @@ public:
     virtual ~StandardMaterial() {}
 
 private:
-    void Initialize(ShaderReadInfo* readInfos, int32 num)
+    void Initialize(ShaderOption options[], int32 num)
     {       
         ShaderManagerInst shaderMgr;
-        ShaderProgram::Ptr program = shaderMgr->ReadShaders(readInfos, num);
+        ShaderProgram::Ptr program = shaderMgr->ReadShaders(options, num);
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
 
@@ -54,11 +54,13 @@ private:
     void Initialize()
     {
         ShaderManagerInst shaderMgr;
-        ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderProgram::Ptr program = nullptr;        
+        ShaderOption options[] = { 
+            ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}
+        };
+
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -90,10 +92,10 @@ private:
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
-            {std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -130,10 +132,10 @@ private:
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
-            {std::string("Assets/Shaders/sprite1D.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/sprite1D.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -169,11 +171,12 @@ private:
     {
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
-            {std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 3);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}
+        };
+        program = shaderMgr->ReadShaders(options, 3);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -201,10 +204,10 @@ private:
     {
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/infinitePlane.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/infinitePlane.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/infinitePlane.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/infinitePlane.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -233,10 +236,10 @@ private:
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/volumnQuad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
-            {std::string("Assets/Shaders/volumnQuad.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/volumnQuad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/volumnQuad.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -273,10 +276,10 @@ private:
     {
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/cube.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/cube.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -308,10 +311,10 @@ private:
     {
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/sphere.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/sphere.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/sphere.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/sphere.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -343,10 +346,10 @@ private:
     {
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/skybox.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/skybox.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/skybox.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/skybox.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -359,7 +362,7 @@ private:
         this->SetTextureTiling("mainTex", tiling);
         this->SetTextureOffset("mainTex", offset);
 
-        RenderPass::CreateRenderPassInstance(shaderInfos, 2);
+        RenderPass::CreateRenderPassInstance(options, 2);
     }
 };
 
@@ -385,10 +388,10 @@ private:
     {
         ShaderManagerInst shaderMgr;
         ShaderProgram::Ptr program = nullptr;
-        ShaderReadInfo shaderInfos[] = {
-            {std::string("Assets/Shaders/projectionTexture.vert"), ShaderType::VERTEX_SHADER},
-            {std::string("Assets/Shaders/projectionTexture.frag"), ShaderType::FRAGMENT_SHADER}};
-        program = shaderMgr->ReadShaders(shaderInfos, 2);
+        ShaderOption options[] = {
+            ShaderOption::OptionData{std::string("Assets/Shaders/projectionTexture.vert"), ShaderType::VERTEX_SHADER},
+            ShaderOption::OptionData{std::string("Assets/Shaders/projectionTexture.frag"), ShaderType::FRAGMENT_SHADER}};
+        program = shaderMgr->ReadShaders(options, 2);
 
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
