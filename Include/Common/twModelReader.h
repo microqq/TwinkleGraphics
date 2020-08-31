@@ -31,8 +31,8 @@ namespace TwinkleGraphics
         ModelReader();
         virtual ~ModelReader();
 
-        template <typename TPtr>
-        ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
+        template <typename T>
+        ReadResult<T> Read(const char *filename, ReaderOption *option);
 
         // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
 

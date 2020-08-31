@@ -7,7 +7,7 @@
 #include <string>
 #include <memory>
 #include <map>
-#include <tuple>
+#include <any>
 
 #include "twCommon.h"
 #include "twRingBuffer.h"
@@ -71,6 +71,59 @@ protected:
 };
 
 
+/**
+ * @brief 
+ * 
+ * @tparam TPtr 
+ */
+template<class T>
+class ReadResult
+{
+public:
+    enum class Status
+    {
+        NONE,
+        WAITLOAD,
+        LOADING,
+        SUCCESS,
+        FAILED
+    };
+
+    ReadResult(Status status = Status::NONE)
+        : _sharedObject(nullptr)
+        , _status(status)
+    {}
+    ReadResult(typename T::Ptr obj, Status status = Status::NONE)
+        : _sharedObject(obj)
+        , _status(status)
+    {}
+    ReadResult(const ReadResult& src)
+        : _sharedObject(src._sharedObject)
+        , _status(src._status)
+    {}
+    ~ReadResult()
+    {}
+
+    typename T::Ptr GetSharedObject() const { return _sharedObject; }
+    Status GetStatus() const { return _status; }
+    ReadResult& operator =(const ReadResult& result)
+    {
+        _sharedObject = result._sharedObject;
+        _status = result._status;
+
+        return *this;
+    }
+
+    bool operator==(std::nullptr_t nullp) const
+    {
+        return _sharedObject == nullp;
+    }
+
+private:
+    typename T::Ptr _sharedObject;
+    Status _status;
+};
+
 class ResourceReader
 {
 public:
@@ -110,53 +163,7 @@ protected:
     // ReaderId _id = 0;;
 };
 
-/**
- * @brief 
- * 
- * @tparam TPtr 
- */
-template<class TPtr>
-class ReadResult
-{
-public:
-    enum class Status
-    {
-        NONE,
-        WAITLOAD,
-        LOADING,
-        SUCCESS,
-        FAILED
-    };
 
-    ReadResult(Status status = Status::NONE)
-        : _sharedObject(nullptr)
-        , _status(status)
-    {}
-    ReadResult(TPtr obj, Status status = Status::NONE)
-        : _sharedObject(obj)
-        , _status(status)
-    {}
-    ReadResult(const ReadResult& src)
-        : _sharedObject(src._sharedObject)
-        , _status(src._status)
-    {}
-    ~ReadResult()
-    {}
-
-    TPtr GetSharedObject() const { return _sharedObject; }
-    Status GetStatus() const { return _status; }
-    ReadResult& operator =(const ReadResult& result) 
-    {
-        _sharedObject = result._sharedObject;
-        _status = result._status;
-
-        return *this;
-    }
-
-private:
-    TPtr _sharedObject;
-    Status _status;
-};
 
 typedef void* VoidPtr;
 
@@ -196,11 +203,6 @@ public:
 
     void Update()
     {
-        ReadTask task;
-        while (!_readTasks.EmptyNoLock())
-        {
-            _readTasks.Pop(task);
-        }
     }
 
     /**
@@ -214,40 +216,41 @@ public:
      * @param args 
      * @return ReadResult<TPtr> 
      */
-    template<class R, class TPtr, class... Args>
-    ReadResult<TPtr> Read(const char* filename, ReaderOption* option, Args&&...args)
+    template<class R, class T, class... Args>
+    ReadResult<T> Read(const char* filename, ReaderOption* option, Args&&...args)
     {
         // get GUID with filename, read from cache
 
         R* r = new R(std::forward<Args>(args)...);
 
         // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-        return r->template Read<TPtr>(filename, option);
+        return r->template Read<T>(filename, option);
     }
 
 
-    template<class R, class... Args>
-    ReadResult<VoidPtr> ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
+    template<class R, class T, class... Args>
+    ReadResult<T> ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
     {
         // get GUID with filename, read from cache
 
-        ReadTask task;
-        task.filename = filename;
-        task.option = option;
         ResourceReader::Ptr reader = GetIdleReader(R::ID);
         if(reader != nullptr)
         {
-            reader = new (reader.get())R(std::forward<Args>(args)...);
+            R* r = new (reader.get())R(std::forward<Args>(args)...);
+            reader.reset(r);
         }
         else
         {
             R* r = new R(std::forward<Args>(args)...);
-            reader = std::make_shared(r);
+            reader.reset(r);
         }
-        task.reader = reader;
-        _readTasks.Push(task);
+        
+        auto future = _threadPool.PushTask(&R::ReadAsync, reader.get(), filename, option);
 
-        return ReadResult<VoidPtr>(ReadResult<VoidPtr>::Status::WAITLOAD);
+        //test
+        ReadResult<T>& result = future.get();
+
+        return ReadResult<T>(ReadResult<T>::Status::WAITLOAD);
     }
 
     template <class R>
@@ -288,14 +291,22 @@ private:
     typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
     typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
 
-    struct ReadTask
+    struct TaskBase
     {
+        typedef std::shared_ptr<TaskBase> Ptr;
+
         std::string filename;
         ReaderOption *option = nullptr;
-        ResourceReader::Ptr reader = nullptr;
     };
 
-    TSQueue<ReadTask> _readTasks;
+    template <class T>
+    struct ReadTask : public TaskBase
+    {
+        typedef std::function<ReadResult<T>(const char *, ReaderOption *)> TaskFunction;
+        typedef std::shared_ptr<TaskFunction> TaskFunctionPtr;
+
+        TaskFunctionPtr taskFuncPtr;
+    };
 
     MultCacheMap _objectCacheMap;
     UnorderedCacheMap _sourceCacheMap;

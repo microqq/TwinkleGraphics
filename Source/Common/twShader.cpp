@@ -20,7 +20,7 @@ namespace TwinkleGraphics
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
         ResourceManagerInst resMgr;
-        ReadResult<Shader::Ptr> result = resMgr->Read<ShaderReader, Shader::Ptr>(filename, option);
+        ReadResult<Shader> result = resMgr->Read<ShaderReader, Shader>(filename, option);
         Shader::Ptr sharedShader = result.GetSharedObject();
 
         return sharedShader;
@@ -505,7 +505,7 @@ namespace TwinkleGraphics
      * @return ReadResult<Shader::Ptr> 
      */
     template <>
-    ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, ReaderOption *option)
+    ReadResult<Shader> ShaderReader::Read<Shader>(const char *filename, ReaderOption *option)
     {
         FILE *fp;
         fp = fopen(filename, "rb");
@@ -541,21 +541,21 @@ namespace TwinkleGraphics
             {
                 if (!(sharedShader->Compile()))
                 {
-                    return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
+                    return ReadResult<Shader>(ReadResult<Shader>::Status::FAILED);
                 }
             }
 
-            return ReadResult<Shader::Ptr>(sharedShader, ReadResult<Shader::Ptr>::Status::SUCCESS);
+            return ReadResult<Shader>(sharedShader, ReadResult<Shader>::Status::SUCCESS);
         }
         else
         {
 #ifdef _DEBUG
             Console::LogError("Shader: ShaderReader open shader file ", filename, " failed\n");
 #endif
-            return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
+            return ReadResult<Shader>(ReadResult<Shader>::Status::FAILED);
         }
 
-        return ReadResult<Shader::Ptr>();
+        return ReadResult<Shader>();
     }
 
     // void ShaderReader::ReadAsync(const char *filename, ReaderOption *option)

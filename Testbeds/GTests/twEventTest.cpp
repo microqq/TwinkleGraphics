@@ -348,6 +348,23 @@ void ThreadFunc2()
     }
 }
 
+class ThreadFuncClass
+{
+public:
+    void ThreadFunc(const std::string& srcStr)
+    {
+        str = srcStr;
+        while(true)
+        {
+            Console::LogGTestInfo("Class 'ThreadFuncClass' Thread id ", std::this_thread::get_id(), str, "\n");
+
+            std::this_thread::sleep_for(1000ms);
+        }
+    }
+
+    std::string str;
+};
+
 TEST(EventTests, FireInThreadingMode)
 {
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
@@ -383,10 +400,13 @@ TEST(EventTests, FireInThreadingMode)
     SampleListener* listener2 = new SampleListener;
     // SampleListener* listener3 = new SampleListener;
 
-    ThreadPool pool(2);
+    ThreadPool pool(4);
     pool.PushTask(ThreadFunc, &handler, listener);
     pool.PushTask(ThreadFunc, &handler, listener2);
     pool.PushTask(ThreadFunc2);
+    ThreadFuncClass threadClass;
+    threadClass.str = " OhOhOhOh.......";
+    pool.PushTask(&ThreadFuncClass::ThreadFunc, &threadClass, "AhAhAhAhAh.......");
 
     std::this_thread::sleep_for(3000ms);
     EventManagerInst eventMgrInst;

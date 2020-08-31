@@ -42,7 +42,7 @@ namespace TwinkleGraphics
 
 
 	template <>
-	ReadResult<Image::Ptr> ImageReader::Read<Image::Ptr>(const char *filename, ReaderOption *option)
+	ReadResult<Image> ImageReader::Read<Image>(const char *filename, ReaderOption *option)
 	{
 		//image format
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -53,7 +53,7 @@ namespace TwinkleGraphics
 			fif = FreeImage_GetFIFFromFilename(filename);
 		//if still unkown, return failure
 		if (fif == FIF_UNKNOWN)
-			return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+			return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 
 		if (fif == FIF_DDS)
 		{
@@ -65,28 +65,29 @@ namespace TwinkleGraphics
 		}
 	}
 
-    template <>
-    ReadResult<Image::Ptr> ImageReader::ReadAsync(const char *filename, ReaderOption *option)
+    ReadResult<Image> ImageReader::ReadAsync(const char *filename, ReaderOption *option)
 	{
-		return ReadResult<Image::Ptr>();
+		return Read<Image>(filename, option);
+
+		return ReadResult<Image>();
 	}
 
-	ReadResult<Image::Ptr> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
+	ReadResult<Image> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
 	{
 		vglImageData data;
 		if (vglLoadDDS(filename, &data))
 		{
 			Console::LogInfo("Image: Load image ", filename, " successed.\n");
 			Image::Ptr image = std::make_shared<Image>(filename, data);
-			return ReadResult<Image::Ptr>(image, ReadResult<Image::Ptr>::Status::SUCCESS);
+			return ReadResult<Image>(image, ReadResult<Image>::Status::SUCCESS);
 		}
 
 		Console::LogWarning("Image: Load image ", filename, " failed.\n");
 
-		return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+		return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 	}
 
-	ReadResult<Image::Ptr> ImageReader::ReadOthers(const char *filename, ReaderOption *option)
+	ReadResult<Image> ImageReader::ReadOthers(const char *filename, ReaderOption *option)
 	{
 		//image format
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -104,7 +105,7 @@ namespace TwinkleGraphics
 			fif = FreeImage_GetFIFFromFilename(filename);
 		//if still unkown, return failure
 		if (fif == FIF_UNKNOWN)
-			return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+			return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 
 		//check that the plugin has reading capabilities and load the file
 		if (FreeImage_FIFSupportsReading(fif))
@@ -113,7 +114,7 @@ namespace TwinkleGraphics
 		if (!dib)
 		{
 			Console::LogWarning("Image: Load image ", filename, " failed.\n");
-			return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+			return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 		}
 
 		FIBITMAP *image = FreeImage_ConvertTo32Bits(dib);
@@ -128,7 +129,7 @@ namespace TwinkleGraphics
 		if ((bits == 0) || (width == 0) || (height == 0))
 		{
 			Console::LogWarning("Image: Load image ", filename, " failed(...).\n");
-			return ReadResult<Image::Ptr>(ReadResult<Image::Ptr>::Status::FAILED);
+			return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 		}
 
 		ImageData data;
@@ -152,7 +153,7 @@ namespace TwinkleGraphics
 		Console::LogInfo("Image: Load image ", filename, " successed.\n");
 
 		//return success
-		return ReadResult<Image::Ptr>(ret_image, ReadResult<Image::Ptr>::Status::SUCCESS);
+		return ReadResult<Image>(ret_image, ReadResult<Image>::Status::SUCCESS);
 	}
 
 	ImageManager::ImageManager()
@@ -174,7 +175,7 @@ namespace TwinkleGraphics
 	Image::Ptr ImageManager::ReadImage(const char* filename)
 	{
 		ResourceManagerInst resMgr;
-		ReadResult<Image::Ptr> result = resMgr->Read<ImageReader, Image::Ptr>(filename, nullptr);
+		ReadResult<Image> result = resMgr->Read<ImageReader, Image>(filename, nullptr);
 		Image::Ptr image = result.GetSharedObject();
 
 		return image;

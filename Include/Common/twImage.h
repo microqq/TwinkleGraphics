@@ -56,17 +56,14 @@ public:
     ImageReader();
     virtual ~ImageReader();
 
-    template <typename TPtr>
-    ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
+    template <typename T>
+    ReadResult<T> Read(const char *filename, ReaderOption *option);
 
-    template <typename TPtr>
-    ReadResult<TPtr> ReadAsync(const char *filename, ReaderOption *option);
-
-    // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
+    ReadResult<Image> ReadAsync(const char *filename, ReaderOption *option);
 
 private:
-    ReadResult<Image::Ptr> ReadDDS(const char *filename, ReaderOption *option);
-    ReadResult<Image::Ptr> ReadOthers(const char *filename, ReaderOption *option);
+    ReadResult<Image> ReadDDS(const char *filename, ReaderOption *option);
+    ReadResult<Image> ReadOthers(const char *filename, ReaderOption *option);
 
     DECLARE_READERID;
 };

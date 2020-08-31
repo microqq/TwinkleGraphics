@@ -21,7 +21,7 @@ namespace TwinkleGraphics
      * 
      */
     template <>
-    ReadResult<Model::Ptr> ModelReader::Read<Model::Ptr>(const char *filename, ReaderOption *option)
+    ReadResult<Model> ModelReader::Read<Model>(const char *filename, ReaderOption *option)
     {
         // https://learnopengl.com/
         Assimp::Importer importer;
@@ -30,7 +30,7 @@ namespace TwinkleGraphics
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
             Console::LogError("ERROR::ASSIMP:: ", importer.GetErrorString(), "\n");
-            return ReadResult<Model::Ptr>(ReadResult<Model::Ptr>::Status::FAILED);
+            return ReadResult<Model>(ReadResult<Model>::Status::FAILED);
         }
 
         Model::Ptr model = std::make_shared<Model>();
@@ -44,7 +44,7 @@ namespace TwinkleGraphics
         Geometry::Ptr rootGeom = ProcessNode(scene->mRootNode, scene, directory, model, vectorMaterials);
         model->SetRootGeometry(rootGeom);
 
-        return ReadResult<Model::Ptr>(model, ReadResult<Model::Ptr>::Status::SUCCESS);
+        return ReadResult<Model>(model, ReadResult<Model>::Status::SUCCESS);
     }
 
     // void ModelReader::ReadAsync(const char *filename, ReaderOption *option)
@@ -475,7 +475,7 @@ namespace TwinkleGraphics
     Model::Ptr ModelManager::ReadModel(const char* filename)
     {
         ResourceManagerInst resMgr;
-        ReadResult<Model::Ptr> result = resMgr->Read<ModelReader, Model::Ptr>(filename, nullptr);
+        ReadResult<Model> result = resMgr->Read<ModelReader, Model>(filename, nullptr);
         Model::Ptr model = result.GetSharedObject();
 
         return model;

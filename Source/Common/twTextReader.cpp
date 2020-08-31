@@ -15,7 +15,7 @@ namespace TwinkleGraphics
     DEFINE_READERID(TextReader)
 
     template <>
-    ReadResult<TextSource::Ptr> TextReader::Read(const char *filename, ReaderOption *option)
+    ReadResult<TextSource> TextReader::Read(const char *filename, ReaderOption *option)
     {
         FILE *fp;
         fp = fopen(filename, "rb");
@@ -39,23 +39,23 @@ namespace TwinkleGraphics
             textSource->filename = filename;
             textSource->content = source;
 
-            return ReadResult<TextSource::Ptr>(textSource, ReadResult<TextSource::Ptr>::Status::SUCCESS);
+            return ReadResult<TextSource>(textSource, ReadResult<TextSource>::Status::SUCCESS);
         }
 
         Console::LogWarning("Text: TextReader open text file ", filename, " failed.\n");
 
-        return ReadResult<TextSource::Ptr>(ReadResult<TextSource::Ptr>::Status::FAILED);
+        return ReadResult<TextSource>(ReadResult<TextSource>::Status::FAILED);
     }
 
-    // void TextReader::ReadAsync(const char *filename, ReaderOption *option)
-	// {
-		
-	// }
+    ReadResult<TextSource> TextReader::ReadAsync(const char *filename, ReaderOption *option)
+    {
+        return Read<TextSource>(filename, option);
+    }
 
     TextSource::Ptr TextManager::ReadText(const char* filename)
     {
         ResourceManagerInst resMgr;
-        ReadResult<TextSource::Ptr> result = resMgr->Read<TextReader, TextSource::Ptr>(filename, nullptr);
+        ReadResult<TextSource> result = resMgr->Read<TextReader, TextSource>(filename, nullptr);
         TextSource::Ptr text = result.GetSharedObject();
 
         return text;
