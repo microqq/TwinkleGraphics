@@ -24,8 +24,6 @@ struct ImageSource : public SourceHandle
     typedef std::shared_ptr<ImageSource> Ptr;
     typedef std::weak_ptr<ImageSource> WeakPtr;
 
-
-
     ImageData imagedata;
     std::string filename;
 };

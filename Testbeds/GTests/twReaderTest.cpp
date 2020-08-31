@@ -19,8 +19,9 @@ TEST(ResourceReaderTests, Read)
 
 TEST(ResourceReaderTests, ReadAsync)
 {
-    // ResourceManagerInst resMgr;    
-    // ReadResult<TextSource> result = resMgr->ReadAsync<TextReader, TextSource>("Assets/Shaders/line.vert", nullptr);
-
-
+    ResourceManagerInst resMgr;    
+    ReadResult<TextSource> result = resMgr->ReadAsync<TextReader, TextSource>(
+        "Assets/Shaders/line.vert"
+        , (ReaderOption*)nullptr
+    );
 };

@@ -406,7 +406,7 @@ TEST(EventTests, FireInThreadingMode)
     pool.PushTask(ThreadFunc2);
     ThreadFuncClass threadClass;
     threadClass.str = " OhOhOhOh.......";
-    pool.PushTask(&ThreadFuncClass::ThreadFunc, &threadClass, "AhAhAhAhAh.......");
+    pool.PushTask(&ThreadFuncClass::ThreadFunc, &threadClass, " AhAhAhAhAh.......");
 
     std::this_thread::sleep_for(3000ms);
     EventManagerInst eventMgrInst;

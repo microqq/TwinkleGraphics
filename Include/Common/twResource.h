@@ -7,7 +7,8 @@
 #include <string>
 #include <memory>
 #include <map>
-#include <any>
+#include <variant>
+#include <vector>
 
 #include "twCommon.h"
 #include "twRingBuffer.h"
@@ -203,6 +204,7 @@ public:
 
     void Update()
     {
+
     }
 
     /**
@@ -234,21 +236,19 @@ public:
         // get GUID with filename, read from cache
 
         ResourceReader::Ptr reader = GetIdleReader(R::ID);
+        R* r = nullptr;
         if(reader != nullptr)
         {
-            R* r = new (reader.get())R(std::forward<Args>(args)...);
+            r = new (reader.get())R(std::forward<Args>(args)...);
             reader.reset(r);
         }
         else
         {
-            R* r = new R(std::forward<Args>(args)...);
+            r = new R(std::forward<Args>(args)...);
             reader.reset(r);
         }
         
-        auto future = _threadPool.PushTask(&R::ReadAsync, reader.get(), filename, option);
-
-        //test
-        ReadResult<T>& result = future.get();
+        auto future = _threadPool.PushTask(&R::ReadAsync, r, filename, option);
 
         return ReadResult<T>(ReadResult<T>::Status::WAITLOAD);
     }
@@ -291,21 +291,12 @@ private:
     typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
     typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
 
-    struct TaskBase
+    struct ReadTask
     {
-        typedef std::shared_ptr<TaskBase> Ptr;
+        typedef std::shared_ptr<ReadTask> Ptr;
 
         std::string filename;
         ReaderOption *option = nullptr;
-    };
-
-    template <class T>
-    struct ReadTask : public TaskBase
-    {
-        typedef std::function<ReadResult<T>(const char *, ReaderOption *)> TaskFunction;
-        typedef std::shared_ptr<TaskFunction> TaskFunctionPtr;
-
-        TaskFunctionPtr taskFuncPtr;
     };
 
     MultCacheMap _objectCacheMap;
