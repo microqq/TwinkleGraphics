@@ -9,51 +9,6 @@
 namespace TwinkleGraphics
 {
 
-    ShaderManager::ShaderManager()
-    {
-    }
-
-    ShaderManager::~ShaderManager()
-    {
-    }
-
-    Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
-    {
-        ResourceManagerInst resMgr;
-        ReadResult<Shader> result = resMgr->Read<ShaderReader, Shader>(filename, option);
-        Shader::Ptr sharedShader = result.GetSharedObject();
-
-        return sharedShader;
-    }
-
-    ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderOption options[], int32 num)
-    {
-        //Todo: read program from cache first
-
-        //read shader source
-        bool readyLink = true;
-        Shader::Ptr* shaders = new Shader::Ptr[num];
-        for (int i = 0; i < num; i++)
-        {
-            Shader::Ptr shader = ReadShader(options[i].optionData.filename.c_str(), &options[i]);
-            if(shader != nullptr)
-            {
-                shaders[i] = shader;
-                readyLink &= shaders[i]->Compiled();
-            }
-        }
-
-        //if cache not found, create new program
-        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(shaders, num);
-        if (readyLink)
-        {
-            program->Link();
-        }
-        SAFE_DEL_ARR(shaders);
-
-        return program;
-    }
-
     Shader::Shader(ShaderType type, ShaderSource::Ptr source)
         : Object()
         , _res()
@@ -106,8 +61,8 @@ namespace TwinkleGraphics
 //         _setupCompile = true;
 //     }
 
-    Shader::Shader(const Shader &copy)
-        : _res(copy._res)
+    Shader::Shader(const Shader &src)
+        : _res(src._res)
     {
     }
 
@@ -227,7 +182,7 @@ namespace TwinkleGraphics
             glCompileShader(_res.id);
 
             // release shadersouce
-            _source = nullptr;
+            // _source = nullptr;
         }
 
 #ifdef _DEBUG
@@ -386,7 +341,7 @@ namespace TwinkleGraphics
         int32 num = _shaders.size();
         for (int i = 0; i < num; i++)
         {
-            glAttachShader(_res.id, _shaders[i]->GetRes().id);
+            glAttachShader(_res.id, _shaders[i]->GetRenderResource().id);
         }
 
         //link program
@@ -408,7 +363,7 @@ namespace TwinkleGraphics
 
             for (int i = 0; i < num; i++)
             {
-                glDetachShader(_res.id, _shaders[i]->GetRes().id);
+                glDetachShader(_res.id, _shaders[i]->GetRenderResource().id);
             }
 
             glDeleteProgram(_res.id);
@@ -417,7 +372,7 @@ namespace TwinkleGraphics
         {
             for (int i = 0; i < num; i++)
             {
-                glDetachShader(_res.id, _shaders[i]->GetRes().id);
+                glDetachShader(_res.id, _shaders[i]->GetRenderResource().id);
             }
         }
 
@@ -524,14 +479,13 @@ namespace TwinkleGraphics
             fclose(fp);
 
             source[len] = 0;
-            // Shader::Ptr sharedShader = std::make_shared<Shader>(_readInfo.type, source);
-
             ShaderSource::Ptr sourcePtr = std::make_shared<ShaderSource>();
             sourcePtr->filename = std::string(filename);
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
-            ShaderOption* soption = dynamic_cast<ShaderOption*>(option);
+            this->SetReaderOption(option);
+            ShaderOption* soption = dynamic_cast<ShaderOption*>(_option);
 
             Shader::Ptr sharedShader = std::make_shared<Shader>(soption->optionData.type, sourcePtr);
             sharedShader->SetDefineMacros(const_cast<const char**>(soption->optionData.macros), soption->optionData.numMacros);
@@ -558,10 +512,97 @@ namespace TwinkleGraphics
         return ReadResult<Shader>();
     }
 
-    // void ShaderReader::ReadAsync(const char *filename, ReaderOption *option)
-	// {
-		
-	// }
+    ReadResult<Shader> ShaderReader::ReadAsync(const char *filename, ReaderOption *option)
+    {
+        return Read<Shader>(filename, option);
+    }
 
+
+
+
+
+    ShaderManager::ShaderManager()
+    {
+    }
+
+    ShaderManager::~ShaderManager()
+    {
+    }
+
+    void ShaderManager::Update()
+    {
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            for(auto& f : _futures)
+            {
+                if(ReadFinished(f))
+                {
+                    const ReadResult<Shader>& result = f.get();
+                    result.OnReadSuccess();
+                    result.OnReadFailed();
+                }
+                else    //loading or wait load?
+                {
+                    
+                }
+            }
+        }
+    }
+
+    Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
+    {
+        ResourceManagerInst resMgr;
+        ReadResult<Shader> result = resMgr->Read<ShaderReader, Shader>(filename, option);
+        Shader::Ptr sharedShader = result.GetSharedObject();
+
+        return sharedShader;
+    }
+
+    ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderOption options[], int32 num)
+    {
+        //Todo: read program from cache first
+
+        //read shader source
+        bool readyLink = true;
+        Shader::Ptr* shaders = new Shader::Ptr[num];
+        for (int i = 0; i < num; i++)
+        {
+            Shader::Ptr shader = ReadShader(options[i].optionData.filename.c_str(), &options[i]);
+            if(shader != nullptr)
+            {
+                shaders[i] = shader;
+                readyLink &= shaders[i]->Compiled();
+            }
+        }
+
+        //if cache not found, create new program
+        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(shaders, num);
+        if (readyLink)
+        {
+            program->Link();
+        }
+        SAFE_DEL_ARR(shaders);
+
+        return program;
+    }
+
+    void ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
+    {
+        ResourceManagerInst resMgr;
+        auto future = resMgr->ReadAsync<ShaderReader, Shader>(filename, option);
+
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.emplace_back(std::move(future));
+        }
+    }
+
+    void ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
+    {
+        for(int i = 0; i < num; i++)
+        {
+            ReadShaderAsync(options[i].optionData.filename.c_str(), &options[i]);
+        }
+    }
 
 } // namespace TwinkleGraphics

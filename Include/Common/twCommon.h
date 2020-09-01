@@ -52,17 +52,32 @@ typedef void (*RENDER_ROUTINE)(void);
 typedef ivec4 Rect;
 typedef vec4 RGBA;
 
-struct RenderResInstance
+struct RenderResourceHandle
 {
     union 
     {
-        uint64 hash;
+        uint64 hash = 0;
         struct
         {
             uint32 id : 32;
             uint32 type : 32;
         };        
     };    
+};
+
+class IUpdatable
+{
+    public:
+        virtual void Update() = 0;
+
+    protected:
+        IUpdatable() {}
+
+    private:
+        IUpdatable(const IUpdatable&) = delete;
+        IUpdatable(IUpdatable&&) = delete;
+        const IUpdatable& operator=(const IUpdatable&) = delete;
+        const IUpdatable& operator=(IUpdatable&&) = delete;
 };
 
 extern const char *PlatformDefines[5];

@@ -68,8 +68,6 @@ namespace TwinkleGraphics
     ReadResult<Image> ImageReader::ReadAsync(const char *filename, ReaderOption *option)
 	{
 		return Read<Image>(filename, option);
-
-		return ReadResult<Image>();
 	}
 
 	ReadResult<Image> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
@@ -181,4 +179,10 @@ namespace TwinkleGraphics
 		return image;
 	}
 
+    auto ImageManager::ReadImageAsync(const char* filename)
+		-> std::future<ReadResult<Image>>
+	{
+		ResourceManagerInst resMgr;
+		return resMgr->ReadAsync<ImageReader, Image>(filename, nullptr);
+	}
 } // namespace TwinkleGraphics

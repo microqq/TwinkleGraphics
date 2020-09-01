@@ -23,10 +23,10 @@ public:
     virtual void Bind() = 0;
     virtual void UnBind() = 0;
 
-    const RenderResInstance& GetResource() { return _resinstance; }
+    const RenderResourceHandle& GetResource() { return _resinstance; }
 
 protected:
-    RenderResInstance _resinstance;
+    RenderResourceHandle _resinstance;
 };
 
 } // namespace TwinkleGraphics

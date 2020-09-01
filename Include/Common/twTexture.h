@@ -286,10 +286,10 @@ public:
     }
 
     bool IsValid() { return _res.id != 0; }
-    const RenderResInstance& GetRenderRes() { return _res; }
+    const RenderResourceHandle& GetRenderRes() { return _res; }
 
 private:
-    RenderResInstance _res;
+    RenderResourceHandle _res;
 
 
 };
@@ -341,7 +341,7 @@ public:
     void Bind() { glBindTexture(_res.type, _res.id); }
     void UnBind() { glBindTexture(_res.type, 0); }
 
-    const RenderResInstance& GetTexResource() { return _res; }
+    const RenderResourceHandle& GetTexResource() { return _res; }
 
     void SetSampler(Sampler::Ptr sampler) { _sampler = sampler; }
     Sampler::Ptr GetSampler() { return _sampler; }
@@ -429,7 +429,7 @@ public:
         }
     }
 
-    const RenderResInstance& GetRenderRes() { return _res; }
+    const RenderResourceHandle& GetRenderRes() { return _res; }
 
     void AppendTexParameterMask(TexParameterMask mask) { _mask = (TexParameterMask)(_mask | mask); }
     void SetTexParameterMask(TexParameterMask mask) { _mask = mask; }
@@ -450,7 +450,7 @@ protected:
 
 protected:
     TexParams _parameters;
-    RenderResInstance _res;
+    RenderResourceHandle _res;
     Image::Ptr _image;
     Sampler::Ptr _sampler;
     TexParameterMask _mask;
@@ -479,7 +479,7 @@ struct TextureSlot
 
     void Apply()
     {
-        const RenderResInstance &res = tex->GetRenderRes();
+        const RenderResourceHandle &res = tex->GetRenderRes();
         glBindTexture(res.type, res.id);
 
         Sampler::Ptr sampler = tex->GetSampler();
@@ -499,7 +499,7 @@ struct TextureSlot
 
     void UnBind()
     {
-        const RenderResInstance &res = tex->GetRenderRes();
+        const RenderResourceHandle &res = tex->GetRenderRes();
         glBindTexture(res.type, 0);
     }
 };

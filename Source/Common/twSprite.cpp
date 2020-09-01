@@ -87,7 +87,7 @@ void SpriteRenderer::Init(Texture::Ptr texture)
 {
     if(texture == nullptr) return;
 
-    const RenderResInstance& res = texture->GetRenderRes();
+    const RenderResourceHandle& res = texture->GetRenderRes();
     ShaderManagerInst shaderMgr;
     ShaderProgram::Ptr program = nullptr;
     if(res.type == (int)(TextureType::TEXTURE_1D))

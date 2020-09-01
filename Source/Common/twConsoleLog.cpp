@@ -15,6 +15,7 @@ namespace TwinkleGraphics
 {
     namespace Console
     {
+        std::mutex ConsoleMutex_;
 
         namespace Internal
         {

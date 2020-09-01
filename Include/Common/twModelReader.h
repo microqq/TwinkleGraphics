@@ -33,8 +33,7 @@ namespace TwinkleGraphics
 
         template <typename T>
         ReadResult<T> Read(const char *filename, ReaderOption *option);
-
-        // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
+        ReadResult<Model> ReadAsync(const char *filename, ReaderOption *option);
 
         Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[]);
         SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);
@@ -52,6 +51,8 @@ namespace TwinkleGraphics
         ~ModelManager() {}
 
         Model::Ptr ReadModel(const char *filename);
+        auto ReadModelAsync(const char* filename, ShaderOption* option)
+            -> std::future<ReadResult<Model>>;
 
     private:
     };

@@ -9,6 +9,7 @@
 #include <map>
 #include <variant>
 #include <vector>
+#include <functional>
 
 #include "twCommon.h"
 #include "twRingBuffer.h"
@@ -29,6 +30,11 @@ typedef Singleton<ResourceManager> ResourceManagerInst;
 typedef uint16_t ReaderId;
 typedef uint64_t CacheId;
 
+typedef std::function<void(Object::Ptr)> ReadSuccessFunc;
+typedef std::function<void()> ReadFailedFunc;
+typedef std::shared_ptr<ReadSuccessFunc> ReadSuccessFuncPtr;
+typedef std::shared_ptr<ReadFailedFunc> ReadFailedFuncPtr;
+
 enum class CacheHint
 {
     NONE_CACHE = 0,
@@ -36,13 +42,15 @@ enum class CacheHint
     CACHE_OBJECT = 2
 };
 
-struct SourceHandle
+class SourceHandle : public Object
 {
+public:
     typedef std::shared_ptr<SourceHandle> Ptr;
 
-    inline virtual CacheId GetCacheId() { return id; }
+    inline virtual CacheId GetCacheId() { return _id; }
 
-    CacheId id = 0;
+private:
+    CacheId _id = 0;
 };
 
 class ReaderOption
@@ -105,9 +113,9 @@ public:
     ~ReadResult()
     {}
 
-    typename T::Ptr GetSharedObject() const { return _sharedObject; }
-    Status GetStatus() const { return _status; }
-    ReadResult& operator =(const ReadResult& result)
+    inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
+    inline Status GetStatus() const { return _status; }
+    inline ReadResult& operator=(const ReadResult& result)
     {
         _sharedObject = result._sharedObject;
         _status = result._status;
@@ -115,15 +123,57 @@ public:
         return *this;
     }
 
-    bool operator==(std::nullptr_t nullp) const
+    inline bool operator==(std::nullptr_t nullp) const
     {
         return _sharedObject == nullp;
     }
 
+    void AddSuccessFunc(ReadSuccessFuncPtr func)
+    {
+        _successFuncList.emplace_back(func);
+    }
+
+    void AddFailedFunc(ReadFailedFuncPtr func)
+    {
+        _failedFuncList.emplace_back(func);
+    }
+
+    void OnReadSuccess() const
+    {
+        if(Status::SUCCESS == _status)
+        {
+            for(auto& func : _successFuncList)
+            {
+                (*func)(_sharedObject);
+            }
+        }
+    }
+
+    void OnReadFailed() const
+    {
+        if(Status::FAILED == _status)
+        {
+            for (auto &func : _failedFuncList)
+            {
+                (*func)();
+            }
+        }
+    }
+
 private:
+    std::vector<ReadSuccessFuncPtr> _successFuncList;
+    std::vector<ReadFailedFuncPtr> _failedFuncList;
     typename T::Ptr _sharedObject;
     Status _status;
 };
+
+
+template <typename T>
+bool ReadFinished(std::future<ReadResult<T>> const &f)
+{
+    using namespace std::chrono_literals;
+    return f.wait_for(std::chrono::microseconds(0ms)) == std::future_status::ready;
+}
 
 class ResourceReader
 {
@@ -141,27 +191,23 @@ public:
         SAFE_DEL(_option);
     }
 
-    void SetReaderOption(ReaderOption* option) 
+    template <typename T>
+    void SetReaderOption(T* option) 
     {
         if(option == nullptr)
         {
             return;
-        } 
-
-        if(_option == nullptr)
-        {
-            _option = new ReaderOption;
         }
 
-        *_option = *option; 
+        _option = new (option)T(*option);
     }
     const ReaderOption* const GetReaderOption() {  return this->_option; }
 
-    // ReaderId GetReaderId() { return _id; };
-
 protected:
     ReaderOption* _option = nullptr;
-    // ReaderId _id = 0;;
+    bool _asynchronize = false;
+
+    friend class ResourceManager;
 };
 
 
@@ -188,7 +234,6 @@ private:
 
     friend class ResourceManager;
 };
-
 
 class ResourceManager
 {
@@ -231,11 +276,12 @@ public:
 
 
     template<class R, class T, class... Args>
-    ReadResult<T> ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
+    auto ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
+        -> std::future<ReadResult<T>>
     {
         // get GUID with filename, read from cache
 
-        ResourceReader::Ptr reader = GetIdleReader(R::ID);
+        ResourceReader::Ptr reader = PopIdleReader(R::ID);
         R* r = nullptr;
         if(reader != nullptr)
         {
@@ -247,10 +293,10 @@ public:
             r = new R(std::forward<Args>(args)...);
             reader.reset(r);
         }
+        reader->_asynchronize = true;
         
         auto future = _threadPool.PushTask(&R::ReadAsync, r, filename, option);
-
-        return ReadResult<T>(ReadResult<T>::Status::WAITLOAD);
+        return future;
     }
 
     template <class R>
@@ -266,7 +312,7 @@ public:
     }
 
 private:
-    ResourceReader::Ptr GetIdleReader(ReaderId id)
+    ResourceReader::Ptr PopIdleReader(ReaderId id)
     {
         std::lock_guard<std::mutex> lock(_idleReaderMutex);
         {
@@ -290,14 +336,6 @@ private:
     typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
     typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
     typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
-
-    struct ReadTask
-    {
-        typedef std::shared_ptr<ReadTask> Ptr;
-
-        std::string filename;
-        ReaderOption *option = nullptr;
-    };
 
     MultCacheMap _objectCacheMap;
     UnorderedCacheMap _sourceCacheMap;

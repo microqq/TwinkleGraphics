@@ -9,7 +9,7 @@ namespace TwinkleGraphics
     class TextManager;
     typedef Singleton<TextManager> TextManagerInst;
 
-    struct TextSource : public SourceHandle
+    struct TextSource : public Object
     {
         typedef std::shared_ptr<TextSource> Ptr;
         typedef std::weak_ptr<TextSource> WeakPtr;
@@ -41,6 +41,8 @@ namespace TwinkleGraphics
         ~TextManager() {}
 
         TextSource::Ptr ReadText(const char* filename);
+        auto ReadTextAsync(const char* filename)
+            -> std::future<ReadResult<TextSource>>;
 
     private:
         std::map<uint32, TextSource::Ptr> _textSources;

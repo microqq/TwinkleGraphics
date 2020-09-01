@@ -47,10 +47,10 @@ namespace TwinkleGraphics
         return ReadResult<Model>(model, ReadResult<Model>::Status::SUCCESS);
     }
 
-    // void ModelReader::ReadAsync(const char *filename, ReaderOption *option)
-	// {
-		
-	// }
+    ReadResult<Model> ModelReader::ReadAsync(const char *filename, ReaderOption *option)
+    {
+        return Read<Model>(filename, option);
+    }
 
     /**
     *   https://learnopengl.com/
@@ -479,6 +479,13 @@ namespace TwinkleGraphics
         Model::Ptr model = result.GetSharedObject();
 
         return model;
+    }
+
+    auto ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
+        -> std::future<ReadResult<Model>>
+    {
+        ResourceManagerInst resMgr;
+        return resMgr->ReadAsync<ModelReader, Model>(filename, nullptr);
     }
 
 } // namespace TwinkleGraphics

@@ -88,8 +88,8 @@ void BasicGeometryView::Initialize()
     {
         ShaderProgramUse use_program(_program);
         //get shader uniform location
-        _mvpMatLoc = glGetUniformLocation(_program->GetRes().id, "mvp");
-        int32 tintcolor_loc = glGetUniformLocation(_program->GetRes().id, "tintColor");
+        _mvpMatLoc = glGetUniformLocation(_program->GetRenderResource().id, "mvp");
+        int32 tintcolor_loc = glGetUniformLocation(_program->GetRenderResource().id, "tintColor");
 
         glm::vec4 tintcolor(1.0f, 1.0f, 1.0f, 1.0f);
         glUniform4fv(tintcolor_loc, 1, glm::value_ptr(tintcolor));
@@ -121,10 +121,10 @@ void BasicGeometryView::Initialize()
     _lineProgram = shaderMgr->ReadShaders(line_shader_options, 3);
     {
         ShaderProgramUse use_program(_lineProgram);
-        _lineMVPLoc = glGetUniformLocation(_lineProgram->GetRes().id, "mvp");
-        _lineParametersLoc = glGetUniformLocation(_lineProgram->GetRes().id, "lineParams");
-        _viewportLoc = glGetUniformLocation(_lineProgram->GetRes().id, "viewportParams");
-        _lineColorLoc = glGetUniformLocation(_lineProgram->GetRes().id, "lineColor");
+        _lineMVPLoc = glGetUniformLocation(_lineProgram->GetRenderResource().id, "mvp");
+        _lineParametersLoc = glGetUniformLocation(_lineProgram->GetRenderResource().id, "lineParams");
+        _viewportLoc = glGetUniformLocation(_lineProgram->GetRenderResource().id, "viewportParams");
+        _lineColorLoc = glGetUniformLocation(_lineProgram->GetRenderResource().id, "lineColor");
     }
 
     View::Initialize();

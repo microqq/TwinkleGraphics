@@ -351,7 +351,7 @@ public:
             attachindex = index;
         }
 
-        const RenderResInstance& res = tex->GetTexResource();
+        const RenderResourceHandle& res = tex->GetTexResource();
         glFramebufferTexture2D(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + attachindex, res.type, res.id, 0);
 
     }
@@ -370,32 +370,32 @@ public:
             attachindex = index;
         }
 
-        const RenderResInstance& res = rbobj->GetResource();
+        const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + attachindex, res.type, res.id);
     }
     void AttachDepth(Texture::Ptr tex)
     {
-        const RenderResInstance& res = tex->GetTexResource();
+        const RenderResourceHandle& res = tex->GetTexResource();
         glFramebufferTexture2D(_resinstance.type, AttachmentType::DEPTH_ATTACHMENT, res.type, res.id, 0);
     }
     void AttachDepth(RenderBufferObject::Ptr rbobj)
     {
-        const RenderResInstance& res = rbobj->GetResource();
+        const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::DEPTH_ATTACHMENT, res.type, res.id);
     }
     void AttachStencil(RenderBufferObject::Ptr rbobj)
     {
-        const RenderResInstance& res = rbobj->GetResource();
+        const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::STENCIL_ATTACHMENT, res.type, res.id);
     }
     void AttachDepthStencil(Texture::Ptr tex)
     {
-        const RenderResInstance& res = tex->GetTexResource();
+        const RenderResourceHandle& res = tex->GetTexResource();
         glFramebufferTexture2D(_resinstance.type, AttachmentType::DEPTH_STENCIL, res.type, res.id, 0);
     }
     void AttachDepthStencil(RenderBufferObject::Ptr rbobj)
     {
-        const RenderResInstance& res = rbobj->GetResource();
+        const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::DEPTH_STENCIL, res.type, res.id);
     }
 

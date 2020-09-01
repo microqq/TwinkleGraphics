@@ -2,6 +2,7 @@
 #define TW_CONSOLELOG_H
 
 #include <iostream>
+#include <mutex>
 
 #include "twCommon.h"
 
@@ -37,6 +38,8 @@ namespace TwinkleGraphics
         };
 #endif
 
+        extern std::mutex ConsoleMutex_;
+
         namespace Internal
         {
             extern void SetConsoleColor(Color &c);
@@ -64,7 +67,6 @@ namespace TwinkleGraphics
                 Log(color, t);
                 Log(color, args...);
             }
-
         } // namespace Internal
 
         template <Color C, class... Args>
@@ -88,6 +90,8 @@ namespace TwinkleGraphics
         void LogGTestInfo(Args... args)
         {
 #ifdef _DEBUG
+            //std::lock_guard<std::mutex> lock(ConsoleMutex_);
+
             Internal::Log(TAGCOLOR, "[----------] ");
             Internal::Log(INFOCOLOR, args...);
 #endif
@@ -98,6 +102,7 @@ namespace TwinkleGraphics
         void LogInfo(Args... args)
         {
 #ifdef _DEBUG
+            //std::lock_guard<std::mutex> lock(ConsoleMutex_);
             Internal::Log(Color::WHITE, args...);
 #endif
         }
@@ -106,6 +111,7 @@ namespace TwinkleGraphics
         void LogWarning(Args... args)
         {
 #ifdef _DEBUG
+            //std::lock_guard<std::mutex> lock(ConsoleMutex_);
             Internal::Log(Color::YELLOW, args...);
 #endif
         }
@@ -114,9 +120,11 @@ namespace TwinkleGraphics
         void LogError(Args... args)
         {
 #ifdef _DEBUG
+            //std::lock_guard<std::mutex> lock(ConsoleMutex_);
             Internal::Log(Color::RED, args...);
 #endif
         }
+
 
     } // namespace Console
 } // namespace TwinkleGraphics

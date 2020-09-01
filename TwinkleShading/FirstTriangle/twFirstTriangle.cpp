@@ -101,9 +101,9 @@ void TriangleView::Initialize()
     _modelMat = glm::scale(_modelMat, glm::vec3(2.f, 2.f, 2.f));
 
     //get shader uniform location
-    _modelMatLoc = glGetUniformLocation(_program->GetRes().id, "model");
-    _viewMatLoc = glGetUniformLocation(_program->GetRes().id, "view");
-    _projection_mat_loc = glGetUniformLocation(_program->GetRes().id, "projection");
+    _modelMatLoc = glGetUniformLocation(_program->GetRenderResource().id, "model");
+    _viewMatLoc = glGetUniformLocation(_program->GetRenderResource().id, "view");
+    _projection_mat_loc = glGetUniformLocation(_program->GetRenderResource().id, "projection");
 
     View::Initialize();
 }

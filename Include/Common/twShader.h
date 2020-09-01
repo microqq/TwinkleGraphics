@@ -113,10 +113,11 @@ namespace TwinkleGraphics
         Shader(const Shader &);
         virtual ~Shader();
 
-        void SetRes(RenderResInstance &res) { _res = res; }
-        const RenderResInstance &GetRes() { return _res; }
+        void SetRenderResource(RenderResourceHandle &res) { _res = res; }
+        const RenderResourceHandle &GetRenderResource() { return _res; }
         bool Compiled() { return _compiled; }
 
+        ShaderSource::Ptr GetShaderSource() { return _source; }
         void SetShaderSource(ShaderSource::Ptr source);
         void SetDefineMacros(const char* macros[], int length);
         void SetupCompile();
@@ -130,7 +131,7 @@ namespace TwinkleGraphics
     private:
         std::vector<ShaderIncludeSource::Ptr> _includeSouces;
         ShaderSource::Ptr _source = nullptr;
-        RenderResInstance _res;
+        RenderResourceHandle _res;
 
         bool _setupCompile = false;
         bool _compiled = false;
@@ -148,8 +149,8 @@ namespace TwinkleGraphics
         virtual ~ShaderProgram();
 
         bool Link();
-        void SetRes(RenderResInstance &res) { _res = res; }
-        const RenderResInstance &GetRes() { return _res; }
+        void SetRenderResource(RenderResourceHandle &res) { _res = res; }
+        const RenderResourceHandle &GetRenderResource() { return _res; }
 
         int32 GetActiveAtrtribsCount();
         int32 GetActiveUniformsCount();
@@ -164,7 +165,7 @@ namespace TwinkleGraphics
 
     private:
         std::vector<Shader::Ptr> _shaders;
-        RenderResInstance _res;
+        RenderResourceHandle _res;
         GLint _linked = false;
         // bool _readyForLink = false;
 
@@ -178,7 +179,7 @@ namespace TwinkleGraphics
         {
             if (program != nullptr)
             {
-                const RenderResInstance &res = program->GetRes();
+                const RenderResourceHandle &res = program->GetRenderResource();
                 glUseProgram(res.id);
             }
         }
@@ -198,24 +199,28 @@ namespace TwinkleGraphics
 
         template <typename T>
         ReadResult<T> Read(const char *filename, ReaderOption *option);
-
-        // virtual void ReadAsync(const char *filename, ReaderOption *option) override;
+        ReadResult<Shader> ReadAsync(const char *filename, ReaderOption *option);
 
         DECLARE_READERID;
     };
 
-    class ShaderManager
+    class ShaderManager : public IUpdatable
     {
     public:
         ShaderManager();
         ~ShaderManager();
 
+        virtual void Update() override;
+
         Shader::Ptr ReadShader(const char* filename, ShaderOption* option);
         ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
 
+        void ReadShaderAsync(const char* filename, ShaderOption* option);
+        void ReadShadersAsync(ShaderOption options[], int32 num);
+
     private:
-        std::map<uint32, Shader::Ptr> _shaders;
-        std::map<uint32, ShaderProgram::Ptr> _shaderPrograms;
+        std::vector<std::future<ReadResult<Shader>>> _futures;
+        std::mutex _mutex;
     };
 
 } // namespace TwinkleGraphics
