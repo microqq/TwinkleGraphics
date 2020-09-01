@@ -24,6 +24,7 @@
 
 namespace TwinkleGraphics
 {
+class ReaderOption;
 class ResourceReader;
 class ResourceManager;
 typedef Singleton<ResourceManager> ResourceManagerInst;
@@ -109,7 +110,10 @@ public:
     ReadResult(const ReadResult& src)
         : _sharedObject(src._sharedObject)
         , _status(src._status)
-    {}
+    {
+        _successFuncList = src._successFuncList;
+        _failedFuncList = src._failedFuncList;
+    }
     ~ReadResult()
     {}
 
@@ -186,6 +190,19 @@ public:
     ResourceReader(ReaderOption* option)
         : _option(option)
     {}
+    ResourceReader(const ResourceReader& src)
+        : _option(src._option)
+        , _asynchronize(src._asynchronize)
+    {
+
+    }
+    ResourceReader(ResourceReader&& src)
+        : _option(std::move(src._option))
+        , _asynchronize(src._asynchronize)
+    {
+
+    }
+
     virtual ~ResourceReader() 
     {
         SAFE_DEL(_option);
@@ -235,7 +252,7 @@ private:
     friend class ResourceManager;
 };
 
-class ResourceManager
+class ResourceManager : public IUpdatable
 {
 public:
     ResourceManager()
@@ -293,7 +310,6 @@ public:
             r = new R(std::forward<Args>(args)...);
             reader.reset(r);
         }
-        reader->_asynchronize = true;
         
         auto future = _threadPool.PushTask(&R::ReadAsync, r, filename, option);
         return future;

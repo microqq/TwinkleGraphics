@@ -279,7 +279,7 @@ void AntiAliasingScene::CreateScene()
     char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
     ShaderManagerInst shaderMgr;
     ShaderOption shader_info[] = {
-        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.frag"), ShaderType::FRAGMENT_SHADER}};
     ShaderProgram::Ptr program = shaderMgr->ReadShaders(shader_info, 2);
     RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
@@ -296,7 +296,7 @@ void AntiAliasingScene::CreateScene()
 
     // create material for custom msaa resolve filter
     ShaderOption resolve_shader_info[] = {
-        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
         ShaderOption::OptionData{std::string("Assets/Shaders/msaaResolve.frag"), ShaderType::FRAGMENT_SHADER}};
     program = shaderMgr->ReadShaders(resolve_shader_info, 2);
     pass = std::make_shared<RenderPass>(program);

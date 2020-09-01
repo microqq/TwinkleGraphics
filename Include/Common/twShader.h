@@ -42,7 +42,6 @@ namespace TwinkleGraphics
             ShaderType type;
             int32 numMacros = 0;
             char **macros = nullptr;
-            bool compileImmediate = true;
         };
            
         ShaderOption(const OptionData& data)
@@ -66,7 +65,6 @@ namespace TwinkleGraphics
             {
                 optionData.macros[i] = src.optionData.macros[i];
             }
-            optionData.compileImmediate = src.optionData.compileImmediate;
         }
 
         const ShaderOption &operator=(const ShaderOption &src)
@@ -81,7 +79,6 @@ namespace TwinkleGraphics
             {
                 optionData.macros[i] = src.optionData.macros[i];
             }
-            optionData.compileImmediate = src.optionData.compileImmediate;
 
             return *this;
         }
@@ -201,6 +198,21 @@ namespace TwinkleGraphics
         ReadResult<T> Read(const char *filename, ReaderOption *option);
         ReadResult<Shader> ReadAsync(const char *filename, ReaderOption *option);
 
+        void OnSuccess(Object::Ptr obj)
+        {
+            Shader* shader = dynamic_cast<Shader*>(obj.get());
+            if(shader != nullptr)
+            {
+                shader->SetupCompile();
+                shader->Compile();
+
+                Console::LogInfo("*****************************\n");
+            }
+        }
+
+        void OnFailed()
+        {}
+
         DECLARE_READERID;
     };
 
@@ -220,6 +232,7 @@ namespace TwinkleGraphics
 
     private:
         std::vector<std::future<ReadResult<Shader>>> _futures;
+        std::vector<Shader::Ptr> _shaders;
         std::mutex _mutex;
     };
 

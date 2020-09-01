@@ -15,14 +15,7 @@ namespace TwinkleGraphics
         , _compiled(false)
     {
         _res.type = (uint32)type;
-        _res.id = glCreateShader(_res.type);
-
         SetShaderSource(source);
-
-#ifdef _DEBUG
-        GLenum error = glGetError();
-        const GLubyte *error_str = glGetString(error);
-#endif
     }
 
 //     /**
@@ -73,15 +66,16 @@ namespace TwinkleGraphics
         if (_res.id != GL_NONE)
         {
             glDeleteShader(_res.id);
+
+            for(auto includeSource : _includeSouces)
+            {
+                if(includeSource != nullptr)
+                {
+                    glDeleteNamedStringARB(includeSource->filename.length(), includeSource->filename.c_str());
+                }
+            }        
         }
 
-        for(auto includeSource : _includeSouces)
-        {
-            if(includeSource != nullptr)
-            {
-                glDeleteNamedStringARB(includeSource->filename.length(), includeSource->filename.c_str());
-            }
-        }        
 
         _includeSouces.clear();
         _source = nullptr;
@@ -118,6 +112,13 @@ namespace TwinkleGraphics
             return;
         }
 
+        _res.id = glCreateShader(_res.type);
+
+#ifdef _DEBUG
+        GLenum error = glGetError();
+        const GLubyte *error_str = glGetString(error);
+#endif
+
         const char *source = _source->content.c_str();
         glShaderSource(_res.id, 1, &source, NULL);
 
@@ -142,15 +143,16 @@ namespace TwinkleGraphics
                         , includeSource->content.c_str()
                     );
 #ifdef _DEBUG
-                    GLenum error = glGetError();
-                    const GLubyte *error_str = glGetString(error);
+                    error = glGetError();
+                    error_str = glGetString(error);
 #endif
                 }
             }
         }
+
 #ifdef _DEBUG
-        GLenum error = glGetError();
-        const GLubyte *error_str = glGetString(error);
+        error = glGetError();
+        error_str = glGetString(error);
 #endif
 
         _setupCompile = true;
@@ -297,7 +299,7 @@ namespace TwinkleGraphics
                 ParseShaderIncludes(includeSource->content.c_str());
                 _includeSouces.push_back(includeSource);
 
-                Console::LogInfo("ShaderInclude: Shader ", _res.id, " include ", sm.str(), "\n");
+                // Console::LogInfo("ShaderInclude: Shader ", _res.id, " include ", sm.str(), "\n");
             }
         }
     }
@@ -484,22 +486,27 @@ namespace TwinkleGraphics
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
-            this->SetReaderOption(option);
+            this->SetReaderOption<ShaderOption>((ShaderOption*)option);
             ShaderOption* soption = dynamic_cast<ShaderOption*>(_option);
 
             Shader::Ptr sharedShader = std::make_shared<Shader>(soption->optionData.type, sourcePtr);
             sharedShader->SetDefineMacros(const_cast<const char**>(soption->optionData.macros), soption->optionData.numMacros);
-            sharedShader->SetupCompile();
 
-            if(soption->optionData.compileImmediate)
+            if(!_asynchronize)
             {
+                sharedShader->SetupCompile();
                 if (!(sharedShader->Compile()))
                 {
-                    return ReadResult<Shader>(ReadResult<Shader>::Status::FAILED);
+                    ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
+                    return result;
                 }
             }
 
-            return ReadResult<Shader>(sharedShader, ReadResult<Shader>::Status::SUCCESS);
+            ReadResult<Shader> result(sharedShader, ReadResult<Shader>::Status::SUCCESS);
+            result.AddSuccessFunc(std::make_shared<ReadSuccessFunc>(
+                std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
+            ));
+            return result;
         }
         else
         {
@@ -514,6 +521,7 @@ namespace TwinkleGraphics
 
     ReadResult<Shader> ShaderReader::ReadAsync(const char *filename, ReaderOption *option)
     {
+        _asynchronize = true;
         return Read<Shader>(filename, option);
     }
 
@@ -535,11 +543,13 @@ namespace TwinkleGraphics
             std::lock_guard<std::mutex> lock(_mutex);
             for(auto& f : _futures)
             {
-                if(ReadFinished(f))
+                if(f.valid() && ReadFinished(f))
                 {
                     const ReadResult<Shader>& result = f.get();
                     result.OnReadSuccess();
                     result.OnReadFailed();
+
+                    _shaders.emplace_back(result.GetSharedObject());
                 }
                 else    //loading or wait load?
                 {

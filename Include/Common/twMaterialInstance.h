@@ -93,7 +93,7 @@ private:
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
         ShaderOption options[] = {
-            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
             ShaderOption::OptionData{std::string("Assets/Shaders/sprite.frag"), ShaderType::FRAGMENT_SHADER}};
         program = shaderMgr->ReadShaders(options, 2);
 
@@ -133,7 +133,7 @@ private:
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
         ShaderOption options[] = {
-            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/sprite.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
             ShaderOption::OptionData{std::string("Assets/Shaders/sprite1D.frag"), ShaderType::FRAGMENT_SHADER}};
         program = shaderMgr->ReadShaders(options, 2);
 
@@ -237,7 +237,7 @@ private:
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
         ShaderOption options[] = {
-            ShaderOption::OptionData{std::string("Assets/Shaders/volumnQuad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            ShaderOption::OptionData{std::string("Assets/Shaders/volumnQuad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
             ShaderOption::OptionData{std::string("Assets/Shaders/volumnQuad.frag"), ShaderType::FRAGMENT_SHADER}};
         program = shaderMgr->ReadShaders(options, 2);
 

@@ -342,8 +342,8 @@ namespace TwinkleGraphics
         char* vertMacros[] = { vertMarco };
         ShaderOption options[] = 
         {
-            ShaderOption::OptionData{std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
-            ShaderOption::OptionData{std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros, true}
+            ShaderOption::OptionData{std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
+            ShaderOption::OptionData{std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros}
         };
 
         StandardMaterial::Ptr material = std::make_shared<StandardMaterial>(options, 2);

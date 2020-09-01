@@ -18,12 +18,14 @@ bool IsReady(std::future<R> const &f)
     return f.wait_for(std::chrono::microseconds(200ms)) == std::future_status::ready;
 }
 
+ShaderOption option(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
+
 TEST(ResourceReaderTests, Read)
 {
-
+    ShaderManagerInst shaderMgr;
+    shaderMgr->ReadShader("Assets/Shaders/line.vert", &option);
 };
 
-ShaderOption option(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
 
 TEST(ResourceReaderTests, ReadAsync)
 {
@@ -32,4 +34,11 @@ TEST(ResourceReaderTests, ReadAsync)
 
     ShaderManagerInst shaderMgr;
     shaderMgr->ReadShaderAsync("Assets/Shaders/line.vert", &option);
+
+    while(true)
+    {
+        shaderMgr->Update();
+
+        std::this_thread::sleep_for(20ms);
+    }
 };
