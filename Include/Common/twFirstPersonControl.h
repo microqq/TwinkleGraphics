@@ -9,7 +9,7 @@
 
 namespace TwinkleGraphics
 {
-class FirstPersonControl : public OrbitControl
+class __TWExport FirstPersonControl : public OrbitControl
 {
 public:
     typedef std::shared_ptr<FirstPersonControl> Ptr;

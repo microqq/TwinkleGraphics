@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-class StandardMaterial : public Material
+class __TWExport StandardMaterial : public Material
 {
 public:
     typedef std::shared_ptr<StandardMaterial> Ptr;
@@ -24,7 +24,7 @@ public:
 private:
     void Initialize(ShaderOption options[], int32 num)
     {       
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = shaderMgr.ReadShaders(options, num);
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
@@ -34,7 +34,7 @@ private:
     }
 };
 
-class BasicGeomMaterial : public Material
+class __TWExport BasicGeomMaterial : public Material
 {
 public:
     typedef std::shared_ptr<BasicGeomMaterial> Ptr;
@@ -53,7 +53,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;        
         ShaderOption options[] = { 
             ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
@@ -70,7 +70,7 @@ private:
     }
 };
 
-class SpriteMaterial : public Material
+class __TWExport SpriteMaterial : public Material
 {
 public:
     typedef std::shared_ptr<SpriteMaterial> Ptr;
@@ -89,7 +89,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
         ShaderOption options[] = {
@@ -110,7 +110,7 @@ private:
     }
 };
 
-class Sprite1DMaterial : public Material
+class __TWExport Sprite1DMaterial : public Material
 {
 public:
     typedef std::shared_ptr<Sprite1DMaterial> Ptr;
@@ -129,7 +129,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
         ShaderOption options[] = {
@@ -150,7 +150,7 @@ private:
     }
 };
 
-class LineMaterial : public Material
+class __TWExport LineMaterial : public Material
 {
 public:
     typedef std::shared_ptr<LineMaterial> Ptr;
@@ -169,7 +169,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         ShaderOption options[] = {
             ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER},
@@ -183,7 +183,7 @@ private:
     }
 };
 
-class InfinitePlaneMaterial : public Material
+class __TWExport InfinitePlaneMaterial : public Material
 {
 public:
     typedef std::shared_ptr<InfinitePlaneMaterial> Ptr;
@@ -202,7 +202,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         ShaderOption options[] = {
             ShaderOption::OptionData{std::string("Assets/Shaders/infinitePlane.vert"), ShaderType::VERTEX_SHADER},
@@ -214,7 +214,7 @@ private:
     }
 };
 
-class VolumnQuadMaterial : public Material
+class __TWExport VolumnQuadMaterial : public Material
 {
 public:
     typedef std::shared_ptr<VolumnQuadMaterial> Ptr;
@@ -233,7 +233,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
         ShaderOption options[] = {
@@ -255,7 +255,7 @@ private:
 };
 
 
-class CubeMaterial : public Material
+class __TWExport CubeMaterial : public Material
 {
 public:
     typedef std::shared_ptr<CubeMaterial> Ptr;
@@ -274,7 +274,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         ShaderOption options[] = {
             ShaderOption::OptionData{std::string("Assets/Shaders/cube.vert"), ShaderType::VERTEX_SHADER},
@@ -290,7 +290,7 @@ private:
 };
 
 
-class SphereMaterial : public Material
+class __TWExport SphereMaterial : public Material
 {
 public:
     typedef std::shared_ptr<SphereMaterial> Ptr;
@@ -309,7 +309,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         ShaderOption options[] = {
             ShaderOption::OptionData{std::string("Assets/Shaders/sphere.vert"), ShaderType::VERTEX_SHADER},
@@ -325,7 +325,7 @@ private:
 };
 
 
-class SkyboxMaterial : public Material
+class __TWExport SkyboxMaterial : public Material
 {
 public:
     typedef std::shared_ptr<SkyboxMaterial> Ptr;
@@ -344,7 +344,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         ShaderOption options[] = {
             ShaderOption::OptionData{std::string("Assets/Shaders/skybox.vert"), ShaderType::VERTEX_SHADER},
@@ -366,7 +366,7 @@ private:
     }
 };
 
-class ProjectionMappingMaterial : public Material
+class __TWExport ProjectionMappingMaterial : public Material
 {
 public:
 
@@ -386,7 +386,7 @@ public:
 private:
     void Initialize()
     {
-        ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgram::Ptr program = nullptr;
         ShaderOption options[] = {
             ShaderOption::OptionData{std::string("Assets/Shaders/projectionTexture.vert"), ShaderType::VERTEX_SHADER},

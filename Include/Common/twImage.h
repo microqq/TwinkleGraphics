@@ -28,7 +28,7 @@ struct ImageSource : public SourceHandle
     std::string filename;
 };
 
-class Image : public Object
+class __TWExport Image : public Object
 {
 public:
     typedef std::shared_ptr<Image> Ptr;
@@ -48,7 +48,7 @@ private:
     ImageSource::Ptr _source;
 };
 
-class ImageReader final : public ResourceReader
+class __TWExport ImageReader final : public ResourceReader
 {
 public:
     ImageReader();
@@ -66,7 +66,7 @@ private:
     DECLARE_READERID;
 };
 
-class ImageManager
+class __TWExport ImageManager
 {
 public:
     ImageManager();

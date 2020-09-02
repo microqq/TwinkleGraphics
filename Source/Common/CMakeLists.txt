@@ -6,6 +6,16 @@ IF(DEFINE_FREEIMAGE_LIB)
     add_definitions(-DFREEIMAGE_LIB)
 ENDIF(DEFINE_FREEIMAGE_LIB)
 
+OPTION(ENABLE_BUILDING_DLL "build dynamic library" ON)
+IF(ENABLE_BUILDING_DLL)
+    add_definitions(-DBUILDING_DLL)
+ENDIF(ENABLE_BUILDING_DLL)
+
+OPTION(ENABLE_EXPORT_SHADERMGR "build shader dynamic library" ON)
+IF(ENABLE_EXPORT_SHADERMGR)
+    add_definitions(-DEXPORT_SHADERMGR)
+ENDIF(ENABLE_EXPORT_SHADERMGR)
+
 SET(Common_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twCommon.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
@@ -20,6 +30,7 @@ SET(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twDeferredPipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTextReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twShader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twShaderManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMesh.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twGeometry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twModel.cpp
@@ -52,8 +63,6 @@ target_include_directories(twCommon PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/vermilion
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Common
 )
-# target_compile_definitions(twCommon PUBLIC _DEBUG=1)
-# target_compile_definitions(twCommon PUBLIC TEMPORARY_USE=1)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twCommon PROPERTIES

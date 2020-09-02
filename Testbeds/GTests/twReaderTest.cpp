@@ -15,7 +15,7 @@ ShaderOption option(ShaderOption::OptionData{ "Assets/Shaders/line.vert", Shader
 
 TEST(ResourceReaderTests, Read)
 {
-    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+    ShaderManager& shaderMgr = ShaderMgrInstance();
     shaderMgr.ReadShader("Assets/Shaders/line.vert", &option);
 };
 
@@ -23,7 +23,7 @@ TEST(ResourceReaderTests, ReadAsync)
 {
     GLFWMainWindow mainWindow(1024, 768);
 
-    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+    ShaderManager& shaderMgr = ShaderMgrInstance();
     shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &option);
     
     mainWindow.Run();

@@ -19,7 +19,7 @@ enum class Space
     WORLD
 };
 
-class Transform final : public Object
+class __TWExport Transform final : public Object
 {
 public:
     typedef std::shared_ptr<Transform> Ptr;

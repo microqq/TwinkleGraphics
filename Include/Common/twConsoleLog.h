@@ -42,8 +42,8 @@ namespace TwinkleGraphics
 
         namespace Internal
         {
-            extern void SetConsoleColor(Color &c);
-            extern void ResetConsoleColor();
+            __TWExport void SetConsoleColor(Color &c);
+            __TWExport void ResetConsoleColor();
 
             // https://www.codeproject.com/articles/16431/add-color-to-your-std-cout
             template <class _Elem, class _Traits>

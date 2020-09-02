@@ -16,7 +16,7 @@ namespace TwinkleGraphics
         __TWExport Plugin *InstallPlugin(PluginManager *);
         __TWExport void UnInstallPlugin(PluginManager *);
 
-        __TWExport Plugin *InstallPlugin(PluginManager *pluginMgr)
+        Plugin *InstallPlugin(PluginManager *pluginMgr)
         {
             std::string name = "3.TextureExplore";
             plugin = new TextureExplore(name);
@@ -26,7 +26,7 @@ namespace TwinkleGraphics
             return plugin;
         }
 
-        __TWExport void UnInstallPlugin(PluginManager *pluginMgr)
+        void UnInstallPlugin(PluginManager *pluginMgr)
         {
             pluginMgr->UnInstallPlugin(plugin);
             SAFE_DEL(plugin);

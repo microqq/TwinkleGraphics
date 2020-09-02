@@ -10,7 +10,7 @@
 
 namespace TwinkleGraphics
 {
-class MeshRenderer : public Object
+class __TWExport MeshRenderer : public Object
 {
 public:
     typedef std::shared_ptr<MeshRenderer> Ptr;

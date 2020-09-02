@@ -7,6 +7,7 @@
 
 #include "twCommon.h"
 #include "twShader.h"
+#include "twShaderManager.h"
 #include "twUniform.h"
 #include "twRenderContext.h"
 #include "twTexture.h"
@@ -34,7 +35,7 @@ class Material;
  * @brief 
  * 
  */
-class RenderPass : public Object
+class __TWExport RenderPass : public Object
 {
 public:
     typedef std::shared_ptr<RenderPass> Ptr;
@@ -82,7 +83,7 @@ private:
  * @brief 
  * 
  */
-class Material : public Object
+class __TWExport Material : public Object
 {
 public:
     typedef std::shared_ptr<Material> Ptr;

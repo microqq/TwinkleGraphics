@@ -8,7 +8,7 @@
 
 namespace TwinkleGraphics
 {
-class OrbitControl : public CameraControl
+class __TWExport OrbitControl : public CameraControl
 {
 public:
     typedef std::shared_ptr<OrbitControl> Ptr;

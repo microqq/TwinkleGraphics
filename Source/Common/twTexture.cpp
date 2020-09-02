@@ -50,7 +50,7 @@ Texture::~Texture()
 
 
 template<>
-void Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap)
+void __TWExport Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap)
 {
     if(wrap == _parameters.wrapModes[0])
         return;
@@ -59,7 +59,7 @@ void Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap)
 }
 
 template<>
-void Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap)
+void __TWExport Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap)
 {
     if(wrap == _parameters.wrapModes[1])
         return;
@@ -68,7 +68,7 @@ void Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap)
 }
 
 template<>
-void Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap)
+void __TWExport Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap)
 {
     if(wrap == _parameters.wrapModes[2])
         return;
@@ -79,7 +79,7 @@ void Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap)
 
 
 template<>
-void Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter)
+void __TWExport Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter)
 {
     if(filter == _parameters.filterModes[0])
         return;
@@ -88,7 +88,7 @@ void Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter)
 }
 
 template<>
-void Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter)
+void __TWExport Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter)
 {
     if(filter == _parameters.filterModes[1])
         return;
@@ -98,14 +98,14 @@ void Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter)
 
 
 template<>
-void Texture::SetSwizzle<1>(SwizzleParam parameter, Swizzle1 swizzle)
+void __TWExport Texture::SetSwizzle<1>(SwizzleParam parameter, Swizzle1 swizzle)
 {
     _parameters.swizzleParameter = parameter;
     _parameters.swizzle[0] = swizzle.mask;
 }
 
 template<>
-void Texture::SetSwizzle<4>(SwizzleParam parameter, Swizzle4 swizzle)
+void __TWExport Texture::SetSwizzle<4>(SwizzleParam parameter, Swizzle4 swizzle)
 {
     _parameters.swizzleParameter = parameter;
     _parameters.swizzle[0] = swizzle.mask[0];

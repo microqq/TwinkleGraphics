@@ -56,7 +56,7 @@ enum UniformType
     UNI_DMAT43
 };
 
-struct Uniform
+struct __TWExport Uniform
 {
     std::string name;
     // UniformType uni_type;
@@ -84,7 +84,7 @@ struct Uniform
     virtual void BindLocation(uint32 location) {}
 };
 
-struct UniformLocation
+struct __TWExport UniformLocation
 {
     Uniform* uniform;
     int32 location = -1;
@@ -107,7 +107,7 @@ template<class T, uint32 N>
 struct SimpleUniform;
 
 template<class T>
-struct SimpleUniform<T, 1> : public Uniform
+struct __TWExport SimpleUniform<T, 1> : public Uniform
 {
     T u0;
 
@@ -133,7 +133,7 @@ struct SimpleUniform<T, 1> : public Uniform
     virtual void BindLocation(uint32 location) override;
 };
 template<class T>
-struct SimpleUniform<T, 2> : public Uniform
+struct __TWExport SimpleUniform<T, 2> : public Uniform
 {
     T u0, u1;
 
@@ -162,7 +162,7 @@ struct SimpleUniform<T, 2> : public Uniform
     virtual void BindLocation(uint32 location) override;
 };
 template<class T>
-struct SimpleUniform<T, 3> : public Uniform
+struct __TWExport SimpleUniform<T, 3> : public Uniform
 {
     T u0, u1, u2;
 
@@ -193,7 +193,7 @@ struct SimpleUniform<T, 3> : public Uniform
     virtual void BindLocation(uint32 location) override;
 };
 template<class T>
-struct SimpleUniform<T, 4> : public Uniform
+struct __TWExport SimpleUniform<T, 4> : public Uniform
 {
     T u0, u1, u2, u3;
 
@@ -229,7 +229,7 @@ struct SimpleUniform<T, 4> : public Uniform
 
 
 template<class T, uint32 N>
-struct VecUniform : public Uniform
+struct __TWExport VecUniform : public Uniform
 {
     vec<N, T, defaultp> vector;
 
@@ -258,7 +258,7 @@ struct VecUniform : public Uniform
 
 
 template<class T, uint32 Row, uint32 Column>
-struct MatUniform : public Uniform
+struct __TWExport MatUniform : public Uniform
 {
     mat<Row, Column, T, defaultp> matrix;
     bool transpose;

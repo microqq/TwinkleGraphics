@@ -277,7 +277,7 @@ void AntiAliasingScene::CreateScene()
 
     // create screen quad material
     char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
-    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+    ShaderManager& shaderMgr = ShaderMgrInstance();
     ShaderOption shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.frag"), ShaderType::FRAGMENT_SHADER}};

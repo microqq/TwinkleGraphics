@@ -7,7 +7,7 @@
 
 namespace TwinkleGraphics
 {
-class SpriteRenderer : public MeshRenderer
+class __TWExport SpriteRenderer : public MeshRenderer
 {
 public:
     typedef std::shared_ptr<SpriteRenderer> Ptr;
@@ -25,7 +25,7 @@ private:
 };
 
 
-class Sprite : public Quad
+class __TWExport Sprite : public Quad
 {
 public:
     typedef std::shared_ptr<Sprite> Ptr;

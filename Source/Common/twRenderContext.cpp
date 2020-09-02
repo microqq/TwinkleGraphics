@@ -3,9 +3,6 @@
 
 namespace TwinkleGraphics
 {
-
-
-
 const char* VertexLayoutDefines[11] = 
 {
     "#define VERTCOLOR\n",

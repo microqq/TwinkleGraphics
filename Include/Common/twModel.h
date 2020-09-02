@@ -8,7 +8,7 @@
 
 namespace TwinkleGraphics
 {
-    class Model
+    class __TWExport Model
     {
     public:
         typedef std::shared_ptr<Model> Ptr;

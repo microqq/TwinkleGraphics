@@ -11,7 +11,7 @@
 namespace TwinkleGraphics
 {
 
-class Scene : public Object
+class __TWExport Scene : public Object
 {
 public:
     typedef std::shared_ptr<Scene> Ptr;

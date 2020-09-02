@@ -76,7 +76,7 @@ void BasicGeometryView::Initialize()
     _projectionMat = glm::mat4(_camera->GetProjectionMatrix());
     _mvpMat = _projectionMat * _viewMat;
 
-    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+    ShaderManager& shaderMgr = ShaderMgrInstance();
 
     //create basic-geometry shader
     ShaderOption options[] = {

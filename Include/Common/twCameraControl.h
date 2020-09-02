@@ -7,7 +7,7 @@
 
 namespace TwinkleGraphics
 {
-class CameraControl : public Object
+class __TWExport CameraControl : public Object
 {
 public:
     typedef std::shared_ptr<CameraControl> Ptr;

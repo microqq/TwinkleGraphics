@@ -13,7 +13,7 @@
 
 namespace TwinkleGraphics
 {
-class View
+class __TWExport View
 {
 public:
     View();

@@ -20,8 +20,6 @@ namespace TwinkleGraphics
     class ShaderResource;
     class ShaderOption;
     class ShaderReader;
-    class ShaderManager;
-    typedef Singleton<ShaderManager> ShaderManagerInst;
 
     enum class ShaderType
     {
@@ -100,7 +98,6 @@ namespace TwinkleGraphics
         OptionData optionData; 
 
         friend class ShaderReader;
-        friend class ShaderManager;
     };
 
     typedef TextSource ShaderSource;
@@ -224,30 +221,6 @@ namespace TwinkleGraphics
         DECLARE_READERID;
     };
 
-    class ShaderManager : public IUpdatable
-    {
-    public:
-        ShaderManager();
-        ~ShaderManager();
-
-        ShaderManager(const ShaderManager&) = delete;
-        ShaderManager(ShaderManager&&) = delete;
-        ShaderManager& operator=(const ShaderManager&) = delete;
-        ShaderManager& operator=(ShaderManager&&) = delete;
-
-        virtual void Update() override;
-
-        Shader::Ptr ReadShader(const char* filename, ShaderOption* option);
-        ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
-
-        void ReadShaderAsync(const char* filename, ShaderOption* option);
-        void ReadShadersAsync(ShaderOption options[], int32 num);
-
-    private:
-        std::vector<std::future<ReadResult<Shader>>> _futures;
-        std::vector<Shader::Ptr> _shaders;
-        std::mutex _mutex;
-    };
 
 } // namespace TwinkleGraphics
 

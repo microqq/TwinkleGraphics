@@ -18,7 +18,7 @@ namespace TwinkleGraphics
         std::string content;
     };
 
-    class TextReader : public ResourceReader
+    class __TWExport TextReader : public ResourceReader
     {
     public:
         typedef std::shared_ptr<TextReader> Ptr;
@@ -34,7 +34,7 @@ namespace TwinkleGraphics
         DECLARE_READERID;
     };
 
-    class TextManager
+    class __TWExport TextManager
     {
     public:
         TextManager() {}
