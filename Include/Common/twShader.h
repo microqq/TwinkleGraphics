@@ -48,7 +48,10 @@ namespace TwinkleGraphics
             : ReaderOption()
             , optionData(data)
         {
-            optionData.macros = new char*[data.numMacros];
+            if(data.numMacros > 0)
+            {
+                optionData.macros = new char*[data.numMacros];
+            }
             for(uint i = 0; i < data.numMacros; i++)
             {
                 optionData.macros[i] = data.macros[i];
@@ -60,7 +63,10 @@ namespace TwinkleGraphics
             optionData.filename = src.optionData.filename;
             optionData.type = src.optionData.type;
             optionData.numMacros = src.optionData.numMacros;
-            optionData.macros = new char*[optionData.numMacros];
+            if(optionData.numMacros > 0)
+            {
+                optionData.macros = new char*[optionData.numMacros];
+            }
             for(uint i = 0; i < optionData.numMacros; i++)
             {
                 optionData.macros[i] = src.optionData.macros[i];
@@ -73,8 +79,10 @@ namespace TwinkleGraphics
 
             optionData.filename = src.optionData.filename;
             optionData.type = src.optionData.type;
-            optionData.numMacros = src.optionData.numMacros;
-            optionData.macros = new char*[optionData.numMacros];
+            if(optionData.numMacros > 0)
+            {
+                optionData.macros = new char*[optionData.numMacros];
+            }
             for(uint i = 0; i < optionData.numMacros; i++)
             {
                 optionData.macros[i] = src.optionData.macros[i];
@@ -221,6 +229,11 @@ namespace TwinkleGraphics
     public:
         ShaderManager();
         ~ShaderManager();
+
+        ShaderManager(const ShaderManager&) = delete;
+        ShaderManager(ShaderManager&&) = delete;
+        ShaderManager& operator=(const ShaderManager&) = delete;
+        ShaderManager& operator=(ShaderManager&&) = delete;
 
         virtual void Update() override;
 

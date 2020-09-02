@@ -87,8 +87,8 @@ void TriangleView::Initialize()
         ShaderOption::OptionData{std::string("Assets/Shaders/firstTriangle.frag"), ShaderType::FRAGMENT_SHADER}
     };
 
-    ShaderManagerInst shaderMgr;
-    _program = shaderMgr->ReadShaders(options, 2);
+    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
+    _program = shaderMgr.ReadShaders(options, 2);
 
     //camera view setting: frustum and its position, orientation 
     _camera->Translate(glm::vec3(0.0f, 0.0f, 10.0f));

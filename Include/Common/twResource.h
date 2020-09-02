@@ -216,7 +216,7 @@ public:
             return;
         }
 
-        _option = new (option)T(*option);
+        _option = new T(*option);
     }
     const ReaderOption* const GetReaderOption() {  return this->_option; }
 

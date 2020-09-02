@@ -76,7 +76,7 @@ void BasicGeometryView::Initialize()
     _projectionMat = glm::mat4(_camera->GetProjectionMatrix());
     _mvpMat = _projectionMat * _viewMat;
 
-    ShaderManagerInst shaderMgr;
+    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
 
     //create basic-geometry shader
     ShaderOption options[] = {
@@ -84,7 +84,7 @@ void BasicGeometryView::Initialize()
         ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}
     };
 
-    _program = shaderMgr->ReadShaders(options, 2);
+    _program = shaderMgr.ReadShaders(options, 2);
     {
         ShaderProgramUse use_program(_program);
         //get shader uniform location
@@ -118,7 +118,7 @@ void BasicGeometryView::Initialize()
         ShaderOption::OptionData{std::string("Assets/Shaders/line.geom"), ShaderType::GEOMETRY_SHADER},
         ShaderOption::OptionData{std::string("Assets/Shaders/line.frag"), ShaderType::FRAGMENT_SHADER}
     };
-    _lineProgram = shaderMgr->ReadShaders(line_shader_options, 3);
+    _lineProgram = shaderMgr.ReadShaders(line_shader_options, 3);
     {
         ShaderProgramUse use_program(_lineProgram);
         _lineMVPLoc = glGetUniformLocation(_lineProgram->GetRenderResource().id, "mvp");
@@ -665,9 +665,9 @@ void BasicGeometryView::CreateInfinitePlane()
 {
     _infinitePlane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
-    ImageManagerInst imageMgr;
+    ImageManager& imageMgr = ImageManagerInst::Instance();
     std::string imageFilename = {"Assets/Textures/grid.png"};
-    Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
+    Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 
     Texture2D::Ptr texture = nullptr;
     texture = std::make_shared<Texture2D>(true, true);

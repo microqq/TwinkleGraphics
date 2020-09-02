@@ -289,10 +289,11 @@ namespace TwinkleGraphics
                     position = _source->filename.find_last_of("\\");
                 }
 
-                std::string directory = _source->filename.substr(0, position) + "/";
-                TextManagerInst textMgr;
+                TextManager& textMgr = TextManagerInst::Instance();
+
+                std::string directory = _source->filename.substr(0, position) + "/";                
                 std::string textFilename{ directory + sm.str() };
-                ShaderIncludeSource::Ptr includeSource = textMgr->ReadText(textFilename.c_str());
+                ShaderIncludeSource::Ptr includeSource = textMgr.ReadText(textFilename.c_str());
 
                 assert(includeSource != nullptr);
                 includeSource->filename = sm.str();
@@ -486,8 +487,8 @@ namespace TwinkleGraphics
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
-            this->SetReaderOption<ShaderOption>((ShaderOption*)option);
-            ShaderOption* soption = dynamic_cast<ShaderOption*>(_option);
+            ShaderOption* soption = dynamic_cast<ShaderOption*>(option);
+            this->SetReaderOption<ShaderOption>(soption);
 
             Shader::Ptr sharedShader = std::make_shared<Shader>(soption->optionData.type, sourcePtr);
             sharedShader->SetDefineMacros(const_cast<const char**>(soption->optionData.macros), soption->optionData.numMacros);
@@ -503,9 +504,9 @@ namespace TwinkleGraphics
             }
 
             ReadResult<Shader> result(sharedShader, ReadResult<Shader>::Status::SUCCESS);
-            result.AddSuccessFunc(std::make_shared<ReadSuccessFunc>(
-                std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
-            ));
+            // result.AddSuccessFunc(std::make_shared<ReadSuccessFunc>(
+            //     std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
+            // ));
             return result;
         }
         else
@@ -530,6 +531,10 @@ namespace TwinkleGraphics
 
 
     ShaderManager::ShaderManager()
+        : IUpdatable() 
+        , _futures()
+        , _shaders()
+        , _mutex()
     {
     }
 
@@ -540,29 +545,37 @@ namespace TwinkleGraphics
     void ShaderManager::Update()
     {
         {
-            std::lock_guard<std::mutex> lock(_mutex);
-            for(auto& f : _futures)
+            try
             {
-                if(f.valid() && ReadFinished(f))
+                std::lock_guard<std::mutex> lock(_mutex);
+                for(auto& f : _futures)
                 {
-                    const ReadResult<Shader>& result = f.get();
-                    result.OnReadSuccess();
-                    result.OnReadFailed();
+                    if(f.valid() && ReadFinished(f))
+                    {
+                        const ReadResult<Shader>& result = f.get();
+                        result.OnReadSuccess();
+                        result.OnReadFailed();
 
-                    _shaders.emplace_back(result.GetSharedObject());
-                }
-                else    //loading or wait load?
-                {
-                    
+                        _shaders.emplace_back(result.GetSharedObject());
+                    }
+                    else    //loading or wait load?
+                    {
+
+                    }
                 }
             }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+            
         }
     }
 
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
-        ResourceManagerInst resMgr;
-        ReadResult<Shader> result = resMgr->Read<ShaderReader, Shader>(filename, option);
+        ResourceManager& resMgr = ResourceManagerInst::Instance();
+        ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader>(filename, option);
         Shader::Ptr sharedShader = result.GetSharedObject();
 
         return sharedShader;
@@ -598,8 +611,8 @@ namespace TwinkleGraphics
 
     void ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
     {
-        ResourceManagerInst resMgr;
-        auto future = resMgr->ReadAsync<ShaderReader, Shader>(filename, option);
+        ResourceManager& resMgr = ResourceManagerInst::Instance();
+        auto future = resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
 
         {
             std::lock_guard<std::mutex> lock(_mutex);

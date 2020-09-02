@@ -215,9 +215,9 @@ void AntiAliasingScene::CreateScene()
 
         CreateGeometry(_sphere, 5);
 
-        ImageManagerInst imageMgr;
+        ImageManager& imageMgr = ImageManagerInst::Instance();
         std::string imageFilename{"Assets/Textures/TantolundenCube.dds"};
-        Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
+        Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
         cubemap->CreateFromImage(image);
 
@@ -277,11 +277,11 @@ void AntiAliasingScene::CreateScene()
 
     // create screen quad material
     char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
-    ShaderManagerInst shaderMgr;
+    ShaderManager& shaderMgr = ShaderManagerInst::Instance();
     ShaderOption shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.frag"), ShaderType::FRAGMENT_SHADER}};
-    ShaderProgram::Ptr program = shaderMgr->ReadShaders(shader_info, 2);
+    ShaderProgram::Ptr program = shaderMgr.ReadShaders(shader_info, 2);
     RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
 
     _screenQuadMat = std::make_shared<Material>();
@@ -298,7 +298,7 @@ void AntiAliasingScene::CreateScene()
     ShaderOption resolve_shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
         ShaderOption::OptionData{std::string("Assets/Shaders/msaaResolve.frag"), ShaderType::FRAGMENT_SHADER}};
-    program = shaderMgr->ReadShaders(resolve_shader_info, 2);
+    program = shaderMgr.ReadShaders(resolve_shader_info, 2);
     pass = std::make_shared<RenderPass>(program);
 
     _msaaResolveMat = std::make_shared<Material>();
@@ -312,8 +312,8 @@ void AntiAliasingScene::CreateScene()
 
 void AntiAliasingScene::Load3DModel(std::string filename)
 {
-    ModelManagerInst modelMgr;
-    _model = modelMgr->ReadModel(filename.c_str());
+    ModelManager& modelMgr = ModelManagerInst::Instance();
+    _model = modelMgr.ReadModel(filename.c_str());
 
     // _model = modelMgr->ReadModel("Assets/Models/Sponza/sponza.obj");
     // _sponza = modelMgr->ReadModel("Assets/Models/bunny.obj");
@@ -630,32 +630,32 @@ void AntiAliasingScene::CreateSkybox()
         cubemap->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
         cubemap->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
 
-        ImageManagerInst imageMgr;
+        ImageManager& imageMgr = ImageManagerInst::Instance();
         std::string front_info = {"Assets/Textures/skybox/front.png"};
-        Image::Ptr front_image = imageMgr->ReadImage(front_info.c_str());
+        Image::Ptr front_image = imageMgr.ReadImage(front_info.c_str());
         std::string back_info = {"Assets/Textures/skybox/back.png"};
-        Image::Ptr back_image = imageMgr->ReadImage(back_info.c_str());
+        Image::Ptr back_image = imageMgr.ReadImage(back_info.c_str());
         std::string left_info = {"Assets/Textures/skybox/left.png"};
-        Image::Ptr left_image = imageMgr->ReadImage(left_info.c_str());
+        Image::Ptr left_image = imageMgr.ReadImage(left_info.c_str());
         std::string right_info = {"Assets/Textures/skybox/right.png"};
-        Image::Ptr right_image = imageMgr->ReadImage(right_info.c_str());
+        Image::Ptr right_image = imageMgr.ReadImage(right_info.c_str());
         std::string top_info = {"Assets/Textures/skybox/top.png"};
-        Image::Ptr top_image = imageMgr->ReadImage(top_info.c_str());
+        Image::Ptr top_image = imageMgr.ReadImage(top_info.c_str());
         std::string down_info = {"Assets/Textures/skybox/bottom.png"};
-        Image::Ptr down_image = imageMgr->ReadImage(down_info.c_str());
+        Image::Ptr down_image = imageMgr.ReadImage(down_info.c_str());
 
         // ImageReadInfo front_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_0_Front+Z.png"};
-        // Image::Ptr front_image = imageMgr->ReadImage(front_info);
+        // Image::Ptr front_image = imageMgr.ReadImage(front_info);
         // ImageReadInfo back_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_1_Back-Z.png"};
-        // Image::Ptr back_image = imageMgr->ReadImage(back_info);
+        // Image::Ptr back_image = imageMgr.ReadImage(back_info);
         // ImageReadInfo left_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_3_Right-X.png"};
-        // Image::Ptr left_image = imageMgr->ReadImage(left_info);
+        // Image::Ptr left_image = imageMgr.ReadImage(left_info);
         // ImageReadInfo right_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_2_Left+X.png"};
-        // Image::Ptr right_image = imageMgr->ReadImage(right_info);
+        // Image::Ptr right_image = imageMgr.ReadImage(right_info);
         // ImageReadInfo top_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_5_Down-Y.png"};
-        // Image::Ptr top_image = imageMgr->ReadImage(top_info);
+        // Image::Ptr top_image = imageMgr.ReadImage(top_info);
         // ImageReadInfo down_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_4_Up+Y.png"};
-        // Image::Ptr down_image = imageMgr->ReadImage(down_info);
+        // Image::Ptr down_image = imageMgr.ReadImage(down_info);
 
         cubemap->SetPositiveX(right_image);
         cubemap->SetPositiveY(top_image);
@@ -666,7 +666,7 @@ void AntiAliasingScene::CreateSkybox()
         cubemap->InitStorageByOthers();
 
         // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
-        // Image::Ptr image = imageMgr->ReadImage(imageFilename);
+        // Image::Ptr image = imageMgr.ReadImage(imageFilename);
         // cubemap->CreateFromImage(image);
 
         mat->SetMainTexture(cubemap);
@@ -684,9 +684,9 @@ void AntiAliasingScene::CreateInfinitePlane()
 {
     _infinitePlane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
-    ImageManagerInst imageMgr;
+    ImageManager& imageMgr = ImageManagerInst::Instance();
     std::string imageFilename = {"Assets/Textures/grid.png"};
-    Image::Ptr image = imageMgr->ReadImage(imageFilename.c_str());
+    Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 
     Texture2D::Ptr texture = nullptr;
     texture = std::make_shared<Texture2D>(true, true);

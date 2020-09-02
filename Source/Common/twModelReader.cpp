@@ -431,9 +431,9 @@ namespace TwinkleGraphics
             //     std::cout << str.C_Str() << std::endl;
             // }
 
-            ImageManagerInst imageMgr;
+            ImageManager& imageMgr = ImageManagerInst::Instance();
             std::string imgFilename{dir + "/" + std::string(str.C_Str())};
-            Image::Ptr image = imageMgr->ReadImage(imgFilename.c_str());
+            Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str());
             if(image == nullptr)
             {
                 continue;
@@ -474,8 +474,8 @@ namespace TwinkleGraphics
 
     Model::Ptr ModelManager::ReadModel(const char* filename)
     {
-        ResourceManagerInst resMgr;
-        ReadResult<Model> result = resMgr->Read<ModelReader, Model>(filename, nullptr);
+        ResourceManager& resMgr = ResourceManagerInst::Instance();
+        ReadResult<Model> result = resMgr.Read<ModelReader, Model>(filename, nullptr);
         Model::Ptr model = result.GetSharedObject();
 
         return model;
@@ -484,8 +484,8 @@ namespace TwinkleGraphics
     auto ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
         -> std::future<ReadResult<Model>>
     {
-        ResourceManagerInst resMgr;
-        return resMgr->ReadAsync<ModelReader, Model>(filename, nullptr);
+        ResourceManager& resMgr = ResourceManagerInst::Instance();
+        return resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
     }
 
 } // namespace TwinkleGraphics

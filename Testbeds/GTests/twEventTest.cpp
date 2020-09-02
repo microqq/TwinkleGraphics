@@ -98,14 +98,14 @@ public:
 
     void Subscribe()
     {
-        EventManagerInst eventMgrInst;
-        eventMgrInst->Subscribe(SampleEventArgsA::ID, _handler);
+        EventManager& eventMgrInst = EventManagerInst::Instance();
+        eventMgrInst.Subscribe(SampleEventArgsA::ID, _handler);
     }
 
     void UnSubscribe()
     {
-        EventManagerInst eventMgrInst;
-        eventMgrInst->UnSubscribe(SampleEventArgsA::ID, _handler);
+        EventManager& eventMgrInst = EventManagerInst::Instance();
+        eventMgrInst.UnSubscribe(SampleEventArgsA::ID, _handler);
     }
 
     void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e) const
@@ -228,7 +228,7 @@ TEST(EventTests, AddEventHandler)
 
 TEST(EventTests, FireEvent)
 {
-    EventManagerInst eventMgrInst;
+    EventManager& eventMgrInst = EventManagerInst::Instance();
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
 
     //EventHandler(const EventHandlerFunction& func)
@@ -258,9 +258,9 @@ TEST(EventTests, FireEvent)
     ASSERT_EQ(handler.GetHandlerFuncSize(), 2);
     handler += lambdaPtr2;
 
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------1\n");
-    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+    eventMgrInst.FireImmediately(nullptr, sampleEventA);
 
     //EventHandler::operator-=
     handler -= lambdaPtr;
@@ -268,23 +268,23 @@ TEST(EventTests, FireEvent)
     ASSERT_EQ(handler.GetHandlerFuncSize(), 1);
 
     // handler updated, so first unsubscribe and then subscribe again
-    eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.UnSubscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------2\n");
-    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+    eventMgrInst.FireImmediately(nullptr, sampleEventA);
 
     handler -= 0;
     handler += lambdaPtr;
     ASSERT_EQ(handler.GetHandlerFuncSize(), 1);
 
-    eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.UnSubscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.UnSubscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.UnSubscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------3\n");
-    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+    eventMgrInst.FireImmediately(nullptr, sampleEventA);
 
     //Bind class member function
     SampleListener* listener = new SampleListener;
@@ -292,12 +292,12 @@ TEST(EventTests, FireEvent)
     listener2->UnSubscribe();
     SampleListener* listener3 = new SampleListener;
 
-    eventMgrInst->UnSubscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.UnSubscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, handler);
     Console::LogGTestInfo("Fire SampleEventArgsA--------4\n");
-    eventMgrInst->FireImmediately(nullptr, sampleEventA);
+    eventMgrInst.FireImmediately(nullptr, sampleEventA);
 
     // en.cppreference.com/w/cpp/utility/functional/function.html
     // std::function<void(const SampleListener&, Object::Ptr, BaseEventArgs::Ptr)> fffFunc = &SampleListener::OnBaseEvent;
@@ -324,8 +324,8 @@ void ThreadFunc(EventHandler* handler, SampleListener* listener)
 {
     Console::LogGTestInfo("Thread id ", std::this_thread::get_id(), "\n");
 
-    EventManagerInst eventMgrInst;
-    eventMgrInst->Subscribe(SampleEventArgsA::ID, *handler);
+    EventManager& eventMgrInst = EventManagerInst::Instance();
+    eventMgrInst.Subscribe(SampleEventArgsA::ID, *handler);
     // listener->UnSubscribe();
 }
 
@@ -335,14 +335,14 @@ void ThreadFunc2()
 {
     std::this_thread::sleep_for(1000ms);
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
-    EventManagerInst eventMgrInst;
+    EventManager& eventMgrInst = EventManagerInst::Instance();
 
     // std::unique_lock<std::mutex> lock(UpdateMutex_, std::defer_lock);
     while(true)
     {
         Console::LogGTestInfo("Thread id ", std::this_thread::get_id(), "\n");
         // lock.lock();
-        eventMgrInst->Fire(nullptr, sampleEventA);
+        eventMgrInst.Fire(nullptr, sampleEventA);
         // lock.unlock();
         std::this_thread::sleep_for(5000ms);
     }
@@ -409,11 +409,11 @@ TEST(EventTests, FireInThreadingMode)
     pool.PushTask(&ThreadFuncClass::ThreadFunc, &threadClass, " AhAhAhAhAh.......");
 
     std::this_thread::sleep_for(3000ms);
-    EventManagerInst eventMgrInst;
+    EventManager& eventMgrInst = EventManagerInst::Instance();
     while(true)
     {
         // std::unique_lock<std::mutex> lock(UpdateMutex_);
-        eventMgrInst->Update();
+        eventMgrInst.Update();
         // lock.unlock();
 
         std::this_thread::sleep_for(1000ms);

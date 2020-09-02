@@ -12,7 +12,7 @@
 using namespace TwinkleGraphics;
 using MapPlugins = std::map<std::string, std::string>;
 
-PluginManagerInst pluginMgr;
+PluginManager& pluginMgr = PluginManagerInst::Instance();
 
 static MapPlugins PluginPaths;
 static std::string CurrentPlugin = std::string();
@@ -79,7 +79,7 @@ void LoadPluginsGUI(void)
                 }
 
                 //load plugin
-                GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr->LoadPlugin(it->second));
+                GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr.LoadPlugin(it->second));
                 if (plugin != nullptr && plugin->GetViewsCount() > 0)
                 {
                     mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
@@ -98,14 +98,14 @@ void LoadPluginsGUI(void)
 void UnLoadCurrentPlugin()
 {
     std::string last_plugin_name = CurrentPlugin;
-    GLPlugin *last_plugin = dynamic_cast<GLPlugin *>(pluginMgr->GetPlugin(last_plugin_name));
+    GLPlugin *last_plugin = dynamic_cast<GLPlugin *>(pluginMgr.GetPlugin(last_plugin_name));
     if(last_plugin != nullptr)
     {
         TwinkleGraphics::View **views = last_plugin->GetViews();
         mainWindow.RemoveViews(views, last_plugin->GetViewsCount());
 
         MapPlugins::iterator last_plugin_path = PluginPaths.find(last_plugin_name);
-        pluginMgr->UnloadPlugin(last_plugin_path->second);
+        pluginMgr.UnloadPlugin(last_plugin_path->second);
     }
 }
 
