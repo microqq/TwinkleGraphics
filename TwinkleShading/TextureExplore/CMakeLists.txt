@@ -2,11 +2,6 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-OPTION(ENABLE_BUILDING_DLL "build dynamic library" ON)
-IF(ENABLE_BUILDING_DLL)
-    add_definitions(-DBUILDING_DLL)
-ENDIF(ENABLE_BUILDING_DLL)
-
 set(TextureExplore_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twTextureExplore.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTextureExplorePlugin.cpp

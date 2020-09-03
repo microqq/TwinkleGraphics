@@ -289,7 +289,7 @@ namespace TwinkleGraphics
                     position = _source->filename.find_last_of("\\");
                 }
 
-                TextManager& textMgr = TextManagerInst::Instance();
+                TextManager& textMgr = TextMgrInstance();
 
                 std::string directory = _source->filename.substr(0, position) + "/";                
                 std::string textFilename{ directory + sm.str() };
@@ -480,6 +480,7 @@ namespace TwinkleGraphics
             GLchar *source = new GLchar[len + 1];
             fread(source, 1, len, fp);
             fclose(fp);
+            fp = nullptr;
 
             source[len] = 0;
             ShaderSource::Ptr sourcePtr = std::make_shared<ShaderSource>();
@@ -504,9 +505,9 @@ namespace TwinkleGraphics
             }
 
             ReadResult<Shader> result(sharedShader, ReadResult<Shader>::Status::SUCCESS);
-            // result.AddSuccessFunc(std::make_shared<ReadSuccessFunc>(
-            //     std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
-            // ));
+            result.AddSuccessFunc(std::make_shared<ReadSuccessFunc>(
+                std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
+            ));
             return result;
         }
         else

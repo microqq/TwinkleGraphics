@@ -4,7 +4,6 @@
 #include "twMeshRenderer.h"
 
 
-
 namespace TwinkleGraphics
 {
 MeshRenderer::MeshRenderer()

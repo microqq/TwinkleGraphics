@@ -18,6 +18,13 @@ namespace TwinkleGraphics
     typedef std::shared_ptr<Task> TaskPtr;
     typedef std::thread Worker;
 
+    template <typename T>
+    bool TaskFinished(std::future<T> const &future)
+    {
+        using namespace std::chrono_literals;
+        return future.wait_for(std::chrono::microseconds(0ms)) == std::future_status::ready;
+    }
+
     template <class T>
     class TSQueue final
     {

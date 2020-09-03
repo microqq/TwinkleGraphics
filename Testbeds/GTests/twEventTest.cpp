@@ -98,13 +98,13 @@ public:
 
     void Subscribe()
     {
-        EventManager& eventMgrInst = EventManagerInst::Instance();
+        EventManager& eventMgrInst = EventMgrInstance();
         eventMgrInst.Subscribe(SampleEventArgsA::ID, _handler);
     }
 
     void UnSubscribe()
     {
-        EventManager& eventMgrInst = EventManagerInst::Instance();
+        EventManager& eventMgrInst = EventMgrInstance();
         eventMgrInst.UnSubscribe(SampleEventArgsA::ID, _handler);
     }
 
@@ -228,7 +228,7 @@ TEST(EventTests, AddEventHandler)
 
 TEST(EventTests, FireEvent)
 {
-    EventManager& eventMgrInst = EventManagerInst::Instance();
+    EventManager& eventMgrInst = EventMgrInstance();
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
 
     //EventHandler(const EventHandlerFunction& func)
@@ -324,7 +324,7 @@ void ThreadFunc(EventHandler* handler, SampleListener* listener)
 {
     Console::LogGTestInfo("Thread id ", std::this_thread::get_id(), "\n");
 
-    EventManager& eventMgrInst = EventManagerInst::Instance();
+    EventManager& eventMgrInst = EventMgrInstance();
     eventMgrInst.Subscribe(SampleEventArgsA::ID, *handler);
     // listener->UnSubscribe();
 }
@@ -335,7 +335,7 @@ void ThreadFunc2()
 {
     std::this_thread::sleep_for(1000ms);
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
-    EventManager& eventMgrInst = EventManagerInst::Instance();
+    EventManager& eventMgrInst = EventMgrInstance();
 
     // std::unique_lock<std::mutex> lock(UpdateMutex_, std::defer_lock);
     while(true)
@@ -409,7 +409,7 @@ TEST(EventTests, FireInThreadingMode)
     pool.PushTask(&ThreadFuncClass::ThreadFunc, &threadClass, " AhAhAhAhAh.......");
 
     std::this_thread::sleep_for(3000ms);
-    EventManager& eventMgrInst = EventManagerInst::Instance();
+    EventManager& eventMgrInst = EventMgrInstance();
     while(true)
     {
         // std::unique_lock<std::mutex> lock(UpdateMutex_);

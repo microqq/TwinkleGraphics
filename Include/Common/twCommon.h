@@ -31,13 +31,24 @@
   #define __TWExport __attribute__ ((__visibility__("default")))
 #elif defined _WIN32
     // #define __TWExport __declspec(dllexport)
-    #ifdef BUILDING_DLL
+    #ifdef EXPORT_DLL
         #define __TWExport __declspec(dllexport)
-        #define __SHADERExport __declspec(dllexport)
     #else
         #define __TWExport __declspec(dllimport)
-        #define __SHADERExport __declspec(dllimport)
     #endif
+
+    #ifdef EXPORT_SINGLETON
+        #define __SINGLETONExport __declspec(dllexport)
+    #else
+        #define __SINGLETONExport __declspec(dllimport)
+    #endif
+
+    #ifdef EXPORT_EVENT
+        #define __EVENTExport __declspec(dllexport)
+    #else
+        #define __EVENTExport __declspec(dllimport)
+    #endif
+
 #endif
 
 namespace TwinkleGraphics
@@ -75,12 +86,20 @@ class IUpdatable
 
     protected:
         IUpdatable() {}
+        virtual ~IUpdatable() {}
+};
 
+class INonCopyable
+{
     private:
-        IUpdatable(const IUpdatable&) = delete;
-        IUpdatable(IUpdatable&&) = delete;
-        const IUpdatable& operator=(const IUpdatable&) = delete;
-        const IUpdatable& operator=(IUpdatable&&) = delete;
+        INonCopyable(const INonCopyable&) = delete;
+        INonCopyable(INonCopyable&&) = delete;
+        INonCopyable& operator=(const INonCopyable&) = delete;
+        INonCopyable& operator=(INonCopyable&&) = delete;
+
+    protected:
+        INonCopyable() {}
+        virtual ~INonCopyable() {}
 };
 
 extern const char *PlatformDefines[5];

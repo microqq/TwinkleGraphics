@@ -6,6 +6,8 @@
 #include "twImage.h"
 #include "twRenderTexture.h"
 #include "twMaterialInstance.h"
+#include "twImageManager.h"
+#include "twModelManager.h"
 
 #include "twConsoleLog.h"
 
@@ -215,7 +217,7 @@ void AntiAliasingScene::CreateScene()
 
         CreateGeometry(_sphere, 5);
 
-        ImageManager& imageMgr = ImageManagerInst::Instance();
+        ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename{"Assets/Textures/TantolundenCube.dds"};
         Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
@@ -312,7 +314,7 @@ void AntiAliasingScene::CreateScene()
 
 void AntiAliasingScene::Load3DModel(std::string filename)
 {
-    ModelManager& modelMgr = ModelManagerInst::Instance();
+    ModelManager& modelMgr = ModelMgrInstance();
     _model = modelMgr.ReadModel(filename.c_str());
 
     // _model = modelMgr->ReadModel("Assets/Models/Sponza/sponza.obj");
@@ -630,7 +632,7 @@ void AntiAliasingScene::CreateSkybox()
         cubemap->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
         cubemap->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
 
-        ImageManager& imageMgr = ImageManagerInst::Instance();
+        ImageManager& imageMgr = ImageMgrInstance();
         std::string front_info = {"Assets/Textures/skybox/front.png"};
         Image::Ptr front_image = imageMgr.ReadImage(front_info.c_str());
         std::string back_info = {"Assets/Textures/skybox/back.png"};
@@ -684,7 +686,7 @@ void AntiAliasingScene::CreateInfinitePlane()
 {
     _infinitePlane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
-    ImageManager& imageMgr = ImageManagerInst::Instance();
+    ImageManager& imageMgr = ImageMgrInstance();
     std::string imageFilename = {"Assets/Textures/grid.png"};
     Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 

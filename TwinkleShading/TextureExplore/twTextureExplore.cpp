@@ -4,7 +4,7 @@
 // #include "imgui_filebrowser.h"
 #include "twImage.h"
 #include "twMaterialInstance.h"
-
+#include "twImageManager.h"
 #include "twTextureExplore.h"
 
 
@@ -286,7 +286,7 @@ void TextureExploreView::OnGUI()
             ResetGUI();
             CreateSkybox();
 
-            ImageManager& imageMgr = ImageManagerInst::Instance();
+            ImageManager& imageMgr = ImageMgrInstance();
             std::string imageFilename = {"Assets/Textures/TantolundenCube.dds"};
             Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 
@@ -584,7 +584,7 @@ void TextureExploreView::CreateSprite()
 {
     if(_sprite != nullptr) return;
                 
-    ImageManager& imageMgr = ImageManagerInst::Instance();
+    ImageManager& imageMgr = ImageMgrInstance();
     std::string imageFilename = {"Assets/Textures/test3.png"};
     Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 
@@ -653,7 +653,7 @@ void TextureExploreView::CreateVolumnTexture()
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         VolumnQuadMaterial::Ptr mat = std::make_shared<VolumnQuadMaterial>();
 
-        ImageManager& imageMgr = ImageManagerInst::Instance();
+        ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename = {"Assets/Textures/cloud.dds"};
         Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 
@@ -682,7 +682,7 @@ void TextureExploreView::CreateSkybox()
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
 
-        ImageManager& imageMgr = ImageManagerInst::Instance();
+        ImageManager& imageMgr = ImageMgrInstance();
         // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
         // Image::Ptr image = imageMgr.ReadImage(imageFilename);
 
@@ -891,7 +891,7 @@ void TextureExploreView::CreateNURBSSurface()
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         ProjectionMappingMaterial::Ptr mat = std::make_shared<ProjectionMappingMaterial>();
 
-        ImageManager& imageMgr = ImageManagerInst::Instance();
+        ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename = {"Assets/Textures/test3.png"};
         Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 

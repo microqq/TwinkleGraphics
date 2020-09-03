@@ -13,8 +13,6 @@ namespace TwinkleGraphics
 {
     struct ModelSource;
     class Model;
-    class ModelManager;
-    typedef Singleton<ModelManager> ModelManagerInst;
 
     struct ModelSource : public SourceHandle
     {
@@ -44,18 +42,6 @@ namespace TwinkleGraphics
         DECLARE_READERID;
     };
 
-    class __TWExport ModelManager
-    {
-    public:
-        ModelManager() {}
-        ~ModelManager() {}
-
-        Model::Ptr ReadModel(const char *filename);
-        auto ReadModelAsync(const char* filename, ShaderOption* option)
-            -> std::future<ReadResult<Model>>;
-
-    private:
-    };
 } // namespace TwinkleGraphics
 
 #endif

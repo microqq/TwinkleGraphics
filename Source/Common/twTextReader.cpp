@@ -51,24 +51,4 @@ namespace TwinkleGraphics
     {
         return Read<TextSource>(filename, option);
     }
-
-
-
-
-    TextSource::Ptr TextManager::ReadText(const char* filename)
-    {
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
-        ReadResult<TextSource> result = resMgr.Read<TextReader, TextSource>(filename, nullptr);
-        TextSource::Ptr text = result.GetSharedObject();
-
-        return text;
-    }
-
-    auto TextManager::ReadTextAsync(const char *filename)
-        -> std::future<ReadResult<TextSource>>
-    {
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
-        return resMgr.ReadAsync<TextReader, TextSource>(filename, nullptr);
-    }
-
 } // namespace TwinkleGraphics

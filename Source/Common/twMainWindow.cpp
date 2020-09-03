@@ -126,9 +126,12 @@ void GLFWMainWindow::Reset()
 
 void GLFWMainWindow::Run()
 {
+    ShaderManager& shaderMgr = ShaderMgrInstance();
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
+        shaderMgr.Update();
         HandleEvents();
 
         // Start the Dear ImGui frame

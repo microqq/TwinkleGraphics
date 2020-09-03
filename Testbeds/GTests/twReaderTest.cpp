@@ -25,6 +25,6 @@ TEST(ResourceReaderTests, ReadAsync)
 
     ShaderManager& shaderMgr = ShaderMgrInstance();
     shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &option);
-    
+
     mainWindow.Run();
 };

@@ -10,6 +10,7 @@
 
 #include "twConsoleLog.h"
 #include "twThreadPool.h"
+#include "twShader.h"
 
 using namespace TwinkleGraphics;
 using namespace std::chrono_literals;
@@ -113,4 +114,102 @@ TEST(ThreadTests, ProducersConsumers)
     pool.PushTask(Consumer);
     pool.PushTask(Consumer);
     pool.PushTask(Consumer);
+};
+
+template <typename T>
+struct Result
+{
+    Result()
+    {}
+    Result(T& data)
+        : _data(data)
+    {}
+    Result(const Result& src)
+        : _data(src._data)
+    {}
+    Result& operator=(const Result& src)
+    {
+        _data = src._data;
+        return *this;
+    }
+
+    T _data = 100;
+};
+
+Result<int> ReturnResult(int start)
+{
+    int sum = start;
+    for(int i = 0; i < 1000; i++)
+    {
+        sum += i;
+    }
+
+    return Result<int>(sum);
+}
+
+ReadResult<Shader> ReturnShader(int start)
+{
+    int sum = start;
+    for(int i = 0; i < 1000; i++)
+    {
+        sum += i;
+    }
+
+    ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
+    return result;
+}
+
+
+std::vector<std::future<Result<int>>> Futures_;
+
+std::vector<std::future<ReadResult<Shader>>> FuturesOfShader_;
+
+TEST(ThreadTests, FutureGet)
+{
+    ThreadPool pool(3);
+
+    for(int i = 0; i < 10; i++)
+    {
+        auto future = pool.PushTask(ReturnResult, i);
+        Futures_.push_back(std::move(future));
+    }
+
+    // while(true)
+    {
+        for(auto& future : Futures_)
+        {
+            if(future.valid() && TaskFinished(future))
+            {
+                Result<int> result = future.get();
+                Console::LogGTestInfo("Future result<int>:", result._data, "\n");
+            }
+        }
+    }
+
+    pool.Stop(true);
+};
+
+
+TEST(ThreadTests, FutureGet2)
+{
+    ThreadPool pool(3);
+
+    for(int i = 0; i < 10; i++)
+    {
+        auto future = pool.PushTask(ReturnShader, i);
+        FuturesOfShader_.push_back(std::move(future));
+    }
+
+    {
+        for(auto& future : FuturesOfShader_)
+        {
+            if(future.valid() && TaskFinished(future))
+            {
+                ReadResult<Shader> result = future.get();
+                Console::LogGTestInfo("Future of shader: ................\n");
+            }
+        }
+    }
+
+    pool.Stop(true);
 }

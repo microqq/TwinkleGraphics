@@ -4,6 +4,7 @@ project(TwinkleGraphics VERSION 0.1.0)
 option(USE_DEBUG "Enter debug mode" OFF)
 option(ENABLE_TEMPORARY "Enter debug mode" OFF)
 Option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
+OPTION(ENABLE_EXPORT_DLL "build dynamic library" ON)
 
 if(ENALBE_EVENT_MULTTHREAD)
     add_definitions(-D_EVT_MULTTHREAD)
@@ -15,6 +16,10 @@ endif()
 
 if(ENABLE_TEMPORARY)
     add_definitions(-DTEMPORARY_USE)
+endif()
+
+if(ENABLE_EXPORT_DLL)
+    add_definitions(-DEXPORT_DLL)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

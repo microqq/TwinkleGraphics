@@ -3,13 +3,14 @@
 
 #include <functional>
 
+#include "twCommon.h"
 #include "twObject.h"
 
 namespace TwinkleGraphics
 {
     typedef unsigned int EventId;
 
-    class BaseEventArgs : public Object
+    class __EVENTExport BaseEventArgs : public Object
     {
     public:
         typedef std::shared_ptr<BaseEventArgs> Ptr;

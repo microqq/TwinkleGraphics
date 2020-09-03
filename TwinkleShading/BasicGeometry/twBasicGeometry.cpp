@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include "imgui.h"
-
-#include "twBasicGeometry.h"
 #include "twUtil.h"
+#include "twImageManager.h"
+#include "twBasicGeometry.h"
 
 namespace TwinkleGraphics
 {
@@ -665,7 +665,7 @@ void BasicGeometryView::CreateInfinitePlane()
 {
     _infinitePlane.reset(CreateInifinitePlane(glm::vec3(0.0f, 1.0f, 0.0f), 5.0f, 2.0f, 128));
 
-    ImageManager& imageMgr = ImageManagerInst::Instance();
+    ImageManager& imageMgr = ImageMgrInstance();
     std::string imageFilename = {"Assets/Textures/grid.png"};
     Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
 

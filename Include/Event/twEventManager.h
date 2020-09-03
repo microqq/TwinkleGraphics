@@ -12,16 +12,14 @@
 
 namespace TwinkleGraphics
 {
-    class EventManager;
-    typedef Singleton<EventManager> EventManagerInst;
     typedef RingBuffer<Event> EventQueue;
     typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
 
-    class EventManager
+    class __EVENTExport EventManager : public IUpdatable, public INonCopyable
     {
     public:
-        EventManager();
-        ~EventManager();
+        virtual ~EventManager();
+        virtual void Update() override;
 
         void Subscribe(EventId id, const EventHandlerFunctionPtr& func);
         void Subscribe(EventId id, const EventHandler& handler);
@@ -31,9 +29,9 @@ namespace TwinkleGraphics
         void Fire(Object::Ptr sender, BaseEventArgs::Ptr args);
         void FireImmediately(Object::Ptr sender, BaseEventArgs::Ptr args);
 
-        void Update();
-
     private:
+        explicit EventManager();
+
         EventHandler* FindFirstEventHandler(EventId id);
         void HandleEvent();
         void HandleEvent(Object::Ptr sender, BaseEventArgs::Ptr args);
@@ -45,7 +43,20 @@ namespace TwinkleGraphics
         std::mutex _queue_mutex;
         std::mutex _handlers_mutex;
 #endif
+
+        friend class Singleton<EventManager>;
     };
+
+#ifdef __cplusplus
+    extern "C"
+    {
+#endif
+        __EVENTExport EventManager& EventMgrInstance();
+#ifdef __cplusplus
+    }
+#endif    
+
+    typedef Singleton<EventManager> EventManagerInst;
 } // namespace TwinkleGraphics
 
 #endif

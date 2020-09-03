@@ -1,7 +1,13 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-SET(EVENT_SRC
+option(ENABLE_EXPORT_EVENT "build singleton dynamic library" ON)
+
+if(ENABLE_EXPORT_EVENT)
+    add_definitions(-DEXPORT_EVENT)
+endif()
+
+set(EVENT_SRC
     ${CMAKE_CURRENT_LIST_DIR}/twEventArgs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twEventHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twEventManager.cpp

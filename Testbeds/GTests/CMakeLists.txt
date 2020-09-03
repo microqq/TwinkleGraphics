@@ -6,7 +6,7 @@
 # SET System Variable %GTESTINCLUDE% & %GTESLIB%
 # VSCode: Install GoogleTest Adapter extension
 
-SET(Tests_SRCs
+set(Tests_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twEventTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterialTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRingBufferTest.cpp

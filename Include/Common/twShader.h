@@ -12,6 +12,7 @@
 #include "twResource.h"
 #include "twRenderContext.h"
 #include "twTextReader.h"
+#include "twTextManager.h"
 
 namespace TwinkleGraphics
 {
@@ -210,8 +211,6 @@ namespace TwinkleGraphics
             {
                 shader->SetupCompile();
                 shader->Compile();
-
-                Console::LogInfo("*****************************\n");
             }
         }
 

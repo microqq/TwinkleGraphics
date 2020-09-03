@@ -26,8 +26,6 @@ namespace TwinkleGraphics
 {
 class ReaderOption;
 class ResourceReader;
-class ResourceManager;
-typedef Singleton<ResourceManager> ResourceManagerInst;
 typedef uint16_t ReaderId;
 typedef uint64_t CacheId;
 
@@ -87,7 +85,7 @@ protected:
  * @tparam TPtr 
  */
 template<class T>
-class ReadResult
+class __SINGLETONExport ReadResult
 {
 public:
     enum class Status
@@ -114,11 +112,12 @@ public:
         _successFuncList = src._successFuncList;
         _failedFuncList = src._failedFuncList;
     }
+    // ReadResult(ReadResult&& src)
+    // {
+    // }
     ~ReadResult()
     {}
 
-    inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
-    inline Status GetStatus() const { return _status; }
     inline ReadResult& operator=(const ReadResult& result)
     {
         _sharedObject = result._sharedObject;
@@ -126,11 +125,18 @@ public:
 
         return *this;
     }
+    // inline ReadResult& operator=(ReadResult&& result)
+    // {
+    //     return *this;
+    // }
 
-    inline bool operator==(std::nullptr_t nullp) const
-    {
-        return _sharedObject == nullp;
-    }
+    inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
+    inline Status GetStatus() const { return _status; }
+
+    // inline bool operator==(std::nullptr_t nullp) const
+    // {
+    //     return _sharedObject == nullp;
+    // }
 
     void AddSuccessFunc(ReadSuccessFuncPtr func)
     {
@@ -170,14 +176,6 @@ private:
     typename T::Ptr _sharedObject;
     Status _status;
 };
-
-
-template <typename T>
-bool ReadFinished(std::future<ReadResult<T>> const &f)
-{
-    using namespace std::chrono_literals;
-    return f.wait_for(std::chrono::microseconds(0ms)) == std::future_status::ready;
-}
 
 class ResourceReader
 {
@@ -223,13 +221,7 @@ public:
 protected:
     ReaderOption* _option = nullptr;
     bool _asynchronize = false;
-
-    friend class ResourceManager;
 };
-
-
-
-typedef void* VoidPtr;
 
 class ResourceCache
 {
@@ -248,121 +240,6 @@ public:
 private:
     SourceHandle::Ptr _sourceCache;
     Object::Ptr _objectCache;
-
-    friend class ResourceManager;
-};
-
-class ResourceManager : public IUpdatable
-{
-public:
-    ResourceManager()
-        : _threadPool(2)
-    {}
-    
-    ~ResourceManager() 
-    {
-        _threadPool.Stop(true);
-    }
-
-    void Update()
-    {
-
-    }
-
-    /**
-     * @brief 
-     * 
-     * @tparam R 
-     * @tparam TPtr 
-     * @tparam Args 
-     * @param filename 
-     * @param option 
-     * @param args 
-     * @return ReadResult<TPtr> 
-     */
-    template<class R, class T, class... Args>
-    ReadResult<T> Read(const char* filename, ReaderOption* option, Args&&...args)
-    {
-        // get GUID with filename, read from cache
-
-        R* r = new R(std::forward<Args>(args)...);
-
-        // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-        return r->template Read<T>(filename, option);
-    }
-
-
-    template<class R, class T, class... Args>
-    auto ReadAsync(const char* filename, ReaderOption* option, Args&&...args)
-        -> std::future<ReadResult<T>>
-    {
-        // get GUID with filename, read from cache
-
-        ResourceReader::Ptr reader = PopIdleReader(R::ID);
-        R* r = nullptr;
-        if(reader != nullptr)
-        {
-            r = new (reader.get())R(std::forward<Args>(args)...);
-            reader.reset(r);
-        }
-        else
-        {
-            r = new R(std::forward<Args>(args)...);
-            reader.reset(r);
-        }
-        
-        auto future = _threadPool.PushTask(&R::ReadAsync, r, filename, option);
-        return future;
-    }
-
-    template <class R>
-    void RecycleReader(typename R::Ptr reader)
-    {
-        if(reader != nullptr)
-        {
-            std::lock_guard<std::mutex> lock(_idleReaderMutex);
-            {
-                _idleReaders.insert(std::make_pair(R::ID, reader));
-            }
-        }
-    }
-
-private:
-    ResourceReader::Ptr PopIdleReader(ReaderId id)
-    {
-        std::lock_guard<std::mutex> lock(_idleReaderMutex);
-        {
-            using MIterator = MultMapReaders::iterator;
-            MIterator iter = _idleReaders.find(id);
-            MIterator end = _idleReaders.end();
-            if(iter != end)
-            {
-                ResourceReader::Ptr reader = iter->second;
-                _idleReaders.erase(iter);
-
-                return iter->second;
-            }
-        }
-
-        return nullptr;
-    }
-
-
-private:
-    typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
-    typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
-    typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
-
-    MultCacheMap _objectCacheMap;
-    UnorderedCacheMap _sourceCacheMap;
-
-    // MultMapReaders _loadingReaders;
-    MultMapReaders _idleReaders;
-
-    // std::mutex _loadingReaderMutex;
-    std::mutex _idleReaderMutex;
-
-    ThreadPool _threadPool;
 };
 
 

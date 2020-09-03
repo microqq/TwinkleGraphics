@@ -4,6 +4,8 @@
 #include "twModelReader.h"
 #include "twMaterialInstance.h"
 #include "twConsoleLog.h"
+#include "twResourceManager.h"
+#include "twImageManager.h"
 
 namespace TwinkleGraphics
 {
@@ -431,7 +433,7 @@ namespace TwinkleGraphics
             //     std::cout << str.C_Str() << std::endl;
             // }
 
-            ImageManager& imageMgr = ImageManagerInst::Instance();
+            ImageManager& imageMgr = ImageMgrInstance();
             std::string imgFilename{dir + "/" + std::string(str.C_Str())};
             Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str());
             if(image == nullptr)
@@ -469,23 +471,6 @@ namespace TwinkleGraphics
             }
         }
         return textures;
-    }
-
-
-    Model::Ptr ModelManager::ReadModel(const char* filename)
-    {
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
-        ReadResult<Model> result = resMgr.Read<ModelReader, Model>(filename, nullptr);
-        Model::Ptr model = result.GetSharedObject();
-
-        return model;
-    }
-
-    auto ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
-        -> std::future<ReadResult<Model>>
-    {
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
-        return resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
     }
 
 } // namespace TwinkleGraphics

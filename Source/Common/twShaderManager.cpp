@@ -1,9 +1,10 @@
 
 #include "twShaderManager.h"
+#include "twResourceManager.h"
 
 namespace TwinkleGraphics
 {
-    ShaderManager& ShaderMgrInstance() { return ShaderManager::Instance(); }
+    ShaderManager& ShaderMgrInstance() { return Singleton<ShaderManager>::Instance(); }
 
     ShaderManager::ShaderManager()
         : IUpdatable() 
@@ -15,18 +16,20 @@ namespace TwinkleGraphics
 
     ShaderManager::~ShaderManager()
     {
+        _futures.clear();
+        _shaders.clear();
     }
 
     void ShaderManager::Update()
     {
-        try
+        // try
         {
             std::lock_guard<std::mutex> lock(_mutex);
             for (auto &f : _futures)
             {
-                if (f.valid() && ReadFinished(f))
+                if (f.valid() && TaskFinished(f))
                 {
-                    const ReadResult<Shader> &result = f.get();
+                    ReadResult<Shader> result = f.get();
                     result.OnReadSuccess();
                     result.OnReadFailed();
 
@@ -37,15 +40,15 @@ namespace TwinkleGraphics
                 }
             }
         }
-        catch (const std::exception &e)
-        {
-            std::cerr << e.what() << '\n';
-        }
+        // catch (...)
+        // {
+        //     std::cerr << "caught ex [1]" << '\n';
+        // }
     }
 
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
+        ResourceManager& resMgr = ResourceMgrInstance();
         ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader>(filename, option);
         Shader::Ptr sharedShader = result.GetSharedObject();
 
@@ -82,12 +85,18 @@ namespace TwinkleGraphics
 
     void ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
     {
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
+        ResourceManager& resMgr = ResourceMgrInstance();
         auto future = resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
+
+        // if(future.valid())
+        // {
+        //     ReadResult<Shader> result = future.get();
+        //     Console::LogWarning("Wait shader load complete.\n");
+        // }
 
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            _futures.emplace_back(std::move(future));
+            _futures.push_back(std::move(future));
         }
     }
 

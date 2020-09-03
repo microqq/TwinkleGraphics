@@ -1,45 +1,46 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-OPTION(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
-IF(DEFINE_FREEIMAGE_LIB)
+option(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
+option(ENABLE_EXPORT_SINGLETON "build singleton dynamic library" ON)
+
+if(DEFINE_FREEIMAGE_LIB)
     add_definitions(-DFREEIMAGE_LIB)
-ENDIF(DEFINE_FREEIMAGE_LIB)
+endif()
 
-OPTION(ENABLE_BUILDING_DLL "build dynamic library" ON)
-IF(ENABLE_BUILDING_DLL)
-    add_definitions(-DBUILDING_DLL)
-ENDIF(ENABLE_BUILDING_DLL)
+if(ENABLE_EXPORT_SINGLETON)
+    add_definitions(-DEXPORT_SINGLETON)
+endif()
 
-OPTION(ENABLE_EXPORT_SHADERMGR "build shader dynamic library" ON)
-IF(ENABLE_EXPORT_SHADERMGR)
-    add_definitions(-DEXPORT_SHADERMGR)
-ENDIF(ENABLE_EXPORT_SHADERMGR)
 
-SET(Common_SRCs 
+set(Common_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twCommon.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twPluginManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twView.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twResource.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twResourceManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMeshRenderer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRenderContext.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRenderPipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twForwardPipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDeferredPipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTextReader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twTextManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twShader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twShaderManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMesh.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twGeometry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twModel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twModelManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twModelReader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTransform.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twCamera.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twOrbitControl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twFirstPersonControl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twImage.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twImageManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twUniform.cpp

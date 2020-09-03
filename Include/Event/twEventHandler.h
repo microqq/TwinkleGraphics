@@ -29,7 +29,7 @@ namespace TwinkleGraphics
     typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> EventHandlerFunction;
     typedef std::shared_ptr<EventHandlerFunction> EventHandlerFunctionPtr;
 
-    class EventHandler : public Object
+    class __EVENTExport EventHandler : public Object
     {
     public:
         typedef std::shared_ptr<EventHandler> Ptr;

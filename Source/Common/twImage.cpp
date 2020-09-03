@@ -154,35 +154,4 @@ namespace TwinkleGraphics
 		return ReadResult<Image>(ret_image, ReadResult<Image>::Status::SUCCESS);
 	}
 
-	ImageManager::ImageManager()
-	{
-// call this ONLY when linking with FreeImage as a static library
-#ifdef FREEIMAGE_LIB
-		FreeImage_Initialise();
-#endif
-	}
-
-	ImageManager::~ImageManager()
-	{
-// call this ONLY when linking with FreeImage as a static library
-#ifdef FREEIMAGE_LIB
-		FreeImage_DeInitialise();
-#endif
-	}
-
-	Image::Ptr ImageManager::ReadImage(const char* filename)
-	{
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
-		ReadResult<Image> result = resMgr.Read<ImageReader, Image>(filename, nullptr);
-		Image::Ptr image = result.GetSharedObject();
-
-		return image;
-	}
-
-    auto ImageManager::ReadImageAsync(const char* filename)
-		-> std::future<ReadResult<Image>>
-	{
-        ResourceManager& resMgr = ResourceManagerInst::Instance();
-		return resMgr.ReadAsync<ImageReader, Image>(filename, nullptr);
-	}
 } // namespace TwinkleGraphics

@@ -6,9 +6,6 @@
 
 namespace TwinkleGraphics
 {
-    class TextManager;
-    typedef Singleton<TextManager> TextManagerInst;
-
     struct TextSource : public Object
     {
         typedef std::shared_ptr<TextSource> Ptr;
@@ -18,7 +15,7 @@ namespace TwinkleGraphics
         std::string content;
     };
 
-    class __TWExport TextReader : public ResourceReader
+    class TextReader : public ResourceReader
     {
     public:
         typedef std::shared_ptr<TextReader> Ptr;
@@ -32,20 +29,6 @@ namespace TwinkleGraphics
         ReadResult<TextSource> ReadAsync(const char *filename, ReaderOption *option);
 
         DECLARE_READERID;
-    };
-
-    class __TWExport TextManager
-    {
-    public:
-        TextManager() {}
-        ~TextManager() {}
-
-        TextSource::Ptr ReadText(const char* filename);
-        auto ReadTextAsync(const char* filename)
-            -> std::future<ReadResult<TextSource>>;
-
-    private:
-        std::map<uint32, TextSource::Ptr> _textSources;
     };
 
 } // namespace TwinkleGraphics

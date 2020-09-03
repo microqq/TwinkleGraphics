@@ -16,8 +16,6 @@ typedef vglImageMipData SubImageData;
 
 class Image;
 class ImageReader;
-class ImageManager;
-typedef Singleton<ImageManager> ImageManagerInst;
 
 struct ImageSource : public SourceHandle
 {
@@ -64,21 +62,6 @@ private:
     ReadResult<Image> ReadOthers(const char *filename, ReaderOption *option);
 
     DECLARE_READERID;
-};
-
-class __TWExport ImageManager
-{
-public:
-    ImageManager();
-    ~ImageManager();
-
-    Image::Ptr ReadImage(const char* filename);
-    auto ReadImageAsync(const char* filename)
-        -> std::future<ReadResult<Image>>;
-
-
-private:
-    
 };
 
 } // namespace TwinkleGraphics
