@@ -6,7 +6,9 @@ namespace TwinkleGraphics
     EventManager& EventMgrInstance() { return Singleton<EventManager>::Instance(); }
 
     EventManager::EventManager()
-        : _queue()
+        : IUpdatable()
+        , INonCopyable()
+        , _queue()
         , _handlerCollection()
     {
     }

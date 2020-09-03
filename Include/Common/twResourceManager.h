@@ -5,12 +5,14 @@
 
 namespace TwinkleGraphics
 {
-    class __SINGLETONExport ResourceManager : public IUpdatable, public INonCopyable
+    class __COMSINGLETONExport ResourceManager : public IUpdatable, public INonCopyable
     {
     public:
         virtual ~ResourceManager()
         {
-            _threadPool.Stop(true);
+            StopWorkers();
+            _idleReaders.clear();
+            _objectCacheMap.clear();
         }
 
         virtual void Update() override
@@ -74,9 +76,16 @@ namespace TwinkleGraphics
             }
         }
 
+        void StopWorkers()
+        {
+            _threadPool.Stop(true);
+        }
+
     private:
         explicit ResourceManager()
-            : _threadPool(2)
+            : IUpdatable()
+            , INonCopyable()
+            , _threadPool(2)
         {
         }
 
@@ -123,7 +132,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __SINGLETONExport ResourceManager& ResourceMgrInstance();
+        __COMSINGLETONExport ResourceManager& ResourceMgrInstance();
 #ifdef __cplusplus
     }
 #endif

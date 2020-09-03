@@ -5,6 +5,7 @@
 
 #include "twMainWindow.h"
 #include "twConsoleLog.h"
+#include "twResourceManager.h"
 
 namespace TwinkleGraphics
 {
@@ -110,7 +111,6 @@ GLFWMainWindow::GLFWMainWindow(int32 width, int32 height)
 GLFWMainWindow::~GLFWMainWindow()
 {
     _imguiFuncs.clear();
-
     Terminate();
 }
 
@@ -270,16 +270,13 @@ void GLFWMainWindow::Initialise()
     glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_drawbuffers_count);
     Console::LogInfo("GL_MAX_DRAW_BUFFERS:", max_drawbuffers_count, "\n");
 #endif
-    
-
-    // glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int32 button, int32 action, int32 mods)
-    // {
-    // });
-    // glfwSetMouseButtonCallback(_window, MouseButtonInput);
 }
 
 void GLFWMainWindow::Terminate()
 {
+    ResourceManager& resMgr = ResourceMgrInstance();
+    resMgr.StopWorkers();
+
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

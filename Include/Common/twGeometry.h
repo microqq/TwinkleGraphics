@@ -15,7 +15,7 @@ namespace TwinkleGraphics
  * @brief 
  * 
  */
-class __TWExport Geometry : public Object, public ISceneNode, public IRenderableObject
+class __TWCOMExport Geometry : public Object, public ISceneNode, public IRenderableObject
 {
 public:
     typedef std::shared_ptr<Geometry> Ptr;

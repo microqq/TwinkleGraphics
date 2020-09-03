@@ -280,6 +280,12 @@ void AntiAliasingScene::CreateScene()
     // create screen quad material
     char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
     ShaderManager& shaderMgr = ShaderMgrInstance();
+
+    ShaderOption* option = new ShaderOption(
+        ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER}
+    );
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", option);
+
     ShaderOption shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.frag"), ShaderType::FRAGMENT_SHADER}};

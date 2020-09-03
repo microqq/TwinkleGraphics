@@ -28,19 +28,42 @@
  * 
  */
 #if defined __linux__
-  #define __TWExport __attribute__ ((__visibility__("default")))
+  #define __TWCOMExport __attribute__ ((__visibility__("default")))
 #elif defined _WIN32
-    // #define __TWExport __declspec(dllexport)
-    #ifdef EXPORT_DLL
-        #define __TWExport __declspec(dllexport)
+    // #ifdef EXPORT_DLL
+    //     #define __TWCOMExport __declspec(dllexport)
+    // #else
+    //     #define __TWCOMExport __declspec(dllimport)
+    // #endif
+
+    #ifdef EXPORT_COMDLL
+        #define __TWCOMExport __declspec(dllexport)
     #else
-        #define __TWExport __declspec(dllimport)
+        #define __TWCOMExport __declspec(dllimport)
     #endif
 
-    #ifdef EXPORT_SINGLETON
-        #define __SINGLETONExport __declspec(dllexport)
+    #ifdef EXPORT_UIDLL
+        #define __TWUIExport __declspec(dllexport)
     #else
-        #define __SINGLETONExport __declspec(dllimport)
+        #define __TWUIExport __declspec(dllimport)
+    #endif
+
+    #ifdef EXPORT_UTILDLL
+        #define __TWUTILExport __declspec(dllexport)
+    #else
+        #define __TWUTILExport __declspec(dllimport)
+    #endif
+
+    #ifdef EXPORT_PLUGIN
+        #define __TWPLUGINExport __declspec(dllexport)
+    #else
+        #define __TWPLUGINExport __declspec(dllimport)
+    #endif
+
+    #ifdef EXPORT_COMSINGLETON
+        #define __COMSINGLETONExport __declspec(dllexport)
+    #else
+        #define __COMSINGLETONExport __declspec(dllimport)
     #endif
 
     #ifdef EXPORT_EVENT

@@ -85,7 +85,7 @@ protected:
  * @tparam TPtr 
  */
 template<class T>
-class __SINGLETONExport ReadResult
+class __COMSINGLETONExport ReadResult
 {
 public:
     enum class Status

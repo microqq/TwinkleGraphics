@@ -6,7 +6,7 @@
 namespace TwinkleGraphics
 {
 
-    class __SINGLETONExport ModelManager : public IUpdatable, public INonCopyable
+    class __COMSINGLETONExport ModelManager : public IUpdatable, public INonCopyable
     {
     public:
         virtual ~ModelManager() {}
@@ -16,7 +16,10 @@ namespace TwinkleGraphics
         void ReadModelAsync(const char* filename, ShaderOption* option);
 
     private:
-        explicit ModelManager() {}
+        explicit ModelManager()
+            : IUpdatable()
+            , INonCopyable()
+        {}
 
         friend class Singleton<ModelManager>;
     };    
@@ -26,7 +29,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __SINGLETONExport ModelManager& ModelMgrInstance();
+        __COMSINGLETONExport ModelManager& ModelMgrInstance();
 #ifdef __cplusplus
     }
 #endif

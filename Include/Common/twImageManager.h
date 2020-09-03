@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-class __SINGLETONExport ImageManager : public IUpdatable, public INonCopyable
+class __COMSINGLETONExport ImageManager : public IUpdatable, public INonCopyable
 {
 public:
     virtual ~ImageManager();
@@ -25,7 +25,7 @@ private:
     extern "C"
     {
 #endif
-        __SINGLETONExport ImageManager& ImageMgrInstance();
+        __COMSINGLETONExport ImageManager& ImageMgrInstance();
 #ifdef __cplusplus
     }
 #endif

@@ -1,6 +1,10 @@
-
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+option(ENABLE_EXPORT_PLUGIN "build ui library" ON)
+
+if(ENABLE_EXPORT_PLUGIN)
+    add_definitions(-DEXPORT_PLUGIN)
+endif()
 
 set(FirstTriangle_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twFirstTriangle.cpp

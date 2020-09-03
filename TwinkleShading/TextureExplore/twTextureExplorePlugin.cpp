@@ -13,8 +13,8 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __TWExport Plugin *InstallPlugin(PluginManager *);
-        __TWExport void UnInstallPlugin(PluginManager *);
+        __TWPLUGINExport Plugin *InstallPlugin(PluginManager *);
+        __TWPLUGINExport void UnInstallPlugin(PluginManager *);
 
         Plugin *InstallPlugin(PluginManager *pluginMgr)
         {

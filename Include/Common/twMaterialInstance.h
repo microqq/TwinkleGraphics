@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-class __TWExport StandardMaterial : public Material
+class __TWCOMExport StandardMaterial : public Material
 {
 public:
     typedef std::shared_ptr<StandardMaterial> Ptr;
@@ -34,7 +34,7 @@ private:
     }
 };
 
-class __TWExport BasicGeomMaterial : public Material
+class __TWCOMExport BasicGeomMaterial : public Material
 {
 public:
     typedef std::shared_ptr<BasicGeomMaterial> Ptr;
@@ -70,7 +70,7 @@ private:
     }
 };
 
-class __TWExport SpriteMaterial : public Material
+class __TWCOMExport SpriteMaterial : public Material
 {
 public:
     typedef std::shared_ptr<SpriteMaterial> Ptr;
@@ -110,7 +110,7 @@ private:
     }
 };
 
-class __TWExport Sprite1DMaterial : public Material
+class __TWCOMExport Sprite1DMaterial : public Material
 {
 public:
     typedef std::shared_ptr<Sprite1DMaterial> Ptr;
@@ -150,7 +150,7 @@ private:
     }
 };
 
-class __TWExport LineMaterial : public Material
+class __TWCOMExport LineMaterial : public Material
 {
 public:
     typedef std::shared_ptr<LineMaterial> Ptr;
@@ -183,7 +183,7 @@ private:
     }
 };
 
-class __TWExport InfinitePlaneMaterial : public Material
+class __TWCOMExport InfinitePlaneMaterial : public Material
 {
 public:
     typedef std::shared_ptr<InfinitePlaneMaterial> Ptr;
@@ -214,7 +214,7 @@ private:
     }
 };
 
-class __TWExport VolumnQuadMaterial : public Material
+class __TWCOMExport VolumnQuadMaterial : public Material
 {
 public:
     typedef std::shared_ptr<VolumnQuadMaterial> Ptr;
@@ -255,7 +255,7 @@ private:
 };
 
 
-class __TWExport CubeMaterial : public Material
+class __TWCOMExport CubeMaterial : public Material
 {
 public:
     typedef std::shared_ptr<CubeMaterial> Ptr;
@@ -290,7 +290,7 @@ private:
 };
 
 
-class __TWExport SphereMaterial : public Material
+class __TWCOMExport SphereMaterial : public Material
 {
 public:
     typedef std::shared_ptr<SphereMaterial> Ptr;
@@ -325,7 +325,7 @@ private:
 };
 
 
-class __TWExport SkyboxMaterial : public Material
+class __TWCOMExport SkyboxMaterial : public Material
 {
 public:
     typedef std::shared_ptr<SkyboxMaterial> Ptr;
@@ -366,7 +366,7 @@ private:
     }
 };
 
-class __TWExport ProjectionMappingMaterial : public Material
+class __TWCOMExport ProjectionMappingMaterial : public Material
 {
 public:
 

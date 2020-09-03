@@ -23,7 +23,7 @@ namespace TwinkleGraphics
         Assimp::Importer* importer = nullptr;
     };
 
-    class __TWExport ModelReader final : public ResourceReader
+    class __TWCOMExport ModelReader final : public ResourceReader
     {
     public:
         ModelReader();

@@ -1,10 +1,12 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-OPTION(ENABLE_EXPORT_DLL "build dynamic library" ON)
-IF(ENABLE_EXPORT_DLL)
-    add_definitions(-DEXPORT_DLL)
-ENDIF(ENABLE_EXPORT_DLL)
+option(ENABLE_EXPORT_UIDLL "build ui library" ON)
+
+if(ENABLE_EXPORT_UIDLL)
+    add_definitions(-DEXPORT_UIDLL)
+endif()
+
 
 SET(UiUtil_SRC
     ${CMAKE_CURRENT_LIST_DIR}/twUiUtil.cpp

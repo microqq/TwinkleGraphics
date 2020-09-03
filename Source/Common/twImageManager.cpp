@@ -6,6 +6,8 @@ namespace TwinkleGraphics
     ImageManager& ImageMgrInstance() { return Singleton<ImageManager>::Instance(); }
 
 	ImageManager::ImageManager()
+        : IUpdatable()
+        , INonCopyable()
 	{
 // call this ONLY when linking with FreeImage as a static library
 #ifdef FREEIMAGE_LIB

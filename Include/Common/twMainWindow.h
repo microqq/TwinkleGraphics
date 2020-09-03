@@ -13,7 +13,7 @@
 namespace TwinkleGraphics
 {
 
-class __TWExport MainWindow
+class __TWCOMExport MainWindow
 {
 public:
     MainWindow(int32 width = 800, int32 height = 640);
@@ -101,7 +101,7 @@ protected:
 };
 
 
-class __TWExport GLFWMainWindow : public MainWindow
+class __TWCOMExport GLFWMainWindow : public MainWindow
 {
 public:
     GLFWMainWindow(int32 width = 800, int32 height = 640);

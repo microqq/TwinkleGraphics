@@ -18,8 +18,8 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __TWExport void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo);
-        __TWExport void MainMenuBar();
+        __TWUIExport void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo);
+        __TWUIExport void MainMenuBar();
 #ifdef __cplusplus
     }
 #endif

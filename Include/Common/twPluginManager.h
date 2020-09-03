@@ -14,7 +14,7 @@ typedef std::string PluginName;
 class PluginManager;
 typedef Singleton<PluginManager> PluginManagerInst;
 
-class __TWExport PluginManager
+class __TWCOMExport PluginManager
 {
 public:
     PluginManager(/* args */);

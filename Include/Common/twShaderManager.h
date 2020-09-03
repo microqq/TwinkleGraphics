@@ -7,7 +7,7 @@
 
 namespace TwinkleGraphics
 {
-    class __SINGLETONExport ShaderManager : public IUpdatable, public INonCopyable
+    class __COMSINGLETONExport ShaderManager : public IUpdatable, public INonCopyable
     {
     public:
         virtual ~ShaderManager();
@@ -34,7 +34,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __SINGLETONExport ShaderManager& ShaderMgrInstance();
+        __COMSINGLETONExport ShaderManager& ShaderMgrInstance();
 #ifdef __cplusplus
     }
 #endif

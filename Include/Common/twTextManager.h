@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-    class __SINGLETONExport TextManager : public IUpdatable, public INonCopyable
+    class __COMSINGLETONExport TextManager : public IUpdatable, public INonCopyable
     {
     public:
         void ReadTextAsync(const char* filename);
@@ -15,7 +15,10 @@ namespace TwinkleGraphics
         virtual void Update() override {}
 
     private:
-        explicit TextManager() {}
+        explicit TextManager()
+            : IUpdatable()
+            , INonCopyable()            
+        {}
 
     private:
         std::map<uint32, TextSource::Ptr> _textSources;
@@ -28,7 +31,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __SINGLETONExport TextManager& TextMgrInstance();
+        __COMSINGLETONExport TextManager& TextMgrInstance();
 #ifdef __cplusplus
     }
 #endif    

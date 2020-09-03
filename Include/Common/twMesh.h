@@ -64,7 +64,7 @@ namespace TwinkleGraphics
     class BezierSurface;
     class NURBSSurface;
 
-    class __TWExport SubMesh : public Object
+    class __TWCOMExport SubMesh : public Object
     {
     public:
         typedef std::shared_ptr<SubMesh> Ptr;
@@ -107,7 +107,7 @@ namespace TwinkleGraphics
         friend class NURBSSurface;
     };
 
-    class __TWExport Mesh : public Object
+    class __TWCOMExport Mesh : public Object
     {
     public:
         typedef std::shared_ptr<Mesh> Ptr;

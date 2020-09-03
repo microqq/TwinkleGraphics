@@ -263,7 +263,7 @@ typedef TexParams SamplerParams;
  * @brief 
  * https://www.khronos.org/registry/OpenGL-Refpages/gl4/
  */
-class __TWExport Sampler : Object
+class __TWCOMExport Sampler : Object
 {
 public:
     typedef std::shared_ptr<Sampler> Ptr;
@@ -300,7 +300,7 @@ private:
  * "A GL texture object includes both categories. The first category represents dimensionality and other image parameters, 
  *  and the second category represents sampling state." ---- OpenGL 4.5(Core Profile)
  */
-class __TWExport Texture : public Object
+class __TWCOMExport Texture : public Object
 {
 public:
     typedef std::shared_ptr<Texture> Ptr;
@@ -505,7 +505,7 @@ struct TextureSlot
 };
 
 
-class __TWExport Texture1D : public Texture
+class __TWCOMExport Texture1D : public Texture
 {
 public:
     typedef std::shared_ptr<Texture1D> Ptr;
@@ -531,7 +531,7 @@ protected:
     }
 };
 
-class __TWExport Texture2D : public Texture
+class __TWCOMExport Texture2D : public Texture
 {
 public:
     typedef std::shared_ptr<Texture2D> Ptr;
@@ -561,7 +561,7 @@ protected:
     }
 };
 
-class __TWExport Texture2DMultiSample : public Texture
+class __TWCOMExport Texture2DMultiSample : public Texture
 {
 public:
     typedef std::shared_ptr<Texture2DMultiSample> Ptr;
@@ -595,7 +595,7 @@ private:
     bool _fixedsampledlocation;
 };
 
-class __TWExport Texture3D : public Texture
+class __TWCOMExport Texture3D : public Texture
 {
 public:
     typedef std::shared_ptr<Texture3D> Ptr;
@@ -619,7 +619,7 @@ protected:
  * https://stackoverflow.com/questions/25157306/gl-texture-2d-vs-gl-texture-rectangle
  * https://www.khronos.org/opengl/wiki/Rectangle_Texture
  */
-class __TWExport TextureRectangle : public Texture
+class __TWCOMExport TextureRectangle : public Texture
 {
 public:
     typedef std::shared_ptr<TextureRectangle> Ptr;
@@ -652,7 +652,7 @@ protected:
  * https://stackoverflow.com/questions/21424968/what-is-the-purpose-of-opengl-texture-buffer-objects
  * https://stackoverflow.com/questions/6281109/texture-buffer-objects-or-regular-textures?rq=1
  */
-class __TWExport TextureBuffer : public Texture
+class __TWCOMExport TextureBuffer : public Texture
 {
 public:
     typedef std::shared_ptr<TextureBuffer> Ptr;
@@ -688,7 +688,7 @@ private:
     int32 _internalformat;
 };
 
-class __TWExport TextureCube : public Texture
+class __TWCOMExport TextureCube : public Texture
 {
 public:
     typedef std::shared_ptr<TextureCube> Ptr;
@@ -728,7 +728,7 @@ private:
     Image::Ptr _imageNegativeZ;
 };
 
-class __TWExport Texture1DArray : public Texture
+class __TWCOMExport Texture1DArray : public Texture
 {
 public:
     typedef std::shared_ptr<Texture1DArray> Ptr;
@@ -747,7 +747,7 @@ protected:
     virtual void InitStorage() override;
 };
 
-class __TWExport Texture2DArray : public Texture
+class __TWCOMExport Texture2DArray : public Texture
 {
 public:
     typedef std::shared_ptr<Texture2DArray> Ptr;
@@ -766,7 +766,7 @@ protected:
     virtual void InitStorage() override;
 };
 
-class __TWExport TextureCubeArray : public Texture
+class __TWCOMExport TextureCubeArray : public Texture
 {
 public:
     typedef std::shared_ptr<TextureCubeArray> Ptr;
@@ -785,7 +785,7 @@ protected:
     virtual void InitStorage() override;
 };
 
-class __TWExport Texture2DMultiSampleArray : public Texture
+class __TWCOMExport Texture2DMultiSampleArray : public Texture
 {
 public:
     typedef std::shared_ptr<Texture2DMultiSampleArray> Ptr;
@@ -824,7 +824,7 @@ private:
 class TextureManager;
 typedef Singleton<TextureManager> TextureManagerInst;
 
-class __TWExport TextureManager
+class __TWCOMExport TextureManager
 {
 public:
     TextureManager()

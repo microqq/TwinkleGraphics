@@ -11,6 +11,8 @@
 #include <atomic>
 #include <future>
 
+#include "twConsoleLog.h"
+
 namespace TwinkleGraphics
 {
     typedef uint32_t uint;
@@ -90,7 +92,7 @@ namespace TwinkleGraphics
         auto PushTask(Func &&f, Args &&... args)
             -> std::future<typename std::result_of<Func(Args...)>::type>;
 
-        void Stop(bool delay = false);
+        void Stop(bool delay = true);
         uint Size() { return static_cast<uint>(_workers.size()); }
         uint IdleCount() { return _idleCount.load(); }
 
@@ -121,7 +123,7 @@ inline ThreadPool::ThreadPool(uint size)
     for(uint i = 0; i < size; i++)
     {
         _workers.emplace_back(
-            [this]()
+            [this]() -> bool
             {
                 for(;;)
                 {
@@ -138,7 +140,7 @@ inline ThreadPool::ThreadPool(uint size)
 
                         if(this->_stoped.load() && this->_tasks.Empty())
                         {
-                            return;
+                            return true;
                         }
 
                         this->_tasks.Pop(task);
@@ -192,7 +194,7 @@ inline void ThreadPool::Stop(bool delay)
         _stoped.store(true);
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            if(!delay)
+            if (!delay)
             {
                 Clear();
             }
@@ -200,17 +202,18 @@ inline void ThreadPool::Stop(bool delay)
         _condition.notify_all();
     }
 
-    for(auto& worker : _workers)
+    for (auto &worker : _workers)
     {
-        if(worker.joinable())
+        if (worker.joinable())
         {
             worker.join();
-            
+
             Console::LogInfo("ThreadPool: WorkThread---", worker.get_id(), " stoped.\n");
         }
     }
-}
 
+    _workers.clear();
+}
 
 } // namespace TwinkleGraphics
 

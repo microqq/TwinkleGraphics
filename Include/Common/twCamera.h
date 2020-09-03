@@ -13,7 +13,7 @@
 
 namespace TwinkleGraphics
 {
-struct __TWExport Viewport
+struct __TWCOMExport Viewport
 {
     Rect rect;
     RGBA clearColor;
@@ -92,7 +92,7 @@ protected:
 };
 
 
-class __TWExport Camera : public Frustum, public ISceneNode
+class __TWCOMExport Camera : public Frustum, public ISceneNode
 {
 public:
     typedef std::shared_ptr<Camera> Ptr;

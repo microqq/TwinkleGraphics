@@ -7,7 +7,8 @@ namespace TwinkleGraphics
     ShaderManager& ShaderMgrInstance() { return Singleton<ShaderManager>::Instance(); }
 
     ShaderManager::ShaderManager()
-        : IUpdatable() 
+        : IUpdatable()
+        , INonCopyable()
         , _futures()
         , _shaders()
         , _mutex()
@@ -15,8 +16,11 @@ namespace TwinkleGraphics
     }
 
     ShaderManager::~ShaderManager()
-    {
-        _futures.clear();
+    {     
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.clear();
+        }
         _shaders.clear();
     }
 
@@ -87,13 +91,6 @@ namespace TwinkleGraphics
     {
         ResourceManager& resMgr = ResourceMgrInstance();
         auto future = resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
-
-        // if(future.valid())
-        // {
-        //     ReadResult<Shader> result = future.get();
-        //     Console::LogWarning("Wait shader load complete.\n");
-        // }
-
         {
             std::lock_guard<std::mutex> lock(_mutex);
             _futures.push_back(std::move(future));

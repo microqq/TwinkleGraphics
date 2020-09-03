@@ -35,7 +35,7 @@ class Material;
  * @brief 
  * 
  */
-class __TWExport RenderPass : public Object
+class __TWCOMExport RenderPass : public Object
 {
 public:
     typedef std::shared_ptr<RenderPass> Ptr;
@@ -83,7 +83,7 @@ private:
  * @brief 
  * 
  */
-class __TWExport Material : public Object
+class __TWCOMExport Material : public Object
 {
 public:
     typedef std::shared_ptr<Material> Ptr;

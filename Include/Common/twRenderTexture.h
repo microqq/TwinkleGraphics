@@ -7,7 +7,7 @@
 namespace TwinkleGraphics
 {
 
-class __TWExport RenderTexture : public Object
+class __TWCOMExport RenderTexture : public Object
 {
 public:
     typedef std::shared_ptr<RenderTexture> Ptr;

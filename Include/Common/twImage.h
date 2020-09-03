@@ -26,7 +26,7 @@ struct ImageSource : public SourceHandle
     std::string filename;
 };
 
-class __TWExport Image : public Object
+class __TWCOMExport Image : public Object
 {
 public:
     typedef std::shared_ptr<Image> Ptr;
@@ -46,7 +46,7 @@ private:
     ImageSource::Ptr _source;
 };
 
-class __TWExport ImageReader final : public ResourceReader
+class __TWCOMExport ImageReader final : public ResourceReader
 {
 public:
     ImageReader();

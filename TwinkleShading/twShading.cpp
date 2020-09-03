@@ -17,7 +17,7 @@ PluginManager& pluginMgr = PluginManagerInst::Instance();
 static MapPlugins PluginPaths;
 static std::string CurrentPlugin = std::string();
 //create opengl window
-static GLFWMainWindow mainWindow(1024, 768);
+static GLFWMainWindow MainWindow_(1024, 768);
 
 void LoadPluginsGUI();
 void UnLoadCurrentPlugin();
@@ -44,16 +44,16 @@ int main(int, char **)
 #endif
 
     IMGUI_FUNC load_plugin_gui_fun = (IMGUI_FUNC)LoadPluginsGUI;
-    mainWindow.AddGUIFunc(load_plugin_gui_fun);
-    mainWindow.SetMouseButtonInputCallback(MouseButtonInput);
-    mainWindow.SetCursorPosCallback(CursorPosCallback);
-    mainWindow.SetCursorPosEnterCallback(CursorEnterPosCallback);
-    mainWindow.SetScrollCallback(ScrollCallback);
-    mainWindow.SetWindowSizeCallback(WindowSizeCallback);
-    mainWindow.SetKeyCallback(KeyCallback);
+    MainWindow_.AddGUIFunc(load_plugin_gui_fun);
+    MainWindow_.SetMouseButtonInputCallback(MouseButtonInput);
+    MainWindow_.SetCursorPosCallback(CursorPosCallback);
+    MainWindow_.SetCursorPosEnterCallback(CursorEnterPosCallback);
+    MainWindow_.SetScrollCallback(ScrollCallback);
+    MainWindow_.SetWindowSizeCallback(WindowSizeCallback);
+    MainWindow_.SetKeyCallback(KeyCallback);
 
     //main loop
-    mainWindow.Run();
+    MainWindow_.Run();
 
     UnLoadCurrentPlugin();
 
@@ -82,7 +82,7 @@ void LoadPluginsGUI(void)
                 GLPlugin *plugin = dynamic_cast<GLPlugin *>(pluginMgr.LoadPlugin(it->second));
                 if (plugin != nullptr && plugin->GetViewsCount() > 0)
                 {
-                    mainWindow.AddViews(plugin->GetViews(), plugin->GetViewsCount());
+                    MainWindow_.AddViews(plugin->GetViews(), plugin->GetViewsCount());
                     plugin->UpdateViews();
                 }
             }
@@ -102,7 +102,7 @@ void UnLoadCurrentPlugin()
     if(last_plugin != nullptr)
     {
         TwinkleGraphics::View **views = last_plugin->GetViews();
-        mainWindow.RemoveViews(views, last_plugin->GetViewsCount());
+        MainWindow_.RemoveViews(views, last_plugin->GetViewsCount());
 
         MapPlugins::iterator last_plugin_path = PluginPaths.find(last_plugin_name);
         pluginMgr.UnloadPlugin(last_plugin_path->second);
@@ -112,30 +112,30 @@ void UnLoadCurrentPlugin()
 
 void MouseButtonInput(GLFWwindow* window, int32 button, int32 action, int32 mods)
 {
-    mainWindow.MouseButtonInput(button, action, mods);
+    MainWindow_.MouseButtonInput(button, action, mods);
 }
 
 void CursorPosCallback(GLFWwindow* window, float64 xpos, float64 ypos)
 {
-    mainWindow.CursorPosCallback(xpos, ypos);
+    MainWindow_.CursorPosCallback(xpos, ypos);
 }
 
 void CursorEnterPosCallback(GLFWwindow* window, int32 entered)
 {
-    mainWindow.CursorEnterPosCallback(entered);
+    MainWindow_.CursorEnterPosCallback(entered);
 }
 
 void ScrollCallback(GLFWwindow* window, float64 dx, float64 dy)
 {
-    mainWindow.ScrollCallback(dx, dy);
+    MainWindow_.ScrollCallback(dx, dy);
 }
 
 void WindowSizeCallback(GLFWwindow* window, int w, int h)
 {
-    mainWindow.WindowSizeCallback(w, h);
+    MainWindow_.WindowSizeCallback(w, h);
 }
 
 void KeyCallback(GLFWwindow* window, int key, int scannode, int action, int mods)
 {
-    mainWindow.KeyCallBack(key, scannode, action, mods);
+    MainWindow_.KeyCallBack(key, scannode, action, mods);
 }
