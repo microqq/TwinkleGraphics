@@ -505,7 +505,7 @@ namespace TwinkleGraphics
             }
 
             ReadResult<Shader> result(sharedShader, ReadResult<Shader>::Status::SUCCESS);
-            result.AddSuccessFunc(std::make_shared<ReadSuccessFunc>(
+            result.AddSuccessFunc(std::make_shared<ReadSuccessCallbackFunc>(
                 std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
             ));
             return result;

@@ -31,12 +31,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(twFirstTriangle OpenGL32.lib)
-    target_link_libraries(twFirstTriangle ${GLEWLIBDIR}/glew32.lib)
-    target_link_libraries(twFirstTriangle ${GLFWLIBDIR}/libglfw3dll.a)
-    target_link_libraries(twFirstTriangle twCommon)
     target_link_libraries(twFirstTriangle twUtil)
-    target_link_libraries(twFirstTriangle imgui)
 endif()
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

@@ -1,6 +1,9 @@
 #ifndef TW_RESOURCEMANAGER_H
 #define TW_RESOURCEMANAGER_H
 
+#include <any>
+#include <variant>
+
 #include "twResource.h"
 
 namespace TwinkleGraphics
@@ -17,6 +20,7 @@ namespace TwinkleGraphics
 
         virtual void Update() override
         {
+
         }
 
         /**
@@ -59,6 +63,19 @@ namespace TwinkleGraphics
                 r = new R(std::forward<Args>(args)...);
                 reader.reset(r);
             }
+
+            // typename PackedReadTask<ReadResult<T>>::Ptr packedReadTaskPtr = 
+            //     std::make_shared<PackedReadTask<ReadResult<T>>>(ReadResult<T>());
+
+            // std::shared_ptr<std::packaged_task<ReadResult<T>()>> task = packedReadTaskPtr->_task;
+            // task = std::make_shared<std::packaged_task<ReadResult<T>()>>(
+            //     std::bind(&R::ReadAsync, r, filename, option)
+            // );
+
+            // _taskQueue.Push(packedReadTaskPtr);
+
+            // auto future = packedReadTaskPtr->_task->get_future();
+            // return future;
 
             auto future = _threadPool.PushTask(&R::ReadAsync, r, filename, option);
             return future;
@@ -112,6 +129,39 @@ namespace TwinkleGraphics
         typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
         typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
         typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
+
+        class IPackedReadTask
+        {
+        public:
+            typedef std::shared_ptr<IPackedReadTask> Ptr;
+            std::any _returnType;
+
+            // template <typename ReturnType>
+            // auto GetTask() ->
+            //     std::shared_ptr<std::packaged_task<ReturnType()>>;
+        };
+
+        template <typename ReturnType>
+        class PackedReadTask : public IPackedReadTask
+        {
+        public:
+            typedef std::shared_ptr<PackedReadTask> Ptr;
+            PackedReadTask(ReturnType ret)
+                : IPackedReadTask()
+            {
+                _returnType = ret;
+            }
+
+            auto GetTask() -> 
+                std::shared_ptr<std::packaged_task<ReturnType()>>
+            {
+                return _task;
+            }
+
+            std::shared_ptr<std::packaged_task<ReturnType()>> _task = nullptr;
+        };
+
+        TSQueue<IPackedReadTask::Ptr> _taskQueue;
 
         MultCacheMap _objectCacheMap;
         UnorderedCacheMap _sourceCacheMap;

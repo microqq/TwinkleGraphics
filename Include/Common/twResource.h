@@ -29,10 +29,10 @@ class ResourceReader;
 typedef uint16_t ReaderId;
 typedef uint64_t CacheId;
 
-typedef std::function<void(Object::Ptr)> ReadSuccessFunc;
-typedef std::function<void()> ReadFailedFunc;
-typedef std::shared_ptr<ReadSuccessFunc> ReadSuccessFuncPtr;
-typedef std::shared_ptr<ReadFailedFunc> ReadFailedFuncPtr;
+typedef std::function<void(Object::Ptr)> ReadSuccessCallbackFunc;
+typedef std::function<void()> ReadFailedCallbackFunc;
+typedef std::shared_ptr<ReadSuccessCallbackFunc> ReadSuccessCallbackFuncPtr;
+typedef std::shared_ptr<ReadFailedCallbackFunc> ReadFailedCallbackFuncPtr;
 
 enum class CacheHint
 {
@@ -85,7 +85,7 @@ protected:
  * @tparam TPtr 
  */
 template<class T>
-class __COMSINGLETONExport ReadResult
+class __TWCOMExport ReadResult
 {
 public:
     enum class Status
@@ -138,12 +138,12 @@ public:
     //     return _sharedObject == nullp;
     // }
 
-    void AddSuccessFunc(ReadSuccessFuncPtr func)
+    void AddSuccessFunc(ReadSuccessCallbackFuncPtr func)
     {
         _successFuncList.emplace_back(func);
     }
 
-    void AddFailedFunc(ReadFailedFuncPtr func)
+    void AddFailedFunc(ReadFailedCallbackFuncPtr func)
     {
         _failedFuncList.emplace_back(func);
     }
@@ -171,8 +171,8 @@ public:
     }
 
 private:
-    std::vector<ReadSuccessFuncPtr> _successFuncList;
-    std::vector<ReadFailedFuncPtr> _failedFuncList;
+    std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
+    std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
     typename T::Ptr _sharedObject;
     Status _status;
 };

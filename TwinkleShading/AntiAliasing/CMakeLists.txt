@@ -31,16 +31,11 @@ target_include_directories(twAntiAliasing PUBLIC
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(twAntiAliasing twCommon imgui twUtil)
+    target_link_libraries(twAntiAliasing twUtil twUiUtil)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(twAntiAliasing OpenGL32.lib)
-    target_link_libraries(twAntiAliasing ${GLEWLIBDIR}/glew32.lib)
-    target_link_libraries(twAntiAliasing ${GLFWLIBDIR}/libglfw3dll.a)
-    target_link_libraries(twAntiAliasing twCommon)
     target_link_libraries(twAntiAliasing twUtil)
-    target_link_libraries(twAntiAliasing imgui)
     target_link_libraries(twAntiAliasing twUiUtil)
 endif()
 

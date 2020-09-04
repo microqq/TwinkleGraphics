@@ -31,12 +31,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(twTextureExplore OpenGL32.lib)
-    target_link_libraries(twTextureExplore ${GLEWLIBDIR}/glew32.lib)
-    target_link_libraries(twTextureExplore ${GLFWLIBDIR}/libglfw3dll.a)
-    target_link_libraries(twTextureExplore twCommon)
     target_link_libraries(twTextureExplore twUtil)
-    target_link_libraries(twTextureExplore imgui)
 endif()
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

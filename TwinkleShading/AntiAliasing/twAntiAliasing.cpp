@@ -281,10 +281,17 @@ void AntiAliasingScene::CreateScene()
     char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
     ShaderManager& shaderMgr = ShaderMgrInstance();
 
-    ShaderOption* option = new ShaderOption(
-        ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER}
-    );
-    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", option);
+    /**
+     * 
+     * Debug Mode With GDB:
+     *  Call ReadShaderAsync in plugin Antialiasing DLL, call future.get() which
+     *  will throw exception with unknown/just-in-time compiled code.
+     * 
+     *  but call ReadShaderAsync in Commmon dll or executable, it works fine. 
+     */
+    // ShaderOption* option = new ShaderOption(
+    //     ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER});
+    // shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", option);
 
     ShaderOption shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},

@@ -31,12 +31,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(twBasicGeometry OpenGL32.lib)
-    target_link_libraries(twBasicGeometry ${GLEWLIBDIR}/glew32.lib)
-    target_link_libraries(twBasicGeometry ${GLFWLIBDIR}/libglfw3dll.a)
-    target_link_libraries(twBasicGeometry twCommon)
     target_link_libraries(twBasicGeometry twUtil)
-    target_link_libraries(twBasicGeometry imgui)
 endif()
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

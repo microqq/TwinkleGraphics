@@ -187,6 +187,7 @@ auto ThreadPool::PushTask(Func&& f, Args&&... args)
     return future;
 }
 
+
 inline void ThreadPool::Stop(bool delay)
 {
     if (!_stoped.load())

@@ -52,6 +52,19 @@ int main(int, char **)
     MainWindow_.SetWindowSizeCallback(WindowSizeCallback);
     MainWindow_.SetKeyCallback(KeyCallback);
 
+    /**
+     * 
+     * Debug Mode With GDB:
+     *  Call ReadShaderAsync in plugin Antialiasing DLL, call future.get() which
+     *  will throw exception with unknown/just-in-time compiled code.
+     * 
+     *  but call ReadShaderAsync in Commmon dll or executable, it works fine. 
+     */
+    // ShaderManager& shaderMgr = ShaderMgrInstance();
+    // ShaderOption* option = new ShaderOption(
+    //     ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER});
+    // shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", option);
+
     //main loop
     MainWindow_.Run();
 
