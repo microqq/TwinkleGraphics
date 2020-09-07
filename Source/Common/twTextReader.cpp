@@ -47,8 +47,9 @@ namespace TwinkleGraphics
         return ReadResult<TextSource>(ReadResult<TextSource>::Status::FAILED);
     }
 
-    ReadResult<TextSource> TextReader::ReadAsync(const char *filename, ReaderOption *option)
+    ReadResult<TextSource> TextReader::ReadAsync(std::string filename, ReaderOption *option)
     {
-        return Read<TextSource>(filename, option);
+        _asynchronize = true;
+        return Read<TextSource>(filename.c_str(), option);
     }
 } // namespace TwinkleGraphics

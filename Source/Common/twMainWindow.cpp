@@ -127,10 +127,12 @@ void GLFWMainWindow::Reset()
 void GLFWMainWindow::Run()
 {
     ShaderManager& shaderMgr = ShaderMgrInstance();
+    ResourceManager& resMgr = ResourceMgrInstance();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
+        resMgr.Update();
         shaderMgr.Update();
         HandleEvents();
 
@@ -275,7 +277,7 @@ void GLFWMainWindow::Initialise()
 void GLFWMainWindow::Terminate()
 {
     ResourceManager& resMgr = ResourceMgrInstance();
-    resMgr.StopWorkers();
+    resMgr.ClearWorkerPool();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

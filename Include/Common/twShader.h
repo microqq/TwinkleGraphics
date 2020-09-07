@@ -202,7 +202,7 @@ namespace TwinkleGraphics
 
         template <typename T>
         ReadResult<T> Read(const char *filename, ReaderOption *option);
-        ReadResult<Shader> ReadAsync(const char *filename, ReaderOption *option);
+        ReadResult<Shader> ReadAsync(std::string filename, ReaderOption *option);
 
         void OnSuccess(Object::Ptr obj)
         {

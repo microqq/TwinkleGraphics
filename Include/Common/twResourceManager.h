@@ -13,14 +13,18 @@ namespace TwinkleGraphics
     public:
         virtual ~ResourceManager()
         {
-            StopWorkers();
+            ClearWorkerPool();
             _idleReaders.clear();
             _objectCacheMap.clear();
         }
 
         virtual void Update() override
         {
-
+            IPackedReadTask::Ptr packedTask;
+            while(_taskQueue.Pop(packedTask))
+            {
+                packedTask->PushTask();
+            }
         }
 
         /**
@@ -39,15 +43,27 @@ namespace TwinkleGraphics
         {
             // get GUID with filename, read from cache
 
-            R *r = new R(std::forward<Args>(args)...);
+            ResourceReader::Ptr reader = PopIdleReader(R::ID);
+            R *r = nullptr;
+            if (reader != nullptr)
+            {
+                r = new (reader.get()) R(/*std::forward<Args>(args)...*/);
+                reader.reset(r);
+            }
+            else
+            {
+                r = new R(/*std::forward<Args>(args)...*/);
+                reader.reset(r);
+            }
 
             // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
             return r->template Read<T>(filename, option);
         }
 
         template <class R, class T, class... Args>
-        auto ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
-            -> std::future<ReadResult<T>>
+        void ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
+        // auto ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
+            //-> std::future<ReadResult<T>>
         {
             // get GUID with filename, read from cache
 
@@ -55,30 +71,25 @@ namespace TwinkleGraphics
             R *r = nullptr;
             if (reader != nullptr)
             {
-                r = new (reader.get()) R(std::forward<Args>(args)...);
+                r = new (reader.get()) R(/*std::forward<Args>(args)...*/);
                 reader.reset(r);
             }
             else
             {
-                r = new R(std::forward<Args>(args)...);
+                r = new R(/*std::forward<Args>(args)...*/);
                 reader.reset(r);
             }
 
-            // typename PackedReadTask<ReadResult<T>>::Ptr packedReadTaskPtr = 
-            //     std::make_shared<PackedReadTask<ReadResult<T>>>(ReadResult<T>());
+            typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr = 
+                std::make_shared<PackedReadTask<ReadResult<T>, R>>();
 
-            // std::shared_ptr<std::packaged_task<ReadResult<T>()>> task = packedReadTaskPtr->_task;
-            // task = std::make_shared<std::packaged_task<ReadResult<T>()>>(
-            //     std::bind(&R::ReadAsync, r, filename, option)
-            // );
+            packedReadTaskPtr->_filename = std::string(filename);
+            packedReadTaskPtr->_reader = r;
+            packedReadTaskPtr->_option = option;
+            _taskQueue.Push(packedReadTaskPtr);
 
-            // _taskQueue.Push(packedReadTaskPtr);
-
-            // auto future = packedReadTaskPtr->_task->get_future();
+            // auto future = _workerPool.PushTask(&R::ReadAsync, r, filename, option);
             // return future;
-
-            auto future = _threadPool.PushTask(&R::ReadAsync, r, filename, option);
-            return future;
         }
 
         template <class R>
@@ -93,16 +104,16 @@ namespace TwinkleGraphics
             }
         }
 
-        void StopWorkers()
+        void ClearWorkerPool()
         {
-            _threadPool.Stop(true);
+            _workerPool.Stop(true);
         }
 
     private:
         explicit ResourceManager()
             : IUpdatable()
             , INonCopyable()
-            , _threadPool(2)
+            , _workerPool(2)
         {
         }
 
@@ -125,42 +136,49 @@ namespace TwinkleGraphics
             return nullptr;
         }
 
+        template <class Func, class... Args>
+        auto PushTask(Func&& f, Args&&... args)
+            -> std::future<typename std::result_of<Func(Args...)>::type>
+        {
+            auto future = _workerPool.PushTask(f, args...);
+            return future;
+        }
+
     private:
         typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
         typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
         typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
+        typedef ThreadPool WorkerPool;
 
         class IPackedReadTask
         {
         public:
             typedef std::shared_ptr<IPackedReadTask> Ptr;
-            std::any _returnType;
 
-            // template <typename ReturnType>
-            // auto GetTask() ->
-            //     std::shared_ptr<std::packaged_task<ReturnType()>>;
+            virtual void PushTask() = 0;
         };
 
-        template <typename ReturnType>
+        template <typename Ret, typename R>
         class PackedReadTask : public IPackedReadTask
         {
         public:
             typedef std::shared_ptr<PackedReadTask> Ptr;
-            PackedReadTask(ReturnType ret)
+            PackedReadTask()
                 : IPackedReadTask()
             {
-                _returnType = ret;
             }
-
-            auto GetTask() -> 
-                std::shared_ptr<std::packaged_task<ReturnType()>>
+            virtual ~PackedReadTask()
             {
-                return _task;
+                _reader = nullptr;
+                _option = nullptr;
             }
 
-            std::shared_ptr<std::packaged_task<ReturnType()>> _task = nullptr;
-        };
+            virtual void PushTask() override;
 
+            std::string _filename;
+            R* _reader;
+            ReaderOption* _option;
+        };
         TSQueue<IPackedReadTask::Ptr> _taskQueue;
 
         MultCacheMap _objectCacheMap;
@@ -172,7 +190,7 @@ namespace TwinkleGraphics
         // std::mutex _loadingReaderMutex;
         std::mutex _idleReaderMutex;
 
-        ThreadPool _threadPool;
+        WorkerPool _workerPool;
 
         friend class Singleton<ResourceManager>;
     };

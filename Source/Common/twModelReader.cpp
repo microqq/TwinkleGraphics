@@ -49,9 +49,10 @@ namespace TwinkleGraphics
         return ReadResult<Model>(model, ReadResult<Model>::Status::SUCCESS);
     }
 
-    ReadResult<Model> ModelReader::ReadAsync(const char *filename, ReaderOption *option)
+    ReadResult<Model> ModelReader::ReadAsync(std::string filename, ReaderOption *option)
     {
-        return Read<Model>(filename, option);
+        _asynchronize = true;
+        return Read<Model>(filename.c_str(), option);
     }
 
     /**

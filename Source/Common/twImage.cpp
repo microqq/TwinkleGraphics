@@ -65,9 +65,10 @@ namespace TwinkleGraphics
 		}
 	}
 
-    ReadResult<Image> ImageReader::ReadAsync(const char *filename, ReaderOption *option)
+    ReadResult<Image> ImageReader::ReadAsync(std::string filename, ReaderOption *option)
 	{
-		return Read<Image>(filename, option);
+        _asynchronize = true;
+		return Read<Image>(filename.c_str(), option);
 	}
 
 	ReadResult<Image> ImageReader::ReadDDS(const char *filename, ReaderOption *option)

@@ -287,11 +287,13 @@ void AntiAliasingScene::CreateScene()
      *  Call ReadShaderAsync in plugin Antialiasing DLL, call future.get() which
      *  will throw exception with unknown/just-in-time compiled code.
      * 
+     * So, fix this problem with that makes operations of _futures.push & future.get() in common dll.
+     * 
      *  but call ReadShaderAsync in Commmon dll or executable, it works fine. 
      */
-    // ShaderOption* option = new ShaderOption(
-    //     ShaderOption::OptionData{std::string("Assets/Shaders/line.vert"), ShaderType::VERTEX_SHADER});
-    // shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", option);
+    ShaderOption* option = new ShaderOption(
+        ShaderOption::OptionData{std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER});
+    shaderMgr.ReadShaderAsync("Assets/Shaders/cube.frag", option);
 
     ShaderOption shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},

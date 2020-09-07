@@ -55,7 +55,7 @@ public:
     template <typename T>
     ReadResult<T> Read(const char *filename, ReaderOption *option);
 
-    ReadResult<Image> ReadAsync(const char *filename, ReaderOption *option);
+    ReadResult<Image> ReadAsync(std::string filename, ReaderOption *option);
 
 private:
     ReadResult<Image> ReadDDS(const char *filename, ReaderOption *option);

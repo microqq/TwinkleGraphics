@@ -31,7 +31,7 @@ namespace TwinkleGraphics
 
         template <typename T>
         ReadResult<T> Read(const char *filename, ReaderOption *option);
-        ReadResult<Model> ReadAsync(const char *filename, ReaderOption *option);
+        ReadResult<Model> ReadAsync(std::string filename, ReaderOption *option);
 
         Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[]);
         SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);

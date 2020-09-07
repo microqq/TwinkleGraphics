@@ -19,6 +19,8 @@ namespace TwinkleGraphics
         void ReadShaderAsync(const char* filename, ShaderOption* option);
         void ReadShadersAsync(ShaderOption options[], int32 num);
 
+        void AddTaskFuture(std::future<ReadResult<Shader>> future);
+
     private:
         explicit ShaderManager();
 

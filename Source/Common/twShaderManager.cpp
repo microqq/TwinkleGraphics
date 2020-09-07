@@ -90,11 +90,7 @@ namespace TwinkleGraphics
     void ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        auto future = resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-            _futures.push_back(std::move(future));
-        }
+        resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
     }
 
     void ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
@@ -104,4 +100,25 @@ namespace TwinkleGraphics
             ReadShaderAsync(options[i].optionData.filename.c_str(), &options[i]);
         }
     }    
+
+    void ShaderManager::AddTaskFuture(std::future<ReadResult<Shader>> future)
+    {
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.emplace_back(std::move(future));
+        }
+    }
+
+    template <>
+    void ResourceManager::PackedReadTask<ReadResult<Shader>, ShaderReader>::PushTask()
+    {
+        // typedef Ret(R::*)(const char*, ReaderOption) Func;
+        ResourceManager &resMgr = ResourceMgrInstance();
+        auto future = resMgr.PushTask(&ShaderReader::ReadAsync, _reader, _filename, _option);
+        {
+            ShaderManager& shaderMgr = ShaderMgrInstance();
+            shaderMgr.AddTaskFuture(std::move(future));
+        }        
+    }
+
 } // namespace TwinkleGraphics

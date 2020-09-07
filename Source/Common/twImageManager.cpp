@@ -21,6 +21,11 @@ namespace TwinkleGraphics
 #ifdef FREEIMAGE_LIB
 		FreeImage_DeInitialise();
 #endif
+
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.clear();
+        }
 	}
 
 	Image::Ptr ImageManager::ReadImage(const char* filename)
@@ -35,6 +40,26 @@ namespace TwinkleGraphics
     void ImageManager::ReadImageAsync(const char* filename)
 	{
         ResourceManager& resMgr = ResourceMgrInstance();
-		auto future = resMgr.ReadAsync<ImageReader, Image>(filename, nullptr);
+		resMgr.ReadAsync<ImageReader, Image>(filename, nullptr);
 	}    
+
+    void ImageManager::AddTaskFuture(std::future<ReadResult<Image>> future)
+    {
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.emplace_back(std::move(future));
+        }
+    }    
+
+    template <>
+    void ResourceManager::PackedReadTask<ReadResult<Image>, ImageReader>::PushTask()
+    {
+        // typedef Ret(R::*)(const char*, ReaderOption) Func;
+        ResourceManager &resMgr = ResourceMgrInstance();
+        auto future = resMgr.PushTask(&ImageReader::ReadAsync, _reader, _filename, _option);
+		{
+			ImageManager& imgMgr = ImageMgrInstance();
+			imgMgr.AddTaskFuture(std::move(future));
+		}
+    }	
 }

@@ -505,9 +505,7 @@ namespace TwinkleGraphics
             }
 
             ReadResult<Shader> result(sharedShader, ReadResult<Shader>::Status::SUCCESS);
-            result.AddSuccessFunc(std::make_shared<ReadSuccessCallbackFunc>(
-                std::bind(&ShaderReader::OnSuccess, this, std::placeholders::_1)
-            ));
+            result.AddSuccessFunc(&ShaderReader::OnSuccess, this, sharedShader);
             return result;
         }
         else
@@ -521,10 +519,10 @@ namespace TwinkleGraphics
         return ReadResult<Shader>();
     }
 
-    ReadResult<Shader> ShaderReader::ReadAsync(const char *filename, ReaderOption *option)
+    ReadResult<Shader> ShaderReader::ReadAsync(std::string filename, ReaderOption *option)
     {
         _asynchronize = true;
-        return Read<Shader>(filename, option);
+        return Read<Shader>(filename.c_str(), option);
     }
 
 

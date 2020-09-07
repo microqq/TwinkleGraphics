@@ -25,8 +25,7 @@ namespace TwinkleGraphics
 
         template <typename T>
         ReadResult<T> Read(const char *filename, ReaderOption *option);
-
-        ReadResult<TextSource> ReadAsync(const char *filename, ReaderOption *option);
+        ReadResult<TextSource> ReadAsync(std::string filename, ReaderOption *option);
 
         DECLARE_READERID;
     };

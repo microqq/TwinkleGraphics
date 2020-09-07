@@ -17,6 +17,27 @@ namespace TwinkleGraphics
     void ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        auto future = resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
+        resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
     }
+
+
+    void ModelManager::AddTaskFuture(std::future<ReadResult<Model>> future)
+    {
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.emplace_back(std::move(future));
+        }
+    }    
+
+    template <>
+    void ResourceManager::PackedReadTask<ReadResult<Model>, ModelReader>::PushTask()
+    {
+        // typedef Ret(R::*)(const char*, ReaderOption) Func;
+        ResourceManager &resMgr = ResourceMgrInstance();
+        auto future = resMgr.PushTask(&ModelReader::ReadAsync, _reader, _filename, _option);
+        {
+            ModelManager& modelMgr = ModelMgrInstance();
+            modelMgr.AddTaskFuture(std::move(future));
+        }
+    }       
 } // namespace TwinkleGraphics

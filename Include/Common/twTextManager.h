@@ -10,10 +10,17 @@ namespace TwinkleGraphics
     public:
         void ReadTextAsync(const char* filename);
         TextSource::Ptr ReadText(const char* filename);
-        virtual ~TextManager() {}
+        virtual ~TextManager() 
+        {
+            {
+                std::lock_guard<std::mutex> lock(_mutex);
+                _futures.clear();
+            }
+        }
 
         virtual void Update() override {}
 
+        void AddTaskFuture(std::future<ReadResult<TextSource>> future);
     private:
         explicit TextManager()
             : IUpdatable()
@@ -21,8 +28,9 @@ namespace TwinkleGraphics
         {}
 
     private:
-        std::map<uint32, TextSource::Ptr> _textSources;
-
+        std::vector<std::future<ReadResult<TextSource>>> _futures;
+        std::vector<TextSource::Ptr> _texts;
+        std::mutex _mutex;
 
         friend class Singleton<TextManager>;
     };
