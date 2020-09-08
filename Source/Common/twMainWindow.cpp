@@ -212,11 +212,15 @@ void GLFWMainWindow::Initialise()
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    _imguiContext = ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(_window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
 
     io.Fonts->AddFontDefault();
     // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Medium.ttf", 16.0f);
@@ -230,10 +234,6 @@ void GLFWMainWindow::Initialise()
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-
-    // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(_window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
 
 #ifdef _DEBUG
     char *vendor = (char *)glGetString(GL_VENDOR);
@@ -278,11 +278,11 @@ void GLFWMainWindow::Terminate()
 {
     ResourceManager& resMgr = ResourceMgrInstance();
     resMgr.ClearWorkerPool();
-
+    
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    ImGui::DestroyContext(_imguiContext);
 
     glfwDestroyWindow(_window);
     glfwTerminate();

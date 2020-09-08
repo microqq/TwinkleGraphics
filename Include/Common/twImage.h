@@ -17,7 +17,7 @@ typedef vglImageMipData SubImageData;
 class Image;
 class ImageReader;
 
-struct ImageSource : public SourceHandle
+struct ImageSource : public Object
 {
     typedef std::shared_ptr<ImageSource> Ptr;
     typedef std::weak_ptr<ImageSource> WeakPtr;
@@ -50,16 +50,16 @@ class __TWCOMExport ImageReader final : public ResourceReader
 {
 public:
     ImageReader();
+    ImageReader(ReaderOption* option);
     virtual ~ImageReader();
 
     template <typename T>
-    ReadResult<T> Read(const char *filename, ReaderOption *option);
-
-    ReadResult<Image> ReadAsync(std::string filename, ReaderOption *option);
+    ReadResult<T> Read(const char *filename);
+    ReadResult<Image> ReadAsync(std::string filename);
 
 private:
-    ReadResult<Image> ReadDDS(const char *filename, ReaderOption *option);
-    ReadResult<Image> ReadOthers(const char *filename, ReaderOption *option);
+    ReadResult<Image> ReadDDS(const char *filename);
+    ReadResult<Image> ReadOthers(const char *filename);
 
     DECLARE_READERID;
 };

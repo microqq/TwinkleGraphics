@@ -14,7 +14,7 @@ namespace TwinkleGraphics
     struct ModelSource;
     class Model;
 
-    struct ModelSource : public SourceHandle
+    struct ModelSource : public Object
     {
         typedef std::shared_ptr<ModelSource> Ptr;
         typedef std::weak_ptr<ModelSource> WeakPtr;
@@ -27,11 +27,12 @@ namespace TwinkleGraphics
     {
     public:
         ModelReader();
+        ModelReader(ReaderOption* option);
         virtual ~ModelReader();
 
         template <typename T>
-        ReadResult<T> Read(const char *filename, ReaderOption *option);
-        ReadResult<Model> ReadAsync(std::string filename, ReaderOption *option);
+        ReadResult<T> Read(const char *filename);
+        ReadResult<Model> ReadAsync(std::string filename);
 
         Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[]);
         SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);

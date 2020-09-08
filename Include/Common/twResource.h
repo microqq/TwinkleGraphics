@@ -41,38 +41,16 @@ enum class CacheHint
     CACHE_OBJECT = 2
 };
 
-class SourceHandle : public Object
+class __TWCOMExport ReaderOption
 {
 public:
-    typedef std::shared_ptr<SourceHandle> Ptr;
+    ReaderOption();
+    ReaderOption(const ReaderOption& src);
+    const ReaderOption& operator=(const ReaderOption& src) = delete;
+    virtual ~ReaderOption();
 
-    inline virtual CacheId GetCacheId() { return _id; }
-
-private:
-    CacheId _id = 0;
-};
-
-class ReaderOption
-{
-public:
-    ReaderOption()
-        : _cacheHint(CacheHint::CACHE_SOURCE)
-    {}
-    ReaderOption(const ReaderOption& src)
-    {
-        _cacheHint = src._cacheHint;
-    }
-    virtual ~ReaderOption()
-    {}
-
-    const ReaderOption& operator=(const ReaderOption& src)
-    {
-        _cacheHint = src._cacheHint;
-        return *this;
-    }
-
-    inline void SetCacheHint(CacheHint hint) { _cacheHint = hint; }
-    CacheHint GetCacheHint() { return _cacheHint; }
+    void SetCacheHint(CacheHint hint);
+    CacheHint GetCacheHint();
 
 protected:
     CacheHint _cacheHint = CacheHint::CACHE_SOURCE;
@@ -205,49 +183,17 @@ private:
     Status _status;
 };
 
-class ResourceReader
+class ResourceReader : public INonCopyable
 {
 public:
     typedef std::shared_ptr<ResourceReader> Ptr;
 
-    ResourceReader()
-        : _option(nullptr)
-    {}
-    ResourceReader(ReaderOption* option)
-        : _option(option)
-    {}
-    ResourceReader(const ResourceReader& src)
-        : _option(src._option)
-        , _asynchronize(src._asynchronize)
-    {
-
-    }
-    ResourceReader(ResourceReader&& src)
-        : _option(std::move(src._option))
-        , _asynchronize(src._asynchronize)
-    {
-
-    }
-
-    virtual ~ResourceReader() 
-    {
-        SAFE_DEL(_option);
-    }
-
-    template <typename T>
-    void SetReaderOption(T* option) 
-    {
-        if(option == nullptr)
-        {
-            return;
-        }
-
-        _option = new T(*option);
-    }
-    const ReaderOption* const GetReaderOption() {  return this->_option; }
+    virtual ~ResourceReader();
 
 protected:
-    ReaderOption* _option = nullptr;
+    ResourceReader();
+
+protected:
     bool _asynchronize = false;
 };
 
@@ -256,9 +202,6 @@ class ResourceCache
 public:
     typedef std::shared_ptr<ResourceCache> Ptr;
 
-    ResourceCache(SourceHandle::Ptr source)
-        : _sourceCache(source)
-    {}
     ResourceCache(Object::Ptr obj)
         : _objectCache(obj)
     {}
@@ -266,7 +209,6 @@ public:
     {}
 
 private:
-    SourceHandle::Ptr _sourceCache;
     Object::Ptr _objectCache;
 };
 

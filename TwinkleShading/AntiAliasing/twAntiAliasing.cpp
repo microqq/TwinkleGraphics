@@ -294,6 +294,7 @@ void AntiAliasingScene::CreateScene()
     ShaderOption* option = new ShaderOption(
         ShaderOption::OptionData{std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER});
     shaderMgr.ReadShaderAsync("Assets/Shaders/cube.frag", option);
+    SAFE_DEL(option);
 
     ShaderOption shader_info[] = {
         ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},

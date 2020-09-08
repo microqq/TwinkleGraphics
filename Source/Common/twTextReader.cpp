@@ -9,13 +9,18 @@ namespace TwinkleGraphics
         // INITIALISE_READERID
     }
 
+    TextReader::TextReader(ReaderOption *option)
+        : ResourceReader()
+    {
+    }
+
     TextReader::~TextReader()
     {
     }
     DEFINE_READERID(TextReader)
 
     template <>
-    ReadResult<TextSource> TextReader::Read(const char *filename, ReaderOption *option)
+    ReadResult<TextSource> TextReader::Read(const char *filename)
     {
         FILE *fp;
         fp = fopen(filename, "rb");
@@ -47,9 +52,9 @@ namespace TwinkleGraphics
         return ReadResult<TextSource>(ReadResult<TextSource>::Status::FAILED);
     }
 
-    ReadResult<TextSource> TextReader::ReadAsync(std::string filename, ReaderOption *option)
+    ReadResult<TextSource> TextReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-        return Read<TextSource>(filename.c_str(), option);
+        return Read<TextSource>(filename.c_str());
     }
 } // namespace TwinkleGraphics

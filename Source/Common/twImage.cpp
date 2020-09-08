@@ -32,9 +32,19 @@ namespace TwinkleGraphics
 	}
 
 	ImageReader::ImageReader()
+		: ResourceReader()
 	{
 		// INITIALISE_READERID
 	}
+
+    ImageReader::ImageReader(ReaderOption* option)
+        : ResourceReader()
+    {
+        if(option != nullptr)
+        {
+        }
+    }
+
 	ImageReader::~ImageReader()
 	{
 	}
@@ -42,7 +52,7 @@ namespace TwinkleGraphics
 
 
 	template <>
-	ReadResult<Image> ImageReader::Read<Image>(const char *filename, ReaderOption *option)
+	ReadResult<Image> ImageReader::Read<Image>(const char *filename)
 	{
 		//image format
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -57,21 +67,21 @@ namespace TwinkleGraphics
 
 		if (fif == FIF_DDS)
 		{
-			return ReadDDS(filename, option);
+			return ReadDDS(filename);
 		}
 		else
 		{
-			return ReadOthers(filename, option);
+			return ReadOthers(filename);
 		}
 	}
 
-    ReadResult<Image> ImageReader::ReadAsync(std::string filename, ReaderOption *option)
+    ReadResult<Image> ImageReader::ReadAsync(std::string filename)
 	{
         _asynchronize = true;
-		return Read<Image>(filename.c_str(), option);
+		return Read<Image>(filename.c_str());
 	}
 
-	ReadResult<Image> ImageReader::ReadDDS(const char *filename, ReaderOption *option)
+	ReadResult<Image> ImageReader::ReadDDS(const char *filename)
 	{
 		vglImageData data;
 		if (vglLoadDDS(filename, &data))
@@ -86,7 +96,7 @@ namespace TwinkleGraphics
 		return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 	}
 
-	ReadResult<Image> ImageReader::ReadOthers(const char *filename, ReaderOption *option)
+	ReadResult<Image> ImageReader::ReadOthers(const char *filename)
 	{
 		//image format
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;

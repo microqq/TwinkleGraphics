@@ -21,11 +21,12 @@ namespace TwinkleGraphics
         typedef std::shared_ptr<TextReader> Ptr;
 
         TextReader();
+        TextReader(ReaderOption *option);
         virtual ~TextReader();
 
         template <typename T>
-        ReadResult<T> Read(const char *filename, ReaderOption *option);
-        ReadResult<TextSource> ReadAsync(std::string filename, ReaderOption *option);
+        ReadResult<T> Read(const char *filename);
+        ReadResult<TextSource> ReadAsync(std::string filename);
 
         DECLARE_READERID;
     };

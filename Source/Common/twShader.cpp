@@ -8,6 +8,42 @@
 
 namespace TwinkleGraphics
 {
+    ShaderOption::ShaderOption(const OptionData &data)
+        : ReaderOption()
+    {
+        _optionData.filename = data.filename;
+        _optionData.type = data.type;
+        _optionData.numMacros = data.numMacros;
+        if (data.numMacros > 0)
+        {
+            _optionData.macros = new char *[data.numMacros];
+        }
+        for (uint i = 0; i < data.numMacros; i++)
+        {
+            _optionData.macros[i] = data.macros[i];
+        }
+    }
+
+    ShaderOption::ShaderOption(const ShaderOption &src)
+        : ReaderOption(src)
+    {
+        _optionData.filename = src._optionData.filename;
+        _optionData.type = src._optionData.type;
+        _optionData.numMacros = src._optionData.numMacros;
+        if (_optionData.numMacros > 0)
+        {
+            _optionData.macros = new char *[_optionData.numMacros];
+        }
+        for (uint i = 0; i < _optionData.numMacros; i++)
+        {
+            _optionData.macros[i] = src._optionData.macros[i];
+        }
+    }
+
+    ShaderOption::~ShaderOption()
+    {
+        SAFE_DEL(_optionData.macros);
+    }
 
     Shader::Shader(ShaderType type, ShaderSource::Ptr source)
         : Object()
@@ -305,6 +341,20 @@ namespace TwinkleGraphics
         }
     }
 
+    ShaderProgramUse::ShaderProgramUse(ShaderProgram::Ptr program)
+    {
+        if (program != nullptr)
+        {
+            const RenderResourceHandle &res = program->GetRenderResource();
+            glUseProgram(res.id);
+        }
+    }
+
+    ShaderProgramUse::~ShaderProgramUse()
+    {
+        glUseProgram(0);
+    }
+
     /**
  * @brief Construct a new Shader Program:: Shader Program object
  * 
@@ -448,6 +498,19 @@ namespace TwinkleGraphics
     {
         // INITIALISE_READERID
     }
+    
+    ShaderReader::ShaderReader(ReaderOption* option)
+        : ResourceReader()
+    {
+        if(option != nullptr)
+        {
+            ShaderOption* srcOption = dynamic_cast<ShaderOption*>(option);
+            if(srcOption != nullptr)
+            {
+                _option = new ShaderOption(*srcOption);
+            }
+        }
+    }
 
     ShaderReader::~ShaderReader()
     {
@@ -463,7 +526,7 @@ namespace TwinkleGraphics
      * @return ReadResult<Shader::Ptr> 
      */
     template <>
-    ReadResult<Shader> ShaderReader::Read<Shader>(const char *filename, ReaderOption *option)
+    ReadResult<Shader> ShaderReader::Read<Shader>(const char *filename)
     {
         FILE *fp;
         fp = fopen(filename, "rb");
@@ -488,11 +551,8 @@ namespace TwinkleGraphics
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
-            ShaderOption* soption = dynamic_cast<ShaderOption*>(option);
-            this->SetReaderOption<ShaderOption>(soption);
-
-            Shader::Ptr sharedShader = std::make_shared<Shader>(soption->optionData.type, sourcePtr);
-            sharedShader->SetDefineMacros(const_cast<const char**>(soption->optionData.macros), soption->optionData.numMacros);
+            Shader::Ptr sharedShader = std::make_shared<Shader>(_option->_optionData.type, sourcePtr);
+            sharedShader->SetDefineMacros(const_cast<const char**>(_option->_optionData.macros), _option->_optionData.numMacros);
 
             if(!_asynchronize)
             {
@@ -500,6 +560,7 @@ namespace TwinkleGraphics
                 if (!(sharedShader->Compile()))
                 {
                     ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
+                    result.AddFailedFunc(&ShaderReader::OnFailed, this);
                     return result;
                 }
             }
@@ -513,17 +574,31 @@ namespace TwinkleGraphics
 #ifdef _DEBUG
             Console::LogError("Shader: ShaderReader open shader file ", filename, " failed\n");
 #endif
-            return ReadResult<Shader>(ReadResult<Shader>::Status::FAILED);
+
+            ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
+            result.AddFailedFunc(&ShaderReader::OnFailed, this);
+            return result;
         }
 
         return ReadResult<Shader>();
     }
 
-    ReadResult<Shader> ShaderReader::ReadAsync(std::string filename, ReaderOption *option)
+    ReadResult<Shader> ShaderReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-        return Read<Shader>(filename.c_str(), option);
+        return Read<Shader>(filename.c_str());
     }
 
+    void ShaderReader::OnSuccess(Object::Ptr obj)
+    {
+        Shader *shader = dynamic_cast<Shader *>(obj.get());
+        if (shader != nullptr)
+        {
+            shader->SetupCompile();
+            shader->Compile();
+        }
+    }
+
+    void ShaderReader::OnFailed() {}
 
 } // namespace TwinkleGraphics

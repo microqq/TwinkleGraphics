@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 
+#include "imgui.h"
 #include "twView.h"
 #include <glfw/glfw3.h>
 
@@ -343,7 +344,8 @@ private:
 
 private:
     std::vector<IMGUI_FUNC>  _imguiFuncs;
-    GLFWwindow* _window;
+    GLFWwindow* _window = nullptr;
+    ImGuiContext* _imguiContext = nullptr;
 };
 } // namespace TwinkleGraphics
 

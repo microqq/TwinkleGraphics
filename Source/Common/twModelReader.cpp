@@ -10,8 +10,14 @@
 namespace TwinkleGraphics
 {
     ModelReader::ModelReader()
+        : ResourceReader()
     {
         // INITIALISE_READERID
+    }
+
+    ModelReader::ModelReader(ReaderOption *option)
+        : ResourceReader()
+    {
     }
 
     ModelReader::~ModelReader()
@@ -23,7 +29,7 @@ namespace TwinkleGraphics
      * 
      */
     template <>
-    ReadResult<Model> ModelReader::Read<Model>(const char *filename, ReaderOption *option)
+    ReadResult<Model> ModelReader::Read<Model>(const char *filename)
     {
         // https://learnopengl.com/
         Assimp::Importer importer;
@@ -49,10 +55,10 @@ namespace TwinkleGraphics
         return ReadResult<Model>(model, ReadResult<Model>::Status::SUCCESS);
     }
 
-    ReadResult<Model> ModelReader::ReadAsync(std::string filename, ReaderOption *option)
+    ReadResult<Model> ModelReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-        return Read<Model>(filename.c_str(), option);
+        return Read<Model>(filename.c_str());
     }
 
     /**

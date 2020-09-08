@@ -47,17 +47,17 @@ namespace TwinkleGraphics
             R *r = nullptr;
             if (reader != nullptr)
             {
-                r = new (reader.get()) R(/*std::forward<Args>(args)...*/);
+                r = new (reader.get()) R(option/*std::forward<Args>(args)...*/);
                 reader.reset(r);
             }
             else
             {
-                r = new R(/*std::forward<Args>(args)...*/);
+                r = new R(option/*std::forward<Args>(args)...*/);
                 reader.reset(r);
             }
 
             // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-            return r->template Read<T>(filename, option);
+            return r->template Read<T>(filename);
         }
 
         template <class R, class T, class... Args>
@@ -71,12 +71,12 @@ namespace TwinkleGraphics
             R *r = nullptr;
             if (reader != nullptr)
             {
-                r = new (reader.get()) R(/*std::forward<Args>(args)...*/);
+                r = new (reader.get()) R(option);
                 reader.reset(r);
             }
             else
             {
-                r = new R(/*std::forward<Args>(args)...*/);
+                r = new R(option);
                 reader.reset(r);
             }
 
@@ -85,7 +85,6 @@ namespace TwinkleGraphics
 
             packedReadTaskPtr->_filename = std::string(filename);
             packedReadTaskPtr->_reader = r;
-            packedReadTaskPtr->_option = option;
             _taskQueue.Push(packedReadTaskPtr);
 
             // auto future = _workerPool.PushTask(&R::ReadAsync, r, filename, option);
@@ -170,14 +169,12 @@ namespace TwinkleGraphics
             virtual ~PackedReadTask()
             {
                 _reader = nullptr;
-                _option = nullptr;
             }
 
             virtual void PushTask() override;
 
             std::string _filename;
             R* _reader;
-            ReaderOption* _option;
         };
         TSQueue<IPackedReadTask::Ptr> _taskQueue;
 

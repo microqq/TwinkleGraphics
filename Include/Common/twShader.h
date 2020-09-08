@@ -21,6 +21,7 @@ namespace TwinkleGraphics
     class ShaderResource;
     class ShaderOption;
     class ShaderReader;
+    class ShaderManager;
 
     enum class ShaderType
     {
@@ -32,7 +33,7 @@ namespace TwinkleGraphics
         COMPUTE_SHADER = GL_COMPUTE_SHADER
     };
 
-    class ShaderOption final : public ReaderOption
+    class __TWCOMExport ShaderOption final : public ReaderOption
     {
     public:
         struct OptionData
@@ -43,62 +44,16 @@ namespace TwinkleGraphics
             char **macros = nullptr;
         };
            
-        ShaderOption(const OptionData& data)
-            : ReaderOption()
-            , optionData(data)
-        {
-            if(data.numMacros > 0)
-            {
-                optionData.macros = new char*[data.numMacros];
-            }
-            for(uint i = 0; i < data.numMacros; i++)
-            {
-                optionData.macros[i] = data.macros[i];
-            }
-        }
-        ShaderOption(const ShaderOption &src)
-            : ReaderOption(src)
-        {   
-            optionData.filename = src.optionData.filename;
-            optionData.type = src.optionData.type;
-            optionData.numMacros = src.optionData.numMacros;
-            if(optionData.numMacros > 0)
-            {
-                optionData.macros = new char*[optionData.numMacros];
-            }
-            for(uint i = 0; i < optionData.numMacros; i++)
-            {
-                optionData.macros[i] = src.optionData.macros[i];
-            }
-        }
+        ShaderOption(const OptionData& data);
+        ShaderOption(const ShaderOption &src);
+        const ShaderOption &operator=(const ShaderOption &src) = delete;
+        virtual ~ShaderOption();
 
-        const ShaderOption &operator=(const ShaderOption &src)
-        {
-            _cacheHint = src._cacheHint;
-
-            optionData.filename = src.optionData.filename;
-            optionData.type = src.optionData.type;
-            if(optionData.numMacros > 0)
-            {
-                optionData.macros = new char*[optionData.numMacros];
-            }
-            for(uint i = 0; i < optionData.numMacros; i++)
-            {
-                optionData.macros[i] = src.optionData.macros[i];
-            }
-
-            return *this;
-        }
-
-
-        virtual ~ShaderOption()
-        {
-            SAFE_DEL(optionData.macros);
-        }
-
-        OptionData optionData; 
+    private:
+        OptionData _optionData;
 
         friend class ShaderReader;
+        friend class ShaderManager;
     };
 
     typedef TextSource ShaderSource;
@@ -175,49 +130,32 @@ namespace TwinkleGraphics
         friend class ShaderManager;
     };
 
-    class ShaderProgramUse
+    class __TWCOMExport ShaderProgramUse
     {
     public:
-        ShaderProgramUse(ShaderProgram::Ptr program)
-        {
-            if (program != nullptr)
-            {
-                const RenderResourceHandle &res = program->GetRenderResource();
-                glUseProgram(res.id);
-            }
-        }
-
-        ~ShaderProgramUse()
-        {
-            glUseProgram(0);
-        }
+        ShaderProgramUse(ShaderProgram::Ptr program);
+        ~ShaderProgramUse();
     };
 
 
-    class ShaderReader : public ResourceReader
+    class __TWCOMExport ShaderReader : public ResourceReader
     {
     public:
         ShaderReader();
+        ShaderReader(ReaderOption* option);
         virtual ~ShaderReader();
 
         template <typename T>
-        ReadResult<T> Read(const char *filename, ReaderOption *option);
-        ReadResult<Shader> ReadAsync(std::string filename, ReaderOption *option);
+        ReadResult<T> Read(const char *filename);
+        ReadResult<Shader> ReadAsync(std::string filename);
 
-        void OnSuccess(Object::Ptr obj)
-        {
-            Shader* shader = dynamic_cast<Shader*>(obj.get());
-            if(shader != nullptr)
-            {
-                shader->SetupCompile();
-                shader->Compile();
-            }
-        }
-
-        void OnFailed()
-        {}
+        void OnSuccess(Object::Ptr obj);
+        void OnFailed();
 
         DECLARE_READERID;
+
+    private:
+        ShaderOption* _option = nullptr;
     };
 
 

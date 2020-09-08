@@ -68,7 +68,7 @@ namespace TwinkleGraphics
         Shader::Ptr* shaders = new Shader::Ptr[num];
         for (int i = 0; i < num; i++)
         {
-            Shader::Ptr shader = ReadShader(options[i].optionData.filename.c_str(), &options[i]);
+            Shader::Ptr shader = ReadShader(options[i]._optionData.filename.c_str(), &options[i]);
             if(shader != nullptr)
             {
                 shaders[i] = shader;
@@ -97,7 +97,7 @@ namespace TwinkleGraphics
     {
         for(int i = 0; i < num; i++)
         {
-            ReadShaderAsync(options[i].optionData.filename.c_str(), &options[i]);
+            ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
         }
     }    
 
@@ -114,11 +114,11 @@ namespace TwinkleGraphics
     {
         // typedef Ret(R::*)(const char*, ReaderOption) Func;
         ResourceManager &resMgr = ResourceMgrInstance();
-        auto future = resMgr.PushTask(&ShaderReader::ReadAsync, _reader, _filename, _option);
+        auto future = resMgr.PushTask(&ShaderReader::ReadAsync, _reader, _filename);
         {
             ShaderManager& shaderMgr = ShaderMgrInstance();
             shaderMgr.AddTaskFuture(std::move(future));
-        }        
+        }
     }
 
 } // namespace TwinkleGraphics
