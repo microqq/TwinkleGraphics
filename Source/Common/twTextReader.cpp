@@ -19,7 +19,6 @@ namespace TwinkleGraphics
     }
     DEFINE_READERID(TextReader)
 
-    template <>
     ReadResult<TextSource> TextReader::Read(const char *filename)
     {
         FILE *fp;
@@ -55,6 +54,6 @@ namespace TwinkleGraphics
     ReadResult<TextSource> TextReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-        return Read<TextSource>(filename.c_str());
+        return Read(filename.c_str());
     }
 } // namespace TwinkleGraphics

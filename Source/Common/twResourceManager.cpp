@@ -3,13 +3,27 @@
 
 namespace TwinkleGraphics
 {
-    ResourceManager& ResourceMgrInstance() { return Singleton<ResourceManager>::Instance(); }
+    ResourceManager &ResourceMgrInstance() { return Singleton<ResourceManager>::Instance(); }
 
-    // template <typename Ret, typename R>
-    // void ResourceManager::PackedReadTask<Ret, R>::PushTask()
-    // {
-    //     // typedef Ret(R::*)(const char*, ReaderOption) Func;
-    //     ResourceManager &resMgr = ResourceMgrInstance();
-    //     auto future = resMgr.PushTask(&R::ReadAsync, _reader, _filename.c_str(), _option);
-    // }
+    ResourceManager::~ResourceManager()
+    {
+        ClearWorkerPool();
+        _idleReaders.clear();
+        _objectCacheMap.clear();
+    }
+
+    void ResourceManager::Update()
+    {
+        IPackedReadTask::Ptr packedTask;
+        while (_taskQueue.Pop(packedTask))
+        {
+            packedTask->PushTask();
+        }
+    }
+
+    void ResourceManager::ClearWorkerPool()
+    {
+        _workerPool.Stop(true);
+    }
+
 } // namespace TwinkleGraphics

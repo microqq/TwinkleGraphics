@@ -51,8 +51,7 @@ namespace TwinkleGraphics
 	DEFINE_READERID(ImageReader)
 
 
-	template <>
-	ReadResult<Image> ImageReader::Read<Image>(const char *filename)
+	ReadResult<Image> ImageReader::Read(const char *filename)
 	{
 		//image format
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -78,7 +77,7 @@ namespace TwinkleGraphics
     ReadResult<Image> ImageReader::ReadAsync(std::string filename)
 	{
         _asynchronize = true;
-		return Read<Image>(filename.c_str());
+		return Read(filename.c_str());
 	}
 
 	ReadResult<Image> ImageReader::ReadDDS(const char *filename)

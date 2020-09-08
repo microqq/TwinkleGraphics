@@ -30,8 +30,7 @@ namespace TwinkleGraphics
         ModelReader(ReaderOption* option);
         virtual ~ModelReader();
 
-        template <typename T>
-        ReadResult<T> Read(const char *filename);
+        ReadResult<Model> Read(const char *filename);
         ReadResult<Model> ReadAsync(std::string filename);
 
         Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[]);

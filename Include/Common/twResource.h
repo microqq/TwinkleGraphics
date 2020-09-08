@@ -41,7 +41,7 @@ enum class CacheHint
     CACHE_OBJECT = 2
 };
 
-class __TWCOMExport ReaderOption
+class ReaderOption
 {
 public:
     ReaderOption();
@@ -183,7 +183,7 @@ private:
     Status _status;
 };
 
-class ResourceReader : public INonCopyable
+class ResourceReader
 {
 public:
     typedef std::shared_ptr<ResourceReader> Ptr;

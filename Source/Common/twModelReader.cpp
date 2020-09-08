@@ -28,8 +28,7 @@ namespace TwinkleGraphics
     /**
      * 
      */
-    template <>
-    ReadResult<Model> ModelReader::Read<Model>(const char *filename)
+    ReadResult<Model> ModelReader::Read(const char *filename)
     {
         // https://learnopengl.com/
         Assimp::Importer importer;
@@ -58,7 +57,7 @@ namespace TwinkleGraphics
     ReadResult<Model> ModelReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-        return Read<Model>(filename.c_str());
+        return Read(filename.c_str());
     }
 
     /**

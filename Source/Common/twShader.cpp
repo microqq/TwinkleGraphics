@@ -525,8 +525,7 @@ namespace TwinkleGraphics
      * @param option 
      * @return ReadResult<Shader::Ptr> 
      */
-    template <>
-    ReadResult<Shader> ShaderReader::Read<Shader>(const char *filename)
+    ReadResult<Shader> ShaderReader::Read(const char *filename)
     {
         FILE *fp;
         fp = fopen(filename, "rb");
@@ -586,7 +585,7 @@ namespace TwinkleGraphics
     ReadResult<Shader> ShaderReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-        return Read<Shader>(filename.c_str());
+        return Read(filename.c_str());
     }
 
     void ShaderReader::OnSuccess(Object::Ptr obj)

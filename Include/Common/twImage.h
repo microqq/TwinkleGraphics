@@ -53,8 +53,7 @@ public:
     ImageReader(ReaderOption* option);
     virtual ~ImageReader();
 
-    template <typename T>
-    ReadResult<T> Read(const char *filename);
+    ReadResult<Image> Read(const char *filename);
     ReadResult<Image> ReadAsync(std::string filename);
 
 private:

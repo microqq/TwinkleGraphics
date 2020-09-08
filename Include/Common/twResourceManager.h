@@ -11,21 +11,8 @@ namespace TwinkleGraphics
     class __COMSINGLETONExport ResourceManager : public IUpdatable, public INonCopyable
     {
     public:
-        virtual ~ResourceManager()
-        {
-            ClearWorkerPool();
-            _idleReaders.clear();
-            _objectCacheMap.clear();
-        }
-
-        virtual void Update() override
-        {
-            IPackedReadTask::Ptr packedTask;
-            while(_taskQueue.Pop(packedTask))
-            {
-                packedTask->PushTask();
-            }
-        }
+        virtual ~ResourceManager();
+        virtual void Update() override;
 
         /**
      * @brief 
@@ -47,23 +34,23 @@ namespace TwinkleGraphics
             R *r = nullptr;
             if (reader != nullptr)
             {
-                r = new (reader.get()) R(option/*std::forward<Args>(args)...*/);
+                r = new (reader.get()) R(option /*std::forward<Args>(args)...*/);
                 reader.reset(r);
             }
             else
             {
-                r = new R(option/*std::forward<Args>(args)...*/);
+                r = new R(option /*std::forward<Args>(args)...*/);
                 reader.reset(r);
             }
 
             // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-            return r->template Read<T>(filename);
+            return r->template Read(filename);
         }
 
         template <class R, class T, class... Args>
         void ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
         // auto ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
-            //-> std::future<ReadResult<T>>
+        //-> std::future<ReadResult<T>>
         {
             // get GUID with filename, read from cache
 
@@ -79,8 +66,9 @@ namespace TwinkleGraphics
                 r = new R(option);
                 reader.reset(r);
             }
+            _loadingReaders.insert(std::make_pair(R::ID, reader));
 
-            typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr = 
+            typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
                 std::make_shared<PackedReadTask<ReadResult<T>, R>>();
 
             packedReadTaskPtr->_filename = std::string(filename);
@@ -103,16 +91,11 @@ namespace TwinkleGraphics
             }
         }
 
-        void ClearWorkerPool()
-        {
-            _workerPool.Stop(true);
-        }
+        void ClearWorkerPool();
 
     private:
         explicit ResourceManager()
-            : IUpdatable()
-            , INonCopyable()
-            , _workerPool(2)
+            : IUpdatable(), INonCopyable(), _workerPool(2)
         {
         }
 
@@ -136,10 +119,10 @@ namespace TwinkleGraphics
         }
 
         template <class Func, class... Args>
-        auto PushTask(Func&& f, Args&&... args)
+        auto PushTask(Func &&f, Args &&... args)
             -> std::future<typename std::result_of<Func(Args...)>::type>
         {
-            auto future = _workerPool.PushTask(f, args...);
+            auto future = _workerPool.PushTask(std::forward<Func>(f), std::forward<Args>(args)...);
             return future;
         }
 
@@ -158,7 +141,7 @@ namespace TwinkleGraphics
         };
 
         template <typename Ret, typename R>
-        class PackedReadTask : public IPackedReadTask
+        class __COMSINGLETONExport PackedReadTask : public IPackedReadTask
         {
         public:
             typedef std::shared_ptr<PackedReadTask> Ptr;
@@ -174,17 +157,17 @@ namespace TwinkleGraphics
             virtual void PushTask() override;
 
             std::string _filename;
-            R* _reader;
+            R *_reader;
         };
         TSQueue<IPackedReadTask::Ptr> _taskQueue;
 
         MultCacheMap _objectCacheMap;
         UnorderedCacheMap _sourceCacheMap;
 
-        // MultMapReaders _loadingReaders;
+        MultMapReaders _loadingReaders;
         MultMapReaders _idleReaders;
 
-        // std::mutex _loadingReaderMutex;
+        std::mutex _loadingReaderMutex;
         std::mutex _idleReaderMutex;
 
         WorkerPool _workerPool;
@@ -192,12 +175,11 @@ namespace TwinkleGraphics
         friend class Singleton<ResourceManager>;
     };
 
-
 #ifdef __cplusplus
     extern "C"
     {
 #endif
-        __COMSINGLETONExport ResourceManager& ResourceMgrInstance();
+        __COMSINGLETONExport ResourceManager &ResourceMgrInstance();
 #ifdef __cplusplus
     }
 #endif
