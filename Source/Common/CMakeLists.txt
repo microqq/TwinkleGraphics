@@ -65,6 +65,11 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+    set_target_properties(twCommon PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+endif()
+
 # target_compile_definitions(twCommon PUBLIC FREEIMAGE_LIB=1)
 
 # #CMake Error: Cannot determine link language for target "twCommon"
@@ -72,6 +77,10 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_link_libraries(twCommon -lglfw -lGL -lGLEW imgui vermilion)
     target_link_libraries(twCommon ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage/linux/libfreeimage-3.18.0.so)
+endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+    target_link_libraries(twCommon -lglfw -lGLEW -lfreeimage -lassimp imgui vermilion)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")

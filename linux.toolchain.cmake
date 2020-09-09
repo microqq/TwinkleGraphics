@@ -2,7 +2,7 @@
 # install glew & glfw
 # install clang(all key package)
 # mkdir build & cd build
-# cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG=ON -DCMAKE_TOOLCHAIN_FILE=../linux.toolchain.cmake ..
+# cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DEBUG=ON -DCMAKE_TOOLCHAIN_FILE=../linux.toolchain.cmake ..
 
 cmake_minimum_required( VERSION 2.6.3 )
 SET(CMAKE_SYSTEM_NAME Linux )

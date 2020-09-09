@@ -43,7 +43,7 @@ SOFTWARE.
 #ifndef PATH_MAX
 #define PATH_MAX 260
 #endif
-#elif defined(LINUX) or defined(APPLE)
+#elif defined(__linux__) or defined(__APPLE__)
 #define stricmp strcasecmp
 #include <sys/types.h>
 #include <dirent.h>
@@ -1782,7 +1782,7 @@ namespace igfd
 		{
 #ifdef _WIN32
 			size_t numchar = GetFullPathNameA(path.c_str(), PATH_MAX - 1, real_path, nullptr);
-#elif defined(LINUX) or defined(APPLE)
+#elif defined(__linux__) or defined(__APPLE__)
 			char *numchar = realpath(path.c_str(), real_path);
 #endif
 			if (numchar != 0)

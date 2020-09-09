@@ -10,7 +10,7 @@
 #include <string>
 #include <map>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #include <dlfcn.h>
 #elif _WIN32
 #include <windows.h>
@@ -18,7 +18,7 @@
 
 #include "twCommon.h"
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #    define DYNLIB_HANDLE void*
 #    define DYNLIB_LOAD( a ) dlopen( a, RTLD_LAZY | RTLD_GLOBAL)
 #    define DYNLIB_GETSYM( a, b ) dlsym( a, b )

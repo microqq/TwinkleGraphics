@@ -31,7 +31,7 @@ void KeyCallback(GLFWwindow* window, int, int, int, int);
 int main(int, char **)
 {
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     PluginPaths.insert(MapPlugins::value_type("1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.so"));
     PluginPaths.insert(MapPlugins::value_type("2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.so"));
     PluginPaths.insert(MapPlugins::value_type("3.TextureExplore", "Output/libs/twShading/libtwTextureExplore.so"));

@@ -10,7 +10,7 @@
 namespace TwinkleGraphics
 {
 
-    class __EVENTExport Event : public Object
+    class __TWEVENTExport Event : public Object
     {
     public:
         typedef std::shared_ptr<Event> Ptr;

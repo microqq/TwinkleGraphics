@@ -27,8 +27,28 @@
  * @brief Refer to ogre plugin system. (https://ogrecave.github.io/ogre/)
  * 
  */
-#if defined __linux__
-  #define __TWCOMExport __attribute__ ((__visibility__("default")))
+#if defined(__linux__) || defined(__APPLE__)
+    // #define __TWCOMExport __attribute__ ((__visibility__("default")))
+    // #ifdef EXPORT_COMDLL
+        #define __TWCOMExport __attribute__ ((__visibility__("default")))
+    // #endif
+
+    // #ifdef EXPORT_UIDLL
+        #define __TWUIExport __attribute__ ((__visibility__("default")))
+    // #endif
+
+    // #ifdef EXPORT_UTILDLL
+        #define __TWUTILExport __attribute__ ((__visibility__("default")))
+    // #endif
+
+    // #ifdef EXPORT_PLUGIN
+        #define __TWPLUGINExport __attribute__ ((__visibility__("default")))
+    // #endif
+
+    // #ifdef EXPORT_EVENT
+        #define __TWEVENTExport __attribute__ ((__visibility__("default")))
+    // #endif
+
 #elif defined _WIN32
     #ifdef EXPORT_COMDLL
         #define __TWCOMExport __declspec(dllexport)
@@ -55,9 +75,9 @@
     #endif
 
     #ifdef EXPORT_EVENT
-        #define __EVENTExport __declspec(dllexport)
+        #define __TWEVENTExport __declspec(dllexport)
     #else
-        #define __EVENTExport __declspec(dllimport)
+        #define __TWEVENTExport __declspec(dllimport)
     #endif
 
 #endif

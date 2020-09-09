@@ -25,7 +25,7 @@ namespace TwinkleGraphics
 #ifdef _WIN32
                 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
                 SetConsoleTextAttribute(hStdout, (WORD)c);
-#elif defined __linux__
+#elif defined __linux__ ||defined(__APPLE__)
 
 #endif
             }

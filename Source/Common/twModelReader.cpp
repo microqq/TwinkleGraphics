@@ -45,7 +45,8 @@ namespace TwinkleGraphics
         // retrieve the directory path of the filepath
         std::string directory = path.substr(0, path.find_last_of('\\'));
 
-        Material::Ptr vectorMaterials[scene->mNumMaterials] = {nullptr};
+        // Material::Ptr vectorMaterials[scene->mNumMaterials] = {nullptr};
+        Material::Ptr vectorMaterials[30] = {nullptr};
 
         // process ASSIMP's root node recursively
         Geometry::Ptr rootGeom = ProcessNode(scene->mRootNode, scene, directory, model, vectorMaterials);

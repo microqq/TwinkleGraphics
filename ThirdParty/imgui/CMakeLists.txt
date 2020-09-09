@@ -27,6 +27,18 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+    set_target_properties(imgui PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+
+    target_link_libraries(imgui -lGLEW -lglfw
+        "-framework OpenGL"
+        "-framework IOKit"
+        "-framework CoreVideo"
+        "-framework Cocoa"
+    ) 
+endif()
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(imgui OpenGL32.lib)
     target_link_libraries(imgui ${GLEWLIBDIR}/glew32.lib)

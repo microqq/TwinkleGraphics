@@ -247,8 +247,8 @@ void TextureExploreView::Advance(float64 delta_time)
 
 #ifdef _WIN32
     _updateTime += 0.02f;
-#elif defined __linux__
-    _update_time += 0.0002f;
+#elif defined(__linux__) || defined(__APPLE__)
+    _updateTime += 0.0002f;
 #endif
 }
 

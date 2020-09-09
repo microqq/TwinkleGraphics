@@ -10,7 +10,7 @@ namespace TwinkleGraphics
 {
     typedef unsigned int EventId;
 
-    class __EVENTExport BaseEventArgs : public Object
+    class __TWEVENTExport BaseEventArgs : public Object
     {
     public:
         typedef std::shared_ptr<BaseEventArgs> Ptr;

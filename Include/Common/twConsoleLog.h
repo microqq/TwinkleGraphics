@@ -23,7 +23,7 @@ namespace TwinkleGraphics
             YELLOW = 14,
             WHITE = 15
         };
-#elif defined __linux__
+#elif defined(__linux__) || defined(__APPLE__)
         // http://www.cplusplus.com/forum/unices/36461/
         enum class Color
         {

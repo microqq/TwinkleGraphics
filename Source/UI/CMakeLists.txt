@@ -26,9 +26,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+    set_target_properties(twUiUtil PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(twUiUtil imguiFileDialog)
-endif()
+target_link_libraries(twUiUtil imguiFileDialog)

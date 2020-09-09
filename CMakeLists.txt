@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(TwinkleGraphics VERSION 0.1.0)
 
-option(USE_DEBUG "Enter debug mode" OFF)
+option(ENABLE_DEBUG "Enter debug mode" OFF)
 option(ENABLE_TEMPORARY "Enter debug mode" OFF)
 Option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
 
@@ -9,7 +9,7 @@ if(ENALBE_EVENT_MULTTHREAD)
     add_definitions(-D_EVT_MULTTHREAD)
 endif()
 
-if(USE_DEBUG)
+if(ENABLE_DEBUG)
     add_definitions(-D_DEBUG)
 endif()
 
@@ -36,7 +36,13 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     SET(GTESTINCLUDEDIR $ENV{GTESTINCLUDE})
     SET(GTESTLIBDIR $ENV{GTESTLIB})
     set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+
+    include_directories([AFTER|BEFORE] [SYSTEM]
+        ${PROJECT_SOURCE_DIR}/ThirdParty/dirent/include
+    )
+
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
@@ -44,7 +50,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 # including path
 include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/ThirdParty
-    ${PROJECT_SOURCE_DIR}/ThirdParty/dirent/include
     ${PROJECT_SOURCE_DIR}/ThirdParty/vermilion
     ${PROJECT_SOURCE_DIR}/Iinclude/Common
     ${PROJECT_SOURCE_DIR}/Include/UI
@@ -52,6 +57,8 @@ include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/Include/Event
     ${PROJECT_SOURCE_DIR}/TwinkleShading
 )
+
+
 
 # add subdirectory
 add_subdirectory(ThirdParty/imgui)

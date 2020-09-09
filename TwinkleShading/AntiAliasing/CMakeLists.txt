@@ -21,6 +21,12 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+    set_target_properties(twAntiAliasing PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+endif()
+
+
 target_include_directories(twAntiAliasing PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/ImGuiFileDialog
@@ -30,14 +36,7 @@ target_include_directories(twAntiAliasing PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(twAntiAliasing twUtil twUiUtil)
-endif()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(twAntiAliasing twUtil)
-    target_link_libraries(twAntiAliasing twUiUtil)
-endif()
+target_link_libraries(twAntiAliasing twUtil twUiUtil)
 
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 #     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.so)

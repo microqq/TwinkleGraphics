@@ -5,7 +5,7 @@
 
 #include <glew/glew.h>
 //include gl after glew
-#include <GL/gl.h>
+// #include <GL/gl.h>
 
 #include "twCommon.h"
 #include "twRenderTexture.h"

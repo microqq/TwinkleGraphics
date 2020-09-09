@@ -56,7 +56,7 @@ namespace TwinkleGraphics
             if(cache == nullptr)
             {
                 // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-                ReadResult<T> result = r->template Read(filename);
+                ReadResult<T> result = r->Read(filename);
 
                 // add resource cache
                 typename T::Ptr obj = result.GetSharedObject();
@@ -174,7 +174,11 @@ namespace TwinkleGraphics
 
     private:
         typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
+#if defined _WIN32        
         typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
+#elif defined(__linux__) or defined(__APPLE__)
+        typedef std::map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
+#endif
         typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
         typedef ThreadPool WorkerPool;
 

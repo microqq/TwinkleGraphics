@@ -15,7 +15,7 @@ namespace TwinkleGraphics
     typedef RingBuffer<Event> EventQueue;
     typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
 
-    class __EVENTExport EventManager : public IUpdatable, public INonCopyable
+    class __TWEVENTExport EventManager : public IUpdatable, public INonCopyable
     {
     public:
         virtual ~EventManager();
@@ -51,7 +51,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __EVENTExport EventManager& EventMgrInstance();
+        __TWEVENTExport EventManager& EventMgrInstance();
 #ifdef __cplusplus
     }
 #endif    
