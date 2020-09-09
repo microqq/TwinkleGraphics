@@ -7,7 +7,9 @@
 
 namespace TwinkleGraphics
 {
-    class __TWCOMExport ShaderManager : public IUpdatable, public INonCopyable, public IDestroyable
+    class __TWCOMExport ShaderManager : public IUpdatable
+        , public INonCopyable
+        , public IDestroyable
     {
     public:
         virtual ~ShaderManager();
@@ -19,8 +21,10 @@ namespace TwinkleGraphics
 
         void ReadShaderAsync(const char* filename, ShaderOption* option);
         void ReadShadersAsync(ShaderOption options[], int32 num);
-
         void AddTaskFuture(std::future<ReadResult<Shader>> future);
+
+        void OnReadShaderSuccess(Object::Ptr obj);
+        void OnReadShaderFailed();
 
     private:
         explicit ShaderManager();

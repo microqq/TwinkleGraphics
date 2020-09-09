@@ -8,12 +8,18 @@
 
 namespace TwinkleGraphics
 {
-    class __TWCOMExport ResourceManager : public IUpdatable, public INonCopyable, public IDestroyable
+    class __TWCOMExport ResourceManager : public IUpdatable
+        , public INonCopyable
+        , public IDestroyable
     {
     public:
         virtual ~ResourceManager();
         virtual void Update() override;
         virtual void Destroy() override;
+
+        bool AddResourceCache(CacheHint hint, ResourceCache::Ptr cache);
+        bool RemoveResourceCache(ResourceCache::Ptr cache);
+        ResourceCache::Ptr GetResourceCache(CacheHint hint, CacheId id);
 
         /**
      * @brief 
@@ -31,21 +37,40 @@ namespace TwinkleGraphics
         {
             // get GUID with filename, read from cache
 
-            ResourceReader::Ptr reader = PopIdleReader(R::ID);
-            R *r = nullptr;
-            if (reader != nullptr)
+            R* r = GetReader<R>(option);
+
+            // typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
+            //     std::make_shared<PackedReadTask<ReadResult<T>, R>>(false);
+
+            // packedReadTaskPtr->_filename = std::string(filename);
+            // packedReadTaskPtr->_reader = r;
+            // _taskQueue.Push(packedReadTaskPtr);
+
+            CacheId id = CACHEID_FROMSTRING(filename);
+            CacheHint hint = CacheHint::CACHE_OBJECT;
+            if(option != nullptr)
             {
-                r = new (reader.get()) R(option /*std::forward<Args>(args)...*/);
-                reader.reset(r);
+                hint = option->GetCacheHint();
+            }
+            ResourceCache::Ptr cache = GetResourceCache(hint, id);
+            if(cache == nullptr)
+            {
+                // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
+                ReadResult<T> result = r->template Read(filename);
+
+                // add resource cache
+                typename T::Ptr obj = result.GetSharedObject();
+                ResourceCache::Ptr cache = std::make_shared<ResourceCache>(id, obj);
+                AddResourceCache(hint, cache);
+
+                return result;
             }
             else
             {
-                r = new R(option /*std::forward<Args>(args)...*/);
-                reader.reset(r);
+                using Status = typename ReadResult<T>::Status;
+                typename T::Ptr obj = std::dynamic_pointer_cast<T>(cache->GetCachedObject());
+                return ReadResult<T>(nullptr, obj, Status::SUCCESS);
             }
-
-            // http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-            return r->template Read(filename);
         }
 
         template <class R, class T, class... Args>
@@ -55,29 +80,14 @@ namespace TwinkleGraphics
         {
             // get GUID with filename, read from cache
 
-            ResourceReader::Ptr reader = PopIdleReader(R::ID);
-            R *r = nullptr;
-            if (reader != nullptr)
-            {
-                r = new (reader.get()) R(option);
-                reader.reset(r);
-            }
-            else
-            {
-                r = new R(option);
-                reader.reset(r);
-            }
-            _loadingReaders.insert(std::make_pair(R::ID, reader));
+            R* r = GetReader<R>(option);
 
             typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
-                std::make_shared<PackedReadTask<ReadResult<T>, R>>();
+                std::make_shared<PackedReadTask<ReadResult<T>, R>>(true);
 
             packedReadTaskPtr->_filename = std::string(filename);
             packedReadTaskPtr->_reader = r;
             _taskQueue.Push(packedReadTaskPtr);
-
-            // auto future = _workerPool.PushTask(&R::ReadAsync, r, filename, option);
-            // return future;
         }
 
         template <class R>
@@ -96,6 +106,26 @@ namespace TwinkleGraphics
         explicit ResourceManager()
             : IUpdatable(), INonCopyable(), _workerPool(2)
         {
+        }
+
+        template <typename R>
+        R* GetReader(ReaderOption *option)
+        {
+            ResourceReader::Ptr reader = PopIdleReader(R::ID);
+            R *r = nullptr;
+            if (reader != nullptr)
+            {
+                r = new (reader.get()) R(option);
+                reader.reset(r);
+            }
+            else
+            {
+                r = new R(option);
+                reader.reset(r);
+            }
+            PushLoadingReader(R::ID, reader);
+
+            return r;
         }
 
         ResourceReader::Ptr PopIdleReader(ReaderId id)
@@ -117,8 +147,23 @@ namespace TwinkleGraphics
             return nullptr;
         }
 
+        void PushLoadingReader(ReaderId id, ResourceReader::Ptr reader)
+        {
+            std::lock_guard<std::mutex> lock(_loadingReaderMutex);
+            {
+                _loadingReaders.insert(std::make_pair(id, reader));
+            }
+        }
+
         template <class Func, class... Args>
-        auto PushTask(Func &&f, Args &&... args)
+        void PushTask(Func &&f, Args &&... args)
+        {
+            auto read = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
+            read();
+        }
+
+        template <class Func, class... Args>
+        auto PushAsyncTask(Func &&f, Args &&... args)
             -> std::future<typename std::result_of<Func(Args...)>::type>
         {
             auto future = _workerPool.PushTask(std::forward<Func>(f), std::forward<Args>(args)...);
@@ -137,8 +182,14 @@ namespace TwinkleGraphics
         {
         public:
             typedef std::shared_ptr<IPackedReadTask> Ptr;
+            IPackedReadTask(bool async = false)
+                : _asyncRead(async)
+            {}
 
             virtual void PushTask() = 0;
+
+        protected:
+            bool _asyncRead = false;
         };
 
         template <typename Ret, typename R>
@@ -146,8 +197,8 @@ namespace TwinkleGraphics
         {
         public:
             typedef std::shared_ptr<PackedReadTask> Ptr;
-            PackedReadTask()
-                : IPackedReadTask()
+            PackedReadTask(bool async = false)
+                : IPackedReadTask(async)
             {
             }
             virtual ~PackedReadTask()
@@ -162,8 +213,8 @@ namespace TwinkleGraphics
         };
         TSQueue<IPackedReadTask::Ptr> _taskQueue;
 
-        MultCacheMap _objectCacheMap;
-        UnorderedCacheMap _sourceCacheMap;
+        MultCacheMap _sceneObjectsCacheMap;
+        UnorderedCacheMap _objectCacheMap;
 
         MultMapReaders _loadingReaders;
         MultMapReaders _idleReaders;

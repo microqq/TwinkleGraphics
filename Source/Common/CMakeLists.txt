@@ -3,18 +3,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
 OPTION(ENABLE_EXPORT_COMDLL "build common dynamic library" ON)
-option(ENABLE_EXPORT_UTILDLL "build ui library" ON)
-
 if(DEFINE_FREEIMAGE_LIB)
     add_definitions(-DFREEIMAGE_LIB)
 endif()
 
 if(ENABLE_EXPORT_COMDLL)
     add_definitions(-DEXPORT_COMDLL)
-endif()
-
-if(ENABLE_EXPORT_UTILDLL)
-    add_definitions(-DEXPORT_UTILDLL)
 endif()
 
 
@@ -57,10 +51,6 @@ set(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twRingBuffer.cpp
 )
 
-SET(Util_SRC
-    ${CMAKE_CURRENT_LIST_DIR}/twUtil.cpp
-)
-
 add_library(twCommon SHARED ${Common_SRCs})
 target_include_directories(twCommon PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
@@ -72,16 +62,6 @@ target_include_directories(twCommon PUBLIC
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twCommon PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
-endif()
-
-add_library(twUtil SHARED ${Util_SRC})
-target_include_directories(twUtil PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}
-)
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set_target_properties(twUtil PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
@@ -102,5 +82,4 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twCommon ${PROJECT_SOURCE_DIR}/ThirdParty/FreeImage/win/FreeImage.lib)
     target_link_libraries(twCommon imgui)
     target_link_libraries(twCommon vermilion)
-    target_link_libraries(twUtil twCommon)
 endif()

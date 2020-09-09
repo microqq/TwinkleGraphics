@@ -19,6 +19,7 @@
 #define DEFINE_READERID(T) ReaderId T::ID = std::hash<std::string>{}( \
     #T   \
     );
+#define CACHEID_FROMSTRING(STR) std::hash<std::string>{}(STR);
 
 // #define INITIALISE_READERID _id = ID;
 
@@ -36,9 +37,9 @@ typedef std::shared_ptr<ReadFailedCallbackFunc> ReadFailedCallbackFuncPtr;
 
 enum class CacheHint
 {
-    NONE_CACHE = 0,
-    CACHE_SOURCE = 1,
-    CACHE_OBJECT = 2
+    CACHE_NONE = 0,
+    CACHE_OBJECT = 1,
+    CACHE_SCENEOBJECT = 2
 };
 
 class ReaderOption
@@ -97,7 +98,7 @@ public:
 protected:
     std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
     std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
-    CacheHint _cacheHint = CacheHint::CACHE_SOURCE;
+    CacheHint _cacheHint = CacheHint::CACHE_OBJECT;
 };
 
 class ResourceReader
@@ -171,19 +172,32 @@ private:
     Status _status;
 };
 
-class ResourceCache
+class ResourceCache : public INonCopyable
 {
 public:
     typedef std::shared_ptr<ResourceCache> Ptr;
 
-    ResourceCache(Object::Ptr obj)
-        : _objectCache(obj)
+    ResourceCache(CacheId id, Object::Ptr obj)
+        : _cachedObject(obj)
+        , _cacheId(id)
     {}
+
     ~ResourceCache()
     {}
 
+    Object::Ptr GetCachedObject()
+    {
+        return _cachedObject;
+    }
+
+    CacheId GetCacheId() 
+    {
+        return _cacheId;
+    }
+
 private:
-    Object::Ptr _objectCache;
+    Object::Ptr _cachedObject = nullptr;
+    CacheId _cacheId = 0;
 };
 
 

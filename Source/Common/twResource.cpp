@@ -4,7 +4,7 @@
 namespace TwinkleGraphics
 {
     ReaderOption::ReaderOption()
-        : _cacheHint(CacheHint::CACHE_SOURCE)
+        : _cacheHint(CacheHint::CACHE_OBJECT)
         , _successFuncList()
         , _failedFuncList()
     {}
@@ -57,7 +57,10 @@ namespace TwinkleGraphics
 
 
 
-    ResourceReader::~ResourceReader() {}
+    ResourceReader::~ResourceReader() 
+    {
+        _option = nullptr;
+    }
     ResourceReader::ResourceReader() {}
 
     ReaderOption* ResourceReader::GetReaderOption() { return _option; }

@@ -15,7 +15,9 @@ namespace TwinkleGraphics
         std::string content;
     };
 
-    class TextReader : public ResourceReader, public Reference<TextReader>, public INonCopyable
+    class TextReader : public ResourceReader
+        , public Reference<TextReader>
+        , public INonCopyable
     {
     public:
         typedef std::shared_ptr<TextReader> Ptr;

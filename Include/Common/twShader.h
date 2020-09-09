@@ -137,7 +137,9 @@ namespace TwinkleGraphics
         ~ShaderProgramUse();
     };
 
-    class __TWCOMExport ShaderReader : public ResourceReader, public Reference<ShaderReader>, public INonCopyable
+    class __TWCOMExport ShaderReader : public ResourceReader
+        , public Reference<ShaderReader>
+        , public INonCopyable
     {
     public:
         ShaderReader();
@@ -146,9 +148,6 @@ namespace TwinkleGraphics
 
         ReadResult<Shader> Read(const char *filename);
         ReadResult<Shader> ReadAsync(std::string filename);
-
-        void OnSuccess(Object::Ptr obj);
-        void OnFailed();
 
         DECLARE_READERID;
 

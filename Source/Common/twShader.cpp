@@ -569,7 +569,6 @@ namespace TwinkleGraphics
                 }
             }
 
-            _option->AddSuccessFunc(this, &ShaderReader::OnSuccess);
             ReadResult<Shader> result(shared_from_this(), sharedShader, ReadResult<Shader>::Status::SUCCESS);
             return result;
         }
@@ -591,17 +590,5 @@ namespace TwinkleGraphics
         _asynchronize = true;
         return Read(filename.c_str());
     }
-
-    void ShaderReader::OnSuccess(Object::Ptr obj)
-    {
-        Shader *shader = dynamic_cast<Shader *>(obj.get());
-        if (shader != nullptr)
-        {
-            shader->SetupCompile();
-            shader->Compile();
-        }
-    }
-
-    void ShaderReader::OnFailed() {}
 
 } // namespace TwinkleGraphics

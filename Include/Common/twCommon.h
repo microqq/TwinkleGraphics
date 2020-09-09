@@ -30,12 +30,6 @@
 #if defined __linux__
   #define __TWCOMExport __attribute__ ((__visibility__("default")))
 #elif defined _WIN32
-    // #ifdef EXPORT_DLL
-    //     #define __TWCOMExport __declspec(dllexport)
-    // #else
-    //     #define __TWCOMExport __declspec(dllimport)
-    // #endif
-
     #ifdef EXPORT_COMDLL
         #define __TWCOMExport __declspec(dllexport)
     #else

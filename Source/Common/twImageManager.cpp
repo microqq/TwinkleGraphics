@@ -60,10 +60,17 @@ namespace TwinkleGraphics
     {
         // typedef Ret(R::*)(const char*, ReaderOption) Func;
         ResourceManager &resMgr = ResourceMgrInstance();
-        auto future = resMgr.PushTask(&ImageReader::ReadAsync, _reader, _filename);
+		if(_asyncRead)
 		{
-			ImageManager& imgMgr = ImageMgrInstance();
-			imgMgr.AddTaskFuture(std::move(future));
+			auto future = resMgr.PushAsyncTask(&ImageReader::ReadAsync, _reader, _filename);
+			{
+				ImageManager& imgMgr = ImageMgrInstance();
+				imgMgr.AddTaskFuture(std::move(future));
+			}
+		}
+		else
+		{
+			resMgr.PushTask(&ImageReader::Read, _reader, _filename.c_str());
 		}
     }	
 }

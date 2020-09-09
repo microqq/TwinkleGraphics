@@ -5,7 +5,9 @@
 
 namespace TwinkleGraphics
 {
-    class __TWCOMExport ModelManager : public IUpdatable, public INonCopyable, public IDestroyable
+    class __TWCOMExport ModelManager : public IUpdatable
+        , public INonCopyable
+        , public IDestroyable
     {
     public:
         virtual ~ModelManager() 

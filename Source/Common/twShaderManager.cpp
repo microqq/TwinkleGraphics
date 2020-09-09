@@ -25,38 +25,46 @@ namespace TwinkleGraphics
         // try
         {
             using ReadStatus = ReadResult<Shader>::Status;
+            using Future = std::future<ReadResult<Shader>>;
+            
             std::lock_guard<std::mutex> lock(_mutex);
-            for (auto &f : _futures)
-            {
-                if (f.valid() && TaskFinished(f))
-                {
-                    ReadResult<Shader> result = f.get();
-                    ResourceReader::Ptr reader = result.GetReader();
-                    if(reader != nullptr)
-                    {
-                        ReaderOption* option = reader->GetReaderOption();
-                        if(option!= nullptr)
-                        {
-                            Shader::Ptr shader = result.GetSharedObject();
-                            ReadStatus status = result.GetStatus();
-                        
-                            if(ReadStatus::SUCCESS == status)
-                            {
-                                option->OnReadSuccess(shader);
-                            }
-                            else if(ReadStatus::FAILED == status)
-                            {
-                                option->OnReadFailed();
-                            }
-                        }
-                    }
 
-                    _shaders.emplace_back(result.GetSharedObject());
-                }
-                else //loading or wait load?
+            _futures.erase(
+                std::remove_if(_futures.begin(), _futures.end(), [this](Future& future)
                 {
-                }
-            }
+                    bool ret = future.valid() && TaskFinished(future);
+                    if(ret)
+                    {
+                        ReadResult<Shader> result = future.get();
+                        ResourceReader::Ptr reader = result.GetReader();
+                        if(reader != nullptr)
+                        {
+                            // Console::LogWarning("ShaderReader use count: ", reader.use_count(), " \n");
+                            ReaderOption* option = reader->GetReaderOption();
+                            if(option!= nullptr)
+                            {
+                                Shader::Ptr shader = result.GetSharedObject();
+                                ReadStatus status = result.GetStatus();
+                            
+                                if(ReadStatus::SUCCESS == status)
+                                {
+                                    option->OnReadSuccess(shader);
+                                    _shaders.emplace_back(result.GetSharedObject());
+                                }
+                                else if(ReadStatus::FAILED == status)
+                                {
+                                    option->OnReadFailed();
+                                }
+                            }
+                        }                        
+                    }
+                    else //loading or wait load?
+                    {}
+
+                    return ret;
+                })
+                , _futures.end()
+            );
         }
         // catch (...)
         // {
@@ -113,6 +121,8 @@ namespace TwinkleGraphics
     void ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
+        option->AddSuccessFunc(this, &ShaderManager::OnReadShaderSuccess);
+        option->AddFailedFunc(this, &ShaderManager::OnReadShaderFailed);
         resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
     }
 
@@ -132,15 +142,40 @@ namespace TwinkleGraphics
         }
     }
 
+    void ShaderManager::OnReadShaderSuccess(Object::Ptr obj)
+    {
+        Shader *shader = dynamic_cast<Shader *>(obj.get());
+        if (shader != nullptr)
+        {
+            shader->SetupCompile();
+            shader->Compile();
+        }
+    }
+
+    void ShaderManager::OnReadShaderFailed() 
+    {}
+
+
+
+
+
+
     template <>
     void ResourceManager::PackedReadTask<ReadResult<Shader>, ShaderReader>::PushTask()
     {
         // typedef Ret(R::*)(const char*, ReaderOption) Func;
         ResourceManager &resMgr = ResourceMgrInstance();
-        auto future = resMgr.PushTask(&ShaderReader::ReadAsync, _reader, _filename);
+        if(_asyncRead)
         {
-            ShaderManager& shaderMgr = ShaderMgrInstance();
-            shaderMgr.AddTaskFuture(std::move(future));
+            auto future = resMgr.PushAsyncTask(&ShaderReader::ReadAsync, _reader, _filename);
+            {
+                ShaderManager& shaderMgr = ShaderMgrInstance();
+                shaderMgr.AddTaskFuture(std::move(future));
+            }
+        }
+        else
+        {
+            resMgr.PushTask(&ShaderReader::Read, _reader, _filename.c_str());
         }
     }
 

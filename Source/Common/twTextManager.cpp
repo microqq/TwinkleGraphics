@@ -34,10 +34,17 @@ namespace TwinkleGraphics
     {
         // typedef Ret(R::*)(const char*, ReaderOption) Func;
         ResourceManager &resMgr = ResourceMgrInstance();
-        auto future = resMgr.PushTask(&TextReader::ReadAsync, _reader, _filename);
+        if(_asyncRead)
         {
-            TextManager& textMgr = TextMgrInstance();
-            textMgr.AddTaskFuture(std::move(future));
+            auto future = resMgr.PushAsyncTask(&TextReader::ReadAsync, _reader, _filename);
+            {
+                TextManager& textMgr = TextMgrInstance();
+                textMgr.AddTaskFuture(std::move(future));
+            }
+        }
+        else
+        {
+            resMgr.PushTask(&TextReader::Read, _reader, _filename.c_str());
         }
     }    
 } // namespace TwinkleGraphics
