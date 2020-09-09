@@ -21,7 +21,11 @@ namespace TwinkleGraphics
 #ifdef FREEIMAGE_LIB
 		FreeImage_DeInitialise();
 #endif
+		Destroy();
+	}
 
+	void ImageManager::Destroy()
+	{
         {
             std::lock_guard<std::mutex> lock(_mutex);
             _futures.clear();

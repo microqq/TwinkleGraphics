@@ -7,11 +7,12 @@
 
 namespace TwinkleGraphics
 {
-    class __COMSINGLETONExport ShaderManager : public IUpdatable, public INonCopyable
+    class __TWCOMExport ShaderManager : public IUpdatable, public INonCopyable, public IDestroyable
     {
     public:
         virtual ~ShaderManager();
         virtual void Update() override;
+        virtual void Destroy() override;
 
         Shader::Ptr ReadShader(const char* filename, ShaderOption* option);
         ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
@@ -36,7 +37,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __COMSINGLETONExport ShaderManager& ShaderMgrInstance();
+        __TWCOMExport ShaderManager& ShaderMgrInstance();
 #ifdef __cplusplus
     }
 #endif

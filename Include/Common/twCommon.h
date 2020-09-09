@@ -60,12 +60,6 @@
         #define __TWPLUGINExport __declspec(dllimport)
     #endif
 
-    #ifdef EXPORT_COMSINGLETON
-        #define __COMSINGLETONExport __declspec(dllexport)
-    #else
-        #define __COMSINGLETONExport __declspec(dllimport)
-    #endif
-
     #ifdef EXPORT_EVENT
         #define __EVENTExport __declspec(dllexport)
     #else
@@ -123,6 +117,12 @@ class INonCopyable
     protected:
         INonCopyable() {}
         virtual ~INonCopyable() {}
+};
+
+class IDestroyable
+{
+    public:
+        virtual void Destroy() = 0;
 };
 
 extern const char *PlatformDefines[5];

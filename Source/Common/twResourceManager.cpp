@@ -7,9 +7,7 @@ namespace TwinkleGraphics
 
     ResourceManager::~ResourceManager()
     {
-        ClearWorkerPool();
-        _idleReaders.clear();
-        _objectCacheMap.clear();
+        Destroy();
     }
 
     void ResourceManager::Update()
@@ -19,6 +17,13 @@ namespace TwinkleGraphics
         {
             packedTask->PushTask();
         }
+    }
+
+    void ResourceManager::Destroy()
+    {
+        ClearWorkerPool();
+        _idleReaders.clear();
+        _objectCacheMap.clear();
     }
 
     void ResourceManager::ClearWorkerPool()

@@ -550,8 +550,14 @@ namespace TwinkleGraphics
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
-            Shader::Ptr sharedShader = std::make_shared<Shader>(_option->_optionData.type, sourcePtr);
-            sharedShader->SetDefineMacros(const_cast<const char**>(_option->_optionData.macros), _option->_optionData.numMacros);
+            ShaderOption* shaderOption = dynamic_cast<ShaderOption*>(_option);
+            Shader::Ptr sharedShader = std::make_shared<Shader>(
+                shaderOption->_optionData.type
+                , sourcePtr);
+            sharedShader->SetDefineMacros(
+                const_cast<const char**>(shaderOption->_optionData.macros)
+                , shaderOption->_optionData.numMacros
+            );
 
             if(!_asynchronize)
             {
@@ -559,13 +565,12 @@ namespace TwinkleGraphics
                 if (!(sharedShader->Compile()))
                 {
                     ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
-                    result.AddFailedFunc(&ShaderReader::OnFailed, this);
                     return result;
                 }
             }
 
-            ReadResult<Shader> result(sharedShader, ReadResult<Shader>::Status::SUCCESS);
-            result.AddSuccessFunc(&ShaderReader::OnSuccess, this, sharedShader);
+            _option->AddSuccessFunc(this, &ShaderReader::OnSuccess);
+            ReadResult<Shader> result(shared_from_this(), sharedShader, ReadResult<Shader>::Status::SUCCESS);
             return result;
         }
         else
@@ -575,7 +580,6 @@ namespace TwinkleGraphics
 #endif
 
             ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
-            result.AddFailedFunc(&ShaderReader::OnFailed, this);
             return result;
         }
 

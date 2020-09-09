@@ -5,11 +5,12 @@
 
 namespace TwinkleGraphics
 {
-    class __COMSINGLETONExport ImageManager : public IUpdatable, public INonCopyable
+    class __TWCOMExport ImageManager : public IUpdatable, public INonCopyable, public IDestroyable
     {
     public:
         virtual ~ImageManager();
         virtual void Update() override {}
+        virtual void Destroy() override;
 
         Image::Ptr ReadImage(const char *filename);
         void ReadImageAsync(const char *filename);
@@ -31,7 +32,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __COMSINGLETONExport ImageManager &ImageMgrInstance();
+        __TWCOMExport ImageManager &ImageMgrInstance();
 #ifdef __cplusplus
     }
 #endif

@@ -46,7 +46,7 @@ private:
     ImageSource::Ptr _source;
 };
 
-class __TWCOMExport ImageReader final : public ResourceReader
+class __TWCOMExport ImageReader final : public ResourceReader, public Reference<ImageReader>, public INonCopyable
 {
 public:
     ImageReader();

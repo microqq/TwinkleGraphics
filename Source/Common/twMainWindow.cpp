@@ -277,7 +277,7 @@ void GLFWMainWindow::Initialise()
 void GLFWMainWindow::Terminate()
 {
     ResourceManager& resMgr = ResourceMgrInstance();
-    resMgr.ClearWorkerPool();
+    resMgr.Destroy();
     
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

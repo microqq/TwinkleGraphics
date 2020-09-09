@@ -43,7 +43,7 @@ namespace TwinkleGraphics
             textSource->filename = filename;
             textSource->content = source;
 
-            return ReadResult<TextSource>(textSource, ReadResult<TextSource>::Status::SUCCESS);
+            return ReadResult<TextSource>(shared_from_this(), textSource, ReadResult<TextSource>::Status::SUCCESS);
         }
 
         Console::LogWarning("Text: TextReader open text file ", filename, " failed.\n");

@@ -87,7 +87,7 @@ namespace TwinkleGraphics
 		{
 			Console::LogInfo("Image: Load image ", filename, " successed.\n");
 			Image::Ptr image = std::make_shared<Image>(filename, data);
-			return ReadResult<Image>(image, ReadResult<Image>::Status::SUCCESS);
+			return ReadResult<Image>(shared_from_this(), image, ReadResult<Image>::Status::SUCCESS);
 		}
 
 		Console::LogWarning("Image: Load image ", filename, " failed.\n");
@@ -161,7 +161,7 @@ namespace TwinkleGraphics
 		Console::LogInfo("Image: Load image ", filename, " successed.\n");
 
 		//return success
-		return ReadResult<Image>(ret_image, ReadResult<Image>::Status::SUCCESS);
+		return ReadResult<Image>(shared_from_this(), ret_image, ReadResult<Image>::Status::SUCCESS);
 	}
 
 } // namespace TwinkleGraphics

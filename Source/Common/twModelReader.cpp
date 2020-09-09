@@ -51,7 +51,7 @@ namespace TwinkleGraphics
         Geometry::Ptr rootGeom = ProcessNode(scene->mRootNode, scene, directory, model, vectorMaterials);
         model->SetRootGeometry(rootGeom);
 
-        return ReadResult<Model>(model, ReadResult<Model>::Status::SUCCESS);
+        return ReadResult<Model>(shared_from_this(), model, ReadResult<Model>::Status::SUCCESS);
     }
 
     ReadResult<Model> ModelReader::ReadAsync(std::string filename)

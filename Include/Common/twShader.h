@@ -137,7 +137,7 @@ namespace TwinkleGraphics
         ~ShaderProgramUse();
     };
 
-    class __TWCOMExport ShaderReader : public ResourceReader, public INonCopyable
+    class __TWCOMExport ShaderReader : public ResourceReader, public Reference<ShaderReader>, public INonCopyable
     {
     public:
         ShaderReader();
@@ -153,7 +153,6 @@ namespace TwinkleGraphics
         DECLARE_READERID;
 
     private:
-        ShaderOption* _option = nullptr;
     };
 
 } // namespace TwinkleGraphics

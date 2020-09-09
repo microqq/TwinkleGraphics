@@ -8,11 +8,12 @@
 
 namespace TwinkleGraphics
 {
-    class __COMSINGLETONExport ResourceManager : public IUpdatable, public INonCopyable
+    class __TWCOMExport ResourceManager : public IUpdatable, public INonCopyable, public IDestroyable
     {
     public:
         virtual ~ResourceManager();
         virtual void Update() override;
+        virtual void Destroy() override;
 
         /**
      * @brief 
@@ -91,8 +92,6 @@ namespace TwinkleGraphics
             }
         }
 
-        void ClearWorkerPool();
-
     private:
         explicit ResourceManager()
             : IUpdatable(), INonCopyable(), _workerPool(2)
@@ -126,6 +125,8 @@ namespace TwinkleGraphics
             return future;
         }
 
+        void ClearWorkerPool();
+
     private:
         typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
         typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
@@ -141,7 +142,7 @@ namespace TwinkleGraphics
         };
 
         template <typename Ret, typename R>
-        class __COMSINGLETONExport PackedReadTask : public IPackedReadTask
+        class __TWCOMExport PackedReadTask : public IPackedReadTask
         {
         public:
             typedef std::shared_ptr<PackedReadTask> Ptr;
@@ -179,7 +180,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __COMSINGLETONExport ResourceManager &ResourceMgrInstance();
+        __TWCOMExport ResourceManager &ResourceMgrInstance();
 #ifdef __cplusplus
     }
 #endif

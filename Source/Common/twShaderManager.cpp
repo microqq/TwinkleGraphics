@@ -16,26 +16,40 @@ namespace TwinkleGraphics
     }
 
     ShaderManager::~ShaderManager()
-    {     
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-            _futures.clear();
-        }
-        _shaders.clear();
+    {
+        Destroy();
     }
 
     void ShaderManager::Update()
     {
         // try
         {
+            using ReadStatus = ReadResult<Shader>::Status;
             std::lock_guard<std::mutex> lock(_mutex);
             for (auto &f : _futures)
             {
                 if (f.valid() && TaskFinished(f))
                 {
                     ReadResult<Shader> result = f.get();
-                    result.OnReadSuccess();
-                    result.OnReadFailed();
+                    ResourceReader::Ptr reader = result.GetReader();
+                    if(reader != nullptr)
+                    {
+                        ReaderOption* option = reader->GetReaderOption();
+                        if(option!= nullptr)
+                        {
+                            Shader::Ptr shader = result.GetSharedObject();
+                            ReadStatus status = result.GetStatus();
+                        
+                            if(ReadStatus::SUCCESS == status)
+                            {
+                                option->OnReadSuccess(shader);
+                            }
+                            else if(ReadStatus::FAILED == status)
+                            {
+                                option->OnReadFailed();
+                            }
+                        }
+                    }
 
                     _shaders.emplace_back(result.GetSharedObject());
                 }
@@ -48,6 +62,15 @@ namespace TwinkleGraphics
         // {
         //     std::cerr << "caught ex [1]" << '\n';
         // }
+    }
+
+    void ShaderManager::Destroy()
+    {
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _futures.clear();
+        }
+        _shaders.clear();
     }
 
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)

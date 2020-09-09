@@ -3,7 +3,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
 OPTION(ENABLE_EXPORT_COMDLL "build common dynamic library" ON)
-option(ENABLE_EXPORT_COMSINGLETON "build singleton dynamic library" ON)
 option(ENABLE_EXPORT_UTILDLL "build ui library" ON)
 
 if(DEFINE_FREEIMAGE_LIB)
@@ -12,10 +11,6 @@ endif()
 
 if(ENABLE_EXPORT_COMDLL)
     add_definitions(-DEXPORT_COMDLL)
-endif()
-
-if(ENABLE_EXPORT_COMSINGLETON)
-    add_definitions(-DEXPORT_COMSINGLETON)
 endif()
 
 if(ENABLE_EXPORT_UTILDLL)

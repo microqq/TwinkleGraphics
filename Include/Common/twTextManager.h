@@ -5,20 +5,24 @@
 
 namespace TwinkleGraphics
 {
-    class __COMSINGLETONExport TextManager : public IUpdatable, public INonCopyable
+    class __TWCOMExport TextManager : public IUpdatable, public INonCopyable, public IDestroyable
     {
     public:
         void ReadTextAsync(const char* filename);
         TextSource::Ptr ReadText(const char* filename);
         virtual ~TextManager() 
         {
+            Destroy();
+        }
+
+        virtual void Update() override {}
+        virtual void Destroy() override
+        {
             {
                 std::lock_guard<std::mutex> lock(_mutex);
                 _futures.clear();
             }
         }
-
-        virtual void Update() override {}
 
         void AddTaskFuture(std::future<ReadResult<TextSource>> future);
     private:
@@ -39,7 +43,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __COMSINGLETONExport TextManager& TextMgrInstance();
+        __TWCOMExport TextManager& TextMgrInstance();
 #ifdef __cplusplus
     }
 #endif    

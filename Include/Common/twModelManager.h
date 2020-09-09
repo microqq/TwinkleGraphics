@@ -5,17 +5,21 @@
 
 namespace TwinkleGraphics
 {
-    class __COMSINGLETONExport ModelManager : public IUpdatable, public INonCopyable
+    class __TWCOMExport ModelManager : public IUpdatable, public INonCopyable, public IDestroyable
     {
     public:
         virtual ~ModelManager() 
+        {
+            Destroy();
+        }
+        virtual void Update() override {} 
+        virtual void Destroy() override 
         {
             {
                 std::lock_guard<std::mutex> lock(_mutex);
                 _futures.clear();
             }
         }
-        virtual void Update() override {} 
 
         Model::Ptr ReadModel(const char *filename);
         void ReadModelAsync(const char* filename, ShaderOption* option);
@@ -41,7 +45,7 @@ namespace TwinkleGraphics
     extern "C"
     {
 #endif
-        __COMSINGLETONExport ModelManager& ModelMgrInstance();
+        __TWCOMExport ModelManager& ModelMgrInstance();
 #ifdef __cplusplus
     }
 #endif

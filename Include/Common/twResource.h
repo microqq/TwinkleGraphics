@@ -29,8 +29,8 @@ class ResourceReader;
 typedef uint16_t ReaderId;
 typedef uint64_t CacheId;
 
-typedef std::function<void()> ReadSuccessCallbackFunc;
-typedef ReadSuccessCallbackFunc ReadFailedCallbackFunc;
+typedef std::function<void(Object::Ptr)> ReadSuccessCallbackFunc;
+typedef std::function<void()> ReadFailedCallbackFunc;
 typedef std::shared_ptr<ReadSuccessCallbackFunc> ReadSuccessCallbackFuncPtr;
 typedef std::shared_ptr<ReadFailedCallbackFunc> ReadFailedCallbackFuncPtr;
 
@@ -52,10 +52,69 @@ public:
     void SetCacheHint(CacheHint hint);
     CacheHint GetCacheHint();
 
+    template <typename Caller, typename Func, typename... Args>
+    void AddSuccessFunc(Caller&& caller, Func&& func, Args&&...args)
+    {
+        auto concreteCallback = std::bind(
+            std::forward<Func>(func)
+            , std::forward<Caller>(caller)
+            , std::placeholders::_1
+            , std::forward<Args>(args)...
+        );
+        ReadSuccessCallbackFuncPtr callback = std::make_shared<ReadSuccessCallbackFunc>(
+            [concreteCallback](Object::Ptr obj)
+            {
+                concreteCallback(obj);
+            }
+        );
+
+        AddSuccessFunc(callback);
+    }
+
+    template <typename Caller, typename Func, typename... Args>
+    void AddFailedFunc(Caller&& caller, Func&& func, Args&&...args)
+    {
+        auto concreteCallback = std::bind(
+            std::forward<Func>(func)
+            , std::forward<Caller>(caller)
+            , std::forward<Args>(args)...
+        );
+        ReadFailedCallbackFuncPtr callback = std::make_shared<ReadFailedCallbackFunc>(
+            [concreteCallback]()
+            {
+                concreteCallback();
+            }
+        );
+
+        AddFailedFunc(callback);
+    }
+
+    void AddSuccessFunc(ReadSuccessCallbackFuncPtr func);
+    void AddFailedFunc(ReadFailedCallbackFuncPtr func);
+    void OnReadSuccess(Object::Ptr obj) const;
+    void OnReadFailed() const;
+
 protected:
+    std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
+    std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
     CacheHint _cacheHint = CacheHint::CACHE_SOURCE;
 };
 
+class ResourceReader
+{
+public:
+    typedef std::shared_ptr<ResourceReader> Ptr;
+
+    virtual ~ResourceReader();
+    ReaderOption* GetReaderOption();
+
+protected:
+    ResourceReader();
+
+protected:
+    ReaderOption* _option = nullptr;
+    bool _asynchronize = false;
+};
 
 /**
  * @brief 
@@ -77,22 +136,20 @@ public:
 
     ReadResult(Status status = Status::NONE)
         : _sharedObject(nullptr)
+        , _reader(nullptr)
         , _status(status)
     {}
-    ReadResult(typename T::Ptr obj, Status status = Status::NONE)
+    ReadResult(ResourceReader::Ptr reader, typename T::Ptr obj, Status status = Status::NONE)
         : _sharedObject(obj)
+        , _reader(reader)
         , _status(status)
     {}
     ReadResult(const ReadResult& src)
         : _sharedObject(src._sharedObject)
+        , _reader(src._reader)
         , _status(src._status)
     {
-        _successFuncList = src._successFuncList;
-        _failedFuncList = src._failedFuncList;
     }
-    // ReadResult(ReadResult&& src)
-    // {
-    // }
     ~ReadResult()
     {}
 
@@ -103,98 +160,15 @@ public:
 
         return *this;
     }
-    // inline ReadResult& operator=(ReadResult&& result)
-    // {
-    //     return *this;
-    // }
 
     inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
     inline Status GetStatus() const { return _status; }
-
-    // inline bool operator==(std::nullptr_t nullp) const
-    // {
-    //     return _sharedObject == nullp;
-    // }
-
-    template <typename Func, typename... Args>
-    void AddSuccessFunc(Func&& func, Args&&...args)
-    {
-        auto concreteCallback = std::bind(std::forward<Func>(func), std::forward<Args>(args)...);
-        ReadSuccessCallbackFuncPtr callback = std::make_shared<ReadSuccessCallbackFunc>(
-            [concreteCallback]()
-            {
-                concreteCallback();
-            }
-        );
-
-        AddSuccessFunc(callback);
-    }
-
-    template <typename Func, typename... Args>
-    void AddFailedFunc(Func&& func, Args&&...args)
-    {
-        auto concreteCallback = std::bind(std::forward<Func>(func), std::forward<Args>(args)...);
-        ReadFailedCallbackFuncPtr callback = std::make_shared<ReadFailedCallbackFunc>(
-            [concreteCallback]()
-            {
-                concreteCallback();
-            }
-        );
-
-        AddFailedFunc(callback);
-    }
-
-    void AddSuccessFunc(ReadSuccessCallbackFuncPtr func)
-    {
-        _successFuncList.emplace_back(func);
-    }
-
-    void AddFailedFunc(ReadFailedCallbackFuncPtr func)
-    {
-        _failedFuncList.emplace_back(func);
-    }
-
-    void OnReadSuccess() const
-    {
-        if(Status::SUCCESS == _status)
-        {
-            for(auto& func : _successFuncList)
-            {
-                (*func)();
-            }
-        }
-    }
-
-    void OnReadFailed() const
-    {
-        if(Status::FAILED == _status)
-        {
-            for (auto &func : _failedFuncList)
-            {
-                (*func)();
-            }
-        }
-    }
+    inline ResourceReader::Ptr GetReader() { return _reader; }
 
 private:
-    std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
-    std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
     typename T::Ptr _sharedObject;
+    ResourceReader::Ptr _reader;
     Status _status;
-};
-
-class ResourceReader
-{
-public:
-    typedef std::shared_ptr<ResourceReader> Ptr;
-
-    virtual ~ResourceReader();
-
-protected:
-    ResourceReader();
-
-protected:
-    bool _asynchronize = false;
 };
 
 class ResourceCache
