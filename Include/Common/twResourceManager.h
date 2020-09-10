@@ -108,25 +108,19 @@ namespace TwinkleGraphics
             ReaderOption* readerOption = reader->GetReaderOption();
             if(readerOption != nullptr)
             {
-                // readerOption->AddSuccessFunc(this, &ResourceManager::OnReadTaskSuccess
-                //                 , taskId
-                //                 , readerOption->GetCacheHint()
-                //                 , id
-                // );
+                readerOption->AddSuccessFunc(this, &ResourceManager::OnReadTaskSuccess
+                                , taskId
+                                , readerOption->GetCacheHint()
+                                , id
+                                , R::ID
+                                , reader
+                );
 
-                // readerOption->AddFailedFunc(this, &ResourceManager::OnReadTaskFailed
-                //                 , taskId
-                // );
-
-                // readerOption->AddSuccessFunc(this, &ResourceManager::OnRecycleReader
-                //                 , R::ID
-                //                 , reader
-                // );
-
-                // readerOption->AddFailedFunc(this, &ResourceManager::OnRecycleReader
-                //                 , R::ID
-                //                 , reader
-                // );
+                readerOption->AddFailedFunc(this, &ResourceManager::OnReadTaskFailed
+                                , taskId
+                                , R::ID
+                                , reader
+                );
             }
 
             typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
@@ -238,14 +232,20 @@ namespace TwinkleGraphics
             , ReadTaskId taskid
             , CacheHint cachehint
             , CacheId cacheid
+            , ReaderId readerid
+            , ResourceReader::Ptr reader
             )
         {
             ResourceCache::Ptr cache = std::make_shared<ResourceCache>(cacheid, obj);
             AddResourceCache(cachehint, cache);
             ReleaseTask(obj, taskid);
+            RecycleReader(readerid, reader);
         }
 
-        void OnReadTaskFailed(ReadTaskId taskid)
+        void OnReadTaskFailed(ReadTaskId taskid
+            , ReaderId readerid
+            , ResourceReader::Ptr reader
+            )
         {
             std::lock_guard<std::mutex> lock(_taskMutex);
 
@@ -259,9 +259,11 @@ namespace TwinkleGraphics
                 int eraseCount = _waitToLoadTasks.erase(taskid);
                 Console::LogWarning("Erased tasks which wait load count ", eraseCount, "\n");
             }
+
+            RecycleReader(readerid, reader);
         }
 
-        void OnRecycleReader(ReaderId id, ResourceReader::Ptr reader)
+        void RecycleReader(ReaderId id, ResourceReader::Ptr reader)
         {
             std::lock_guard<std::mutex> lock(_readerMutex);
 
