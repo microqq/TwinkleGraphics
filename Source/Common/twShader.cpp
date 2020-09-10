@@ -144,7 +144,7 @@ namespace TwinkleGraphics
 
     void Shader::SetupCompile()
     {
-        if(_source == nullptr)
+        if(_source == nullptr || _setupCompile)
         {
             return;
         }
@@ -197,6 +197,11 @@ namespace TwinkleGraphics
 
     bool Shader::Compile()
     {
+        if(_compiled)
+        {
+            return true;
+        }
+
         if(!_setupCompile)
         {
             return false;

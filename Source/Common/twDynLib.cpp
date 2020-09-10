@@ -122,7 +122,7 @@ void DynLib::Unload()
     }
 
     bool success = !(DYNLIB_UNLOAD(_handle));
-#ifdef __linux__  ||defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__)
 #elif _WIN32
 #endif    
 

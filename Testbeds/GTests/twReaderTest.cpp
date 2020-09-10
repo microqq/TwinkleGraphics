@@ -13,6 +13,7 @@ using namespace TwinkleGraphics;
 using namespace std::chrono_literals;
 
 ShaderOption ShaderOption_(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
+ShaderOption ShaderOption2_(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
 
 TEST(ResourceReaderTests, Read)
 {
@@ -26,6 +27,7 @@ TEST(ResourceReaderTests, ReadAsync)
 
     ShaderManager& shaderMgr = ShaderMgrInstance();
     shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &ShaderOption_);
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &ShaderOption2_);
 
     MainWindow_.Run();
 };

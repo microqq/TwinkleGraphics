@@ -105,23 +105,6 @@ namespace TwinkleGraphics
             ReadTaskId taskId = id;
             // packed read task
             typename R::Ptr reader = GetReader<R>(option);
-            ReaderOption* readerOption = reader->GetReaderOption();
-            if(readerOption != nullptr)
-            {
-                readerOption->AddSuccessFunc(this, &ResourceManager::OnReadTaskSuccess
-                                , taskId
-                                , readerOption->GetCacheHint()
-                                , id
-                                , R::ID
-                                , reader
-                );
-
-                readerOption->AddFailedFunc(this, &ResourceManager::OnReadTaskFailed
-                                , taskId
-                                , R::ID
-                                , reader
-                );
-            }
 
             typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
                 std::make_shared<PackedReadTask<ReadResult<T>, R>>(taskId, true);
@@ -138,12 +121,30 @@ namespace TwinkleGraphics
                     _waitToLoadTasks.emplace(std::make_pair(taskId, packedReadTaskPtr));
                     lock.unlock();
 
-                    Console::LogWarning("Readtask ", taskId, " ", filename, "wait to load.\n");
+                    Console::LogWarning("Readtask ", taskId, " ", filename, " wait to load.\n");
 
                     return ReadResult<T>(nullptr, nullptr, Status::WAITTOLOAD);
                 }
                 else
                 {
+                    ReaderOption* readerOption = reader->GetReaderOption();
+                    if(readerOption != nullptr)
+                    {
+                        readerOption->AddSuccessFunc(this, &ResourceManager::OnReadTaskSuccess
+                                        , taskId
+                                        , readerOption->GetCacheHint()
+                                        , id
+                                        , R::ID
+                                        , reader
+                        );
+
+                        readerOption->AddFailedFunc(this, &ResourceManager::OnReadTaskFailed
+                                        , taskId
+                                        , R::ID
+                                        , reader
+                        );
+                    }
+
                     _loadingTasks.emplace(taskId);
                     lock.unlock();
  
@@ -238,7 +239,7 @@ namespace TwinkleGraphics
         {
             ResourceCache::Ptr cache = std::make_shared<ResourceCache>(cacheid, obj);
             AddResourceCache(cachehint, cache);
-            ReleaseTask(obj, taskid);
+            ReleaseTask(obj, taskid, true);
             RecycleReader(readerid, reader);
         }
 
@@ -247,19 +248,7 @@ namespace TwinkleGraphics
             , ResourceReader::Ptr reader
             )
         {
-            std::lock_guard<std::mutex> lock(_taskMutex);
-
-            if(_loadingTasks.find(taskid) != _loadingTasks.end())
-            {
-                _loadingTasks.erase(taskid);
-            }
-
-            if(_waitToLoadTasks.find(taskid) != _waitToLoadTasks.end())
-            {
-                int eraseCount = _waitToLoadTasks.erase(taskid);
-                Console::LogWarning("Erased tasks which wait load count ", eraseCount, "\n");
-            }
-
+            ReleaseTask(nullptr, taskid, false);
             RecycleReader(readerid, reader);
         }
 
@@ -289,7 +278,7 @@ namespace TwinkleGraphics
             }
         }
 
-        void ReleaseTask(Object::Ptr obj, ReadTaskId taskid)
+        void ReleaseTask(Object::Ptr obj, ReadTaskId taskid, bool success)
         {
             std::lock_guard<std::mutex> lock(_taskMutex);
 
@@ -307,7 +296,14 @@ namespace TwinkleGraphics
             while(first != second)
             {
                 packedTask = first->second;
-                packedTask->InvokeSuccess(obj);
+                if(success)
+                {
+                    packedTask->InvokeSuccess(obj);
+                }
+                else
+                {
+                    packedTask->InvokeFailed();
+                }
 
                 ++first;
             }
