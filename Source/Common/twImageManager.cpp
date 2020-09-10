@@ -41,10 +41,10 @@ namespace TwinkleGraphics
 		return image;
 	}
 
-    void ImageManager::ReadImageAsync(const char* filename)
+    ReadResult<Image> ImageManager::ReadImageAsync(const char* filename)
 	{
         ResourceManager& resMgr = ResourceMgrInstance();
-		resMgr.ReadAsync<ImageReader, Image>(filename, nullptr);
+		return resMgr.ReadAsync<ImageReader, Image>(filename, nullptr);
 	}    
 
     void ImageManager::AddTaskFuture(std::future<ReadResult<Image>> future)

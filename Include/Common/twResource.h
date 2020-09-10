@@ -42,6 +42,13 @@ enum class CacheHint
     CACHE_SCENEOBJECT = 2
 };
 
+enum class CacheStoreHint
+{
+    NONE = 0,
+    TIMELIMITED = 1,
+    PERMERNANTLY = 2
+};
+
 class ReaderOption
 {
 public:
@@ -52,6 +59,9 @@ public:
 
     void SetCacheHint(CacheHint hint);
     CacheHint GetCacheHint();
+
+    void SetStoreHint(CacheStoreHint hint);
+    CacheStoreHint GetStoreHint();
 
     template <typename Caller, typename Func, typename... Args>
     void AddSuccessFunc(Caller&& caller, Func&& func, Args&&...args)
@@ -99,6 +109,7 @@ protected:
     std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
     std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
     CacheHint _cacheHint = CacheHint::CACHE_OBJECT;
+    CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
 };
 
 class ResourceReader
@@ -129,7 +140,7 @@ public:
     enum class Status
     {
         NONE,
-        WAITLOAD,
+        WAITTOLOAD,
         LOADING,
         SUCCESS,
         FAILED
@@ -177,9 +188,11 @@ class ResourceCache : public INonCopyable
 public:
     typedef std::shared_ptr<ResourceCache> Ptr;
 
-    ResourceCache(CacheId id, Object::Ptr obj)
+    ResourceCache(CacheId id, Object::Ptr obj, CacheStoreHint hint = CacheStoreHint::TIMELIMITED)
         : _cachedObject(obj)
         , _cacheId(id)
+        , _storeHint(hint)
+        , _timeLimit(100.0f)
     {}
 
     ~ResourceCache()
@@ -195,8 +208,24 @@ public:
         return _cacheId;
     }
 
+    bool Expired(float deltaTime)
+    {
+        if(CacheStoreHint::PERMERNANTLY == _storeHint)
+        {
+            return true;
+        }
+        else if(CacheStoreHint::TIMELIMITED == _storeHint)
+        {
+            _timeLimit -= deltaTime;
+            return _timeLimit <= 0.0f;
+        }
+    }
+
 private:
     Object::Ptr _cachedObject = nullptr;
+    CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
+    // cache life time(seconds)
+    float _timeLimit;
     CacheId _cacheId = 0;
 };
 

@@ -28,6 +28,8 @@ namespace TwinkleGraphics
         , public INonCopyable
     {
     public:
+        typedef std::shared_ptr<ModelReader> Ptr;
+
         ModelReader();
         ModelReader(ReaderOption* option);
         virtual ~ModelReader();
@@ -35,7 +37,7 @@ namespace TwinkleGraphics
         ReadResult<Model> Read(const char *filename);
         ReadResult<Model> ReadAsync(std::string filename);
 
-        Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[]);
+        Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr* vecMats);
         SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);
         Material::Ptr ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFalg);
         std::vector<Texture::Ptr> LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir);

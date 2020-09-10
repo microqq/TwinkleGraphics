@@ -14,10 +14,10 @@ namespace TwinkleGraphics
         return model;
     }
 
-    void ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
+    ReadResult<Model> ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
+        return resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
     }
 
 

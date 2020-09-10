@@ -14,10 +14,10 @@ namespace TwinkleGraphics
         return text;
     }
 
-    void TextManager::ReadTextAsync(const char *filename)
+    ReadResult<TextSource> TextManager::ReadTextAsync(const char *filename)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        resMgr.ReadAsync<TextReader, TextSource>(filename, nullptr);
+        return resMgr.ReadAsync<TextReader, TextSource>(filename, nullptr);
     }    
 
     void TextManager::AddTaskFuture(std::future<ReadResult<TextSource>> future)

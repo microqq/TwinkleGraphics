@@ -10,7 +10,6 @@ namespace TwinkleGraphics
         : IUpdatable()
         , INonCopyable()
         , _futures()
-        , _shaders()
         , _mutex()
     {
     }
@@ -49,14 +48,13 @@ namespace TwinkleGraphics
                                 if(ReadStatus::SUCCESS == status)
                                 {
                                     option->OnReadSuccess(shader);
-                                    _shaders.emplace_back(result.GetSharedObject());
                                 }
                                 else if(ReadStatus::FAILED == status)
                                 {
                                     option->OnReadFailed();
                                 }
                             }
-                        }                        
+                        }
                     }
                     else //loading or wait load?
                     {}
@@ -78,7 +76,6 @@ namespace TwinkleGraphics
             std::lock_guard<std::mutex> lock(_mutex);
             _futures.clear();
         }
-        _shaders.clear();
     }
 
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
@@ -118,20 +115,36 @@ namespace TwinkleGraphics
         return program;
     }
 
-    void ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
+    ReadResult<Shader> ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
         option->AddSuccessFunc(this, &ShaderManager::OnReadShaderSuccess);
         option->AddFailedFunc(this, &ShaderManager::OnReadShaderFailed);
-        resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
+        return resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
     }
 
-    void ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
+    ShaderProgram::Ptr ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
     {
+        bool readyLink = true;
+        Shader::Ptr* shaders = new Shader::Ptr[num];
         for(int i = 0; i < num; i++)
         {
-            ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
+            auto result = ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
+            shaders[i] = result.GetSharedObject();
+            readyLink &= ((shaders[i] != nullptr) ? shaders[i]->Compiled() : false);
         }
+
+        if(readyLink)
+        {
+            ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(shaders, num);
+            program->Link();
+
+            SAFE_DEL_ARR(shaders);
+            return program;
+        }
+
+        SAFE_DEL_ARR(shaders);
+        return nullptr;
     }    
 
     void ShaderManager::AddTaskFuture(std::future<ReadResult<Shader>> future)

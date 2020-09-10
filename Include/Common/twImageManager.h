@@ -13,7 +13,7 @@ namespace TwinkleGraphics
         virtual void Destroy() override;
 
         Image::Ptr ReadImage(const char *filename);
-        void ReadImageAsync(const char *filename);
+        ReadResult<Image> ReadImageAsync(const char *filename);
 
         void AddTaskFuture(std::future<ReadResult<Image>> future);
 

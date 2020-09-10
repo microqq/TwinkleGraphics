@@ -1169,7 +1169,7 @@ protected:
             return _controlPoints[k - _degree];
         }
 
-        glm::vec4 helper[h];
+        glm::vec4* helper = new glm::vec4[h];
 
         for(int32 r = 1; r <= h; r++)
         {
@@ -1188,9 +1188,9 @@ protected:
                 g++;
             }
         }
-
         glm::vec3 result = glm::vec3(helper[0].x, helper[0].y, helper[0].z) / helper[0].w;
 
+        SAFE_DEL_ARR(helper);
         return result;
     }
 
@@ -1464,13 +1464,16 @@ public:
 
     glm::vec4 GetPoint(float32 u, float32 v, int32 uspan, int32 vspan)
     {
-        glm::vec4 u_points[_uPointsCount];
+        glm::vec4* u_points = new glm::vec4[_uPointsCount];
         for(int32 col = 0; col < _uPointsCount; col++)
         {
             u_points[col] = DeBoor(v, vspan, _vDegree, _vKnots, &(_controlPoints[_vPointsCount * col]));
         }
 
-        return DeBoor(u, uspan, _uDegree, _uKnots, u_points);
+        glm::vec4 ret = DeBoor(u, uspan, _uDegree, _uKnots, u_points);
+
+        SAFE_DEL_ARR(u_points);
+        return ret;
     }
 
     glm::vec4* GetControlPoints() { return _controlPoints; }
@@ -1647,7 +1650,7 @@ private:
             return points[k - p];
         }
 
-        glm::vec4 helper[h];
+        glm::vec4* helper = new glm::vec4[h];
 
         for(int32 r = 1; r <= h; r++)
         {
@@ -1666,8 +1669,10 @@ private:
                 g++;
             }
         }
+        glm::vec4 ret = helper[0];
 
-        return helper[0];
+        SAFE_DEL_ARR(helper);
+        return ret;
     }
 
 

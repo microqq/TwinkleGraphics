@@ -22,6 +22,9 @@ namespace TwinkleGraphics
     void ReaderOption::SetCacheHint(CacheHint hint) { _cacheHint = hint; }
     CacheHint ReaderOption::GetCacheHint() { return _cacheHint; }
 
+    void ReaderOption::SetStoreHint(CacheStoreHint hint) { _storeHint = hint; }
+    CacheStoreHint ReaderOption::GetStoreHint() { return _storeHint; }
+
     void ReaderOption::AddSuccessFunc(ReadSuccessCallbackFuncPtr func)
     {
         _successFuncList.emplace_back(func);

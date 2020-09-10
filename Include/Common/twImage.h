@@ -51,6 +51,8 @@ class __TWCOMExport ImageReader final : public ResourceReader
         , public INonCopyable
 {
 public:
+    typedef std::shared_ptr<ImageReader> Ptr;
+    
     ImageReader();
     ImageReader(ReaderOption* option);
     virtual ~ImageReader();

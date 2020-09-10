@@ -5,6 +5,7 @@
 
 #include "twShader.h"
 #include "twConsoleLog.h"
+#include "twResourceManager.h"
 
 namespace TwinkleGraphics
 {

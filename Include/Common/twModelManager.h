@@ -24,7 +24,7 @@ namespace TwinkleGraphics
         }
 
         Model::Ptr ReadModel(const char *filename);
-        void ReadModelAsync(const char* filename, ShaderOption* option);
+        ReadResult<Model> ReadModelAsync(const char* filename, ShaderOption* option);
 
         void AddTaskFuture(std::future<ReadResult<Model>> future);
 

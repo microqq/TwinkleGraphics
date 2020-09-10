@@ -8,12 +8,12 @@ namespace TwinkleGraphics
     class __TWCOMExport TextManager : public IUpdatable, public INonCopyable, public IDestroyable
     {
     public:
-        void ReadTextAsync(const char* filename);
-        TextSource::Ptr ReadText(const char* filename);
         virtual ~TextManager() 
         {
             Destroy();
         }
+        TextSource::Ptr ReadText(const char* filename);
+        ReadResult<TextSource> ReadTextAsync(const char* filename);
 
         virtual void Update() override {}
         virtual void Destroy() override

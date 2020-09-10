@@ -45,12 +45,14 @@ namespace TwinkleGraphics
         // retrieve the directory path of the filepath
         std::string directory = path.substr(0, path.find_last_of('\\'));
 
-        // Material::Ptr vectorMaterials[scene->mNumMaterials] = {nullptr};
-        Material::Ptr vectorMaterials[30] = {nullptr};
+        Material::Ptr* vectorMaterials = new Material::Ptr[scene->mNumMaterials]{nullptr};
+        // Material::Ptr vectorMaterials[30] = {nullptr};
 
         // process ASSIMP's root node recursively
         Geometry::Ptr rootGeom = ProcessNode(scene->mRootNode, scene, directory, model, vectorMaterials);
         model->SetRootGeometry(rootGeom);
+
+        SAFE_DEL_ARR(vectorMaterials);
 
         return ReadResult<Model>(shared_from_this(), model, ReadResult<Model>::Status::SUCCESS);
     }
@@ -65,7 +67,7 @@ namespace TwinkleGraphics
     *   https://learnopengl.com/
     *   processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     */
-    Geometry::Ptr ModelReader::ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr vecMats[])
+    Geometry::Ptr ModelReader::ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr* vecMats)
     {
         int32 verticeNum = 0;
         int32 meshFlag = (int32)(MeshDataFlag::DEFAULT);

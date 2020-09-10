@@ -142,6 +142,8 @@ namespace TwinkleGraphics
         , public INonCopyable
     {
     public:
+        typedef std::shared_ptr<ShaderReader> Ptr;
+
         ShaderReader();
         ShaderReader(ReaderOption* option);
         virtual ~ShaderReader();
