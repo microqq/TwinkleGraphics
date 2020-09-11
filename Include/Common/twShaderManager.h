@@ -13,6 +13,11 @@ namespace TwinkleGraphics
     {
     public:
         virtual ~ShaderManager();
+
+        /**
+         * @brief 
+         * Update() must execute in main thread
+         */
         virtual void Update() override;
         virtual void Destroy() override;
 

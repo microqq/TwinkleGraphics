@@ -7,6 +7,8 @@ namespace TwinkleGraphics
         : _cacheHint(CacheHint::CACHE_OBJECT)
         , _successFuncList()
         , _failedFuncList()
+        , _storeHint(CacheStoreHint::TIMELIMITED)
+        , _storeTime(100.0f)
     {}
 
     ReaderOption::ReaderOption(const ReaderOption& src)
@@ -14,6 +16,8 @@ namespace TwinkleGraphics
         _cacheHint = src._cacheHint;
         _successFuncList = src._successFuncList;
         _failedFuncList = src._failedFuncList;
+        _storeHint = src._storeHint;
+        _storeTime = src._storeTime;
     }
     
     ReaderOption::~ReaderOption()
@@ -21,10 +25,14 @@ namespace TwinkleGraphics
 
     void ReaderOption::SetCacheHint(CacheHint hint) { _cacheHint = hint; }
     CacheHint ReaderOption::GetCacheHint() { return _cacheHint; }
-
-    void ReaderOption::SetStoreHint(CacheStoreHint hint) { _storeHint = hint; }
+    void ReaderOption::SetStoreHint(CacheStoreHint hint, float storeTime) 
+    { 
+        _storeHint = hint;
+        _storeTime = storeTime; 
+    }
     CacheStoreHint ReaderOption::GetStoreHint() { return _storeHint; }
-
+    float ReaderOption::GetStoreTime() { return _storeTime; }
+    
     void ReaderOption::AddSuccessFunc(ReadSuccessCallbackFuncPtr func)
     {
         _successFuncList.emplace_back(func);

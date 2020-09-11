@@ -12,22 +12,30 @@
 using namespace TwinkleGraphics;
 using namespace std::chrono_literals;
 
-ShaderOption ShaderOption_(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
-ShaderOption ShaderOption2_(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
+ShaderOption lineVertOption_(ShaderOption::OptionData{ "Assets/Shaders/line.vert", ShaderType::VERTEX_SHADER });
+ShaderOption lineFragOption_(ShaderOption::OptionData{ "Assets/Shaders/line.frag", ShaderType::FRAGMENT_SHADER });
 
 TEST(ResourceReaderTests, Read)
 {
     ShaderManager& shaderMgr = ShaderMgrInstance();
-    shaderMgr.ReadShader("Assets/Shaders/line.vert", &ShaderOption_);
+    shaderMgr.ReadShader("Assets/Shaders/line.vert", &lineVertOption_);
 };
 
 TEST(ResourceReaderTests, ReadAsync)
 {
     GLFWMainWindow MainWindow_(1024, 768);
 
+    lineVertOption_.SetStoreHint(CacheStoreHint::TIMELIMITED, 20.0f);
+    lineFragOption_.SetStoreHint(CacheStoreHint::TIMELIMITED, 10.0f);
+
     ShaderManager& shaderMgr = ShaderMgrInstance();
-    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &ShaderOption_);
-    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &ShaderOption2_);
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &lineVertOption_);
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &lineVertOption_);
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.vert", &lineVertOption_);
+
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.frag", &lineFragOption_);
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.frag", &lineFragOption_);
+    shaderMgr.ReadShaderAsync("Assets/Shaders/line.frag", &lineFragOption_);
 
     MainWindow_.Run();
 };

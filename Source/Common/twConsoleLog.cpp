@@ -20,7 +20,7 @@ namespace TwinkleGraphics
         namespace Internal
         {
 
-            void SetConsoleColor(Color &c)
+            __TWCOMExport void SetConsoleColor(Color &c)
             {
 #ifdef _WIN32
                 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -30,7 +30,7 @@ namespace TwinkleGraphics
 #endif
             }
 
-            void ResetConsoleColor()
+            __TWCOMExport void ResetConsoleColor()
             {
                 Color c = Color::WHITE;
                 SetConsoleColor(c);

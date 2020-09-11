@@ -1,14 +1,22 @@
 #ifndef TW_RESOURCEMANAGER_H
 #define TW_RESOURCEMANAGER_H
 
-#include <any>
-#include <variant>
 #include <set>
 
 #include "twResource.h"
 
 namespace TwinkleGraphics
 {
+    class ResourceManager;
+#ifdef __cplusplus
+    extern "C"
+    {
+#endif
+        __TWCOMExport ResourceManager &ResourceMgrInstance();
+#ifdef __cplusplus
+    }
+#endif
+
     typedef uint64_t ReadTaskId;
 
     class __TWCOMExport ResourceManager : public IUpdatable
@@ -17,12 +25,13 @@ namespace TwinkleGraphics
     {
     public:
         virtual ~ResourceManager();
+
+        /**
+         * @brief 
+         * Update() must execute in main thread
+         */
         virtual void Update() override;
         virtual void Destroy() override;
-
-        bool AddResourceCache(CacheHint hint, ResourceCache::Ptr cache);
-        bool RemoveResourceCache(ResourceCache::Ptr cache);
-        ResourceCache::Ptr GetResourceCache(CacheHint hint, CacheId id);
 
         /**
      * @brief 
@@ -64,7 +73,11 @@ namespace TwinkleGraphics
 
                 // add resource cache
                 typename T::Ptr obj = result.GetSharedObject();
-                ResourceCache::Ptr cache = std::make_shared<ResourceCache>(id, obj);
+                ResourceCache::Ptr cache = std::make_shared<ResourceCache>(id
+                    , obj
+                    , option != nullptr ? option->GetStoreHint() : CacheStoreHint::TIMELIMITED
+                    , option != nullptr ? option->GetStoreTime() : 100.0f
+                );
                 AddResourceCache(hint, cache);
 
                 return result;
@@ -85,31 +98,30 @@ namespace TwinkleGraphics
             using Status = typename ReadResult<T>::Status;
             
             // Todo: get GUID with filename, read from cache
-
             CacheId id = CACHEID_FROMSTRING(filename);
+
+            // temporally use cacheid instead.
+            // packed read task
+            ReadTaskId taskId = id;
+            typename R::Ptr reader = GetReader<R>(option);
+            typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
+                std::make_shared<PackedReadTask<ReadResult<T>, R>>(taskId, true);
+            packedReadTaskPtr->_filename = std::string(filename);
+            packedReadTaskPtr->_reader = reader.get();
+
             CacheHint hint = CacheHint::CACHE_NONE;
             if (option != nullptr)
             {
                 hint = option->GetCacheHint();
             }
-            ResourceCache::Ptr cache = GetResourceCache(hint, id);
-
             // get resource cache
+            ResourceCache::Ptr cache = GetResourceCache(hint, id);
             if (cache != nullptr)
             {
+                _cachedTaskQueue.Push(packedReadTaskPtr);
                 typename T::Ptr obj = std::dynamic_pointer_cast<T>(cache->GetCachedObject());
                 return ReadResult<T>(nullptr, obj, Status::SUCCESS);
             }
-
-            // temporally use cacheid instead.
-            ReadTaskId taskId = id;
-            // packed read task
-            typename R::Ptr reader = GetReader<R>(option);
-
-            typename PackedReadTask<ReadResult<T>, R>::Ptr packedReadTaskPtr =
-                std::make_shared<PackedReadTask<ReadResult<T>, R>>(taskId, true);
-            packedReadTaskPtr->_filename = std::string(filename);
-            packedReadTaskPtr->_reader = reader.get();
             
             {
                 std::unique_lock<std::mutex> lock(_taskMutex, std::defer_lock);
@@ -121,7 +133,7 @@ namespace TwinkleGraphics
                     _waitToLoadTasks.emplace(std::make_pair(taskId, packedReadTaskPtr));
                     lock.unlock();
 
-                    Console::LogWarning("Readtask ", taskId, " ", filename, " wait to load.\n");
+                    Console::LogWithColor<Console::Color::GREEN>("Readtask ", taskId, " ", filename, " wait to load.\n");
 
                     return ReadResult<T>(nullptr, nullptr, Status::WAITTOLOAD);
                 }
@@ -133,7 +145,9 @@ namespace TwinkleGraphics
                         readerOption->AddSuccessFunc(this, &ResourceManager::OnReadTaskSuccess
                                         , taskId
                                         , readerOption->GetCacheHint()
+                                        , readerOption->GetStoreHint()
                                         , id
+                                        , readerOption->GetStoreTime()
                                         , R::ID
                                         , reader
                         );
@@ -232,88 +246,22 @@ namespace TwinkleGraphics
         void OnReadTaskSuccess(Object::Ptr obj
             , ReadTaskId taskid
             , CacheHint cachehint
+            , CacheStoreHint storeHint
             , CacheId cacheid
+            , float storeTime
             , ReaderId readerid
             , ResourceReader::Ptr reader
-            )
-        {
-            ResourceCache::Ptr cache = std::make_shared<ResourceCache>(cacheid, obj);
-            AddResourceCache(cachehint, cache);
-            ReleaseTask(obj, taskid, true);
-            RecycleReader(readerid, reader);
-        }
-
+            );
         void OnReadTaskFailed(ReadTaskId taskid
             , ReaderId readerid
             , ResourceReader::Ptr reader
-            )
-        {
-            ReleaseTask(nullptr, taskid, false);
-            RecycleReader(readerid, reader);
-        }
+            );
+        void RecycleReader(ReaderId id, ResourceReader::Ptr reader);
+        void ReleaseTask(Object::Ptr obj, ReadTaskId taskid, bool success);
 
-        void RecycleReader(ReaderId id, ResourceReader::Ptr reader)
-        {
-            std::lock_guard<std::mutex> lock(_readerMutex);
-
-            auto range = _loadingReaders.equal_range(id);
-            MultMapReaders::iterator iter = range.first;
-            MultMapReaders::iterator second = range.second;
-            if (iter != second)
-            {
-                while (iter != second)
-                {
-                    if (iter->second == reader)
-                    {
-                        break;
-                    }
-                    ++iter;
-                }
-
-                if (iter != second)
-                {
-                    _loadingReaders.erase(iter);
-                    _idleReaders.insert(std::make_pair(id, reader));
-                }
-            }
-        }
-
-        void ReleaseTask(Object::Ptr obj, ReadTaskId taskid, bool success)
-        {
-            std::lock_guard<std::mutex> lock(_taskMutex);
-
-            if(_loadingTasks.find(taskid) != _loadingTasks.end())
-            {
-                _loadingTasks.erase(taskid);
-            }
-
-            auto range = _waitToLoadTasks.equal_range(taskid);
-            WaitToLoadTaskMap::iterator first = range.first;
-            WaitToLoadTaskMap::iterator second = range.second;
-            bool exist = first != second;
-
-            IPackedReadTask::Ptr packedTask = nullptr;
-            while(first != second)
-            {
-                packedTask = first->second;
-                if(success)
-                {
-                    packedTask->InvokeSuccess(obj);
-                }
-                else
-                {
-                    packedTask->InvokeFailed();
-                }
-
-                ++first;
-            }
-
-            if(exist)
-            {
-                int eraseCount = _waitToLoadTasks.erase(taskid);
-                Console::LogWarning("Erased tasks which wait load count ", eraseCount, "\n");
-            }
-        }
+        bool AddResourceCache(CacheHint hint, ResourceCache::Ptr cache);
+        ResourceCache::Ptr GetResourceCache(CacheHint hint, CacheId id);
+        void UpdateResourceCache(float deltaTime);
 
     private:
         class IPackedReadTask
@@ -328,10 +276,12 @@ namespace TwinkleGraphics
             virtual void PushTask() = 0;
 
         protected:
+            virtual void InvokeSuccess() = 0;
             virtual void InvokeSuccess(Object::Ptr obj) = 0;
             virtual void InvokeFailed() = 0;
 
         protected:
+            std::string _filename;
             ReadTaskId _task = 0;;
             bool _asyncRead = false;
 
@@ -355,6 +305,18 @@ namespace TwinkleGraphics
             virtual void PushTask() override;
         
         protected:
+            virtual void InvokeSuccess() override
+            {
+                ResourceManager& resMgr = ResourceMgrInstance();
+                CacheId cacheid = CACHEID_FROMSTRING(_filename);
+                ReaderOption* option = _reader->GetReaderOption();
+                if(option != nullptr)
+                {
+                    ResourceCache::Ptr cache = resMgr.GetResourceCache(option->GetCacheHint(), cacheid);
+                    option->OnReadSuccess(cache->GetCachedObject());
+                }
+            }
+
             virtual void InvokeSuccess(Object::Ptr obj) override
             {
                 ReaderOption* option = _reader->GetReaderOption();
@@ -373,7 +335,7 @@ namespace TwinkleGraphics
                 }                
             }
 
-            std::string _filename;
+        private:
             R *_reader;
 
             friend class ResourceManager;
@@ -391,6 +353,7 @@ namespace TwinkleGraphics
         typedef std::multimap<ReadTaskId, IPackedReadTask::Ptr> WaitToLoadTaskMap;
 
         TSQueue<IPackedReadTask::Ptr> _taskQueue;
+        TSQueue<IPackedReadTask::Ptr> _cachedTaskQueue;
         LoadingTaskSet _loadingTasks;
         WaitToLoadTaskMap _waitToLoadTasks;
 
@@ -402,20 +365,12 @@ namespace TwinkleGraphics
 
         std::mutex _taskMutex;
         std::mutex _readerMutex;
+        std::mutex _cacheMutex;
 
         WorkerPool _workerPool;
 
         friend class Singleton<ResourceManager>;
     };
-
-#ifdef __cplusplus
-    extern "C"
-    {
-#endif
-        __TWCOMExport ResourceManager &ResourceMgrInstance();
-#ifdef __cplusplus
-    }
-#endif
 
     typedef Singleton<ResourceManager> ResourceManagerInst;
 
