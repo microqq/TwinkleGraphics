@@ -28,5 +28,3 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
     set_target_properties(twEvent PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
-
-target_link_libraries(twEvent twCommon)
