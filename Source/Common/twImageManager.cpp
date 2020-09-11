@@ -55,6 +55,17 @@ namespace TwinkleGraphics
         }
     }    
 
+    void ImageManager::OnReadShaderSuccess(Object::Ptr obj)
+    {
+        Image *image = dynamic_cast<Image *>(obj.get());
+        if (image != nullptr)
+        {
+        }
+    }
+
+    void ImageManager::OnReadShaderFailed() 
+    {}
+
     template <>
     void ResourceManager::PackedReadTask<ReadResult<Image>, ImageReader>::PushTask()
     {

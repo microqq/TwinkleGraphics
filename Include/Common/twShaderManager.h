@@ -25,18 +25,23 @@ namespace TwinkleGraphics
         ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
 
         ReadResult<Shader> ReadShaderAsync(const char* filename, ShaderOption* option);
-        ShaderProgram::Ptr ReadShadersAsync(ShaderOption options[], int32 num);
+        ReadResult<ShaderProgram> ReadShadersAsync(ShaderOption options[], int32 num);
         void AddTaskFuture(std::future<ReadResult<Shader>> future);
-
-        void OnReadShaderSuccess(Object::Ptr obj);
-        void OnReadShaderFailed();
+        void AddTaskProgramFuture(std::future<ReadResult<ShaderProgram>> future);
 
     private:
         explicit ShaderManager();
+        void OnReadShaderSuccess(Object::Ptr obj);
+        void OnReadShaderFailed();
+
+        void OnReadShadersSuccess(Object::Ptr obj, ShaderOption* option);
+        void OnReadShadersFailed();
 
     private:
         std::vector<std::future<ReadResult<Shader>>> _futures;
+        std::vector<std::future<ReadResult<ShaderProgram>>> _programFutures;
         std::mutex _mutex;
+        std::mutex _programMutex;
 
         friend class Singleton<ShaderManager>;
     };

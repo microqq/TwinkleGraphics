@@ -1,4 +1,6 @@
 
+// #include <filesystem>
+
 #include "twShaderManager.h"
 #include "twResourceManager.h"
 
@@ -76,6 +78,10 @@ namespace TwinkleGraphics
             std::lock_guard<std::mutex> lock(_mutex);
             _futures.clear();
         }
+
+        {
+            std::lock_guard<std::mutex> lock(_programMutex);
+        }
     }
 
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
@@ -93,24 +99,17 @@ namespace TwinkleGraphics
 
         //read shader source
         bool readyLink = true;
-        Shader::Ptr* shaders = new Shader::Ptr[num];
+        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(num);
         for (int i = 0; i < num; i++)
         {
             Shader::Ptr shader = ReadShader(options[i]._optionData.filename.c_str(), &options[i]);
             if(shader != nullptr)
             {
-                shaders[i] = shader;
-                readyLink &= shaders[i]->Compiled();
+                program->AddShader(shader);
             }
         }
 
-        //if cache not found, create new program
-        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(shaders, num);
-        if (readyLink)
-        {
-            program->Link();
-        }
-        SAFE_DEL_ARR(shaders);
+        program->Link();
 
         return program;
     }
@@ -120,31 +119,40 @@ namespace TwinkleGraphics
         ResourceManager& resMgr = ResourceMgrInstance();
         option->AddSuccessFunc(this, &ShaderManager::OnReadShaderSuccess);
         option->AddFailedFunc(this, &ShaderManager::OnReadShaderFailed);
+        option->AddSuccessFunc(this, &ShaderManager::OnReadShadersSuccess, option);
         return resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
     }
 
-    ShaderProgram::Ptr ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
+    ReadResult<ShaderProgram> ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
     {
+        ResourceManager& resMgr = ResourceMgrInstance();
+
         bool readyLink = true;
-        Shader::Ptr* shaders = new Shader::Ptr[num];
+        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(num);
+        Shader::Ptr shader = nullptr;
+
+        std::string programFilename;
         for(int i = 0; i < num; i++)
         {
-            auto result = ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
-            shaders[i] = result.GetSharedObject();
-            readyLink &= ((shaders[i] != nullptr) ? shaders[i]->Compiled() : false);
-        }
+            // auto path = options[i]._optionData.filename;
+            // auto filename = std::filesystem::path(path).filename().string();
 
-        if(readyLink)
+            // programFilename += ((i < num -1) ? (filename + "/") : filename);
+        }
+        ShaderOption* programOption = new ShaderOption;
+        programOption->_optionData.program = program;
+        resMgr.ReadAsync<ShaderReader, ShaderProgram>(programFilename.c_str(), programOption);
+
+        for(int i = 0; i < num; i++)
         {
-            ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(shaders, num);
-            program->Link();
-
-            SAFE_DEL_ARR(shaders);
-            return program;
+            options[i]._optionData.program = program;
+            auto result = ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
+            shader = result.GetSharedObject();
+            // program->AddShader(shader);
         }
 
-        SAFE_DEL_ARR(shaders);
-        return nullptr;
+        using Status = ReadResult<ShaderProgram>::Status;
+        return ReadResult<ShaderProgram>(nullptr, program, Status::SUCCESS);
     }    
 
     void ShaderManager::AddTaskFuture(std::future<ReadResult<Shader>> future)
@@ -152,6 +160,14 @@ namespace TwinkleGraphics
         {
             std::lock_guard<std::mutex> lock(_mutex);
             _futures.emplace_back(std::move(future));
+        }
+    }
+
+    void ShaderManager::AddTaskProgramFuture(std::future<ReadResult<ShaderProgram>> future)
+    {
+        {
+            std::lock_guard<std::mutex> lock(_programMutex);
+            _programFutures.emplace_back(std::move(future));
         }
     }
 
@@ -168,10 +184,28 @@ namespace TwinkleGraphics
     void ShaderManager::OnReadShaderFailed() 
     {}
 
+    void ShaderManager::OnReadShadersSuccess(Object::Ptr obj, ShaderOption* option)
+    {
+        if(option == nullptr)
+        {
+            return;
+        }
 
+        Shader::Ptr shader = std::dynamic_pointer_cast<Shader>(obj);
+        if (shader != nullptr)
+        {
+            ShaderProgram::Ptr program = option->_optionData.program;
+            if(program != nullptr)
+            {
+                program->AddShader(shader);
+                bool linked = program->Link();
+            }
+        }
+    }
 
-
-
+    void ShaderManager::OnReadShadersFailed()
+    {
+    }
 
     template <>
     void ResourceManager::PackedReadTask<ReadResult<Shader>, ShaderReader>::PushTask()
@@ -191,5 +225,22 @@ namespace TwinkleGraphics
             resMgr.PushTask(&ShaderReader::Read, _reader, _filename.c_str());
         }
     }
+
+    template <>
+    void ResourceManager::PackedReadTask<ReadResult<ShaderProgram>, ShaderReader>::PushTask()
+    {
+        // typedef Ret(R::*)(const char*, ReaderOption) Func;
+        ResourceManager &resMgr = ResourceMgrInstance();
+        if(_asyncRead)
+        {
+            auto future = resMgr.PushAsyncTask(&ShaderReader::ReadProgramAsync, _reader, _filename);
+            {
+                ShaderManager& shaderMgr = ShaderMgrInstance();
+                shaderMgr.AddTaskProgramFuture(std::move(future));
+            }
+        }
+    }
+
+
 
 } // namespace TwinkleGraphics

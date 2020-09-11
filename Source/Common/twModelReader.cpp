@@ -18,6 +18,10 @@ namespace TwinkleGraphics
     ModelReader::ModelReader(ReaderOption *option)
         : ResourceReader()
     {
+        if(option != nullptr)
+        {
+			_option = new ReaderOption(*option);
+        }
     }
 
     ModelReader::~ModelReader()

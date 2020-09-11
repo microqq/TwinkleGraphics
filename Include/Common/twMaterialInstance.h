@@ -361,8 +361,6 @@ private:
         vec2 tiling(1.0f, 1.0f), offset(0.0f, 0.0f);
         this->SetTextureTiling("mainTex", tiling);
         this->SetTextureOffset("mainTex", offset);
-
-        RenderPass::CreateRenderPassInstance(options, 2);
     }
 };
 

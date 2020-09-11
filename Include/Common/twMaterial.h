@@ -49,12 +49,12 @@ public:
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
 
-    void SetShader(ShaderProgram::Ptr shader) { _shader = shader; }
+    void SetShaderProgram(ShaderProgram::Ptr shader) { _shader = shader; }
     void SetEnable(bool enable) { _enable = enable; }
 
     inline bool Enabled() { return _enable; }
     inline const RenderState& GetRenderState() { return _state; }
-    inline const ShaderProgram::Ptr& GetShader() { return _shader; }
+    inline const ShaderProgram::Ptr& GetShaderProgram() { return _shader; }
     inline const std::map<std::string, TextureSlot>& GetTextureSlots() { return _slots; }
     inline const std::map<std::string, UniformLocation>& GetUniformLocations() { return _uniformlocations; }
 
@@ -73,7 +73,7 @@ private:
     RenderState _state;
     ShaderProgram::Ptr _shader;
 
-    bool _enable;
+    bool _enable = true;
 
     friend class Material;
 };

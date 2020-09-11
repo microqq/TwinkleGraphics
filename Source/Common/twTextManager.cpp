@@ -29,6 +29,17 @@ namespace TwinkleGraphics
     }
 
 
+    void TextManager::OnReadShaderSuccess(Object::Ptr obj)
+    {
+        TextSource *text = dynamic_cast<TextSource *>(obj.get());
+        if (text != nullptr)
+        {
+        }
+    }
+
+    void TextManager::OnReadShaderFailed() 
+    {}    
+
     template <>
     void ResourceManager::PackedReadTask<ReadResult<TextSource>, TextReader>::PushTask()
     {

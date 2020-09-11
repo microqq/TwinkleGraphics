@@ -13,7 +13,6 @@ RenderPass::Ptr RenderPass::CreateRenderPassInstance(ShaderOption options[], int
     return pass;
 }
 
-
 RenderPass::RenderPass(ShaderProgram::Ptr shader)
     : Object()
     , _slots()

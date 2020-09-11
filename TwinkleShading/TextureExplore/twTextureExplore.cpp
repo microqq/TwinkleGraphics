@@ -1027,7 +1027,7 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 {
     Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
-    ShaderProgram::Ptr shader = pass->GetShader();
+    ShaderProgram::Ptr shader = pass->GetShaderProgram();
 
     for (auto tex_slot : pass->GetTextureSlots())
     {

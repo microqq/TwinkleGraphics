@@ -12,6 +12,10 @@ namespace TwinkleGraphics
     TextReader::TextReader(ReaderOption *option)
         : ResourceReader()
     {
+        if(option != nullptr)
+        {
+			_option = new ReaderOption(*option);
+        }
     }
 
     TextReader::~TextReader()

@@ -29,6 +29,17 @@ namespace TwinkleGraphics
         }
     }    
 
+    void ModelManager::OnReadShaderSuccess(Object::Ptr obj)
+    {
+        Model *model = dynamic_cast<Model *>(obj.get());
+        if (model != nullptr)
+        {
+        }
+    }
+
+    void ModelManager::OnReadShaderFailed() 
+    {}    
+
     template <>
     void ResourceManager::PackedReadTask<ReadResult<Model>, ModelReader>::PushTask()
     {

@@ -33,29 +33,6 @@ namespace TwinkleGraphics
         COMPUTE_SHADER = GL_COMPUTE_SHADER
     };
 
-    class __TWCOMExport ShaderOption final : public ReaderOption
-    {
-    public:
-        struct OptionData
-        {
-            std::string filename;
-            ShaderType type;
-            int32 numMacros = 0;
-            char **macros = nullptr;
-        };
-           
-        ShaderOption(const OptionData& data);
-        ShaderOption(const ShaderOption &src);
-        const ShaderOption &operator=(const ShaderOption &src) = delete;
-        virtual ~ShaderOption();
-
-    private:
-        OptionData _optionData;
-
-        friend class ShaderReader;
-        friend class ShaderManager;
-    };
-
     typedef TextSource ShaderSource;
     typedef TextSource ShaderIncludeSource;
 
@@ -103,9 +80,11 @@ namespace TwinkleGraphics
         typedef std::shared_ptr<ShaderProgram> Ptr;
         typedef std::weak_ptr<ShaderProgram> WeakPtr;
 
-        ShaderProgram(Shader::Ptr* shaders, int32 num);
+        ShaderProgram(int32 shaderCount);
         virtual ~ShaderProgram();
 
+        void AddShader(Shader::Ptr shader);
+        void ClearShader();
         bool Link();
         void SetRenderResource(RenderResourceHandle &res) { _res = res; }
         const RenderResourceHandle &GetRenderResource() { return _res; }
@@ -124,9 +103,56 @@ namespace TwinkleGraphics
     private:
         std::vector<Shader::Ptr> _shaders;
         RenderResourceHandle _res;
+        int32 _linkShaderCount = 0;
         GLint _linked = false;
-        // bool _readyForLink = false;
 
+        friend class ShaderManager;
+    };
+
+    class __TWCOMExport ShaderOption final : public ReaderOption
+    {
+    public:
+        struct OptionData
+        {
+            std::string filename;
+            ShaderType type;
+            int32 numMacros = 0;
+            char **macros = nullptr;
+            ShaderProgram::Ptr program = nullptr;
+        };
+
+        ShaderOption();
+        ShaderOption(const OptionData& data);
+        ShaderOption(const ShaderOption &src);
+        const ShaderOption &operator=(const ShaderOption &src) = delete;
+        virtual ~ShaderOption();
+
+    private:
+        OptionData _optionData;
+
+        friend class ShaderReader;
+        friend class ShaderManager;
+    };
+
+    class __TWCOMExport ShaderProgramOption final : public ReaderOption
+    {
+    public:
+        ShaderProgramOption()
+            : ReaderOption()
+            , _program(nullptr)
+        {}
+        ShaderProgramOption(const ShaderProgramOption &src)
+            : ReaderOption(src)
+        {
+            _program = src._program;
+        }
+        const ShaderOption &operator=(const ShaderProgramOption &src) = delete;
+        virtual ~ShaderProgramOption() {}
+
+    private:
+        ShaderProgram::Ptr _program = nullptr;
+
+        friend class ShaderReader;
         friend class ShaderManager;
     };
 
@@ -150,6 +176,7 @@ namespace TwinkleGraphics
 
         ReadResult<Shader> Read(const char *filename);
         ReadResult<Shader> ReadAsync(std::string filename);
+        ReadResult<ShaderProgram> ReadProgramAsync(std::string filename);
 
         DECLARE_READERID;
 

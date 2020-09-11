@@ -42,6 +42,7 @@ namespace TwinkleGraphics
     {
         if(option != nullptr)
         {
+			_option = new ReaderOption(*option);
         }
     }
 

@@ -9,8 +9,14 @@
 
 namespace TwinkleGraphics
 {
+    ShaderOption::ShaderOption()
+        : ReaderOption()
+        , _optionData()
+    {}
+
     ShaderOption::ShaderOption(const OptionData &data)
         : ReaderOption()
+        , _optionData()
     {
         _optionData.filename = data.filename;
         _optionData.type = data.type;
@@ -23,6 +29,7 @@ namespace TwinkleGraphics
         {
             _optionData.macros[i] = data.macros[i];
         }
+        _optionData.program = data.program;
     }
 
     ShaderOption::ShaderOption(const ShaderOption &src)
@@ -39,6 +46,7 @@ namespace TwinkleGraphics
         {
             _optionData.macros[i] = src._optionData.macros[i];
         }
+        _optionData.program = src._optionData.program;
     }
 
     ShaderOption::~ShaderOption()
@@ -365,40 +373,65 @@ namespace TwinkleGraphics
  * @brief Construct a new Shader Program:: Shader Program object
  * 
  */
-    ShaderProgram::ShaderProgram(Shader::Ptr* shaders, int32 num)
-        : Object(), _res()
+    ShaderProgram::ShaderProgram(int32 shaderCount)
+        : Object()
+        , _shaders()
+        , _res()
+        , _linkShaderCount(shaderCount)
     {
-        for(int32 i = 0; i < num; i++)
-        {
-            _shaders.push_back(shaders[i]);
-        }
-
-        _res.id = glCreateProgram();
         _res.type = GL_PROGRAM;
-
-#ifdef _DEBUG
-        GLenum error = glGetError();
-        const GLubyte *error_str = glGetString(error);
-#endif
     }
 
     ShaderProgram::~ShaderProgram()
     {
         Console::LogInfo("Shader: Shader Program ", _res.id, "(hash: ", _res.hash, ") deconstruct\n");
 
+        if(_res.id != GL_NONE)
+        {
+            glDeleteProgram(_res.id);
+        }
+    }
+
+    void ShaderProgram::AddShader(Shader::Ptr shader)
+    {
+        _shaders.emplace_back(shader);
+    }
+
+    void ShaderProgram::ClearShader()
+    {
         _shaders.clear();
-        glDeleteProgram(_res.id);
     }
 
     bool ShaderProgram::Link()
     {
-        if(_shaders.size() == 0)
+        if(_linked)
+        {
+            return true;
+        }
+
+        bool readyForLink = _linkShaderCount == _shaders.size();
+        if(!readyForLink)
         {
             return false;
         }
 
-        int32 num = _shaders.size();
-        for (int i = 0; i < num; i++)
+        for(auto shader : _shaders)
+        {
+            readyForLink &= shader->Compiled();
+        }
+        if(!readyForLink)
+        {
+            return false;
+        }
+
+        _res.id = glCreateProgram();
+
+#ifdef _DEBUG
+        GLenum error = glGetError();
+        const GLubyte *error_str = glGetString(error);
+#endif
+
+        for (int i = 0; i < _linkShaderCount; i++)
         {
             glAttachShader(_res.id, _shaders[i]->GetRenderResource().id);
         }
@@ -420,7 +453,7 @@ namespace TwinkleGraphics
             SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
-            for (int i = 0; i < num; i++)
+            for (int i = 0; i < _linkShaderCount; i++)
             {
                 glDetachShader(_res.id, _shaders[i]->GetRenderResource().id);
             }
@@ -429,14 +462,13 @@ namespace TwinkleGraphics
         }
         else
         {
-            for (int i = 0; i < num; i++)
+            for (int i = 0; i < _linkShaderCount; i++)
             {
                 glDetachShader(_res.id, _shaders[i]->GetRenderResource().id);
             }
         }
 
-        // release shaders
-        _shaders.clear();
+        ClearShader();
 
         return _linked;
     }
@@ -597,4 +629,15 @@ namespace TwinkleGraphics
         return Read(filename.c_str());
     }
 
+    ReadResult<ShaderProgram> ShaderReader::ReadProgramAsync(std::string filename)
+    {
+        using Status = typename ReadResult<ShaderProgram>::Status;
+        ShaderOption* option = dynamic_cast<ShaderOption*>(_option);
+        if(option != nullptr)
+        {
+            return ReadResult<ShaderProgram>(nullptr, option->_optionData.program, Status::SUCCESS);
+        }
+
+        return ReadResult<ShaderProgram>(Status::FAILED);
+    }
 } // namespace TwinkleGraphics

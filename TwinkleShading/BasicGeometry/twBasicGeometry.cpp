@@ -510,7 +510,7 @@ void BasicGeometryView::RenderInfinitePlane()
 {
     Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
-    ShaderProgram::Ptr shader = pass->GetShader();
+    ShaderProgram::Ptr shader = pass->GetShaderProgram();
 
     for (auto tex_slot : pass->GetTextureSlots())
     {

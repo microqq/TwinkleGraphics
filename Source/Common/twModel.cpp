@@ -75,7 +75,7 @@ namespace TwinkleGraphics
                 if(mat != nullptr)
                 {
                     RenderPass::Ptr pass = mat->GetRenderPass(0);
-                    ShaderProgram::Ptr shader = pass->GetShader();
+                    ShaderProgram::Ptr shader = pass->GetShaderProgram();
 
                     for (auto tex_slot : pass->GetTextureSlots())
                     {

@@ -30,6 +30,8 @@ namespace TwinkleGraphics
             : IUpdatable()
             , INonCopyable()            
         {}
+        void OnReadShaderSuccess(Object::Ptr obj);
+        void OnReadShaderFailed();
 
     private:
         std::vector<std::future<ReadResult<TextSource>>> _futures;
