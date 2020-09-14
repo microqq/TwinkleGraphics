@@ -38,9 +38,5 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_link_libraries(TWTests ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
-    target_link_libraries(TWTests twCommon twEvent -lgtest)
-endif()
-
 
 

@@ -96,12 +96,7 @@ namespace TwinkleGraphics
     };
 
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWCOMExport TextureManager& TextureMgrInstance();
-#ifdef __cplusplus
-    }
 #endif    
 
     typedef Singleton<TextureManager> TextManagerInst;

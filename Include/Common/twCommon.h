@@ -28,7 +28,6 @@
  * 
  */
 #if defined(__linux__) || defined(__APPLE__)
-    // #define __TWCOMExport __attribute__ ((__visibility__("default")))
     // #ifdef EXPORT_COMDLL
         #define __TWCOMExport __attribute__ ((__visibility__("default")))
     // #endif

@@ -31,12 +31,7 @@ namespace TwinkleGraphics
     };
 
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWCOMExport ImageManager &ImageMgrInstance();
-#ifdef __cplusplus
-    }
 #endif
 
     typedef Singleton<ImageManager> ImageManagerInst;

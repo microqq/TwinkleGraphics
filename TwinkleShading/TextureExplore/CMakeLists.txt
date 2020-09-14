@@ -20,11 +20,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
-    set_target_properties(twTextureExplore PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
-endif()
-
 target_include_directories(twTextureExplore PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../../Common
@@ -32,18 +27,6 @@ target_include_directories(twTextureExplore PUBLIC
 )
 
 target_link_libraries(twTextureExplore twUtil)
-
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwTextureExplore.so)
-#         file(COPY 
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwTextureExplore.so 
-#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-#         )
-#         file(REMOVE
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwTextureExplore.so
-#         )
-#     endif()
-# endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwTextureExplore.dll)

@@ -20,11 +20,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
-    set_target_properties(twBasicGeometry PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
-endif()
-
 target_include_directories(twBasicGeometry PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../../Common
@@ -32,18 +27,6 @@ target_include_directories(twBasicGeometry PUBLIC
 )
 
 target_link_libraries(twBasicGeometry twUtil)
-
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-#     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so)
-#         file(COPY 
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so 
-#             DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-#         )
-#         file(REMOVE
-#             ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.so
-#         )
-#     endif()
-# endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll)

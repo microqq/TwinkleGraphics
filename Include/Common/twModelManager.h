@@ -46,12 +46,7 @@ namespace TwinkleGraphics
 
 
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWCOMExport ModelManager& ModelMgrInstance();
-#ifdef __cplusplus
-    }
 #endif
 
     typedef Singleton<ModelManager> ModelManagerInst;

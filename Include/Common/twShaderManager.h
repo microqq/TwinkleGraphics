@@ -52,12 +52,7 @@ namespace TwinkleGraphics
     };
 
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWCOMExport ShaderManager& ShaderMgrInstance();
-#ifdef __cplusplus
-    }
 #endif
 
     typedef Singleton<ShaderManager> ShaderManagerInst;

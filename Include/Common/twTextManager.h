@@ -42,12 +42,7 @@ namespace TwinkleGraphics
     };
 
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWCOMExport TextManager& TextMgrInstance();
-#ifdef __cplusplus
-    }
 #endif    
 
     typedef Singleton<TextManager> TextManagerInst;

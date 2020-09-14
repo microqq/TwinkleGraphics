@@ -9,12 +9,7 @@ namespace TwinkleGraphics
 {
     class ResourceManager;
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWCOMExport ResourceManager &ResourceMgrInstance();
-#ifdef __cplusplus
-    }
 #endif
 
     typedef uint64_t ReadTaskId;

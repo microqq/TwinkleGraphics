@@ -3,7 +3,8 @@ project(TwinkleGraphics VERSION 0.1.0)
 
 option(ENABLE_DEBUG "Enter debug mode" OFF)
 option(ENABLE_TEMPORARY "Enter debug mode" OFF)
-Option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
+option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
+option(BUILD_GTESTS "build gtests" OFF)
 
 if(ENALBE_EVENT_MULTTHREAD)
     add_definitions(-D_EVT_MULTTHREAD)
@@ -30,22 +31,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # include(CheckCXXSymbolExists)
 # CHECK_CXX_SYMBOL_EXISTS(std::filesystem::path::preferred_separator filesystem cxx17fs)
 
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     SET(GLEWLIBDIR $ENV{GLEW_LIB_PATH})
     SET(GLFWLIBDIR $ENV{GLFW_LIB_PATH})
     SET(GTESTINCLUDEDIR $ENV{GTESTINCLUDE})
     SET(GTESTLIBDIR $ENV{GTESTLIB})
-    set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output/libs)
-
+    
     include_directories([AFTER|BEFORE] [SYSTEM]
         ${PROJECT_SOURCE_DIR}/ThirdParty/dirent/include
-    )
-
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-
+    )    
 endif()
-
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Output)
 
 # including path
 include_directories([AFTER|BEFORE] [SYSTEM]
@@ -58,8 +56,6 @@ include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/TwinkleShading
 )
 
-
-
 # add subdirectory
 add_subdirectory(ThirdParty/imgui)
 add_subdirectory(ThirdParty/ImGuiFileDialog)
@@ -71,8 +67,7 @@ add_subdirectory(Source/Event)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
 
-OPTION(BUILD_GTESTS "build gtests" OFF)
-IF(BUILD_GTESTS)
+if(BUILD_GTESTS)
     add_subdirectory(Testbeds/GTests)
     
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -81,9 +76,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     include_directories(${GTEST_INCLUDE_DIRS})
 endif()
 
-    add_test(UniformSetting ${EXECUTABLE_OUTPUT_PATH}/MaterialTests)
-    add_test(AddEventHandler ${EXECUTABLE_OUTPUT_PATH}/EventTests)
-    add_test(FireEvent ${EXECUTABLE_OUTPUT_PATH}/EventTests)
-
-    enable_testing()
-ENDIF(BUILD_GTESTS)
+    # add_test(UniformSetting ${EXECUTABLE_OUTPUT_PATH}/MaterialTests)
+    # add_test(AddEventHandler ${EXECUTABLE_OUTPUT_PATH}/EventTests)
+    # add_test(FireEvent ${EXECUTABLE_OUTPUT_PATH}/EventTests)
+    # enable_testing()
+endif()

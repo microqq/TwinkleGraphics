@@ -48,12 +48,7 @@ namespace TwinkleGraphics
     };
 
 #ifdef __cplusplus
-    extern "C"
-    {
-#endif
         __TWEVENTExport EventManager& EventMgrInstance();
-#ifdef __cplusplus
-    }
 #endif    
 
     typedef Singleton<EventManager> EventManagerInst;
