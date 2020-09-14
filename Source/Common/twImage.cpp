@@ -1,6 +1,7 @@
 #include "FreeImage.h"
 
 #include "twImage.h"
+#include "twTexture.h"
 #include "twConsoleLog.h"
 
 #ifdef __cplusplus
@@ -37,12 +38,14 @@ namespace TwinkleGraphics
 		// INITIALISE_READERID
 	}
 
-    ImageReader::ImageReader(ReaderOption* option)
+    ImageReader::ImageReader(ImageOption* option)
         : ResourceReader()
     {
         if(option != nullptr)
         {
-			_option = new ReaderOption(*option);
+			_option = new ImageOption(*option);
+			_option->AddSuccessFunc(this, &ImageReader::OnReadImageSuccess);
+			_option->AddFailedFunc(this, &ImageReader::OnReadImageFailed);
         }
     }
 
@@ -164,5 +167,28 @@ namespace TwinkleGraphics
 		//return success
 		return ReadResult<Image>(shared_from_this(), ret_image, ReadResult<Image>::Status::SUCCESS);
 	}
+
+    void ImageReader::OnReadImageSuccess(Object::Ptr obj)
+    {
+        Image::Ptr image = std::dynamic_pointer_cast<Image>(obj);
+        if (image != nullptr)
+        {
+			if(_option != nullptr)
+			{
+				ImageOption* op = dynamic_cast<ImageOption*>(_option);
+				if(op != nullptr)
+				{
+					Texture::Ptr texture = std::dynamic_pointer_cast<Texture>(op->_texture);
+					if(texture != nullptr)
+					{
+						texture->CreateFromImage(image);
+					}
+				}
+			}
+        }
+    }
+
+    void ImageReader::OnReadImageFailed() 
+    {}	
 
 } // namespace TwinkleGraphics

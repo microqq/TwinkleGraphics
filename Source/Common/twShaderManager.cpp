@@ -1,5 +1,4 @@
 
-// #include <filesystem>
 
 #include "twShaderManager.h"
 #include "twResourceManager.h"
@@ -24,47 +23,58 @@ namespace TwinkleGraphics
     void ShaderManager::Update()
     {
         // try
-        {
-            using ReadStatus = ReadResult<Shader>::Status;
-            using Future = std::future<ReadResult<Shader>>;
-            
-            std::lock_guard<std::mutex> lock(_mutex);
+        {            
+            {
+                std::lock_guard<std::mutex> lock(_mutex);
+                RemoveFutures<Shader>(_futures);
+            }
+            {
+                std::lock_guard<std::mutex> lock(_programMutex);
+                RemoveFutures<ShaderProgram>(_programFutures);
+            }
 
-            _futures.erase(
-                std::remove_if(_futures.begin(), _futures.end(), [this](Future& future)
-                {
-                    bool ret = future.valid() && TaskFinished(future);
-                    if(ret)
-                    {
-                        ReadResult<Shader> result = future.get();
-                        ResourceReader::Ptr reader = result.GetReader();
-                        if(reader != nullptr)
-                        {
-                            // Console::LogWarning("ShaderReader use count: ", reader.use_count(), " \n");
-                            ReaderOption* option = reader->GetReaderOption();
-                            if(option!= nullptr)
-                            {
-                                Shader::Ptr shader = result.GetSharedObject();
-                                ReadStatus status = result.GetStatus();
+            // _futures.erase(
+            //     std::remove_if(_futures.begin(), _futures.end(), [this](Future& future)
+            //     {
+            //         bool ret = future.valid() && TaskFinished(future);
+            //         if(ret)
+            //         {
+            //             ReadResult<Shader> result = future.get();
+            //             ResourceReader::Ptr reader = result.GetReader();
+            //             if(reader != nullptr)
+            //             {
+            //                 // Console::LogWarning("ShaderReader use count: ", reader.use_count(), " \n");
+            //                 ReaderOption* option = reader->GetReaderOption();
+            //                 if(option!= nullptr)
+            //                 {
+            //                     Shader::Ptr shader = result.GetSharedObject();
+            //                     ReadStatus status = result.GetStatus();
                             
-                                if(ReadStatus::SUCCESS == status)
-                                {
-                                    option->OnReadSuccess(shader);
-                                }
-                                else if(ReadStatus::FAILED == status)
-                                {
-                                    option->OnReadFailed();
-                                }
-                            }
-                        }
-                    }
-                    else //loading or wait load?
-                    {}
+            //                     if(ReadStatus::SUCCESS == status)
+            //                     {
+            //                         option->OnReadSuccess(shader);
+            //                     }
+            //                     else if(ReadStatus::FAILED == status)
+            //                     {
+            //                         option->OnReadFailed();
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //         else //loading or wait load?
+            //         {}
 
-                    return ret;
-                })
-                , _futures.end()
-            );
+            //         return ret;
+            //     })
+            //     , _futures.end()
+            // );
+
+            // _programFutures.erase(
+            //     std::remove_if(_programFutures.begin(), _programFutures.end(), [this](ProgramFuture &future) {
+            //         bool ret = future.valid() && TaskFinished(future);
+            //         return ret;
+            //     }),
+            //     _programFutures.end());
         }
         // catch (...)
         // {
@@ -81,6 +91,7 @@ namespace TwinkleGraphics
 
         {
             std::lock_guard<std::mutex> lock(_programMutex);
+            _programFutures.clear();
         }
     }
 
@@ -134,14 +145,25 @@ namespace TwinkleGraphics
         std::string programFilename;
         for(int i = 0; i < num; i++)
         {
-            // auto path = options[i]._optionData.filename;
-            // auto filename = std::filesystem::path(path).filename().string();
+            auto path = options[i]._optionData.filename;
+            int pos = path.find_last_of("/");
+            if(pos == std::string::npos)
+            {
+                pos = 0;
+            }
+            else
+            {
+                pos += 1;
+            }
+            
 
-            // programFilename += ((i < num -1) ? (filename + "/") : filename);
+            auto filename = path.substr(pos);
+            programFilename += ((i < num -1) ? (filename + "/") : filename);
         }
-        ShaderOption* programOption = new ShaderOption;
-        programOption->_optionData.program = program;
-        resMgr.ReadAsync<ShaderReader, ShaderProgram>(programFilename.c_str(), programOption);
+
+        ShaderProgramOption programOption;
+        programOption._program = program;
+        resMgr.ReadAsync<ShaderReader, ShaderProgram>(programFilename.c_str(), &programOption);
 
         for(int i = 0; i < num; i++)
         {

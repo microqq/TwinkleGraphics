@@ -52,6 +52,7 @@ namespace TwinkleGraphics
     ShaderOption::~ShaderOption()
     {
         SAFE_DEL(_optionData.macros);
+        _optionData.program = nullptr;
     }
 
     Shader::Shader(ShaderType type, ShaderSource::Ptr source)
@@ -537,16 +538,21 @@ namespace TwinkleGraphics
         // INITIALISE_READERID
     }
     
-    ShaderReader::ShaderReader(ReaderOption* option)
+    ShaderReader::ShaderReader(ShaderOption* option)
         : ResourceReader()
     {
         if(option != nullptr)
         {
-            ShaderOption* srcOption = dynamic_cast<ShaderOption*>(option);
-            if(srcOption != nullptr)
-            {
-                _option = new ShaderOption(*srcOption);
-            }
+            _option = new ShaderOption(*option);
+        }
+    }
+
+    ShaderReader::ShaderReader(ShaderProgramOption *option)
+        : ResourceReader()
+    {
+        if(option != nullptr)
+        {
+            _option = new ShaderProgramOption(*option);
         }
     }
 
@@ -632,10 +638,10 @@ namespace TwinkleGraphics
     ReadResult<ShaderProgram> ShaderReader::ReadProgramAsync(std::string filename)
     {
         using Status = typename ReadResult<ShaderProgram>::Status;
-        ShaderOption* option = dynamic_cast<ShaderOption*>(_option);
+        ShaderProgramOption* option = dynamic_cast<ShaderProgramOption*>(_option);
         if(option != nullptr)
         {
-            return ReadResult<ShaderProgram>(nullptr, option->_optionData.program, Status::SUCCESS);
+            return ReadResult<ShaderProgram>(nullptr, option->_program, Status::SUCCESS);
         }
 
         return ReadResult<ShaderProgram>(Status::FAILED);

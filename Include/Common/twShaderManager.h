@@ -2,12 +2,14 @@
 #ifndef TW_SHADERMANAGER_H
 #define TW_SHADERMANAGER_H
 
+#include "twReaderManager.h"
 #include "twShader.h"
 #include "twSingleton.h"
 
 namespace TwinkleGraphics
 {
     class __TWCOMExport ShaderManager : public IUpdatable
+        , public IReaderManager
         , public INonCopyable
         , public IDestroyable
     {
@@ -30,6 +32,9 @@ namespace TwinkleGraphics
         void AddTaskProgramFuture(std::future<ReadResult<ShaderProgram>> future);
 
     private:
+        typedef std::vector<std::future<ReadResult<Shader>>> ShaderFutures;
+        typedef std::vector<std::future<ReadResult<ShaderProgram>>> ShaderProgramFutures;
+
         explicit ShaderManager();
         void OnReadShaderSuccess(Object::Ptr obj);
         void OnReadShaderFailed();

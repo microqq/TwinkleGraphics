@@ -146,8 +146,11 @@ namespace TwinkleGraphics
         {
             _program = src._program;
         }
-        const ShaderOption &operator=(const ShaderProgramOption &src) = delete;
-        virtual ~ShaderProgramOption() {}
+        const ShaderProgramOption &operator=(const ShaderProgramOption &src) = delete;
+        virtual ~ShaderProgramOption() 
+        {
+            _program = nullptr;
+        }
 
     private:
         ShaderProgram::Ptr _program = nullptr;
@@ -171,7 +174,8 @@ namespace TwinkleGraphics
         typedef std::shared_ptr<ShaderReader> Ptr;
 
         ShaderReader();
-        ShaderReader(ReaderOption* option);
+        ShaderReader(ShaderOption* option);
+        ShaderReader(ShaderProgramOption* option);
         virtual ~ShaderReader();
 
         ReadResult<Shader> Read(const char *filename);

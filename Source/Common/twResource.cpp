@@ -70,7 +70,7 @@ namespace TwinkleGraphics
 
     ResourceReader::~ResourceReader() 
     {
-        _option = nullptr;
+        SAFE_DEL(_option);
     }
     ResourceReader::ResourceReader() {}
 

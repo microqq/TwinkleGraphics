@@ -24,6 +24,14 @@ namespace TwinkleGraphics
 		Destroy();
 	}
 
+    void ImageManager::Update()
+	{
+		{
+			std::lock_guard<std::mutex> lock(_mutex);
+			RemoveFutures<Image>(_futures);
+		}
+	}
+
 	void ImageManager::Destroy()
 	{
         {
@@ -32,19 +40,19 @@ namespace TwinkleGraphics
         }
 	}
 
-	Image::Ptr ImageManager::ReadImage(const char* filename)
+	Image::Ptr ImageManager::ReadImage(const char* filename, ImageOption* option)
 	{
         ResourceManager& resMgr = ResourceMgrInstance();
-		ReadResult<Image> result = resMgr.Read<ImageReader, Image>(filename, nullptr);
+		ReadResult<Image> result = resMgr.Read<ImageReader, Image, ImageOption>(filename, option);
 		Image::Ptr image = result.GetSharedObject();
 
 		return image;
 	}
 
-    ReadResult<Image> ImageManager::ReadImageAsync(const char* filename)
+    ReadResult<Image> ImageManager::ReadImageAsync(const char* filename, ImageOption* option)
 	{
         ResourceManager& resMgr = ResourceMgrInstance();
-		return resMgr.ReadAsync<ImageReader, Image>(filename, nullptr);
+		return resMgr.ReadAsync<ImageReader, Image, ImageOption>(filename, option);
 	}    
 
     void ImageManager::AddTaskFuture(std::future<ReadResult<Image>> future)
@@ -54,17 +62,6 @@ namespace TwinkleGraphics
             _futures.emplace_back(std::move(future));
         }
     }    
-
-    void ImageManager::OnReadShaderSuccess(Object::Ptr obj)
-    {
-        Image *image = dynamic_cast<Image *>(obj.get());
-        if (image != nullptr)
-        {
-        }
-    }
-
-    void ImageManager::OnReadShaderFailed() 
-    {}
 
     template <>
     void ResourceManager::PackedReadTask<ReadResult<Image>, ImageReader>::PushTask()

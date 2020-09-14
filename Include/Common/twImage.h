@@ -46,6 +46,33 @@ private:
     ImageSource::Ptr _source;
 };
 
+class ImageOption final : public ReaderOption
+{
+    public:
+        ImageOption()
+            : ReaderOption()
+            , _texture(nullptr)
+        {}
+        ImageOption(const ImageOption &src)
+            : ReaderOption(src)
+        {
+            _texture = src._texture;
+        }
+        const ImageOption &operator=(const ImageOption &src) = delete;
+        virtual ~ImageOption() 
+        {
+            _texture = nullptr;
+        }
+
+        void SetTexture(Object::Ptr texture) { _texture = texture; }
+
+    private:
+        Object::Ptr _texture = nullptr;
+
+        friend class ImageReader;
+        friend class ImageManager;
+};
+
 class __TWCOMExport ImageReader final : public ResourceReader
         , public Reference<ImageReader>
         , public INonCopyable
@@ -54,7 +81,7 @@ public:
     typedef std::shared_ptr<ImageReader> Ptr;
     
     ImageReader();
-    ImageReader(ReaderOption* option);
+    ImageReader(ImageOption* option);
     virtual ~ImageReader();
 
     ReadResult<Image> Read(const char *filename);
@@ -63,6 +90,9 @@ public:
 private:
     ReadResult<Image> ReadDDS(const char *filename);
     ReadResult<Image> ReadOthers(const char *filename);
+
+    void OnReadImageSuccess(Object::Ptr obj);
+    void OnReadImageFailed();
 
     DECLARE_READERID;
 };

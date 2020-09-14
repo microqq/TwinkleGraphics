@@ -2,29 +2,29 @@
 #define TW_IMAGEMANAGER_H
 
 #include "twImage.h"
+#include "twReaderManager.h"
 
 namespace TwinkleGraphics
 {
-    class __TWCOMExport ImageManager : public IUpdatable, public INonCopyable, public IDestroyable
+    class __TWCOMExport ImageManager : public IUpdatable
+        , public IReaderManager
+        , public INonCopyable
+        , public IDestroyable
     {
     public:
         virtual ~ImageManager();
-        virtual void Update() override {}
+        virtual void Update() override;
         virtual void Destroy() override;
 
-        Image::Ptr ReadImage(const char *filename);
-        ReadResult<Image> ReadImageAsync(const char *filename);
+        Image::Ptr ReadImage(const char *filename, ImageOption* option = nullptr);
+        ReadResult<Image> ReadImageAsync(const char *filename, ImageOption* option = nullptr);
 
         void AddTaskFuture(std::future<ReadResult<Image>> future);
 
     private:
         explicit ImageManager();
-        void OnReadShaderSuccess(Object::Ptr obj);
-        void OnReadShaderFailed();
-
     private:
         std::vector<std::future<ReadResult<Image>>> _futures;
-        std::vector<Image::Ptr> _images;
         std::mutex _mutex;
 
         friend class Singleton<ImageManager>;

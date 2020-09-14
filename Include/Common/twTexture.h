@@ -820,22 +820,6 @@ private:
 };
 
 
-
-class TextureManager;
-typedef Singleton<TextureManager> TextureManagerInst;
-
-class __TWCOMExport TextureManager
-{
-public:
-    TextureManager()
-    {}
-    ~TextureManager()
-    {}
-
-private:
-
-};
-
 } // namespace TwinkleGraphics
 
 #endif

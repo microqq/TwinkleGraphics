@@ -37,5 +37,12 @@ TEST(ResourceReaderTests, ReadAsync)
     shaderMgr.ReadShaderAsync("Assets/Shaders/line.frag", &lineFragOption_);
     shaderMgr.ReadShaderAsync("Assets/Shaders/line.frag", &lineFragOption_);
 
+    ShaderOption options[] = {
+        ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
+        ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}};
+
+    shaderMgr.ReadShadersAsync(options, 2);
+    shaderMgr.ReadShadersAsync(options, 2);
+
     MainWindow_.Run();
 };

@@ -41,6 +41,7 @@ set(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twImage.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twImageManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twTexture.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twTextureManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twSprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twUniform.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterial.cpp
@@ -91,5 +92,4 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twCommon ${PROJECT_SOURCE_DIR}/ThirdParty/FreeImage/win/FreeImage.lib)
     target_link_libraries(twCommon imgui)
     target_link_libraries(twCommon vermilion)
-    target_link_libraries(twCommon twEvent)
 endif()

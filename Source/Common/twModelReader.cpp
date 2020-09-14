@@ -448,7 +448,7 @@ namespace TwinkleGraphics
 
             ImageManager& imageMgr = ImageMgrInstance();
             std::string imgFilename{dir + "/" + std::string(str.C_Str())};
-            Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str());
+            Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str(), nullptr);
             if(image == nullptr)
             {
                 continue;

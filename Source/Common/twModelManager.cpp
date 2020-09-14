@@ -8,7 +8,7 @@ namespace TwinkleGraphics
     Model::Ptr ModelManager::ReadModel(const char* filename)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        ReadResult<Model> result = resMgr.Read<ModelReader, Model>(filename, nullptr);
+        ReadResult<Model> result = resMgr.Read<ModelReader, Model, ReaderOption>(filename, nullptr);
         Model::Ptr model = result.GetSharedObject();
 
         return model;
@@ -17,7 +17,7 @@ namespace TwinkleGraphics
     ReadResult<Model> ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        return resMgr.ReadAsync<ModelReader, Model>(filename, nullptr);
+        return resMgr.ReadAsync<ModelReader, Model, ReaderOption>(filename, nullptr);
     }
 
 
@@ -29,7 +29,7 @@ namespace TwinkleGraphics
         }
     }    
 
-    void ModelManager::OnReadShaderSuccess(Object::Ptr obj)
+    void ModelManager::OnReadModelSuccess(Object::Ptr obj)
     {
         Model *model = dynamic_cast<Model *>(obj.get());
         if (model != nullptr)
@@ -37,7 +37,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void ModelManager::OnReadShaderFailed() 
+    void ModelManager::OnReadModelFailed() 
     {}    
 
     template <>

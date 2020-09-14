@@ -19,17 +19,6 @@ Texture::Texture(bool immutable, bool genMipMap)
     , _immutable(immutable)
     , _generateMipMap(genMipMap)
 {
-    uint32 textures[1] = {0};
-    glGenTextures(1, textures);
-
-#ifdef _DEBUG
-    GLenum error = glGetError();
-    const GLubyte* error_str = glGetString(error);
-
-    assert(textures[0] != 0);
-#endif
-
-    _res.id = textures[0];
 }
 
 Texture::~Texture()
@@ -316,11 +305,23 @@ void Texture::SetAnistropic(float32 anistropic, bool maxAnistropic)
 
 void Texture::InitStorage()
 {
-    glBindTexture(_res.type, _res.id);
+    uint32 textures[1] = {0};
+    glGenTextures(1, textures);
 
 #ifdef _DEBUG
     GLenum error = glGetError();
     const GLubyte* error_str = glGetString(error);
+
+    assert(textures[0] != 0);
+#endif
+
+    _res.id = textures[0];
+
+    glBindTexture(_res.type, _res.id);
+
+#ifdef _DEBUG
+    error = glGetError();
+    error_str = glGetString(error);
 #endif
 
 }

@@ -8,7 +8,7 @@ namespace TwinkleGraphics
     TextSource::Ptr TextManager::ReadText(const char* filename)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        ReadResult<TextSource> result = resMgr.Read<TextReader, TextSource>(filename, nullptr);
+        ReadResult<TextSource> result = resMgr.Read<TextReader, TextSource, ReaderOption>(filename, nullptr);
         TextSource::Ptr text = result.GetSharedObject();
 
         return text;
@@ -17,7 +17,7 @@ namespace TwinkleGraphics
     ReadResult<TextSource> TextManager::ReadTextAsync(const char *filename)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        return resMgr.ReadAsync<TextReader, TextSource>(filename, nullptr);
+        return resMgr.ReadAsync<TextReader, TextSource, ReaderOption>(filename, nullptr);
     }    
 
     void TextManager::AddTaskFuture(std::future<ReadResult<TextSource>> future)
@@ -29,7 +29,7 @@ namespace TwinkleGraphics
     }
 
 
-    void TextManager::OnReadShaderSuccess(Object::Ptr obj)
+    void TextManager::OnReadTextSuccess(Object::Ptr obj)
     {
         TextSource *text = dynamic_cast<TextSource *>(obj.get());
         if (text != nullptr)
@@ -37,7 +37,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void TextManager::OnReadShaderFailed() 
+    void TextManager::OnReadTextFailed() 
     {}    
 
     template <>

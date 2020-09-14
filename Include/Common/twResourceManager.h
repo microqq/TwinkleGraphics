@@ -44,8 +44,8 @@ namespace TwinkleGraphics
      * @param args 
      * @return ReadResult<TPtr> 
      */
-        template <class R, class T, class... Args>
-        ReadResult<T> Read(const char *filename, ReaderOption *option, Args &&... args)
+        template <class R, class T, class OP, class... Args>
+        ReadResult<T> Read(const char *filename, OP *option, Args &&... args)
         {
             // get GUID with filename, read from cache
 
@@ -90,8 +90,8 @@ namespace TwinkleGraphics
             }
         }
 
-        template <class R, class T, class... Args>
-        ReadResult<T> ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
+        template <class R, class T, class OP, class... Args>
+        ReadResult<T> ReadAsync(const char *filename, OP *option, Args &&... args)
         // auto ReadAsync(const char *filename, ReaderOption *option, Args &&... args)
         //-> std::future<ReadResult<T>>
         {
@@ -176,8 +176,8 @@ namespace TwinkleGraphics
             , _workerPool(2)
         {}
 
-        template <typename R>
-        typename R::Ptr GetReader(ReaderOption *option)
+        template <typename R, typename OP>
+        typename R::Ptr GetReader(OP *option)
         {
             std::unique_lock<std::mutex> lock(_readerMutex, std::defer_lock);
 
