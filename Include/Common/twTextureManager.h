@@ -13,26 +13,27 @@ namespace TwinkleGraphics
     class TextureOption final : public ReaderOption
     {
     public:
-        TextureOption()
+        TextureOption(TextureType type)
             : ReaderOption()
-            , _texture(nullptr)
+            , _textureType(type)
         {}
         TextureOption(const TextureOption &src)
             : ReaderOption(src)
         {
-            _texture = src._texture;
+            _immutable = src._immutable;
+            _genMipMap = src._genMipMap;
+            _textureType = src._textureType;
         }
         const TextureOption &operator=(const TextureOption &src) = delete;
         virtual ~TextureOption() 
         {
-            _texture = nullptr;
         }
 
         void SetImmutable(bool immutable) { _immutable = immutable; }
         void SetGenMipMap(bool genMipMap) { _genMipMap = genMipMap; }
 
     private:
-        Texture::Ptr _texture = nullptr;
+        TextureType _textureType;
         bool _immutable = true;
         bool _genMipMap = false;
 
@@ -48,7 +49,7 @@ namespace TwinkleGraphics
         typedef std::shared_ptr<TextureReader> Ptr;
 
         TextureReader();
-        TextureReader(ReaderOption *option);
+        TextureReader(TextureOption *option);
         virtual ~TextureReader();
 
         ReadResult<Texture> Read(const char *filename);
@@ -70,7 +71,13 @@ namespace TwinkleGraphics
         Texture::Ptr ReadTexture(const char* filename, TextureOption* option);
         ReadResult<Texture> ReadTextureAsync(const char* filename, TextureOption* option);
 
-        virtual void Update() override {}
+        virtual void Update() override 
+        {
+            {
+                std::lock_guard<std::mutex> lock(_mutex);
+                RemoveFutures(_futures);
+            }
+        }
         virtual void Destroy() override
         {
             {
@@ -99,7 +106,7 @@ namespace TwinkleGraphics
         __TWCOMExport TextureManager& TextureMgrInstance();
 #endif    
 
-    typedef Singleton<TextureManager> TextManagerInst;
+    typedef Singleton<TextureManager> TextureManagerInst;
 } // namespace TwinkleGraphics
 
 

@@ -316,13 +316,27 @@ public:
             assert(image->GetImageSource().target == _res.type);
 #endif
             _image = image;
+        }
+
+        CreateFromImage();
+    }
+
+    void CreateFromImage()
+    { 
+        if(_res.id != 0)
+        {
+            return;
+        }
+
+        if(_image != nullptr) 
+        {
             InitStorage();
         }
         else if(!_immutable)
         {
             //update texture storage
         }
-    }
+    }    
 
     void Create(int32 width, int32 height, GLenum internalformat = GL_RGBA8
         , GLenum format = GL_RGBA, int32 miplevels = 1
@@ -370,6 +384,7 @@ public:
 
     void SetAnistropic(float32 anistropic = -1.0f, bool maxAnistropic = true);
 
+    void SetImage(Image::Ptr image) { _image = image; }
     Image::Ptr GetImage() { return _image; }
     const TexParams& GetTexParams() { return _parameters; }
     int32 GetNumMipLevels() 
@@ -514,8 +529,6 @@ public:
         : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_1D;
-
-        Console::LogInfo("Texture: Create texture1D ", _res.id, "(hash: ", _res.hash, ").\n");
     }
     virtual ~Texture1D() {}
 
@@ -540,8 +553,6 @@ public:
         : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_2D;
-
-        Console::LogInfo("Texture: Create texture2D ", _res.id, " (hash: ", _res.hash, ").\n");
     }
     virtual ~Texture2D() {}
 
@@ -572,8 +583,6 @@ public:
             , _fixedsampledlocation(true)
     {
         _res.type = GL_TEXTURE_2D_MULTISAMPLE;
-
-        Console::LogInfo("Texture: Create texture2D-multisample ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~Texture2DMultiSample() {}
@@ -604,8 +613,6 @@ public:
             : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_3D;
-
-        Console::LogInfo("Texture: Create texture3D ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~Texture3D() {}
@@ -628,8 +635,6 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_RECTANGLE;
-
-        Console::LogInfo("Texture: Create textureRectangle ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~TextureRectangle() {}
@@ -661,8 +666,6 @@ public:
             : Texture(immutable)
     {
         _res.type = GL_TEXTURE_BUFFER;
-
-        Console::LogInfo("Texture: Create textureBuffer ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~TextureBuffer();
@@ -697,8 +700,6 @@ public:
         : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_CUBE_MAP;
-
-        Console::LogInfo("Texture: Create textureCube ", _res.id, " (hash: ", _res.hash, ").\n");
     }
     virtual ~TextureCube() {}
 
@@ -737,8 +738,6 @@ public:
             : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_1D_ARRAY;
-
-        Console::LogInfo("Texture: Create texture1DArray ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~Texture1DArray() {}
@@ -756,8 +755,6 @@ public:
             : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_2D_ARRAY;
-
-        Console::LogInfo("Texture: Create texture3DArray ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~Texture2DArray() {}
@@ -775,8 +772,6 @@ public:
             : Texture(immutable, genMipMap)
     {
         _res.type = GL_TEXTURE_CUBE_MAP_ARRAY;
-
-        Console::LogInfo("Texture: Create textureCubeArray ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~TextureCubeArray() {}
@@ -796,8 +791,6 @@ public:
             , _fixedsampledlocation(true)
     {
         _res.type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-
-        Console::LogInfo("Texture: Create texture2D-multisample-array ", _res.id, " (hash: ", _res.hash, ").\n");
     }
 
     virtual ~Texture2DMultiSampleArray() {}

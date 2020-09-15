@@ -153,6 +153,7 @@ namespace TwinkleGraphics
 
             if (iter != second)
             {
+                reader->Reset();
                 _loadingReaders.erase(iter);
                 _idleReaders.insert(std::make_pair(id, reader));
             }

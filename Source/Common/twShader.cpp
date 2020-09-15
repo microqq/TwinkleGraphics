@@ -641,7 +641,7 @@ namespace TwinkleGraphics
         ShaderProgramOption* option = dynamic_cast<ShaderProgramOption*>(_option);
         if(option != nullptr)
         {
-            return ReadResult<ShaderProgram>(nullptr, option->_program, Status::SUCCESS);
+            return ReadResult<ShaderProgram>(nullptr, option->_program, Status::LOADING);
         }
 
         return ReadResult<ShaderProgram>(Status::FAILED);

@@ -27,6 +27,7 @@ namespace TwinkleGraphics
 {
 class ReaderOption;
 class ResourceReader;
+class ResourceManager;
 typedef uint16_t ReaderId;
 typedef uint64_t CacheId;
 
@@ -65,7 +66,7 @@ public:
     float GetStoreTime();
 
     template <typename Caller, typename Func, typename... Args>
-    void AddSuccessFunc(Caller&& caller, Func&& func, Args&&...args)
+    void AddSuccessFunc(int insertPos, Caller&& caller, Func&& func, Args&&...args)
     {
         auto concreteCallback = std::bind(
             std::forward<Func>(func)
@@ -80,11 +81,11 @@ public:
             }
         );
 
-        AddSuccessFunc(callback);
+        AddSuccessFunc(insertPos, callback);
     }
 
     template <typename Caller, typename Func, typename... Args>
-    void AddFailedFunc(Caller&& caller, Func&& func, Args&&...args)
+    void AddFailedFunc(int insertPos, Caller&& caller, Func&& func, Args&&...args)
     {
         auto concreteCallback = std::bind(
             std::forward<Func>(func)
@@ -98,11 +99,11 @@ public:
             }
         );
 
-        AddFailedFunc(callback);
+        AddFailedFunc(insertPos, callback);
     }
 
-    void AddSuccessFunc(ReadSuccessCallbackFuncPtr func);
-    void AddFailedFunc(ReadFailedCallbackFuncPtr func);
+    void AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func);
+    void AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func);
     void OnReadSuccess(Object::Ptr obj) const;
     void OnReadFailed() const;
 
@@ -124,10 +125,13 @@ public:
 
 protected:
     ResourceReader();
+    void Reset();
 
 protected:
     ReaderOption* _option = nullptr;
     bool _asynchronize = false;
+
+    friend class ResourceManager;
 };
 
 /**

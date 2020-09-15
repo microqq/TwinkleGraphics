@@ -11,12 +11,12 @@ namespace TwinkleGraphics
         // INITIALISE_READERID
     }
 
-    TextureReader::TextureReader(ReaderOption *option)
+    TextureReader::TextureReader(TextureOption *option)
         : ResourceReader()
     {
         if(option != nullptr)
         {
-			_option = new ReaderOption(*option);
+			_option = new TextureOption(*option);
         }
     }
 
@@ -27,22 +27,63 @@ namespace TwinkleGraphics
 
     ReadResult<Texture> TextureReader::Read(const char *filename)
     {
+        Texture::Ptr texture = nullptr;
+        TextureOption* option = dynamic_cast<TextureOption*>(_option);
+        TextureType texType = option->_textureType;
+        switch (texType)
+        {
+        case TextureType::TEXTURE_1D:
+            texture = std::make_shared<Texture1D>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_1D_ARRAY:
+            texture = std::make_shared<Texture1DArray>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_2D:
+            texture = std::make_shared<Texture2D>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_2D_ARRAY:
+            texture = std::make_shared<Texture2DArray>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_3D:
+            texture = std::make_shared<Texture3D>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_CUBE_MAP:
+            texture = std::make_shared<TextureCube>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_CUBE_MAP_ARRAY:
+            texture = std::make_shared<TextureCubeArray>(option->_immutable, option->_genMipMap);
+            break;
+        case TextureType::TEXTURE_RECTANGLE:
+            texture = std::make_shared<TextureRectangle>(option->_immutable);
+            break;
+        case TextureType::TEXTURE_BUFFER:
+            texture = std::make_shared<TextureBuffer>(option->_immutable);
+            break;        
+        default:
+            break;
+        }
+
+        ImageManager& imgMgr = ImageMgrInstance();
+        std::string texFilename = std::string(filename);
+        int pos = texFilename.find_first_of(":");
+        if(pos != std::string::npos)
+        {
+            std::string imgFilename = texFilename.substr(pos + 1);
+            Image::Ptr image = imgMgr.ReadImage(imgFilename.c_str(), nullptr);
+            if(image != nullptr)
+            {
+                texture->SetImage(image);
+                return ReadResult<Texture>(shared_from_this(), texture, ReadResult<Texture>::Status::SUCCESS);
+            }
+        }
+
         return ReadResult<Texture>(ReadResult<Texture>::Status::FAILED);
     }
 
     ReadResult<Texture> TextureReader::ReadAsync(std::string filename)
     {
         _asynchronize = true;
-
-        TextureOption* option = dynamic_cast<TextureOption*>(_option);
-        Texture::Ptr texture = std::make_shared<Texture>(option->_immutable, option->_genMipMap);
-
-        ImageManager& imgMgr = ImageMgrInstance();
-        ImageOption imgOption; 
-        imgOption.SetTexture(texture);
-
-        imgMgr.ReadImageAsync(filename.c_str(), &imgOption);
-        return ReadResult<Texture>(shared_from_this(), texture, ReadResult<Texture>::Status::SUCCESS);
+        return Read(filename.c_str());
     }
 
 
@@ -55,7 +96,8 @@ namespace TwinkleGraphics
     Texture::Ptr TextureManager::ReadTexture(const char* filename, TextureOption* option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        ReadResult<Texture> result = resMgr.Read<TextureReader, Texture, TextureOption>(filename, option);
+        std::string texFilename = "Texture:" + std::string(filename);
+        ReadResult<Texture> result = resMgr.Read<TextureReader, Texture, TextureOption>(texFilename.c_str(), option);
         Texture::Ptr texture = result.GetSharedObject();
 
         return texture;
@@ -64,10 +106,14 @@ namespace TwinkleGraphics
     ReadResult<Texture> TextureManager::ReadTextureAsync(const char *filename, TextureOption* option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        auto result = resMgr.ReadAsync<TextureReader, Texture, TextureOption>(filename, option);
+        option->AddSuccessFunc(0, this, &OnReadTextureSuccess);
+        option->AddFailedFunc(0, this, &OnReadTextureFailed);
+        std::string texFilename = "Texture:";
+        texFilename +=  filename;
+        auto result = resMgr.ReadAsync<TextureReader, Texture, TextureOption>(texFilename.c_str(), option);
 
         return result;
-    }    
+    }
 
     void TextureManager::AddTaskFuture(std::future<ReadResult<Texture>> future)
     {
@@ -83,6 +129,7 @@ namespace TwinkleGraphics
         Texture *texture = dynamic_cast<Texture *>(obj.get());
         if (texture != nullptr)
         {
+            texture->CreateFromImage();
         }
     }
 

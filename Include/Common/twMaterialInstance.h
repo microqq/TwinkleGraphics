@@ -23,12 +23,16 @@ public:
 
 private:
     void Initialize(ShaderOption options[], int32 num)
-    {       
+    {
         ShaderManager& shaderMgr = ShaderMgrInstance();
-        ShaderProgram::Ptr program = shaderMgr.ReadShaders(options, num);
+        ReadResult<ShaderProgram> result = shaderMgr.ReadShadersAsync(options, num);
+        ShaderProgram::Ptr program = result.GetSharedObject();
         RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
         this->AddRenderPass(pass);
+    }
 
+    void OnMaterialSuccess(Object::Ptr obj)
+    {
         vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
         this->SetVecUniformValue<float32, 4>("tintColor", tintColor);
     }

@@ -98,7 +98,7 @@ namespace TwinkleGraphics
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader>(filename, option);
+        ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader, ShaderOption>(filename, option);
         Shader::Ptr sharedShader = result.GetSharedObject();
 
         return sharedShader;
@@ -128,10 +128,10 @@ namespace TwinkleGraphics
     ReadResult<Shader> ShaderManager::ReadShaderAsync(const char *filename, ShaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        option->AddSuccessFunc(this, &ShaderManager::OnReadShaderSuccess);
-        option->AddFailedFunc(this, &ShaderManager::OnReadShaderFailed);
-        option->AddSuccessFunc(this, &ShaderManager::OnReadShadersSuccess, option);
-        return resMgr.ReadAsync<ShaderReader, Shader>(filename, option);
+        option->AddSuccessFunc(0, this, &ShaderManager::OnReadShaderSuccess);
+        option->AddFailedFunc(0, this, &ShaderManager::OnReadShaderFailed);
+        option->AddSuccessFunc(1, this, &ShaderManager::OnReadShadersSuccess, option);
+        return resMgr.ReadAsync<ShaderReader, Shader, ShaderOption>(filename, option);
     }
 
     ReadResult<ShaderProgram> ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
@@ -163,18 +163,16 @@ namespace TwinkleGraphics
 
         ShaderProgramOption programOption;
         programOption._program = program;
-        resMgr.ReadAsync<ShaderReader, ShaderProgram>(programFilename.c_str(), &programOption);
+        resMgr.ReadAsync<ShaderReader, ShaderProgram, ShaderProgramOption>(programFilename.c_str(), &programOption);
 
         for(int i = 0; i < num; i++)
         {
             options[i]._optionData.program = program;
-            auto result = ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
-            shader = result.GetSharedObject();
-            // program->AddShader(shader);
+            ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
         }
 
         using Status = ReadResult<ShaderProgram>::Status;
-        return ReadResult<ShaderProgram>(nullptr, program, Status::SUCCESS);
+        return ReadResult<ShaderProgram>(nullptr, program, Status::LOADING);
     }    
 
     void ShaderManager::AddTaskFuture(std::future<ReadResult<Shader>> future)

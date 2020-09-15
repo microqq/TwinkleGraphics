@@ -137,7 +137,7 @@ namespace TwinkleGraphics
                     ReaderOption* readerOption = reader->GetReaderOption();
                     if(readerOption != nullptr)
                     {
-                        readerOption->AddSuccessFunc(this, &ResourceManager::OnReadTaskSuccess
+                        readerOption->AddSuccessFunc(-1, this, &ResourceManager::OnReadTaskSuccess
                                         , taskId
                                         , readerOption->GetCacheHint()
                                         , readerOption->GetStoreHint()
@@ -147,7 +147,7 @@ namespace TwinkleGraphics
                                         , reader
                         );
 
-                        readerOption->AddFailedFunc(this, &ResourceManager::OnReadTaskFailed
+                        readerOption->AddFailedFunc(-1, this, &ResourceManager::OnReadTaskFailed
                                         , taskId
                                         , R::ID
                                         , reader

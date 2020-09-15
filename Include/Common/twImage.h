@@ -51,17 +51,14 @@ class ImageOption final : public ReaderOption
     public:
         ImageOption()
             : ReaderOption()
-            , _texture(nullptr)
         {}
         ImageOption(const ImageOption &src)
             : ReaderOption(src)
         {
-            _texture = src._texture;
         }
         const ImageOption &operator=(const ImageOption &src) = delete;
         virtual ~ImageOption() 
         {
-            _texture = nullptr;
         }
 
         void SetTexture(Object::Ptr texture) { _texture = texture; }

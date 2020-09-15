@@ -8,6 +8,7 @@
 #include "twShader.h"
 #include "twMainWindow.h"
 #include "twResourceManager.h"
+#include "twTextureManager.h"
 
 using namespace TwinkleGraphics;
 using namespace std::chrono_literals;
@@ -43,6 +44,11 @@ TEST(ResourceReaderTests, ReadAsync)
 
     shaderMgr.ReadShadersAsync(options, 2);
     shaderMgr.ReadShadersAsync(options, 2);
+
+    TextureManager& textureMgr = TextureMgrInstance();
+    TextureOption textureOption(TextureType::TEXTURE_2D);
+    textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
+    textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
 
     MainWindow_.Run();
 };

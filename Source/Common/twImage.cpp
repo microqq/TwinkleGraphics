@@ -44,8 +44,8 @@ namespace TwinkleGraphics
         if(option != nullptr)
         {
 			_option = new ImageOption(*option);
-			_option->AddSuccessFunc(this, &ImageReader::OnReadImageSuccess);
-			_option->AddFailedFunc(this, &ImageReader::OnReadImageFailed);
+			_option->AddSuccessFunc(0, this, &ImageReader::OnReadImageSuccess);
+			_option->AddFailedFunc(0, this, &ImageReader::OnReadImageFailed);
         }
     }
 
@@ -178,11 +178,6 @@ namespace TwinkleGraphics
 				ImageOption* op = dynamic_cast<ImageOption*>(_option);
 				if(op != nullptr)
 				{
-					Texture::Ptr texture = std::dynamic_pointer_cast<Texture>(op->_texture);
-					if(texture != nullptr)
-					{
-						texture->CreateFromImage(image);
-					}
 				}
 			}
         }

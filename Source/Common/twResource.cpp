@@ -33,14 +33,36 @@ namespace TwinkleGraphics
     CacheStoreHint ReaderOption::GetStoreHint() { return _storeHint; }
     float ReaderOption::GetStoreTime() { return _storeTime; }
     
-    void ReaderOption::AddSuccessFunc(ReadSuccessCallbackFuncPtr func)
+    void ReaderOption::AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func)
     {
-        _successFuncList.emplace_back(func);
+        if(insertPos == -1 || insertPos > _successFuncList.size() - 1)
+        {
+            _successFuncList.emplace_back(func);
+        }
+        else
+        {
+            using iterator = std::vector<ReadSuccessCallbackFuncPtr>::iterator;
+            iterator it = _successFuncList.begin();
+
+            it += insertPos;
+            _successFuncList.insert(it, func);
+        }
     }
 
-    void ReaderOption::AddFailedFunc(ReadFailedCallbackFuncPtr func)
+    void ReaderOption::AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func)
     {
-        _failedFuncList.emplace_back(func);
+        if(insertPos == -1 || insertPos > _successFuncList.size() - 1)
+        {
+            _failedFuncList.emplace_back(func);
+        }
+        else
+        {
+            using iterator = std::vector<ReadFailedCallbackFuncPtr>::iterator;
+            iterator it = _failedFuncList.begin();
+
+            it += insertPos;
+            _failedFuncList.insert(it, func);
+        }
     }
 
     void ReaderOption::OnReadSuccess(Object::Ptr obj) const
@@ -75,5 +97,11 @@ namespace TwinkleGraphics
     ResourceReader::ResourceReader() {}
 
     ReaderOption* ResourceReader::GetReaderOption() { return _option; }
+
+    void ResourceReader::Reset()
+    {
+        SAFE_DEL(_option);
+        _asynchronize = false;
+    }
 
 } // namespace TwinkleGraphics
