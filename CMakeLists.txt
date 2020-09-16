@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(TwinkleGraphics VERSION 0.1.0)
 
-option(ENABLE_DEBUG "Enter debug mode" OFF)
+option(ENABLE_DEBUG "Enter debug mode" ON)
 option(ENABLE_TEMPORARY "Enter debug mode" OFF)
-option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
-option(BUILD_GTESTS "build gtests" OFF)
+option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" ON)
+option(BUILD_GTESTS "build gtests" ON)
 
 if(ENALBE_EVENT_MULTTHREAD)
     add_definitions(-D_EVT_MULTTHREAD)

@@ -45,7 +45,7 @@ namespace TwinkleGraphics
         CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
         mat->SetSimpleUniformValue<float32, 1>("size", size);
 
-        renderer->SetMaterial(mat);
+        renderer->SetSharedMaterial(mat);
         renderer->SetMesh(cube->GetMesh());
 
         cube->SetMeshRenderer(renderer);
@@ -61,7 +61,7 @@ namespace TwinkleGraphics
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
 
-        renderer->SetMaterial(mat);
+        renderer->SetSharedMaterial(mat);
         renderer->SetMesh(uvsphere->GetMesh());
 
         uvsphere->SetMeshRenderer(renderer);
@@ -77,7 +77,7 @@ namespace TwinkleGraphics
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
 
-        renderer->SetMaterial(mat);
+        renderer->SetSharedMaterial(mat);
         renderer->SetMesh(norcube_sphere->GetMesh());
 
         norcube_sphere->SetMeshRenderer(renderer);
@@ -93,7 +93,7 @@ namespace TwinkleGraphics
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
 
-        renderer->SetMaterial(mat);
+        renderer->SetSharedMaterial(mat);
         renderer->SetMesh(icosphere->GetMesh());
 
         icosphere->SetMeshRenderer(renderer);

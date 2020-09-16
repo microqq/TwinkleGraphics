@@ -16,17 +16,17 @@ RenderPass::Ptr RenderPass::CreateRenderPassInstance(ShaderOption options[], int
 RenderPass::RenderPass(ShaderProgram::Ptr shader)
     : Object()
     , _slots()
-    , _shader(shader)
+    , _program(shader)
     , _enable(true)
 {
 }
 
-RenderPass::RenderPass(const RenderPass &copy)
+RenderPass::RenderPass(const RenderPass &src)
     : Object()
     , _slots()
-    , _state(copy._state)
-    , _shader(copy._shader)
-    , _enable(copy._enable)
+    , _state(src._state)
+    , _program(src._program)
+    , _enable(src._enable)
 {
     // for(auto src : copy._slots)
     // {
@@ -50,7 +50,7 @@ void RenderPass::SetTexture(const char *name, Texture::Ptr tex)
     if(tex == nullptr)
         return;
 
-    if(_shader != nullptr)
+    if(_program != nullptr)
     {
         // ShaderProgramUse use(_shader);
 
@@ -58,13 +58,13 @@ void RenderPass::SetTexture(const char *name, Texture::Ptr tex)
         if(it == _slots.end())
         {
             char uniformName[128];
-            int32 count = _shader->GetActiveUniformsCount();
+            int32 count = _program->GetActiveUniformsCount();
             for (int32 i = 0; i < count; i++)
             {
-                _shader->GetActiveUniform(i, uniformName);
+                _program->GetActiveUniform(i, uniformName);
                 if (::strcmp(name, uniformName) == 0)
                 {
-                    int32 location = _shader->GetUniformLocation(name);
+                    int32 location = _program->GetUniformLocation(name);
                     TextureSlot slot;
                     // slot.texname = name;
                     slot.tex = tex;
@@ -87,22 +87,22 @@ void RenderPass::SetTexture(const char *name, Texture::Ptr tex)
 
 void RenderPass::SetUniform(const char *name, Uniform *uniform)
 {
-    if(_shader != nullptr)
+    if(_program != nullptr)
     {
         // ShaderProgramUse use(_shader);
         std::map<std::string, UniformLocation>::iterator it = _uniformlocations.find(name);
         if(it == _uniformlocations.end())
         {
             char uniformName[128];
-            int32 count = _shader->GetActiveUniformsCount();
+            int32 count = _program->GetActiveUniformsCount();
             for(int32 i = 0; i < count; i++)
             {
-                _shader->GetActiveUniform(i, uniformName);
+                _program->GetActiveUniform(i, uniformName);
                 if(::strcmp(name, uniformName) == 0)
                 {
                     UniformLocation binding;
                     binding.uniform = uniform;
-                    binding.location = _shader->GetUniformLocation(name);
+                    binding.location = _program->GetUniformLocation(name);
 
                     _uniformlocations.insert(std::map<std::string, UniformLocation>::value_type(name, binding));
 
@@ -159,20 +159,20 @@ Material::Material()
 
 }
 
-Material::Material(const Material &copy)
+Material::Material(const Material &src)
     : Object()
     , _passes()
     , _uniforms()
     , _textures()
-    , _state(copy._state)
+    , _state(src._state)
 {
-    for(auto srcPass : copy._passes)
+    for(auto srcPass : src._passes)
     {
         RenderPass::Ptr pass = std::make_shared<RenderPass>(*(srcPass.get()));
         _passes.push_back(pass);
     }
 
-    for(auto srcUniform : copy._uniforms)
+    for(auto srcUniform : src._uniforms)
     {
         Uniform* uniform = srcUniform.second->Clone();
         _uniforms.insert(std::map<std::string, Uniform*>::value_type(srcUniform.first, uniform));
@@ -183,7 +183,7 @@ Material::Material(const Material &copy)
         }
     }
 
-    for(auto srcTex : copy._textures)
+    for(auto srcTex : src._textures)
     {
         _textures.insert(std::map<std::string, Texture::Ptr>::value_type(srcTex.first, srcTex.second));
 
@@ -257,6 +257,23 @@ void Material::SetPassesUniform(const char *name, Uniform *uniform)
     }
 }
 
+void Material::ApplyPassUniforms()
+{
+    for(auto srcUniform : _uniforms)
+    {
+        Uniform* uniform = srcUniform.second->Clone();
+        SetPassesUniform(uniform->name.c_str(), uniform);
+    }
+
+    for(auto srcTex : _textures)
+    {
+        for (auto pass : _passes)
+        {
+            pass->SetTexture(srcTex.first.c_str(), srcTex.second);
+        }
+    }    
+}
+
 void Material::SetMainTexture(Texture::Ptr maintex)
 {
     SetTexture("mainTex", maintex);
@@ -264,9 +281,6 @@ void Material::SetMainTexture(Texture::Ptr maintex)
 
 void Material::SetTexture(const char *name, Texture::Ptr tex)
 {
-    if (_passes.size() == 0)
-        return;
-
     std::map<std::string, Texture::Ptr>::iterator it = _textures.find(name);
     if (it == _textures.end())
     {
@@ -282,6 +296,8 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
     }
     else
     {
+        it->second = tex;
+
         if(it->second != tex)
         {
             for (auto pass : _passes)

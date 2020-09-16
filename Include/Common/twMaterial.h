@@ -43,18 +43,18 @@ public:
     static RenderPass::Ptr CreateRenderPassInstance(ShaderOption options[], int32 num);
 
     RenderPass(ShaderProgram::Ptr shader = nullptr);
-    RenderPass(const RenderPass& copy);
+    RenderPass(const RenderPass& src);
     virtual ~RenderPass();
 
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
 
-    void SetShaderProgram(ShaderProgram::Ptr shader) { _shader = shader; }
+    void SetShaderProgram(ShaderProgram::Ptr shader) { _program = shader; }
     void SetEnable(bool enable) { _enable = enable; }
 
     inline bool Enabled() { return _enable; }
     inline const RenderState& GetRenderState() { return _state; }
-    inline const ShaderProgram::Ptr& GetShaderProgram() { return _shader; }
+    inline const ShaderProgram::Ptr& GetShaderProgram() { return _program; }
     inline const std::map<std::string, TextureSlot>& GetTextureSlots() { return _slots; }
     inline const std::map<std::string, UniformLocation>& GetUniformLocations() { return _uniformlocations; }
 
@@ -71,7 +71,7 @@ private:
     std::map<std::string, TextureSlot> _slots;
     std::map<std::string, UniformLocation> _uniformlocations;
     RenderState _state;
-    ShaderProgram::Ptr _shader;
+    ShaderProgram::Ptr _program;
 
     bool _enable = true;
 
@@ -91,7 +91,7 @@ public:
     static Material::Ptr CreateMaterailInstance(RenderPass::Ptr passes[], int32 num);
 
     Material();
-    Material(const Material& copy);
+    Material(const Material& src);
     virtual ~Material();
 
     void SetCullMode(CullMode cull) {}
@@ -103,14 +103,14 @@ public:
      * @param index 
      * @param pass 
      */
-    void SetRenderPass(int32 index, const RenderPass::Ptr pass) { if(index < _passes.size()) _passes[index] = pass; }
+    void SetRenderPass(int32 index, RenderPass::Ptr pass) { if(index < _passes.size()) _passes[index] = pass; }
 
     /**
      * @brief 
      * 
      * @param pass 
      */
-    void AddRenderPass(const RenderPass::Ptr pass) { _passes.push_back(pass); }
+    void AddRenderPass(RenderPass::Ptr pass) { _passes.push_back(pass); }
 
     RenderPass::Ptr GetRenderPass(int32 index) { if(index >= 0 && index < _passes.size()) return _passes[index]; return nullptr; }
 
@@ -250,6 +250,9 @@ public:
      */
     const Uniform* GetUniform(const char* name);
 
+
+protected:
+    void ApplyPassUniforms();
 
 private:
     /**

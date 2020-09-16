@@ -18,6 +18,11 @@ public:
         : Reference<Object>()
     {}
     virtual ~Object() {}
+    virtual void SetValid(bool valid) { _valid = valid; }
+    virtual bool IsValid() { return _valid; }
+
+protected:
+    bool _valid = false;
 };
 
 } // namespace TwinkleGraphics

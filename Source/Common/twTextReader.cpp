@@ -14,6 +14,10 @@ namespace TwinkleGraphics
     {
         if(option != nullptr)
         {
+            if(_option != nullptr)
+            {
+                SAFE_DEL(_option); 
+            }
 			_option = new ReaderOption(*option);
         }
     }

@@ -43,6 +43,11 @@ namespace TwinkleGraphics
     {
         if(option != nullptr)
         {
+            if(_option != nullptr)
+            {
+                SAFE_DEL(_option); 
+            }
+
 			_option = new ImageOption(*option);
 			_option->AddSuccessFunc(0, this, &ImageReader::OnReadImageSuccess);
 			_option->AddFailedFunc(0, this, &ImageReader::OnReadImageFailed);

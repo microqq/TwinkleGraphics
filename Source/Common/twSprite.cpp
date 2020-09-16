@@ -94,13 +94,13 @@ void SpriteRenderer::Init(Texture::Ptr texture)
     {
         Sprite1DMaterial::Ptr mat = std::make_shared<Sprite1DMaterial>();
         mat->SetMainTexture(texture);
-        SetMaterial(mat);
+        SetSharedMaterial(mat);
     }
     else if(res.type == (int)(TextureType::TEXTURE_2D))
     {
         SpriteMaterial::Ptr mat = std::make_shared<SpriteMaterial>();
         mat->SetMainTexture(texture);
-        SetMaterial(mat);
+        SetSharedMaterial(mat);
     }
 }
 

@@ -27,7 +27,7 @@ namespace TwinkleGraphics
         ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
 
         ReadResult<Shader> ReadShaderAsync(const char* filename, ShaderOption* option);
-        ReadResult<ShaderProgram> ReadShadersAsync(ShaderOption options[], int32 num);
+        ReadResult<ShaderProgram> ReadShadersAsync(ShaderProgramOption* option, int32 num);
         void AddTaskFuture(std::future<ReadResult<Shader>> future);
         void AddTaskProgramFuture(std::future<ReadResult<ShaderProgram>> future);
 
@@ -39,7 +39,7 @@ namespace TwinkleGraphics
         void OnReadShaderSuccess(Object::Ptr obj);
         void OnReadShaderFailed();
 
-        void OnReadShadersSuccess(Object::Ptr obj, ShaderOption* option);
+        void OnReadShadersSuccess(Object::Ptr obj);
         void OnReadShadersFailed();
 
     private:

@@ -6,6 +6,7 @@
 #include "twShader.h"
 #include "twConsoleLog.h"
 #include "twResourceManager.h"
+#include "twShaderManager.h"
 
 namespace TwinkleGraphics
 {
@@ -48,6 +49,31 @@ namespace TwinkleGraphics
         }
         _optionData.program = src._optionData.program;
     }
+    
+    const ShaderOption& ShaderOption::operator=(const ShaderOption &src)
+    {
+        _cacheHint = src._cacheHint;
+        _successFuncList = src._successFuncList;
+        _failedFuncList = src._failedFuncList;
+        _storeHint = src._storeHint;
+        _storeTime = src._storeTime;
+
+        _optionData.filename = src._optionData.filename;
+        _optionData.type = src._optionData.type;
+        _optionData.numMacros = src._optionData.numMacros;
+        if (_optionData.numMacros > 0)
+        {
+            _optionData.macros = new char *[_optionData.numMacros];
+        }
+        for (uint i = 0; i < _optionData.numMacros; i++)
+        {
+            _optionData.macros[i] = src._optionData.macros[i];
+        }
+        _optionData.program = src._optionData.program;
+
+        return *this;
+    }
+
 
     ShaderOption::~ShaderOption()
     {
@@ -418,11 +444,11 @@ namespace TwinkleGraphics
 
         for(auto shader : _shaders)
         {
-            readyForLink &= shader->Compiled();
-        }
-        if(!readyForLink)
-        {
-            return false;
+            if(!shader->Compiled())
+            {
+                shader->SetupCompile();
+                shader->Compile();
+            }
         }
 
         _res.id = glCreateProgram();
@@ -543,6 +569,10 @@ namespace TwinkleGraphics
     {
         if(option != nullptr)
         {
+            if(_option != nullptr)
+            {
+                SAFE_DEL(_option); 
+            }
             _option = new ShaderOption(*option);
         }
     }
@@ -552,6 +582,10 @@ namespace TwinkleGraphics
     {
         if(option != nullptr)
         {
+            if(_option != nullptr)
+            {
+                SAFE_DEL(_option); 
+            }
             _option = new ShaderProgramOption(*option);
         }
     }
@@ -603,16 +637,6 @@ namespace TwinkleGraphics
                 , shaderOption->_optionData.numMacros
             );
 
-            if(!_asynchronize)
-            {
-                sharedShader->SetupCompile();
-                if (!(sharedShader->Compile()))
-                {
-                    ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
-                    return result;
-                }
-            }
-
             ReadResult<Shader> result(shared_from_this(), sharedShader, ReadResult<Shader>::Status::SUCCESS);
             return result;
         }
@@ -638,10 +662,23 @@ namespace TwinkleGraphics
     ReadResult<ShaderProgram> ShaderReader::ReadProgramAsync(std::string filename)
     {
         using Status = typename ReadResult<ShaderProgram>::Status;
+
+        ShaderManager& shaderMgr = ShaderMgrInstance();
         ShaderProgramOption* option = dynamic_cast<ShaderProgramOption*>(_option);
         if(option != nullptr)
         {
-            return ReadResult<ShaderProgram>(nullptr, option->_program, Status::LOADING);
+            Shader::Ptr shader = nullptr;
+            ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(option->_numShaderOption);
+            for(int i = 0, num = option->_numShaderOption; i < num; i++)
+            {
+                ShaderOption& shaderOption = option->_shaderOptions[i];
+                shader = shaderMgr.ReadShader(shaderOption._optionData.filename.c_str()
+                    , &shaderOption);
+
+                program->AddShader(shader);
+            }
+
+            return ReadResult<ShaderProgram>(shared_from_this(), program, Status::SUCCESS);
         }
 
         return ReadResult<ShaderProgram>(Status::FAILED);

@@ -21,7 +21,10 @@ namespace TwinkleGraphics
     }
     
     ReaderOption::~ReaderOption()
-    {}
+    {
+        _successFuncList.clear();
+        _failedFuncList.clear();
+    }
 
     void ReaderOption::SetCacheHint(CacheHint hint) { _cacheHint = hint; }
     CacheHint ReaderOption::GetCacheHint() { return _cacheHint; }
@@ -94,7 +97,9 @@ namespace TwinkleGraphics
     {
         SAFE_DEL(_option);
     }
-    ResourceReader::ResourceReader() {}
+    ResourceReader::ResourceReader()
+        : _option(nullptr)
+    {}
 
     ReaderOption* ResourceReader::GetReaderOption() { return _option; }
 

@@ -32,54 +32,7 @@ namespace TwinkleGraphics
                 std::lock_guard<std::mutex> lock(_programMutex);
                 RemoveFutures<ShaderProgram>(_programFutures);
             }
-
-            // _futures.erase(
-            //     std::remove_if(_futures.begin(), _futures.end(), [this](Future& future)
-            //     {
-            //         bool ret = future.valid() && TaskFinished(future);
-            //         if(ret)
-            //         {
-            //             ReadResult<Shader> result = future.get();
-            //             ResourceReader::Ptr reader = result.GetReader();
-            //             if(reader != nullptr)
-            //             {
-            //                 // Console::LogWarning("ShaderReader use count: ", reader.use_count(), " \n");
-            //                 ReaderOption* option = reader->GetReaderOption();
-            //                 if(option!= nullptr)
-            //                 {
-            //                     Shader::Ptr shader = result.GetSharedObject();
-            //                     ReadStatus status = result.GetStatus();
-                            
-            //                     if(ReadStatus::SUCCESS == status)
-            //                     {
-            //                         option->OnReadSuccess(shader);
-            //                     }
-            //                     else if(ReadStatus::FAILED == status)
-            //                     {
-            //                         option->OnReadFailed();
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //         else //loading or wait load?
-            //         {}
-
-            //         return ret;
-            //     })
-            //     , _futures.end()
-            // );
-
-            // _programFutures.erase(
-            //     std::remove_if(_programFutures.begin(), _programFutures.end(), [this](ProgramFuture &future) {
-            //         bool ret = future.valid() && TaskFinished(future);
-            //         return ret;
-            //     }),
-            //     _programFutures.end());
         }
-        // catch (...)
-        // {
-        //     std::cerr << "caught ex [1]" << '\n';
-        // }
     }
 
     void ShaderManager::Destroy()
@@ -130,22 +83,18 @@ namespace TwinkleGraphics
         ResourceManager& resMgr = ResourceMgrInstance();
         option->AddSuccessFunc(0, this, &ShaderManager::OnReadShaderSuccess);
         option->AddFailedFunc(0, this, &ShaderManager::OnReadShaderFailed);
-        option->AddSuccessFunc(1, this, &ShaderManager::OnReadShadersSuccess, option);
         return resMgr.ReadAsync<ShaderReader, Shader, ShaderOption>(filename, option);
     }
 
-    ReadResult<ShaderProgram> ShaderManager::ReadShadersAsync(ShaderOption options[], int32 num)
+    ReadResult<ShaderProgram> ShaderManager::ReadShadersAsync(ShaderProgramOption* option, int32 num)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-
-        bool readyLink = true;
-        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(num);
-        Shader::Ptr shader = nullptr;
+        option->AddSuccessFunc(0, this, &ShaderManager::OnReadShadersSuccess);
 
         std::string programFilename;
         for(int i = 0; i < num; i++)
         {
-            auto path = options[i]._optionData.filename;
+            auto path = option->_shaderOptions[i]._optionData.filename;
             int pos = path.find_last_of("/");
             if(pos == std::string::npos)
             {
@@ -156,23 +105,11 @@ namespace TwinkleGraphics
                 pos += 1;
             }
             
-
             auto filename = path.substr(pos);
             programFilename += ((i < num -1) ? (filename + "/") : filename);
         }
 
-        ShaderProgramOption programOption;
-        programOption._program = program;
-        resMgr.ReadAsync<ShaderReader, ShaderProgram, ShaderProgramOption>(programFilename.c_str(), &programOption);
-
-        for(int i = 0; i < num; i++)
-        {
-            options[i]._optionData.program = program;
-            ReadShaderAsync(options[i]._optionData.filename.c_str(), &options[i]);
-        }
-
-        using Status = ReadResult<ShaderProgram>::Status;
-        return ReadResult<ShaderProgram>(nullptr, program, Status::LOADING);
+        return resMgr.ReadAsync<ShaderReader, ShaderProgram, ShaderProgramOption>(programFilename.c_str(), option);
     }    
 
     void ShaderManager::AddTaskFuture(std::future<ReadResult<Shader>> future)
@@ -198,28 +135,21 @@ namespace TwinkleGraphics
         {
             shader->SetupCompile();
             shader->Compile();
+
+            shader->SetValid(true);
         }
     }
 
     void ShaderManager::OnReadShaderFailed() 
     {}
 
-    void ShaderManager::OnReadShadersSuccess(Object::Ptr obj, ShaderOption* option)
+    void ShaderManager::OnReadShadersSuccess(Object::Ptr obj)
     {
-        if(option == nullptr)
+        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        if (program != nullptr)
         {
-            return;
-        }
-
-        Shader::Ptr shader = std::dynamic_pointer_cast<Shader>(obj);
-        if (shader != nullptr)
-        {
-            ShaderProgram::Ptr program = option->_optionData.program;
-            if(program != nullptr)
-            {
-                program->AddShader(shader);
-                bool linked = program->Link();
-            }
+            program->Link();
+            program->SetValid(true);
         }
     }
 

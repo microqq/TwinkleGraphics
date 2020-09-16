@@ -42,13 +42,15 @@ TEST(ResourceReaderTests, ReadAsync)
         ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.vert"), ShaderType::VERTEX_SHADER},
         ShaderOption::OptionData{std::string("Assets/Shaders/basicGeometry.frag"), ShaderType::FRAGMENT_SHADER}};
 
-    shaderMgr.ReadShadersAsync(options, 2);
-    shaderMgr.ReadShadersAsync(options, 2);
+    ShaderProgramOption programOption(options, 2); 
 
-    TextureManager& textureMgr = TextureMgrInstance();
-    TextureOption textureOption(TextureType::TEXTURE_2D);
-    textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
-    textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
+    shaderMgr.ReadShadersAsync(&programOption, 2);
+    shaderMgr.ReadShadersAsync(&programOption, 2);
+
+    // TextureManager& textureMgr = TextureMgrInstance();
+    // TextureOption textureOption(TextureType::TEXTURE_2D);
+    // textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
+    // textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
 
     MainWindow_.Run();
 };

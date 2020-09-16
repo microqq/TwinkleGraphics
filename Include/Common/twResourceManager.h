@@ -75,6 +75,8 @@ namespace TwinkleGraphics
                 );
                 AddResourceCache(hint, cache);
 
+                RecycleReader(R::ID, reader);
+
                 return result;
             }
             else
@@ -184,7 +186,7 @@ namespace TwinkleGraphics
             if (reader != nullptr)
             {
                 r = new (reader.get()) R(option);
-                reader.reset(r);
+                // reader.reset(r);
             }
             else
             {
@@ -210,7 +212,7 @@ namespace TwinkleGraphics
                 ResourceReader::Ptr reader = iter->second;
                 _idleReaders.erase(iter);
 
-                return iter->second;
+                return reader;
             }
 
             return nullptr;

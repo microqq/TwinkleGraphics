@@ -124,7 +124,7 @@ namespace TwinkleGraphics
         ShaderOption();
         ShaderOption(const OptionData& data);
         ShaderOption(const ShaderOption &src);
-        const ShaderOption &operator=(const ShaderOption &src) = delete;
+        const ShaderOption &operator=(const ShaderOption &src);
         virtual ~ShaderOption();
 
     private:
@@ -137,23 +137,44 @@ namespace TwinkleGraphics
     class __TWCOMExport ShaderProgramOption final : public ReaderOption
     {
     public:
-        ShaderProgramOption()
+        ShaderProgramOption(ShaderOption* options, int num)
             : ReaderOption()
-            , _program(nullptr)
-        {}
+        {
+            FillShaderOptions(options, num);
+        }
+
         ShaderProgramOption(const ShaderProgramOption &src)
             : ReaderOption(src)
         {
-            _program = src._program;
+            FillShaderOptions(src._shaderOptions, src._numShaderOption);
         }
+
         const ShaderProgramOption &operator=(const ShaderProgramOption &src) = delete;
         virtual ~ShaderProgramOption() 
         {
-            _program = nullptr;
+            SAFE_DEL_ARR(_shaderOptions);
+        }
+    private:
+        void FillShaderOptions(ShaderOption* options, int num)
+        {
+            if(options == nullptr)
+                return;
+            
+            SAFE_DEL_ARR(_shaderOptions);
+
+            _shaderOptions = new ShaderOption[num];
+            _numShaderOption = num;
+
+            for(int i = 0; i < num; i++)
+            {
+                _shaderOptions[i] = options[i];
+            }
         }
 
+
     private:
-        ShaderProgram::Ptr _program = nullptr;
+        ShaderOption* _shaderOptions = nullptr;
+        int _numShaderOption;
 
         friend class ShaderReader;
         friend class ShaderManager;

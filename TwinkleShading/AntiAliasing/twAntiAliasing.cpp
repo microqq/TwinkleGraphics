@@ -349,7 +349,7 @@ void AntiAliasingScene::UpdateScene()
     _projectionMat = camera->GetProjectionMatrix();
     _mvpMat = _projectionMat * _viewMat;
 
-    Material::Ptr skyboxmat = _skybox->GetMeshRenderer()->GetMaterial();
+    Material::Ptr skyboxmat = _skybox->GetMeshRenderer()->GetSharedMaterial();
     mat4 rotate_mat = glm::mat4_cast(camera->GetOrientation());
     // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
     mat4 mvp = _projectionMat * rotate_mat;
@@ -723,15 +723,18 @@ void AntiAliasingScene::CreateInfinitePlane()
 
 void AntiAliasingScene::RenderGeometry(Geometry::Ptr geom, int32 index)
 {
-    Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
+    Material::Ptr mat = geom->GetMeshRenderer()->GetSharedMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
-    ShaderProgram::Ptr shader = pass->GetShaderProgram();
+    if(pass == nullptr)
+        return;
+
 
     for (auto tex_slot : pass->GetTextureSlots())
     {
         tex_slot.second.Apply();
     }
 
+    ShaderProgram::Ptr shader = pass->GetShaderProgram();
     ShaderProgramUse use(shader);
     for (auto loc : pass->GetUniformLocations())
     {

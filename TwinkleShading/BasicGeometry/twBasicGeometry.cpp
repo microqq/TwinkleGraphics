@@ -508,8 +508,11 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
  */
 void BasicGeometryView::RenderInfinitePlane()
 {
-    Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetMaterial();
+    Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
+    if(pass == nullptr)
+        return;
+
     ShaderProgram::Ptr shader = pass->GetShaderProgram();
 
     for (auto tex_slot : pass->GetTextureSlots())

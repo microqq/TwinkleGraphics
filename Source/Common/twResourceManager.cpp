@@ -34,7 +34,12 @@ namespace TwinkleGraphics
         while (_taskQueue.Pop(packedTask)) {}
         while (_cachedTaskQueue.Pop(packedTask)) {}
 
-        _idleReaders.clear();
+        std::lock_guard<std::mutex> lock(_readerMutex);
+        {
+            _idleReaders.clear();
+            _loadingReaders.clear();
+        }
+
         _sceneObjectsCacheMap.clear();
     }
 
