@@ -47,10 +47,10 @@ TEST(ResourceReaderTests, ReadAsync)
     shaderMgr.ReadShadersAsync(&programOption, 2);
     shaderMgr.ReadShadersAsync(&programOption, 2);
 
-    // TextureManager& textureMgr = TextureMgrInstance();
-    // TextureOption textureOption(TextureType::TEXTURE_2D);
-    // textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
-    // textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
+    TextureManager& textureMgr = TextureMgrInstance();
+    TextureOption textureOption(TextureType::TEXTURE_2D);
+    textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
+    textureMgr.ReadTextureAsync("Assets/Textures/skybox/front.png", &textureOption);
 
     MainWindow_.Run();
 };

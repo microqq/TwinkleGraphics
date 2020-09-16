@@ -150,6 +150,7 @@ namespace TwinkleGraphics
         }
 
         const ShaderProgramOption &operator=(const ShaderProgramOption &src) = delete;
+
         virtual ~ShaderProgramOption() 
         {
             SAFE_DEL_ARR(_shaderOptions);
@@ -202,6 +203,30 @@ namespace TwinkleGraphics
         ReadResult<Shader> Read(const char *filename);
         ReadResult<Shader> ReadAsync(std::string filename);
         ReadResult<ShaderProgram> ReadProgramAsync(std::string filename);
+
+        void SetOption(ShaderOption* option)
+        {
+            if(option == nullptr)
+                return;
+
+            if(_option != nullptr)
+            {
+                SAFE_DEL(_option);
+            }
+            _option = new ShaderOption(*option);
+        }
+
+        void SetOption(ShaderProgramOption* option)
+        {
+            if(option == nullptr)
+                return;
+
+            if(_option != nullptr)
+            {
+                SAFE_DEL(_option);
+            }
+            _option = new ShaderProgramOption(*option);
+        }
 
         DECLARE_READERID;
 

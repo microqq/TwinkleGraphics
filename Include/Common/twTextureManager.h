@@ -55,6 +55,17 @@ namespace TwinkleGraphics
         ReadResult<Texture> Read(const char *filename);
         ReadResult<Texture> ReadAsync(std::string filename);
 
+        void SetOption(TextureOption* option) 
+        {
+            if(option == nullptr)
+                return;
+
+            if (_option == nullptr)
+            {
+                _option = new TextureOption(*option);
+            }       
+        }
+
         DECLARE_READERID;
     };
 

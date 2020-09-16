@@ -115,6 +115,13 @@ namespace TwinkleGraphics
             ResourceCache::Ptr cache = GetResourceCache(hint, id);
             if (cache != nullptr)
             {
+                ReaderOption* readerOption = reader->GetReaderOption();
+                readerOption->AddSuccessFunc(-1, this
+                    , &ResourceManager::OnRecycleReader
+                    , R::ID
+                    , reader
+                );
+
                 _cachedTaskQueue.Push(packedReadTaskPtr);
                 typename T::Ptr obj = std::dynamic_pointer_cast<T>(cache->GetCachedObject());
                 return ReadResult<T>(nullptr, obj, Status::SUCCESS);
@@ -127,6 +134,12 @@ namespace TwinkleGraphics
                 LoadingTaskSet::iterator iter = _loadingTasks.find(id);
                 if(iter != _loadingTasks.end())
                 {
+                    ReaderOption* readerOption = reader->GetReaderOption();
+                    readerOption->AddSuccessFunc(-1, this
+                        , &ResourceManager::OnRecycleReader
+                        , R::ID
+                        , reader
+                    );
                     _waitToLoadTasks.emplace(std::make_pair(taskId, packedReadTaskPtr));
                     lock.unlock();
 
@@ -182,16 +195,17 @@ namespace TwinkleGraphics
             ResourceReader::Ptr reader = PopIdleReader(R::ID);
             lock.unlock();
 
-            R *r = nullptr;
             if (reader != nullptr)
             {
-                r = new (reader.get()) R(option);
+                typename R::Ptr rPtr = std::dynamic_pointer_cast<R>(reader);
+                rPtr->SetOption(option);
+
+                // r = new (reader.get()) R(option);
                 // reader.reset(r);
             }
             else
             {
-                r = new R(option);
-                reader.reset(r);
+                reader = std::make_shared<R>(option);
             }
 
             lock.lock();
@@ -253,6 +267,12 @@ namespace TwinkleGraphics
             , ReaderId readerid
             , ResourceReader::Ptr reader
             );
+        
+        void OnRecycleReader(Object::Ptr obj, ReaderId id, ResourceReader::Ptr reader)
+        {
+            RecycleReader(id, reader);
+        }
+
         void RecycleReader(ReaderId id, ResourceReader::Ptr reader);
         void ReleaseTask(Object::Ptr obj, ReadTaskId taskid, bool success);
 

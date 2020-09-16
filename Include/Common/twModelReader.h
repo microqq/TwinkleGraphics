@@ -24,6 +24,15 @@ namespace TwinkleGraphics
 
         ReadResult<Model> Read(const char *filename);
         ReadResult<Model> ReadAsync(std::string filename);
+
+        void SetOption(ReaderOption* option) 
+        {
+            if (_option == nullptr)
+            {
+                _option = new ReaderOption(*option);
+            }            
+        }
+
         DECLARE_READERID;
 
     private:

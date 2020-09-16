@@ -56,16 +56,14 @@ class ImageOption final : public ReaderOption
             : ReaderOption(src)
         {
         }
+
         const ImageOption &operator=(const ImageOption &src) = delete;
+
         virtual ~ImageOption() 
         {
         }
 
-        void SetTexture(Object::Ptr texture) { _texture = texture; }
-
     private:
-        Object::Ptr _texture = nullptr;
-
         friend class ImageReader;
         friend class ImageManager;
 };
@@ -83,6 +81,17 @@ public:
 
     ReadResult<Image> Read(const char *filename);
     ReadResult<Image> ReadAsync(std::string filename);
+
+    void SetOption(ImageOption* option) 
+    {
+        if (option == nullptr)
+            return;
+
+        if (_option == nullptr)
+        {
+            _option = new ImageOption(*option);
+        }
+    }
 
 private:
     ReadResult<Image> ReadDDS(const char *filename);

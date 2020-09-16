@@ -29,7 +29,6 @@ namespace TwinkleGraphics
 
     void ResourceManager::Destroy()
     {
-        ClearWorkerPool();
         IPackedReadTask::Ptr packedTask;
         while (_taskQueue.Pop(packedTask)) {}
         while (_cachedTaskQueue.Pop(packedTask)) {}
@@ -41,6 +40,9 @@ namespace TwinkleGraphics
         }
 
         _sceneObjectsCacheMap.clear();
+        _objectCacheMap.clear();
+
+        ClearWorkerPool();
     }
 
     bool ResourceManager::AddResourceCache(CacheHint hint, ResourceCache::Ptr cache)
@@ -145,23 +147,21 @@ namespace TwinkleGraphics
         auto range = _loadingReaders.equal_range(id);
         MultMapReaders::iterator iter = range.first;
         MultMapReaders::iterator second = range.second;
+
+        while (iter != second)
+        {
+            if (iter->second == reader)
+            {
+                break;
+            }
+            ++iter;
+        }
+
         if (iter != second)
         {
-            while (iter != second)
-            {
-                if (iter->second == reader)
-                {
-                    break;
-                }
-                ++iter;
-            }
-
-            if (iter != second)
-            {
-                reader->Reset();
-                _loadingReaders.erase(iter);
-                _idleReaders.insert(std::make_pair(id, reader));
-            }
+            reader->Reset();
+            _loadingReaders.erase(iter);
+            _idleReaders.insert(std::make_pair(id, reader));
         }
     }
 
