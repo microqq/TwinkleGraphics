@@ -92,32 +92,28 @@ void SpriteRenderer::Init(Texture::Ptr texture)
     ShaderProgram::Ptr program = nullptr;
     if(res.type == (int)(TextureType::TEXTURE_1D))
     {
-        Sprite1DMaterial::Ptr mat = std::make_shared<Sprite1DMaterial>();
+        Material::Ptr mat = std::make_shared<Sprite1DMaterial>();
+        SetMaterial(mat);
+        mat = GetMaterial(); 
         mat->SetMainTexture(texture);
-        SetSharedMaterial(mat);
     }
     else if(res.type == (int)(TextureType::TEXTURE_2D))
     {
-        SpriteMaterial::Ptr mat = std::make_shared<SpriteMaterial>();
-        mat->SetMainTexture(texture);
-        SetSharedMaterial(mat);
+        Material::Ptr mat = std::make_shared<SpriteMaterial>();
+        SetMaterial(mat);
+        mat = GetMaterial(); 
+        GetMaterial()->SetMainTexture(texture);
     }
 }
 
 void SpriteRenderer::SetFlip(bvec2 flip)
 {
-    if(_sharedMaterial != nullptr)
-    {
-        _sharedMaterial->SetVecUniformValue<bool, 2>("flip", flip);
-    }
+    GetMaterial()->SetVecUniformValue<bool, 2>("flip", flip);
 }
 
 void SpriteRenderer::SetColor(vec4 &color)
 {
-    if(_sharedMaterial != nullptr)
-    {
-        _sharedMaterial->SetVecUniformValue<float32, 4>("tintColor", color);
-    }
+    GetMaterial()->SetVecUniformValue<float32, 4>("tintColor", color);
 }
 
 } // namespace TwinkleGraphics

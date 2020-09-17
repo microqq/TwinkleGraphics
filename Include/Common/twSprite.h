@@ -37,14 +37,25 @@ public:
     void SetFlip(bvec2 flip);
     void SetColor(vec4& color);
     void SetTexture(Texture::Ptr texture);
-    Texture::Ptr GetTexture() { if(_renderer == nullptr || _renderer->GetSharedMaterial() == nullptr) return nullptr; return _renderer->GetSharedMaterial()->GetMainTexture(); }
-    Material::Ptr GetMaterial() { return _renderer->GetSharedMaterial(); }
+    Texture::Ptr GetTexture()
+    {
+        if (_renderer == nullptr)
+        {
+            return nullptr;
+        }
+
+        Material::Ptr mat = _renderer->GetMaterial();
+        if(mat == nullptr)
+        {
+            return nullptr;
+        }
+        return mat->GetMainTexture();
+    }
+    Material::Ptr GetMaterial() { return _renderer->GetMaterial(); }
 
 private:
     void InitRenderer(Texture::Ptr texture);
-
-    void UpdateSize()
-    {}
+    void Resize() {}
 
 private:
     SpriteRenderer::Ptr _spriteRenderer;

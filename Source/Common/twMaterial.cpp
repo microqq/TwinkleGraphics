@@ -28,15 +28,24 @@ RenderPass::RenderPass(const RenderPass &src)
     , _program(src._program)
     , _enable(src._enable)
 {
-    // for(auto src : copy._slots)
-    // {
-    //     TextureSlot dest;
-    //     dest.tex = src.tex;
-    //     dest.slot = src.slot;
-    //     dest.location = src.location;
+    for(auto srcSlot : src._slots)
+    {
+        TextureSlot dest;
+        dest.tex = srcSlot.second.tex;
+        dest.slot = srcSlot.second.slot;
+        dest.location = srcSlot.second.location;
 
-    //     _slots.push_back(dest);
-    // }
+        _slots.insert(std::make_pair(srcSlot.first, dest));
+    }
+
+    for(auto srcLocation : src._uniformlocations)
+    {
+        UniformLocation location;
+        location.location = srcLocation.second.location;
+        location.uniform = srcLocation.second.uniform;
+
+        _uniformlocations.insert(std::make_pair(srcLocation.first, location));
+    }
 }
 
 RenderPass::~RenderPass()
@@ -136,20 +145,6 @@ void RenderPass::Apply()
 
 /*------------------------------Material--------------------------*/
 
-Material::Ptr Material::CreateMaterailInstance(RenderPass::Ptr passes[], int32 num)
-{
-    Material::Ptr material = std::make_shared<Material>();
-    for(int32 i = 0; i < num; i++)
-    {
-        if(passes[i] != nullptr)
-        {
-            material->AddRenderPass(passes[i]);
-        }
-    }
-
-    return material;
-}
-
 Material::Material()
     : Object()
     , _passes()
@@ -177,20 +172,12 @@ Material::Material(const Material &src)
         Uniform* uniform = srcUniform.second->Clone();
         _uniforms.insert(std::map<std::string, Uniform*>::value_type(srcUniform.first, uniform));
 
-        for(auto pass : _passes)
-        {
-            pass->SetUniform(uniform->name.c_str(), uniform);
-        }
+        SetPassesUniform(uniform->name.c_str(), uniform);
     }
 
     for(auto srcTex : src._textures)
     {
-        _textures.insert(std::map<std::string, Texture::Ptr>::value_type(srcTex.first, srcTex.second));
-
-        for (auto pass : _passes)
-        {
-            pass->SetTexture(srcTex.first.c_str(), srcTex.second);
-        }
+        SetTexture(srcTex.first.c_str(), srcTex.second);
     }
 }
 
@@ -230,18 +217,8 @@ const Uniform *Material::GetUniform(const char *name)
 
 void Material::AddUniform(const char *name, Uniform *uniform)
 {
-    std::map<std::string, Uniform *>::iterator it = _uniforms.find(name);
-    if(it == _uniforms.end())
-    {
-        _uniforms.insert(
-            std::map<std::string, Uniform *>::value_type(name, uniform)
-        );
-    }
-    else
-    {
-        SAFE_DEL(it->second);
-        it->second = uniform;
-    }
+    _uniforms.insert(
+        std::map<std::string, Uniform *>::value_type(name, uniform));
 }
 
 void Material::SetPassesUniform(const char *name, Uniform *uniform)
@@ -257,21 +234,20 @@ void Material::SetPassesUniform(const char *name, Uniform *uniform)
     }
 }
 
-void Material::ApplyPassUniforms()
+void Material::ApplyRenderPass()
 {
-    for(auto srcUniform : _uniforms)
+    for(auto uniform : _uniforms)
     {
-        Uniform* uniform = srcUniform.second->Clone();
-        SetPassesUniform(uniform->name.c_str(), uniform);
+        SetPassesUniform(uniform.first.c_str(), uniform.second);
     }
 
-    for(auto srcTex : _textures)
+    for(auto tex : _textures)
     {
         for (auto pass : _passes)
         {
-            pass->SetTexture(srcTex.first.c_str(), srcTex.second);
+            pass->SetTexture(tex.first.c_str(), tex.second);
         }
-    }    
+    }
 }
 
 void Material::SetMainTexture(Texture::Ptr maintex)
@@ -296,8 +272,6 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
     }
     else
     {
-        it->second = tex;
-
         if(it->second != tex)
         {
             for (auto pass : _passes)
@@ -308,6 +282,7 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
                 }
             }
         }
+        it->second = tex;
     }
 }
 

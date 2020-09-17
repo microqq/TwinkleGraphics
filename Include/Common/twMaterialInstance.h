@@ -5,31 +5,47 @@
 
 namespace TwinkleGraphics
 {
+
 class __TWCOMExport StandardMaterial : public Material
 {
 public:
     typedef std::shared_ptr<StandardMaterial> Ptr;
 
-    StandardMaterial(ShaderOption* options, int32 num)
+    StandardMaterial(std::string vertLayoutMacros)
         : Material()
+        , _vertLayoutMacros(vertLayoutMacros)
     {
-        Initialize(options, num);
     }
-    StandardMaterial(const StandardMaterial &copy)
-        : Material(copy)
+    StandardMaterial(const StandardMaterial &src)
+        : Material(src)
+        , _vertLayoutMacros(src._vertLayoutMacros)
     {
     }
     virtual ~StandardMaterial() {}
 
-private:
-    void Initialize(ShaderOption options[], int32 num)
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
+        char* vertMarco = const_cast<char*>(_vertLayoutMacros.c_str());
+        char* vertMacros[] = { vertMarco };
+        ShaderOption options[] = 
+        {
+            ShaderOption::OptionData{std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
+            ShaderOption::OptionData{std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros}
+        };
 
-        ShaderProgramOption programOption(options, num);
+        ShaderProgramOption programOption(options, 2);
         programOption.AddSuccessFunc(-1, this, &StandardMaterial::OnMaterialSuccess);
-        shaderMgr.ReadShadersAsync(&programOption, num);
+        shaderMgr.ReadShadersAsync(&programOption, 2);
     }
+
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<StandardMaterial>(*this);
+        return clone;
+    }
+
 
     void OnMaterialSuccess(Object::Ptr obj)
     {
@@ -41,7 +57,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             this->SetVecUniformValue<float32, 4>("tintColor", tintColor);
@@ -49,6 +65,10 @@ private:
             this->SetValid(true);
         }
     }
+
+protected:
+    std::string _vertLayoutMacros;
+
 };
 
 class __TWCOMExport BasicGeomMaterial : public Material
@@ -59,16 +79,15 @@ public:
     BasicGeomMaterial()
         : Material()
     {
-        Initialize();
     }
-    BasicGeomMaterial(const BasicGeomMaterial &copy)
-        : Material(copy)
+    BasicGeomMaterial(const BasicGeomMaterial &src)
+        : Material(src)
     {
     }
     virtual ~BasicGeomMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
          
@@ -82,6 +101,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<BasicGeomMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -92,7 +117,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             this->SetVecUniformValue<float32, 4>("tintColor", tintColor);
@@ -110,16 +135,15 @@ public:
     SpriteMaterial()
         : Material()
     {
-        Initialize();
     }
-    SpriteMaterial(const SpriteMaterial &copy)
-        : Material(copy)
+    SpriteMaterial(const SpriteMaterial &src)
+        : Material(src)
     {
     }
     virtual ~SpriteMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -133,6 +157,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<SpriteMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -143,7 +173,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             bvec2 flip(false, false);
@@ -166,16 +196,15 @@ public:
     Sprite1DMaterial()
         : Material()
     {
-        Initialize();
     }
-    Sprite1DMaterial(const Sprite1DMaterial &copy)
-        : Material(copy)
+    Sprite1DMaterial(const Sprite1DMaterial &src)
+        : Material(src)
     {
     }
     virtual ~Sprite1DMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -189,6 +218,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<Sprite1DMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -199,7 +234,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             bvec2 flip(false, false);
@@ -222,16 +257,15 @@ public:
     LineMaterial()
         : Material()
     {
-        Initialize();
     }
-    LineMaterial(const LineMaterial &copy)
-        : Material(copy)
+    LineMaterial(const LineMaterial &src)
+        : Material(src)
     {
     }
     virtual ~LineMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -246,6 +280,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 3);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<LineMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -256,7 +296,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             this->SetValid(true);
         }
@@ -271,16 +311,15 @@ public:
     InfinitePlaneMaterial()
         : Material()
     {
-        Initialize();
     }
-    InfinitePlaneMaterial(const InfinitePlaneMaterial &copy)
-        : Material(copy)
+    InfinitePlaneMaterial(const InfinitePlaneMaterial &src)
+        : Material(src)
     {
     }
     virtual ~InfinitePlaneMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -293,6 +332,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<InfinitePlaneMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -303,7 +348,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             this->SetValid(true);
         }
@@ -318,16 +363,15 @@ public:
     VolumnQuadMaterial()
         : Material()
     {
-        Initialize();
     }
-    VolumnQuadMaterial(const VolumnQuadMaterial &copy)
-        : Material(copy)
+    VolumnQuadMaterial(const VolumnQuadMaterial &src)
+        : Material(src)
     {
     }
     virtual ~VolumnQuadMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -341,6 +385,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }    
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<VolumnQuadMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -351,7 +401,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             bvec2 flip(false, false);
@@ -375,16 +425,15 @@ public:
     CubeMaterial()
         : Material()
     {
-        Initialize();
     }
-    CubeMaterial(const CubeMaterial &copy)
-        : Material(copy)
+    CubeMaterial(const CubeMaterial &src)
+        : Material(src)
     {
     }
     virtual ~CubeMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -397,6 +446,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<CubeMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -407,7 +462,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             this->SetVecUniformValue<float32, 4>("tintColor", tintColor);  
@@ -426,16 +481,15 @@ public:
     SphereMaterial()
         : Material()
     {
-        Initialize();
     }
-    SphereMaterial(const SphereMaterial &copy)
-        : Material(copy)
+    SphereMaterial(const SphereMaterial &src)
+        : Material(src)
     {
     }
     virtual ~SphereMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -448,6 +502,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<SphereMaterial>(*this);
+        return clone;
+    }
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -458,7 +518,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             this->SetVecUniformValue<float32, 4>("tintColor", tintColor);     
@@ -477,16 +537,15 @@ public:
     SkyboxMaterial()
         : Material()
     {
-        Initialize();
     }
-    SkyboxMaterial(const SkyboxMaterial &copy)
-        : Material(copy)
+    SkyboxMaterial(const SkyboxMaterial &src)
+        : Material(src)
     {
     }
     virtual ~SkyboxMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -499,6 +558,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<SkyboxMaterial>(*this);
+        return clone;
+    }    
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -509,7 +574,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             bvec2 flip(false, false);
@@ -533,16 +598,15 @@ public:
     ProjectionMappingMaterial()
         : Material()
     {
-        Initialize();
     }
-    ProjectionMappingMaterial(const ProjectionMappingMaterial &copy)
-        : Material(copy)
+    ProjectionMappingMaterial(const ProjectionMappingMaterial &src)
+        : Material(src)
     {
     }
     virtual ~ProjectionMappingMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
  
@@ -555,6 +619,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<ProjectionMappingMaterial>(*this);
+        return clone;
+    }        
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -565,7 +635,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             vec4 tintColor(1.0f, 1.0f, 1.0f, 1.0f);
             this->SetVecUniformValue<float32, 4>("tintColor", tintColor);
@@ -584,16 +654,15 @@ public:
     ScreenQuadMaterial()
         : Material()
     {
-        Initialize();
     }
-    ScreenQuadMaterial(const ScreenQuadMaterial &copy)
-        : Material(copy)
+    ScreenQuadMaterial(const ScreenQuadMaterial &src)
+        : Material(src)
     {
     }
     virtual ~ScreenQuadMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
 
@@ -607,6 +676,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<ScreenQuadMaterial>(*this);
+        return clone;
+    }      
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -617,7 +692,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             this->SetValid(true);
         }
@@ -633,16 +708,15 @@ public:
     MSAAResolveMaterial()
         : Material()
     {
-        Initialize();
     }
-    MSAAResolveMaterial(const MSAAResolveMaterial &copy)
-        : Material(copy)
+    MSAAResolveMaterial(const MSAAResolveMaterial &src)
+        : Material(src)
     {
     }
     virtual ~MSAAResolveMaterial() {}
 
-private:
-    void Initialize()
+protected:
+    virtual void Initialize() override
     {
         ShaderManager& shaderMgr = ShaderMgrInstance();
 
@@ -656,6 +730,12 @@ private:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
+    virtual Material::Ptr SharedClone() override 
+    {
+        Material::Ptr clone = std::make_shared<MSAAResolveMaterial>(*this);
+        return clone;
+    }   
+
     void OnMaterialSuccess(Object::Ptr obj)
     {
         if(obj == nullptr)
@@ -666,7 +746,7 @@ private:
         {
             RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
-            this->ApplyPassUniforms();
+            this->ApplyRenderPass();
 
             this->SetValid(true);
         }

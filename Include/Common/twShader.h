@@ -118,7 +118,6 @@ namespace TwinkleGraphics
             ShaderType type;
             int32 numMacros = 0;
             char **macros = nullptr;
-            ShaderProgram::Ptr program = nullptr;
         };
 
         ShaderOption();

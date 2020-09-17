@@ -18,31 +18,34 @@ public:
     MeshRenderer();
     virtual ~MeshRenderer();
 
-    void PushDrawCommands();
-
     void AddMaterial(Material::Ptr material);
-    void SetMaterial(int32 index, Material::Ptr material);
 
     void SetMaterial(Material::Ptr material) 
     { 
-        _sharedMaterial = material; 
-        _material = std::make_shared<Material>(*(_sharedMaterial.get()));
+        _sharedMaterial = material;
     }
-    void SetSharedMaterial(Material::Ptr material) { _sharedMaterial = material; }
 
-    //Todo: Shared mesh
-    void SetMesh(Mesh::Ptr mesh, bool setupVAO = false);
+    void SetSharedMaterial(Material::Ptr material) 
+    { 
+        _sharedMaterial = material; 
+    }
 
     const Material::Ptr GetMaterial()
     {
         if(_sharedMaterial != _material)
         {
-            _material = std::make_shared<Material>(*(_sharedMaterial.get()));
+            // _material = std::make_shared<Material>(*(_sharedMaterial.get()));
+            _material = _sharedMaterial->SharedClone();
+            if(!_material->IsValid())
+            {
+                _material->Initialize();
+            }
             _sharedMaterial = _material;
         }
 
         return _material;
     }
+
     const Material::Ptr GetSharedMaterial()
     {
         return _sharedMaterial;
@@ -54,31 +57,22 @@ public:
         {
             return nullptr; 
         }
+
+        // _materials[index] = std::make_shared<Material>(*(_sharedMaterials[index].get()));
+        _materials[index] = _sharedMaterials[index]->SharedClone();
+        if (!_materials[index]->IsValid())
+        {
+            _materials[index]->Initialize();
+        }
+
+        _sharedMaterials[index] = _materials[index];
+
         return _materials[index];
     }
 
     int32 GetMaterialIndex(Material::Ptr mat)
     {
         if(mat == nullptr)
-        {
-            return -1;
-        }
-
-        int32 index = -1;
-        for(auto m : _materials)
-        {
-            ++index;
-            if(mat == m)
-            {
-                return index;
-            }
-        }
-
-        return index;
-    }
-    int32 GetSharedMaterialIndex(Material::Ptr mat)
-    {
-        if (mat == nullptr)
         {
             return -1;
         }
@@ -92,11 +86,15 @@ public:
                 return index;
             }
         }
+
         return index;
     }
+
     int32 GetMaterialCount() { return _materials.size(); }
     int32 GetSharedMaterialCount() { return _sharedMaterials.size(); }
 
+    //Todo: Shared mesh
+    void SetMesh(Mesh::Ptr mesh, bool setupVAO = false);
     const Mesh::Ptr GetMesh() { return _mesh; }
 
     VertexArrayObject::Ptr GetVertexArrayObject(int32 index) 
@@ -108,6 +106,8 @@ public:
 
         return nullptr;
     }
+
+    void PushDrawCommands();
 
 private:
     void SetupVAOs();

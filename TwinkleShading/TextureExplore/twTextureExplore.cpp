@@ -236,12 +236,12 @@ void TextureExploreView::Advance(float64 delta_time)
             nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
             nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
-            Material::Ptr quad_mat = _projTexQuad->GetMeshRenderer()->GetMaterial();
-            Transform::Ptr quad_trans = _projTexQuad->GetTransform();
-            world = quad_trans->GetLocalToWorldMatrix();
+            Material::Ptr quadMat = _projTexQuad->GetMeshRenderer()->GetMaterial();
+            Transform::Ptr quadTrans = _projTexQuad->GetTransform();
+            world = quadTrans->GetLocalToWorldMatrix();
             mvp = _mvpMat * world;
-            quad_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
-            quad_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+            quadMat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
+            quadMat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
         }
     }
 
@@ -651,7 +651,9 @@ void TextureExploreView::CreateVolumnTexture()
         // _volumnQuad->GenerateMeshInternal();
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        VolumnQuadMaterial::Ptr mat = std::make_shared<VolumnQuadMaterial>();
+        Material::Ptr mat = std::make_shared<VolumnQuadMaterial>();
+        renderer->SetMaterial(mat);
+        mat = renderer->GetMaterial();
 
         ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename = {"Assets/Textures/cloud.dds"};
@@ -659,11 +661,9 @@ void TextureExploreView::CreateVolumnTexture()
 
         Texture3D::Ptr volumntex = std::make_shared<Texture3D>(true);
         volumntex->CreateFromImage(image);
-
         mat->SetMainTexture(volumntex);
-        renderer->SetMaterial(mat);
-        renderer->SetMesh(_volumnQuad->GetMesh());
 
+        renderer->SetMesh(_volumnQuad->GetMesh());
         _volumnQuad->SetMeshRenderer(renderer);
 
         CreateGeometry(_volumnQuad, 2);
@@ -678,10 +678,9 @@ void TextureExploreView::CreateSkybox()
         // _skybox->GenerateMeshInternal();
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        SkyboxMaterial::Ptr mat = std::make_shared<SkyboxMaterial>();
+        Material::Ptr mat = std::make_shared<SkyboxMaterial>();
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
-
         ImageManager& imageMgr = ImageMgrInstance();
         // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
         // Image::Ptr image = imageMgr.ReadImage(imageFilename);
@@ -735,9 +734,10 @@ void TextureExploreView::CreateSkybox()
         cubemap->SetNegativeZ(back_image);
         cubemap->InitStorageByOthers();
 
-        mat->SetMainTexture(cubemap);
-
         renderer->SetMaterial(mat);
+        mat = renderer->GetMaterial();
+
+        mat->SetMainTexture(cubemap);
         renderer->SetMesh(_skybox->GetMesh());
 
         _skybox->SetMeshRenderer(renderer);
@@ -762,16 +762,16 @@ void TextureExploreView::CreateCube(Image::Ptr image)
         trans->SetParent(_camera->GetTransform());
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        CubeMaterial::Ptr mat = std::make_shared<CubeMaterial>();
+        Material::Ptr mat = std::make_shared<CubeMaterial>();
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
         cubemap->CreateFromImage(image);
 
+        renderer->SetMaterial(mat);
+        mat = renderer->GetMaterial();
         mat->SetMainTexture(cubemap);
 
-        renderer->SetMaterial(mat);
         renderer->SetMesh(_cube->GetMesh());
-
         _cube->SetMeshRenderer(renderer);
 
         CreateGeometry(_cube, 15);
@@ -788,16 +788,16 @@ void TextureExploreView::CreateIconSphere(Image::Ptr image)
         trans->Translate(glm::vec3(-3.5f, 0.0f, 0.0f));
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        SphereMaterial::Ptr mat = std::make_shared<SphereMaterial>();
+        Material::Ptr mat = std::make_shared<SphereMaterial>();
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
         cubemap->CreateFromImage(image);
 
-        mat->SetMainTexture(cubemap);
-
         renderer->SetMaterial(mat);
-        renderer->SetMesh(_sphere->GetMesh());
+        mat->SetMainTexture(cubemap);
+        mat = renderer->GetMaterial();
 
+        renderer->SetMesh(_sphere->GetMesh());
         _sphere->SetMeshRenderer(renderer);
 
         CreateGeometry(_sphere, 14);
@@ -889,7 +889,7 @@ void TextureExploreView::CreateNURBSSurface()
         SubMesh::Ptr submesh = mesh->GetSubMesh(0);
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        ProjectionMappingMaterial::Ptr mat = std::make_shared<ProjectionMappingMaterial>();
+        Material::Ptr mat = std::make_shared<ProjectionMappingMaterial>();
 
         ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename = {"Assets/Textures/test3.png"};
@@ -904,9 +904,10 @@ void TextureExploreView::CreateNURBSSurface()
 
         texture->SetTexBorderColor(TextureBorderColorParam::BORDER_COLOR, vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-        mat->SetMainTexture(texture);
+        renderer->SetMaterial(mat);
+        mat = renderer->GetMaterial();
 
-        renderer->SetSharedMaterial(mat);
+        mat->SetMainTexture(texture);
         renderer->SetMesh(_nurbsSurface->GetMesh());
 
         _nurbsSurface->SetMeshRenderer(renderer);
@@ -915,17 +916,18 @@ void TextureExploreView::CreateNURBSSurface()
         _projTexQuad = std::make_shared<Quad>(size, MeshDataFlag(8));
         // _projTexQuad->GenerateMeshInternal();
 
-        Transform::Ptr quad_trans = _projTexQuad->GetTransform();
-        quad_trans->Translate(glm::vec3(6.0f, 0.0f, 0.0f));
+        Transform::Ptr quadTrans = _projTexQuad->GetTransform();
+        quadTrans->Translate(glm::vec3(6.0f, 0.0f, 0.0f));
 
-        MeshRenderer::Ptr quad_renderer = std::make_shared<MeshRenderer>();
-        ProjectionMappingMaterial::Ptr quad_mat = std::make_shared<ProjectionMappingMaterial>();
+        MeshRenderer::Ptr quadRenderer = std::make_shared<MeshRenderer>();
+        Material::Ptr quadMat = std::make_shared<ProjectionMappingMaterial>();
 
-        quad_mat->SetMainTexture(texture);
-        quad_renderer->SetSharedMaterial(quad_mat);
-        quad_renderer->SetMesh(_projTexQuad->GetMesh());
+        quadRenderer->SetMaterial(quadMat);
+        quadMat = quadRenderer->GetMaterial();
+        quadMat->SetMainTexture(texture);
 
-        _projTexQuad->SetMeshRenderer(quad_renderer);
+        quadRenderer->SetMesh(_projTexQuad->GetMesh());
+        _projTexQuad->SetMeshRenderer(quadRenderer);
 
         CreateGeometry(_nurbsSurface, 6);
         CreateGeometry(_projTexQuad, 13);
@@ -1027,6 +1029,11 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
 {
     Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
+    if(pass == nullptr)
+    {
+        return;
+    }
+
     ShaderProgram::Ptr shader = pass->GetShaderProgram();
 
     for (auto tex_slot : pass->GetTextureSlots())

@@ -140,7 +140,7 @@ void BasicGeometryView::Advance(float64 delta_time)
     _projectionMat = _camera->GetProjectionMatrix();
     _mvpMat = _projectionMat * _viewMat;
 
-    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
     material->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
 }
 
@@ -508,10 +508,12 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
  */
 void BasicGeometryView::RenderInfinitePlane()
 {
-    Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
     if(pass == nullptr)
+    {
         return;
+    }
 
     ShaderProgram::Ptr shader = pass->GetShaderProgram();
 
@@ -683,7 +685,7 @@ void BasicGeometryView::CreateInfinitePlane()
     texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
     texture->SetAnistropic();
 
-    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
     material->SetMainTexture(texture);
 
     CreateGeometry(_infinitePlane->GetMesh(), 6);

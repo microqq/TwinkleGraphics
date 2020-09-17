@@ -156,25 +156,15 @@ void MeshRenderer::AddMaterial(Material::Ptr material)
     if(material == nullptr)
         return;
 
-    std::vector<Material::Ptr>::iterator it = std::find(_materials.begin()
-        , _materials.end()
+    std::vector<Material::Ptr>::iterator it = std::find(_sharedMaterials.begin()
+        , _sharedMaterials.end()
         , material
     );
+
     if (it == _materials.end())
-    {
-        _materials.push_back(material);
+    {        
+        _sharedMaterials.push_back(material);
     }
-}
-
-void MeshRenderer::SetMaterial(int32 index, Material::Ptr material)
-{
-    if(material == nullptr || 
-        index >= _materials.size())
-    {
-        return;
-    }
-
-    _materials[index] = material;
 }
 
 } // namespace TwinkleGraphics

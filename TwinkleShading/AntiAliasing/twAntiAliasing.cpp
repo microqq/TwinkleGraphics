@@ -129,12 +129,14 @@ void AntiAliasingView::OnGUI()
                 }
 
                 MeshRenderer::Ptr renderer = scene->_screenQuadMSAA->GetMeshRenderer();
-                renderer->SetSharedMaterial(scene->_msaaResolveMat);
+                renderer->SetMaterial(scene->_msaaResolveMat);
+                renderer->GetMaterial();
             }
             else
             {
                 MeshRenderer::Ptr renderer = scene->_screenQuadMSAA->GetMeshRenderer();
-                renderer->SetSharedMaterial(scene->_screenQuadMat);
+                renderer->SetMaterial(scene->_screenQuadMat);
+                renderer->GetMaterial();                
             }
             ImGui::EndGroup();
         }
@@ -223,7 +225,7 @@ void AntiAliasingScene::CreateScene()
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
         cubemap->CreateFromImage(image);
 
-        Material::Ptr mat = _sphere->GetMeshRenderer()->GetSharedMaterial();
+        Material::Ptr mat = _sphere->GetMeshRenderer()->GetMaterial();
         mat->SetMainTexture(cubemap);
     }
 
@@ -242,7 +244,7 @@ void AntiAliasingScene::CreateScene()
     glm::vec3 p0(-3.0f, 5.0f, 0.0f), p1(-4.0f, 0.0f, 0.0f), p2(3.0f, 5.2f, 0.0f);
     _triangleBack.reset(CreateTriangle(p0, p1, p2));
     {
-        Material::Ptr material = _triangleBack->GetMeshRenderer()->GetSharedMaterial();
+        Material::Ptr material = _triangleBack->GetMeshRenderer()->GetMaterial();
         material->SetVecUniformValue<float32, 4>("tintColor", tintcolor);
 
         CreateGeometry(_triangleBack, 7);
@@ -253,7 +255,7 @@ void AntiAliasingScene::CreateScene()
     _triangle_front.reset(CreateTriangle(p0, p1, p2));
     {
         tintcolor = glm::vec4(1.0f, 0.3f, 0.8f, 1.0f);
-        Material::Ptr material = _triangle_front->GetMeshRenderer()->GetSharedMaterial();
+        Material::Ptr material = _triangle_front->GetMeshRenderer()->GetMaterial();
         material->SetVecUniformValue<float32, 4>("tintColor", tintcolor);
 
         CreateGeometry(_triangle_front, 8);
@@ -291,35 +293,24 @@ void AntiAliasingScene::CreateScene()
      * 
      *  but call ReadShaderAsync in Commmon dll or executable, it works fine. 
      */
-    ShaderOption option(
-        ShaderOption::OptionData{std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER});
-    shaderMgr.ReadShaderAsync("Assets/Shaders/cube.frag", &option);
+    // ShaderOption option(
+    //     ShaderOption::OptionData{std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER});
+    // shaderMgr.ReadShaderAsync("Assets/Shaders/cube.frag", &option);
 
-    ShaderOption shader_info[] = {
-        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
-        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.frag"), ShaderType::FRAGMENT_SHADER}};
-    ShaderProgram::Ptr program = shaderMgr.ReadShaders(shader_info, 2);
-    RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
 
-    _screenQuadMat = std::make_shared<Material>();
-    _screenQuadMat->AddRenderPass(pass);
+    MeshRenderer::Ptr quadRenderer = std::make_shared<MeshRenderer>();
+    _screenQuadMat = std::make_shared<ScreenQuadMaterial>(); 
+    quadRenderer->SetMaterial(_screenQuadMat);
 
+    _screenQuadMat = quadRenderer->GetMaterial();
     _screenQuadMat->SetMainTexture(_rtScreen->GetTexture());
-    MeshRenderer::Ptr quad_renderer = std::make_shared<MeshRenderer>();
-    quad_renderer->SetSharedMaterial(_screenQuadMat);
-    quad_renderer->SetMesh(_screenQuadMSAA->GetMesh());
-    _screenQuadMSAA->SetMeshRenderer(quad_renderer);
+
+    quadRenderer->SetMesh(_screenQuadMSAA->GetMesh());
+    _screenQuadMSAA->SetMeshRenderer(quadRenderer);
 
 
     // create material for custom msaa resolve filter
-    ShaderOption resolve_shader_info[] = {
-        ShaderOption::OptionData{std::string("Assets/Shaders/screenquad.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
-        ShaderOption::OptionData{std::string("Assets/Shaders/msaaResolve.frag"), ShaderType::FRAGMENT_SHADER}};
-    program = shaderMgr.ReadShaders(resolve_shader_info, 2);
-    pass = std::make_shared<RenderPass>(program);
-
-    _msaaResolveMat = std::make_shared<Material>();
-    _msaaResolveMat->AddRenderPass(pass);
+    _msaaResolveMat = std::make_shared<MSAAResolveMaterial>();
     _msaaResolveMat->SetMainTexture(_rtMSAA->GetTexture());
     _msaaResolveMat->SetSimpleUniformValue<int, 1>("samplecount", _numSamples);
 
@@ -349,7 +340,7 @@ void AntiAliasingScene::UpdateScene()
     _projectionMat = camera->GetProjectionMatrix();
     _mvpMat = _projectionMat * _viewMat;
 
-    Material::Ptr skyboxmat = _skybox->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr skyboxmat = _skybox->GetMeshRenderer()->GetMaterial();
     mat4 rotate_mat = glm::mat4_cast(camera->GetOrientation());
     // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
     mat4 mvp = _projectionMat * rotate_mat;
@@ -358,14 +349,14 @@ void AntiAliasingScene::UpdateScene()
     // Material::Ptr infplaneMaterial = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
     // infplaneMaterial->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
 
-    Material::Ptr material_plane_left = _planeLeft->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_plane_left = _planeLeft->GetMeshRenderer()->GetMaterial();
     glm::mat4 model = _planeLeft->GetTransform()->GetLocalToWorldMatrix();
     mvp = _mvpMat * model;
     material_plane_left->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     glm::vec4 tintColor(0.7f, 0.0f, 0.0f, 1.0f);
     material_plane_left->SetVecUniformValue<float32, 4>("tintColor", tintColor);
 
-    Material::Ptr material_plane_top = _planeTop->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_plane_top = _planeTop->GetMeshRenderer()->GetMaterial();
     {
         model = _planeTop->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvpMat * model;
@@ -374,7 +365,7 @@ void AntiAliasingScene::UpdateScene()
         material_plane_top->SetVecUniformValue<float32, 4>("tintColor", tintColor);
     }
 
-    Material::Ptr material_plane_right = _planeRight->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_plane_right = _planeRight->GetMeshRenderer()->GetMaterial();
     {
         model = _planeRight->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvpMat * model;
@@ -383,7 +374,7 @@ void AntiAliasingScene::UpdateScene()
         material_plane_right->SetVecUniformValue<float32, 4>("tintColor", tintColor);
     }
 
-    Material::Ptr material_plane_bottom = _planeBottom->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_plane_bottom = _planeBottom->GetMeshRenderer()->GetMaterial();
     {
         model = _planeBottom->GetTransform()->GetLocalToWorldMatrix();
         mvp = _mvpMat * model;
@@ -392,7 +383,7 @@ void AntiAliasingScene::UpdateScene()
         material_plane_bottom->SetVecUniformValue<float32, 4>("tintColor", tintColor);
     }
 
-    Material::Ptr material_plane_back = _planeBack->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_plane_back = _planeBack->GetMeshRenderer()->GetMaterial();
     {
         model = _planeBack->GetTransform()->GetLocalToWorldMatrix();
         tintColor = glm::vec4(0.7f, 0.7f, 0.0f, 1.0f);
@@ -401,7 +392,7 @@ void AntiAliasingScene::UpdateScene()
         material_plane_back->SetVecUniformValue<float32, 4>("tintColor", tintColor);
     }
 
-    Material::Ptr material_sphere = _sphere->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_sphere = _sphere->GetMeshRenderer()->GetMaterial();
     {
         Transform::Ptr trans = _sphere->GetTransform();
         trans->Rotate(0.002f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -417,7 +408,7 @@ void AntiAliasingScene::UpdateScene()
         spheretex->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
     }
 
-    Material::Ptr material_cube = _cube->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_cube = _cube->GetMeshRenderer()->GetMaterial();
     {
         Transform::Ptr trans = _cube->GetTransform();
         trans->Rotate(0.002f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -426,11 +417,11 @@ void AntiAliasingScene::UpdateScene()
         material_cube->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     }
 
-    Material::Ptr material_triangle = _triangleBack->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material_triangle = _triangleBack->GetMeshRenderer()->GetMaterial();
     {
         material_triangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
     }
-    material_triangle = _triangle_front->GetMeshRenderer()->GetSharedMaterial();
+    material_triangle = _triangle_front->GetMeshRenderer()->GetMaterial();
     {
         material_triangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
     }
@@ -637,7 +628,7 @@ void AntiAliasingScene::CreateSkybox()
         // _skybox->GenerateMeshInternal();
         
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        SkyboxMaterial::Ptr mat = std::make_shared<SkyboxMaterial>();
+        Material::Ptr mat = std::make_shared<SkyboxMaterial>();
 
         TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
         cubemap->SetWrap<WrapParam::WRAP_S>(WrapMode::CLAMP_TO_EDGE);
@@ -686,11 +677,11 @@ void AntiAliasingScene::CreateSkybox()
         // Image::Ptr image = imageMgr.ReadImage(imageFilename);
         // cubemap->CreateFromImage(image);
 
+        renderer->SetMaterial(mat);
+        mat = renderer->GetMaterial();
         mat->SetMainTexture(cubemap);
 
-        renderer->SetMaterial(mat);
         renderer->SetMesh(_skybox->GetMesh());
-
         _skybox->SetMeshRenderer(renderer);
 
         CreateGeometry(_skybox, 10);
@@ -715,7 +706,7 @@ void AntiAliasingScene::CreateInfinitePlane()
     texture->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
     texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
 
-    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
     material->SetMainTexture(texture);
 
     CreateGeometry(_infinitePlane, 11);
@@ -723,10 +714,12 @@ void AntiAliasingScene::CreateInfinitePlane()
 
 void AntiAliasingScene::RenderGeometry(Geometry::Ptr geom, int32 index)
 {
-    Material::Ptr mat = geom->GetMeshRenderer()->GetSharedMaterial();
+    Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
     RenderPass::Ptr pass = mat->GetRenderPass(0);
     if(pass == nullptr)
+    {
         return;
+    }
 
 
     for (auto tex_slot : pass->GetTextureSlots())

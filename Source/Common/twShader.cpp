@@ -30,7 +30,6 @@ namespace TwinkleGraphics
         {
             _optionData.macros[i] = data.macros[i];
         }
-        _optionData.program = data.program;
     }
 
     ShaderOption::ShaderOption(const ShaderOption &src)
@@ -47,7 +46,6 @@ namespace TwinkleGraphics
         {
             _optionData.macros[i] = src._optionData.macros[i];
         }
-        _optionData.program = src._optionData.program;
     }
     
     const ShaderOption& ShaderOption::operator=(const ShaderOption &src)
@@ -69,7 +67,6 @@ namespace TwinkleGraphics
         {
             _optionData.macros[i] = src._optionData.macros[i];
         }
-        _optionData.program = src._optionData.program;
 
         return *this;
     }
@@ -78,7 +75,6 @@ namespace TwinkleGraphics
     ShaderOption::~ShaderOption()
     {
         SAFE_DEL(_optionData.macros);
-        _optionData.program = nullptr;
     }
 
     Shader::Shader(ShaderType type, ShaderSource::Ptr source)

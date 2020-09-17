@@ -147,11 +147,12 @@ namespace TwinkleGraphics
                     {
                         subMesh->SetMaterialIndex(renderer->GetMaterialCount());
                         renderer->AddMaterial(vecMats[mesh->mMaterialIndex]);
+                        Material::Ptr material = renderer->GetMaterial(renderer->GetMaterialCount() - 1);
+                        vecMats[mesh->mMaterialIndex] = material;
                     }
                     else
                     {
                         subMesh->SetMaterialIndex(renderer->GetMaterialIndex(vecMats[mesh->mMaterialIndex]));
-
                     }
                 }
                 else
@@ -160,6 +161,8 @@ namespace TwinkleGraphics
 
                     subMesh->SetMaterialIndex(renderer->GetMaterialCount());
                     renderer->AddMaterial(material);
+                    material = renderer->GetMaterial(renderer->GetMaterialCount() - 1);
+
                     vecMats[mesh->mMaterialIndex] = material;
                 }
 
@@ -354,18 +357,7 @@ namespace TwinkleGraphics
             index++;
         }
 
-        char* vertMarco = const_cast<char*>(vertLayoutMacros.c_str());
-
-        Console::LogInfo("ModelReader: Process material vertex shader macros\n", vertMarco, "\n");
-
-        char* vertMacros[] = { vertMarco };
-        ShaderOption options[] = 
-        {
-            ShaderOption::OptionData{std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros},
-            ShaderOption::OptionData{std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros}
-        };
-
-        StandardMaterial::Ptr material = std::make_shared<StandardMaterial>(options, 2);
+        StandardMaterial::Ptr material = std::make_shared<StandardMaterial>(vertLayoutMacros);
 
         // process materials
         aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];    

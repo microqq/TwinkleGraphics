@@ -1,0 +1,10 @@
+<Material>
+    <RasterState></RasterState>
+    <RenderState></RenderState>
+    <Pass>
+        <RasterState></RasterState>
+        <RenderState></RenderState>
+        <Shader>
+        </Shader>
+    </Pass>
+</Material>

@@ -30,6 +30,7 @@ namespace TwinkleGraphics
 
 class RenderPass;
 class Material;
+class MeshRenderer;
 
 /**
  * @brief 
@@ -52,7 +53,7 @@ public:
     void SetShaderProgram(ShaderProgram::Ptr shader) { _program = shader; }
     void SetEnable(bool enable) { _enable = enable; }
 
-    inline bool Enabled() { return _enable; }
+    inline bool Enable() { return _enable; }
     inline const RenderState& GetRenderState() { return _state; }
     inline const ShaderProgram::Ptr& GetShaderProgram() { return _program; }
     inline const std::map<std::string, TextureSlot>& GetTextureSlots() { return _slots; }
@@ -88,11 +89,16 @@ class __TWCOMExport Material : public Object
 public:
     typedef std::shared_ptr<Material> Ptr;
 
-    static Material::Ptr CreateMaterailInstance(RenderPass::Ptr passes[], int32 num);
-
     Material();
     Material(const Material& src);
+
     virtual ~Material();
+    virtual void Initialize() {}
+    virtual Material::Ptr SharedClone() 
+    {
+        Material::Ptr clone = std::make_shared<Material>(*this);
+        return clone;
+    }
 
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
@@ -250,9 +256,7 @@ public:
      */
     const Uniform* GetUniform(const char* name);
 
-
-protected:
-    void ApplyPassUniforms();
+    void ApplyRenderPass();
 
 private:
     /**
@@ -283,8 +287,9 @@ private:
     std::vector<RenderPass::Ptr> _passes;
     std::map<std::string, Uniform*> _uniforms;
     std::map<std::string, Texture::Ptr> _textures;
-
     RenderState _state;
+
+    friend class MeshRenderer;
 };
 
 
