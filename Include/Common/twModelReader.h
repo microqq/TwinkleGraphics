@@ -27,10 +27,16 @@ namespace TwinkleGraphics
 
         void SetOption(ReaderOption* option) 
         {
-            if (_option == nullptr)
+            if(option == nullptr)
             {
-                _option = new ReaderOption(*option);
+                return;                
+            }
+
+            if (_option != nullptr)
+            {
+                SAFE_DEL(_option);
             }            
+            _option = new ReaderOption(*option);
         }
 
         DECLARE_READERID;

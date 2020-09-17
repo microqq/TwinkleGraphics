@@ -34,10 +34,11 @@ namespace TwinkleGraphics
             if(option == nullptr)
                 return;
 
-            if (_option == nullptr)
+            if (_option != nullptr)
             {
-                _option = new ReaderOption(*option);
+                SAFE_DEL(_option);
             }       
+            _option = new ReaderOption(*option);
         }
         DECLARE_READERID;
     };

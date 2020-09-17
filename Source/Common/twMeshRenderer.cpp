@@ -20,6 +20,7 @@ MeshRenderer::~MeshRenderer()
 {
     _mesh = nullptr;
     _materials.clear();
+    _sharedMaterials.clear();
     _vaos.clear();
     _vbo = nullptr;
     _ibos.clear();
@@ -161,9 +162,10 @@ void MeshRenderer::AddMaterial(Material::Ptr material)
         , material
     );
 
-    if (it == _materials.end())
+    if (it == _sharedMaterials.end())
     {        
         _sharedMaterials.push_back(material);
+        _materials.push_back(nullptr);
     }
 }
 

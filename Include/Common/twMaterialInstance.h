@@ -713,7 +713,10 @@ public:
         : Material(src)
     {
     }
-    virtual ~MSAAResolveMaterial() {}
+    virtual ~MSAAResolveMaterial() 
+    {
+        Console::LogWarning("Deconstruct MSAA resolve material\n");
+    }
 
 protected:
     virtual void Initialize() override

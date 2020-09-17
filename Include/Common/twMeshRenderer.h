@@ -32,6 +32,11 @@ public:
 
     const Material::Ptr GetMaterial()
     {
+        if(_sharedMaterial == nullptr)
+        {
+            return nullptr;
+        }
+
         if(_sharedMaterial != _material)
         {
             // _material = std::make_shared<Material>(*(_sharedMaterial.get()));
@@ -53,9 +58,19 @@ public:
 
     const Material::Ptr GetMaterial(int32 index)
     { 
-        if(index < 0 || index >= _materials.size())
+        if(index < 0 || index >= _sharedMaterials.size())
         {
             return nullptr; 
+        }
+
+        if(_sharedMaterials[index] == nullptr)
+        {
+            return nullptr;
+        }
+
+        if(_sharedMaterials[index] == _materials[index])
+        {
+            return _materials[index];
         }
 
         // _materials[index] = std::make_shared<Material>(*(_sharedMaterials[index].get()));

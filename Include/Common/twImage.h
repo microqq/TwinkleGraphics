@@ -87,10 +87,11 @@ public:
         if (option == nullptr)
             return;
 
-        if (_option == nullptr)
+        if (_option != nullptr)
         {
-            _option = new ImageOption(*option);
+            SAFE_DEL(_option);
         }
+        _option = new ImageOption(*option);
     }
 
 private:
