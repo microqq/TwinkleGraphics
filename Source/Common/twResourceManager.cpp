@@ -35,6 +35,8 @@ namespace TwinkleGraphics
 
     void ResourceManager::Destroy()
     {
+        ClearWorkerPool();
+
         IPackedReadTask::Ptr packedTask;
         while (_taskQueue.Pop(packedTask)) {}
         while (_cachedTaskQueue.Pop(packedTask)) {}
@@ -47,8 +49,6 @@ namespace TwinkleGraphics
 
         _sceneObjectsCacheMap.clear();
         _objectCacheMap.clear();
-
-        ClearWorkerPool();
     }
 
     bool ResourceManager::AddResourceCache(CacheHint hint, ResourceCache::Ptr cache)

@@ -5,6 +5,10 @@
         <RasterState></RasterState>
         <RenderState></RenderState>
         <Shader>
+            <Vert>Asset/Shaders/standard.vert</Vert>
+            <Frag>Asset/Shaders/standard.frag</Frag>
         </Shader>
+    <Uniforms>
+    </Uniforms>
     </Pass>
 </Material>

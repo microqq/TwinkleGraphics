@@ -86,42 +86,6 @@ namespace TwinkleGraphics
         SetShaderSource(source);
     }
 
-//     /**
-//  * @brief Construct a new Shader:: Shader object
-//  * 
-//  * @param type 
-//  */
-//     Shader::Shader(ShaderType type, const char *source)
-//         : Object()
-//         , _res()
-//         , _compiled(false)
-//     {
-//         _res.type = (uint32)type;
-//         _res.id = glCreateShader(_res.type);
-
-//         glShaderSource(_res.id, 1, &source, NULL);
-//         glCompileShader(_res.id);
-
-//         // test
-//         {
-//             _source = std::make_shared<ShaderSource>();
-//             _source->content = std::string(source);
-//             _source->filename = "";
-
-//             const char* macros[] = {"#define VERTCOLOR\n", "#define VERTNORMAL\n"};
-//             SetDefineMacros(macros, 2);
-//         }
-
-
-// #ifdef _DEBUG
-//         GLenum error = glGetError();
-//         const GLubyte *error_str = glGetString(error);
-// #endif
-
-//         _compiled = true;
-//         _setupCompile = true;
-//     }
-
     Shader::Shader(const Shader &src)
         : _res(src._res)
     {
