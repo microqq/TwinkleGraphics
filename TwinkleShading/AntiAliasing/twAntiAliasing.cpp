@@ -130,13 +130,13 @@ void AntiAliasingView::OnGUI()
 
                 MeshRenderer::Ptr renderer = scene->_screenQuadMSAA->GetMeshRenderer();
                 renderer->SetMaterial(scene->_msaaResolveMat);
-                renderer->GetMaterial();
+                scene->_msaaResolveMat = renderer->GetMaterial();
             }
             else
             {
                 MeshRenderer::Ptr renderer = scene->_screenQuadMSAA->GetMeshRenderer();
                 renderer->SetMaterial(scene->_screenQuadMat);
-                renderer->GetMaterial();                
+                scene->_screenQuadMat = renderer->GetMaterial();                
             }
             ImGui::EndGroup();
         }

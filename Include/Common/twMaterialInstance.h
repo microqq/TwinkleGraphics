@@ -715,7 +715,6 @@ public:
     }
     virtual ~MSAAResolveMaterial() 
     {
-        Console::LogWarning("Deconstruct MSAA resolve material\n");
     }
 
 protected:

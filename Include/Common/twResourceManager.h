@@ -330,7 +330,7 @@ namespace TwinkleGraphics
                 if(option != nullptr)
                 {
                     ResourceCache::Ptr cache = resMgr.GetResourceCache(option->GetCacheHint(), cacheid);
-                    option->OnReadSuccess(cache->GetCachedObject());
+                    option->OnReadSuccess(cache == nullptr ? nullptr : cache->GetCachedObject());
                 }
             }
 

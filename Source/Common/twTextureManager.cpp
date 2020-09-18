@@ -73,7 +73,7 @@ namespace TwinkleGraphics
         if(pos != std::string::npos)
         {
             std::string imgFilename = texFilename.substr(pos + 1);
-            Image::Ptr image = imgMgr.ReadImage(imgFilename.c_str(), nullptr);
+            Image::Ptr image = imgMgr.ReadImage(imgFilename.c_str(), new ImageOption);
             if(image != nullptr)
             {
                 texture->SetImage(image);

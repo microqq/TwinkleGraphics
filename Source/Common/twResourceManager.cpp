@@ -20,7 +20,6 @@ namespace TwinkleGraphics
             packedTask->PushTask();
         }
 
-        ResourceCache::Ptr cache = nullptr;
         while(_cachedTaskQueue.Pop(packedTask))
         {
             packedTask->InvokeSuccess();
