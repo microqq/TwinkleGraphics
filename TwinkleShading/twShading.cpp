@@ -58,7 +58,7 @@ int main(int, char **)
      *  Call ReadShaderAsync in plugin Antialiasing DLL, call future.get() which
      *  will throw exception with unknown/just-in-time compiled code.
      * 
-     *  but call ReadShaderAsync in Commmon dll or executable, it works fine. 
+     *  So, fix this problem with solution that makes the operations of _futures.push & future.get() in Common Update.
      */
     // ShaderManager& shaderMgr = ShaderMgrInstance();
     // ShaderOption* option = new ShaderOption(

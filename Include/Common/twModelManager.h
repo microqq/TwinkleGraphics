@@ -2,10 +2,12 @@
 #define TW_MODELMANAGER_H
 
 #include "twModelReader.h"
+#include "twReaderManager.h"
 
 namespace TwinkleGraphics
 {
     class __TWCOMExport ModelManager : public IUpdatable
+        , public IReaderManager
         , public INonCopyable
         , public IDestroyable
     {
@@ -14,7 +16,13 @@ namespace TwinkleGraphics
         {
             Destroy();
         }
-        virtual void Update() override {} 
+        virtual void Update() override 
+        {
+            {
+                std::lock_guard<std::mutex> lock(_mutex);
+                RemoveFutures<Model>(_futures);
+            }
+        } 
         virtual void Destroy() override 
         {
             {
@@ -24,7 +32,7 @@ namespace TwinkleGraphics
         }
 
         Model::Ptr ReadModel(const char *filename);
-        ReadResult<Model> ReadModelAsync(const char* filename, ShaderOption* option);
+        ReadResult<Model> ReadModelAsync(const char* filename, ReaderOption* option);
 
         void AddTaskFuture(std::future<ReadResult<Model>> future);
 
@@ -32,17 +40,18 @@ namespace TwinkleGraphics
         explicit ModelManager()
             : IUpdatable()
             , INonCopyable()
+            , _futures()
+            , _mutex()
         {}
         void OnReadModelSuccess(Object::Ptr obj);
         void OnReadModelFailed();
 
     private:
         std::vector<std::future<ReadResult<Model>>> _futures;
-        std::vector<Model::Ptr> _models;
         std::mutex _mutex;
 
         friend class Singleton<ModelManager>;
-    };    
+    };
 
 
 #ifdef __cplusplus

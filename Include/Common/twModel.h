@@ -15,6 +15,7 @@ namespace TwinkleGraphics
 
         Model();
         virtual ~Model();
+        virtual void SetValid(bool valid) override;
 
         void AddGeometry(Geometry::Ptr geom);
         void RemoveGeometry(int index);

@@ -14,10 +14,17 @@ namespace TwinkleGraphics
     {
         UpdateResourceCache(0.02f);
 
+        int taskPerFrame = 4;
         IPackedReadTask::Ptr packedTask;
         while (_taskQueue.Pop(packedTask))
         {
             packedTask->PushTask();
+            --taskPerFrame;
+
+            if(taskPerFrame <= 0)
+            {
+                break;
+            }
         }
 
         while(_cachedTaskQueue.Pop(packedTask))

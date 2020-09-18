@@ -183,7 +183,7 @@ namespace TwinkleGraphics
         explicit ResourceManager()
             : IUpdatable()
             , INonCopyable()
-            , _workerPool(2)
+            , _workerPool(4)
         {}
 
         template <typename R, typename OP>

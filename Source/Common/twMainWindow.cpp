@@ -8,6 +8,7 @@
 #include "twResourceManager.h"
 #include "twTextureManager.h"
 #include "twImageManager.h"
+#include "twModelManager.h"
 
 namespace TwinkleGraphics
 {
@@ -131,6 +132,7 @@ void GLFWMainWindow::Run()
     ShaderManager& shaderMgr = ShaderMgrInstance();
     TextureManager& textureMgr = TextureMgrInstance();
     ImageManager& imgMgr = ImageMgrInstance();
+    ModelManager& modelMgr = ModelMgrInstance();
     ResourceManager& resMgr = ResourceMgrInstance();
 
     /* Loop until the user closes the window */
@@ -140,6 +142,7 @@ void GLFWMainWindow::Run()
         shaderMgr.Update();
         imgMgr.Update();
         textureMgr.Update();
+        modelMgr.Update();
         HandleEvents();
 
         // Start the Dear ImGui frame

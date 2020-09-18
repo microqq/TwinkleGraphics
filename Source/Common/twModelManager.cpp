@@ -14,10 +14,10 @@ namespace TwinkleGraphics
         return model;
     }
 
-    ReadResult<Model> ModelManager::ReadModelAsync(const char *filename, ShaderOption *option)
+    ReadResult<Model> ModelManager::ReadModelAsync(const char *filename, ReaderOption *option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        return resMgr.ReadAsync<ModelReader, Model, ReaderOption>(filename, nullptr);
+        return resMgr.ReadAsync<ModelReader, Model, ReaderOption>(filename, option);
     }
 
 
@@ -31,10 +31,6 @@ namespace TwinkleGraphics
 
     void ModelManager::OnReadModelSuccess(Object::Ptr obj)
     {
-        Model *model = dynamic_cast<Model *>(obj.get());
-        if (model != nullptr)
-        {
-        }
     }
 
     void ModelManager::OnReadModelFailed() 

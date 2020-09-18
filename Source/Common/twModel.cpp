@@ -13,6 +13,27 @@ namespace TwinkleGraphics
         _geometries.clear();
     }
 
+    void Model::SetValid(bool valid)
+    {
+        if(_rootGeometry == nullptr)
+        {
+            return;
+        }
+
+        for(auto geom : _geometries)
+        {
+            MeshRenderer::Ptr renderer = geom->GetMeshRenderer();
+            if(renderer == nullptr)
+            {
+                continue;
+            }
+
+            renderer->SetupVAOs();
+        }
+
+        _valid = valid;
+    }
+
     void Model::AddGeometry(Geometry::Ptr geom)
     {
         if(geom != nullptr)

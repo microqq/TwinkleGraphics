@@ -110,6 +110,7 @@ public:
 
     //Todo: Shared mesh
     void SetMesh(Mesh::Ptr mesh, bool setupVAO = false);
+    void SetupVAOs();
     const Mesh::Ptr GetMesh() { return _mesh; }
 
     VertexArrayObject::Ptr GetVertexArrayObject(int32 index) 
@@ -125,7 +126,6 @@ public:
     void PushDrawCommands();
 
 private:
-    void SetupVAOs();
     void BindingVertexBuffer(int32 attribIndex, int32 attribSize, int32 bindingIndex, int32 offset, int32 stride);
 
 protected:

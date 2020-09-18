@@ -169,7 +169,7 @@ private:
     Material::Ptr _screenQuadMat;
     Material::Ptr _msaaResolveMat;
 
-    Model::Ptr _model;
+    Model::Ptr _model = nullptr;
 
     uint32 *_vaos;
     uint32 *_vbos;

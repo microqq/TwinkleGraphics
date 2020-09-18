@@ -11,7 +11,9 @@ namespace TwinkleGraphics
         : IUpdatable()
         , INonCopyable()
         , _futures()
+        , _programFutures()
         , _mutex()
+        , _programMutex()
     {
     }
 
@@ -23,7 +25,7 @@ namespace TwinkleGraphics
     void ShaderManager::Update()
     {
         // try
-        {            
+        {
             {
                 std::lock_guard<std::mutex> lock(_mutex);
                 RemoveFutures<Shader>(_futures);

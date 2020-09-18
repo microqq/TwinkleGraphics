@@ -155,7 +155,7 @@ Material::Material()
 }
 
 Material::Material(const Material &src)
-    : Object()
+    : Object(src)
     , _passes()
     , _uniforms()
     , _textures()

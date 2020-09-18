@@ -147,8 +147,7 @@ namespace TwinkleGraphics
                     {
                         subMesh->SetMaterialIndex(renderer->GetMaterialCount());
                         renderer->AddMaterial(vecMats[mesh->mMaterialIndex]);
-                        Material::Ptr material = renderer->GetMaterial(renderer->GetMaterialCount() - 1);
-                        vecMats[mesh->mMaterialIndex] = material;
+                        vecMats[mesh->mMaterialIndex] = renderer->GetMaterial(renderer->GetMaterialCount() - 1);
                     }
                     else
                     {
@@ -161,16 +160,14 @@ namespace TwinkleGraphics
 
                     subMesh->SetMaterialIndex(renderer->GetMaterialCount());
                     renderer->AddMaterial(material);
-                    material = renderer->GetMaterial(renderer->GetMaterialCount() - 1);
-
-                    vecMats[mesh->mMaterialIndex] = material;
+                    vecMats[mesh->mMaterialIndex] = renderer->GetMaterial(renderer->GetMaterialCount() - 1);
                 }
 
                 verticeNum += mesh->mNumVertices;
             }
 
             geom->SetMeshExternal(tMesh);
-            renderer->SetMesh(tMesh, true);
+            renderer->SetMesh(tMesh);
         }
 
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
@@ -442,42 +439,44 @@ namespace TwinkleGraphics
             //     std::cout << str.C_Str() << std::endl;
             // }
 
+            Texture2D::Ptr texture = std::make_shared<Texture2D>(true, true);
             ImageManager& imageMgr = ImageMgrInstance();
             std::string imgFilename{dir + "/" + std::string(str.C_Str())};
-            Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str(), new ImageOption);
-            if(image == nullptr)
-            {
-                continue;
-            }
-            ImageData* imageData = image->GetImageSourcePtr();
-            float fwh = imageData->mip[0].width > imageData->mip[0].height ? imageData->mip[0].height : imageData->mip[0].width;
-            int32 level = 0;
-            while(fwh >= 1.0f)
-            {
-                fwh /= 2.0f;
-                level++;
-            }
-            if(level > 10)
-            {
-                level = 10;
-            }
-            imageData->mipLevels = level;
 
-            Texture2D::Ptr texture = nullptr;
-            if (image != nullptr)
-            {
-                texture = std::make_shared<Texture2D>(true, true);
-                texture->CreateFromImage(image);
+            ImageOption option;
+            ReadSuccessCallbackFuncPtr funcPtr = std::make_shared<ReadSuccessCallbackFunc>(
+                [texture](Object::Ptr obj) {
+                    Image::Ptr image = std::dynamic_pointer_cast<Image>(obj);
+                    if (image != nullptr)
+                    {
+                        ImageData *imageData = image->GetImageSourcePtr();
+                        float fwh = imageData->mip[0].width > imageData->mip[0].height ? imageData->mip[0].height : imageData->mip[0].width;
+                        int32 level = 0;
+                        while (fwh >= 1.0f)
+                        {
+                            fwh /= 2.0f;
+                            level++;
+                        }
+                        if (level > 10)
+                        {
+                            level = 10;
+                        }
 
-                texture->SetWrap<WrapParam::WRAP_S>(WrapMode::REPEAT);
-                texture->SetWrap<WrapParam::WRAP_T>(WrapMode::REPEAT);
-                texture->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
-                texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
-                texture->SetMipMapBaseLevel(MipMapBaseLevelParam::BESE_LEVEL, 0);
-                texture->SetMipMapMaxLevel(MipMapMaxLevelParam::MAX_LEVEL, level - 1);
+                        imageData->mipLevels = level;
+                        texture->CreateFromImage(image);
 
-                textures.push_back(texture);
-            }
+                        texture->SetWrap<WrapParam::WRAP_S>(WrapMode::REPEAT);
+                        texture->SetWrap<WrapParam::WRAP_T>(WrapMode::REPEAT);
+                        texture->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR_MIPMAP_LINEAR);
+                        texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
+                        texture->SetMipMapBaseLevel(MipMapBaseLevelParam::BESE_LEVEL, 0);
+                        texture->SetMipMapMaxLevel(MipMapMaxLevelParam::MAX_LEVEL, level - 1);
+                    }
+                });
+            option.AddSuccessFunc(-1, funcPtr);
+            imageMgr.ReadImageAsync(imgFilename.c_str(), &option);
+            // Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str(), new ImageOption);
+            textures.push_back(texture);
         }
         return textures;
     }

@@ -286,12 +286,10 @@ void AntiAliasingScene::CreateScene()
     /**
      * 
      * Debug Mode With GDB:
-     *  Call ReadShaderAsync in plugin Antialiasing DLL, call future.get() which
-     *  will throw exception with unknown/just-in-time compiled code.
+     *  Call ReadShaderAsync in plugin Antialiasing, call function(future.get())
+     *  would throw exception that unknown/just-in-time compiled code.
      * 
-     * So, fix this problem with solution that makes the operations of _futures.push & future.get() in common dll.
-     * 
-     *  but call ReadShaderAsync in Commmon dll or executable, it works fine. 
+     *  So, fix this problem with solution that makes the operations of _futures.push & future.get() in Common Update.
      */
     // ShaderOption option(
     //     ShaderOption::OptionData{std::string("Assets/Shaders/cube.frag"), ShaderType::FRAGMENT_SHADER});
@@ -321,8 +319,19 @@ void AntiAliasingScene::CreateScene()
 void AntiAliasingScene::Load3DModel(std::string filename)
 {
     ModelManager& modelMgr = ModelMgrInstance();
-    _model = modelMgr.ReadModel(filename.c_str());
+    ReaderOption* option = new ReaderOption;
+    ReadSuccessCallbackFuncPtr funcPtr = std::make_shared<ReadSuccessCallbackFunc>(
+        [this](Object::Ptr obj) {
+            if(obj != nullptr)
+            {
+                _model = std::dynamic_pointer_cast<Model>(obj);
+                _model->SetValid(true);   
+            }
+    });
+    option->AddSuccessFunc(-1, funcPtr);
+    modelMgr.ReadModelAsync(filename.c_str(), option);
 
+    // _model = modelMgr.ReadModel(filename.c_str());
     // _model = modelMgr->ReadModel("Assets/Models/Sponza/sponza.obj");
     // _sponza = modelMgr->ReadModel("Assets/Models/bunny.obj");
     // _sponza = modelMgr->ReadModel("Assets/Models/Armadillo/Armadillo.ply");

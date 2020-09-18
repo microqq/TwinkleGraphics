@@ -49,7 +49,7 @@ protected:
 
     void OnMaterialSuccess(Object::Ptr obj)
     {
-        if(obj == nullptr)
+        if(obj == nullptr || this->IsValid())
             return;
 
         ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
