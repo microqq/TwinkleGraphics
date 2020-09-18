@@ -661,19 +661,6 @@ void AntiAliasingScene::CreateSkybox()
         std::string down_info = {"Assets/Textures/skybox/bottom.png"};
         Image::Ptr down_image = imageMgr.ReadImage(down_info.c_str());
 
-        // ImageReadInfo front_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_0_Front+Z.png"};
-        // Image::Ptr front_image = imageMgr.ReadImage(front_info);
-        // ImageReadInfo back_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_1_Back-Z.png"};
-        // Image::Ptr back_image = imageMgr.ReadImage(back_info);
-        // ImageReadInfo left_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_3_Right-X.png"};
-        // Image::Ptr left_image = imageMgr.ReadImage(left_info);
-        // ImageReadInfo right_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_2_Left+X.png"};
-        // Image::Ptr right_image = imageMgr.ReadImage(right_info);
-        // ImageReadInfo top_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_5_Down-Y.png"};
-        // Image::Ptr top_image = imageMgr.ReadImage(top_info);
-        // ImageReadInfo down_info = {"Assets/Textures/cartoonskyes/FluffyBlueSky/Sky_Cartoon_FluffyBlueSky_Cam_4_Up+Y.png"};
-        // Image::Ptr down_image = imageMgr.ReadImage(down_info);
-
         cubemap->SetPositiveX(right_image);
         cubemap->SetPositiveY(top_image);
         cubemap->SetPositiveZ(front_image);
@@ -682,8 +669,8 @@ void AntiAliasingScene::CreateSkybox()
         cubemap->SetNegativeZ(back_image);
         cubemap->InitStorageByOthers();
 
-        // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
-        // Image::Ptr image = imageMgr.ReadImage(imageFilename);
+        // std::string imageFilename = {"Assets/Textures/skybox/output.dds"};
+        // Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
         // cubemap->CreateFromImage(image);
 
         renderer->SetMaterial(mat);
