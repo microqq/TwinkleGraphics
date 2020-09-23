@@ -328,15 +328,19 @@ public:
             return;
         }
 
-        if(_image != nullptr) 
+        if(_image != nullptr && _image->GetImageSourcePtr() != nullptr)
         {
             InitStorage();
         }
-        else if(!_immutable)
+        else
         {
-            //update texture storage
+            InitStorageWithEmptyImage();
         }
-    }    
+        // else if(!_immutable)
+        // {
+        //     //update texture storage
+        // }
+    }
 
     void Create(int32 width, int32 height, GLenum internalformat = GL_RGBA8
         , GLenum format = GL_RGBA, int32 miplevels = 1
@@ -463,6 +467,8 @@ protected:
     virtual void ApplyDepthStencilMode();
     virtual void ApplyAnistropicFilter();
 
+    virtual void InitStorageWithEmptyImage() {}
+
 protected:
     TexParams _parameters;
     RenderResourceHandle _res;
@@ -569,6 +575,15 @@ protected:
         {
             glTexParameteri(_res.type, GL_TEXTURE_WRAP_T, (int32)(_parameters.wrapModes[1]));
         }
+    }
+
+    virtual void InitStorageWithEmptyImage() override
+    {
+        GLubyte *bytes = new GLubyte[4]{
+            180, 180, 180, 255};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+
+        SAFE_DEL_ARR(bytes);
     }
 };
 

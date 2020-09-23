@@ -2,7 +2,6 @@
 #include <map>
 
 #include "twModelReader.h"
-#include "twMaterialInstance.h"
 #include "twConsoleLog.h"
 #include "twResourceManager.h"
 #include "twImageManager.h"
@@ -367,58 +366,63 @@ namespace TwinkleGraphics
 
         // 1. diffuse maps
         std::vector<Texture::Ptr> diffuseMaps = LoadTextures(aiMat, aiTextureType_DIFFUSE, dir);
-        SetMaterialTextures(diffuseMaps, material, "diffuseTex");
+        SetMaterialTextures(diffuseMaps, material, "diffuseTex", "#define DIFFTEX");
 
         // 2. specular maps
         std::vector<Texture::Ptr> specularMaps = LoadTextures(aiMat, aiTextureType_SPECULAR, dir);
-        SetMaterialTextures(specularMaps, material, "specularTex");
+        SetMaterialTextures(specularMaps, material, "specularTex", "#define DIFFTEX");
 
         // 3. normal maps
         std::vector<Texture::Ptr> normalMaps = LoadTextures(aiMat, aiTextureType_NORMALS, dir);
-        SetMaterialTextures(normalMaps, material, "normalTex");
+        SetMaterialTextures(normalMaps, material, "normalTex", "#define DIFFTEX");
         
         // 4. height maps
         std::vector<Texture::Ptr> heightMaps = LoadTextures(aiMat, aiTextureType_HEIGHT, dir);
-        SetMaterialTextures(heightMaps, material, "heightTex");
+        SetMaterialTextures(heightMaps, material, "heightTex", "#define DIFFTEX");
 
         // 5. amibient maps
         std::vector<Texture::Ptr> ambientMaps = LoadTextures(aiMat, aiTextureType_AMBIENT, dir);
-        SetMaterialTextures(ambientMaps, material, "ambientTex");
+        SetMaterialTextures(ambientMaps, material, "ambientTex", "#define DIFFTEX");
 
         // 6. emissive maps
         std::vector<Texture::Ptr> emissiveMaps = LoadTextures(aiMat, aiTextureType_EMISSIVE, dir);
-        SetMaterialTextures(emissiveMaps, material, "emissiveTex");
+        SetMaterialTextures(emissiveMaps, material, "emissiveTex", "#define DIFFTEX");
 
         // 7. shininess maps
         std::vector<Texture::Ptr> shininessMaps = LoadTextures(aiMat, aiTextureType_SHININESS, dir);
-        SetMaterialTextures(shininessMaps, material, "shininessTex");
+        SetMaterialTextures(shininessMaps, material, "shininessTex", "#define DIFFTEX");
 
         // 8. opacity maps
         std::vector<Texture::Ptr> opacityMaps = LoadTextures(aiMat, aiTextureType_OPACITY, dir);
-        SetMaterialTextures(opacityMaps, material, "opacityTex");
+        SetMaterialTextures(opacityMaps, material, "opacityTex", "#define DIFFTEX");
 
         // 9. displacement maps
         std::vector<Texture::Ptr> displacementMaps = LoadTextures(aiMat, aiTextureType_DISPLACEMENT, dir);
-        SetMaterialTextures(displacementMaps, material, "displacementTex");
+        SetMaterialTextures(displacementMaps, material, "displacementTex", "#define DIFFTEX");
 
         // 10. lightmap maps
         std::vector<Texture::Ptr> lightmapMaps = LoadTextures(aiMat, aiTextureType_LIGHTMAP, dir);
-        SetMaterialTextures(lightmapMaps, material, "lightmapTex");
+        SetMaterialTextures(lightmapMaps, material, "lightmapTex", "#define DIFFTEX");
 
         // 11. reflection maps
         std::vector<Texture::Ptr> reflectionMaps = LoadTextures(aiMat, aiTextureType_REFLECTION, dir);
-        SetMaterialTextures(reflectionMaps, material, "reflectionTex");
+        SetMaterialTextures(reflectionMaps, material, "reflectionTex", "#define DIFFTEX");
 
         return material;
     }
 
-    void ModelReader::SetMaterialTextures(std::vector<Texture::Ptr>& textures, Material::Ptr material, std::string texNamePrefix)
+    void ModelReader::SetMaterialTextures(std::vector<Texture::Ptr>& textures
+        , StandardMaterial::Ptr material
+        , std::string texNamePrefix
+        , std::string macroPrefix)
     {
         int32 number = 0;
         for(auto texture : textures)
         {
-             std::string texVarName = texNamePrefix + std::to_string(number++);
-             material->SetTexture(texVarName.c_str(), texture);
+            std::string macro = macroPrefix + std::to_string(number) + "\n";
+            material->AddTexDefineMacros(macro);
+            std::string texVarName = texNamePrefix + std::to_string(number++);
+            material->SetTexture(texVarName.c_str(), texture);
         }
     }
 
@@ -471,6 +475,8 @@ namespace TwinkleGraphics
                         texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
                         texture->SetMipMapBaseLevel(MipMapBaseLevelParam::BESE_LEVEL, 0);
                         texture->SetMipMapMaxLevel(MipMapMaxLevelParam::MAX_LEVEL, level - 1);
+
+                        texture->SetValid(true);
                     }
                 });
             option.AddSuccessFunc(-1, funcPtr);

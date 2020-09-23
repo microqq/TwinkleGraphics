@@ -745,8 +745,6 @@ void Texture2D::InitStorage()
     }
     else
     {
-        // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
         glTexStorage2D(_res.type, _miplevels,
                        _internalformat,
                        _width,

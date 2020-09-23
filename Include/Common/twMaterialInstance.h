@@ -23,6 +23,11 @@ public:
     }
     virtual ~StandardMaterial() {}
 
+    void AddTexDefineMacros(std::string macro)
+    {
+        _vertLayoutMacros += macro;
+    }
+
 protected:
     virtual void Initialize() override
     {

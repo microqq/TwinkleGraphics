@@ -101,6 +101,7 @@ enum class BlendFunc
 /*------------------------------Vertex Attribute--------------------------*/
 
 __TWCOMExport extern const char *VertexLayoutDefines[11];
+__TWCOMExport extern const char *TextureLayoutDefines[11];
 
 enum VertexLayoutFlag
 {

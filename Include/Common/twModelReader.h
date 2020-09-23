@@ -8,6 +8,7 @@
 
 #include "twResource.h"
 #include "twModel.h"
+#include "twMaterialInstance.h"
 
 namespace TwinkleGraphics
 {
@@ -46,7 +47,10 @@ namespace TwinkleGraphics
         SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);
         Material::Ptr ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFalg);
         std::vector<Texture::Ptr> LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir);
-        void SetMaterialTextures(std::vector<Texture::Ptr>& textures, Material::Ptr material, std::string texNamePrefix);
+        void SetMaterialTextures(std::vector<Texture::Ptr>& textures
+            , StandardMaterial::Ptr material
+            , std::string texNamePrefix
+            , std::string macroPrefix);
     };
 
 } // namespace TwinkleGraphics
