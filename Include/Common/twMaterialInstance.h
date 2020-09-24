@@ -41,6 +41,7 @@ protected:
         };
 
         ShaderProgramOption programOption(options, 2);
+        programOption.SetMacros(_vertLayoutMacros);
         programOption.AddSuccessFunc(-1, this, &StandardMaterial::OnMaterialSuccess);
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }

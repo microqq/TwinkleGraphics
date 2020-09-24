@@ -565,11 +565,19 @@ namespace TwinkleGraphics
      */
     ReadResult<Shader> ShaderReader::Read(const char *filename)
     {
+        std::string path(filename);
+        int len = path.find_last_of(":");
+        if (len == std::string::npos)
+        {
+            len = path.length();
+        }
+        auto subFilename = path.substr(0, len);
+
         FILE *fp;
-        fp = fopen(filename, "rb");
+        fp = fopen(subFilename.c_str(), "rb");
         if (fp)
         {
-            Console::LogInfo("Shader: ShaderReader open shader file ", filename, " successed.\n");
+            Console::LogInfo("Shader: ShaderReader open shader file ", subFilename, " successed.\n");
 
             //opengl programing guide 8th source code
             //read source
@@ -584,7 +592,7 @@ namespace TwinkleGraphics
 
             source[len] = 0;
             ShaderSource::Ptr sourcePtr = std::make_shared<ShaderSource>();
-            sourcePtr->filename = std::string(filename);
+            sourcePtr->filename = subFilename;
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
@@ -603,7 +611,7 @@ namespace TwinkleGraphics
         else
         {
 #ifdef _DEBUG
-            Console::LogError("Shader: ShaderReader open shader file ", filename, " failed\n");
+            Console::LogError("Shader: ShaderReader open shader file ", subFilename, " failed\n");
 #endif
 
             ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);

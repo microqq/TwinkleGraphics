@@ -53,7 +53,19 @@ namespace TwinkleGraphics
     Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
-        ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader, ShaderOption>(filename, option);
+
+        std::string shaderFilename(filename);
+        std::string macros;
+        for(int i = 0, count = option->_optionData.numMacros; i < count; i++)
+        {
+            macros += std::string(option->_optionData.macros[i]);
+        }
+        if(!macros.empty())
+        {
+            shaderFilename += std::string(":") + std::to_string(std::hash<std::string>{}(macros));
+        }
+
+        ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader, ShaderOption>(shaderFilename.c_str(), option);
         Shader::Ptr sharedShader = result.GetSharedObject();
 
         return sharedShader;
@@ -85,7 +97,18 @@ namespace TwinkleGraphics
         ResourceManager& resMgr = ResourceMgrInstance();
         option->AddSuccessFunc(0, this, &ShaderManager::OnReadShaderSuccess);
         option->AddFailedFunc(0, this, &ShaderManager::OnReadShaderFailed);
-        return resMgr.ReadAsync<ShaderReader, Shader, ShaderOption>(filename, option);
+
+        std::string shaderFilename(filename);
+        std::string macros;
+        for(int i = 0, count = option->_optionData.numMacros; i < count; i++)
+        {
+            macros += std::string(option->_optionData.macros[i]);
+        }
+        if(!macros.empty())
+        {
+            shaderFilename += std::string(":") + std::to_string(std::hash<std::string>{}(macros));
+        }
+        return resMgr.ReadAsync<ShaderReader, Shader, ShaderOption>(shaderFilename.c_str(), option);
     }
 
     ReadResult<ShaderProgram> ShaderManager::ReadShadersAsync(ShaderProgramOption* option, int32 num)
@@ -109,6 +132,11 @@ namespace TwinkleGraphics
             
             auto filename = path.substr(pos);
             programFilename += ((i < num -1) ? (filename + "/") : filename);
+        }
+
+        if(!option->_macros.empty())
+        {
+            programFilename += std::string(":") + std::to_string(std::hash<std::string>{}(option->_macros));
         }
 
         return resMgr.ReadAsync<ShaderReader, ShaderProgram, ShaderProgramOption>(programFilename.c_str(), option);

@@ -138,12 +138,14 @@ namespace TwinkleGraphics
     public:
         ShaderProgramOption(ShaderOption* options, int num)
             : ReaderOption()
+            , _macros()
         {
             FillShaderOptions(options, num);
         }
 
         ShaderProgramOption(const ShaderProgramOption &src)
             : ReaderOption(src)
+            , _macros(src._macros)
         {
             FillShaderOptions(src._shaderOptions, src._numShaderOption);
         }
@@ -154,6 +156,8 @@ namespace TwinkleGraphics
         {
             SAFE_DEL_ARR(_shaderOptions);
         }
+
+        void SetMacros(std::string macros) { _macros = macros; }
     private:
         void FillShaderOptions(ShaderOption* options, int num)
         {
@@ -171,8 +175,8 @@ namespace TwinkleGraphics
             }
         }
 
-
     private:
+        std::string _macros;
         ShaderOption* _shaderOptions = nullptr;
         int _numShaderOption;
 
