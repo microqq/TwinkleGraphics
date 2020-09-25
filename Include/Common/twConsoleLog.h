@@ -10,7 +10,7 @@ namespace TwinkleGraphics
 {
     namespace Console
     {
-#if defined _WIN32
+#if defined(_WIN32)
         // https://docs.microsoft.com/en-us/windows/console/using-the-high-level-input-and-output-functions
         enum class Color
         {

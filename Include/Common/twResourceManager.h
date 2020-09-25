@@ -359,7 +359,7 @@ namespace TwinkleGraphics
         };
 
         typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
-#if defined _WIN32        
+#if defined(_WIN32)        
         typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
 #elif defined(__linux__) or defined(__APPLE__)
         typedef std::map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;

@@ -158,6 +158,18 @@ void GLFWMainWindow::Run()
 
         if(_viewCount > 0)
         {
+            // ImGui::Begin("GameWindow");
+            // {
+            //     // Using a Child allow to fill all the space of the window.
+            //     // It also alows customization
+            //     ImGui::BeginChild("GameRender");
+            //     // Get the size of the child (i.e. the whole draw size of the windows).
+            //     ImVec2 wsize = ImGui::GetWindowSize();
+            //     ImVec2 pos = ImGui::GetWindowPos();
+            //     ImGui::EndChild();
+            // }
+            // ImGui::End();
+
             for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
             {
                 if(_views[i] != nullptr)
@@ -223,6 +235,7 @@ void GLFWMainWindow::Initialise()
     IMGUI_CHECKVERSION();
     _imguiContext = ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
+    // io.ConfigFlags |= ImGui::ImGuiConfigFlags_ViewportsEnable;    
     (void)io;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls

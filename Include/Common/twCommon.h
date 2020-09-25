@@ -48,7 +48,7 @@
         #define __TWEVENTExport __attribute__ ((__visibility__("default")))
     // #endif
 
-#elif defined _WIN32
+#elif defined(_WIN32)
     #ifdef EXPORT_COMDLL
         #define __TWCOMExport __declspec(dllexport)
     #else
