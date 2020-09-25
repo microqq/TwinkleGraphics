@@ -158,18 +158,6 @@ void GLFWMainWindow::Run()
 
         if(_viewCount > 0)
         {
-            // ImGui::Begin("GameWindow");
-            // {
-            //     // Using a Child allow to fill all the space of the window.
-            //     // It also alows customization
-            //     ImGui::BeginChild("GameRender");
-            //     // Get the size of the child (i.e. the whole draw size of the windows).
-            //     ImVec2 wsize = ImGui::GetWindowSize();
-            //     ImVec2 pos = ImGui::GetWindowPos();
-            //     ImGui::EndChild();
-            // }
-            // ImGui::End();
-
             for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
             {
                 if(_views[i] != nullptr)
@@ -177,6 +165,7 @@ void GLFWMainWindow::Run()
             }
 
             ImGui::Render();
+
             for(int i = 0; i < _viewCount; i++)
             {
                 if(_views[i] != nullptr)
