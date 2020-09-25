@@ -42,6 +42,8 @@ public:
         }
         _cameralists[index] = nullptr;
     }
+
+    Camera::Ptr GetMainCamera() { return _maincamera; }
     Camera::Ptr GetCamera(int32 index)
     {
         if(index < 0 || index >= MAX_SCENE_CAMERA_COUNT)

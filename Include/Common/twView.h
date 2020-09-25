@@ -25,11 +25,6 @@ public:
         if(camera == nullptr)
             return;
         _camera = camera;
-
-        if(_scene != nullptr)
-        {
-            _scene->SetMainCamera(_camera);
-        }
     }
 
     // [[deprecated]]
@@ -37,15 +32,17 @@ public:
 
     void AttachScene(Scene::Ptr scene) 
     {
-        _scene = scene;
-        if(_camera != nullptr)
+        if(scene == nullptr)
         {
-            _scene->SetMainCamera(_camera);
+            return;
+        }
+        _scene = scene;
+
+        if(_camera == nullptr)
+        {
+            _camera = _scene->GetMainCamera();
         }
     }
-
-    const Viewport& GetViewport()
-    { return _camera->GetViewport(); }
 
     void Init(glm::ivec4 rect)
     {
@@ -84,8 +81,12 @@ public:
         _camera->ResizeViewport(scale_x, scale_y);
     }
 
-    void ResetViewport(const Rect& rect)
+    void ResetViewRect(const Rect& rect)
     {
+        _rect.x = rect.x;        
+        _rect.y = rect.y;        
+        _rect.z = rect.z;        
+        _rect.w = rect.w;        
         _camera->SetViewportRect(rect);
     }
 

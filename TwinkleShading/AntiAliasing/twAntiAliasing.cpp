@@ -44,6 +44,7 @@ void AntiAliasing::Install()
     _view->SetCameraControl(cameraControl);
 
     AntiAliasingScene::Ptr scene = std::make_shared<AntiAliasingScene>();
+    scene->SetMainCamera(camera);
     _view->AttachScene(scene);
 
     _views[_viewsCount++] = _view;
@@ -60,9 +61,9 @@ void AntiAliasing::UnInstall()
 
 void AntiAliasing::UpdateViews()
 {
-    const glm::ivec2& size = _view->GetViewSize();
-    Rect rect(0, 0, size.x, size.y);
-    _view->ResetViewport(rect);
+    // const glm::ivec2& size = _view->GetViewSize();
+    // Rect rect(0, 0, size.x, size.y);
+    // _view->ResetViewRect(rect);
     // float32 ratio = (float32)size.x / (float32)size.y;
     // int32 w = ratio * 200.0f;
     // _view2->ResetViewport(Rect(size.x - w, 0, w, 200.0f));
