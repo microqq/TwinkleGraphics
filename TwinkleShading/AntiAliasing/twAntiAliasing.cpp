@@ -95,12 +95,12 @@ void AntiAliasingView::OnGUI()
 {
     TwinkleGraphics::MainMenuBar();
 
+    AntiAliasingScene *scene = dynamic_cast<AntiAliasingScene *>(_scene.get());
+    int32 &current_aa_option = scene->GetCurrentAAOption();
+    int32 &current_msaa_sw_option = scene->_currentMSAASWOption;
+    int32 &current_rsf_option = scene->_resolveFitlerOption;
     ImGui::Begin(u8"反走样");
     {
-        AntiAliasingScene* scene = dynamic_cast<AntiAliasingScene*>(_scene.get());
-        int32& current_aa_option = scene->GetCurrentAAOption();
-        int32& current_msaa_sw_option = scene->_currentMSAASWOption;
-        int32& current_rsf_option = scene->_resolveFitlerOption;
 
         ImGui::RadioButton(u8"NO AA", &(current_aa_option), AAOption::NONE);
         ImGui::RadioButton(u8"MSAA_HW", &(current_aa_option), AAOption::MSAA_HW);
@@ -147,8 +147,21 @@ void AntiAliasingView::OnGUI()
         ImGui::RadioButton(u8"CFAA", &current_aa_option, AAOption::CFAA);
         ImGui::RadioButton(u8"FXAA", &current_aa_option, AAOption::FXAA);
     }
-
     ImGui::End();
+
+    if (current_aa_option == AAOption::MSAA_SW)
+    {
+        if (current_msaa_sw_option == MSAASWOption::MSAA_SW_RESOLVE)
+        {
+            ImGui::Begin(u8"Sub window");
+            {
+                Texture::Ptr rt = scene->_rtScreen->GetTexture();
+                uint id = rt->GetRenderRes().id;
+                ImGui::Image((ImTextureID)id, ImVec2(512, 512), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+            }
+            ImGui::End();
+        }
+    }
 
     Select3DModel();
 }

@@ -135,6 +135,7 @@ void GLFWMainWindow::Run()
     ModelManager& modelMgr = ModelMgrInstance();
     ResourceManager& resMgr = ResourceMgrInstance();
 
+    ImGuiIO &io = ImGui::GetIO();
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
@@ -158,6 +159,12 @@ void GLFWMainWindow::Run()
 
         if(_viewCount > 0)
         {
+            for(int i = 0; i < _viewCount; i++)
+            {
+                if(_views[i] != nullptr)
+                    _views[i]->Run();
+            }
+
             for(int i = 0; i < MAX_VIEWPORT_COUNT; i++)
             {
                 if(_views[i] != nullptr)
@@ -165,23 +172,30 @@ void GLFWMainWindow::Run()
             }
 
             ImGui::Render();
-
-            for(int i = 0; i < _viewCount; i++)
-            {
-                if(_views[i] != nullptr)
-                    _views[i]->Run();
-            }
         }
         else
         {
             ImGui::Render();
+
             glViewport(0, 0, _width, _height);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glClearColor(0.f, 0.0f, 0.0f, 1.0f);
         }
 
+        // int display_w, display_h;
+        // glfwGetFramebufferSize(_window, &display_w, &display_h);
+        // glViewport(0, 0, display_w, display_h);
+        // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        // glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
         glfwSwapBuffers(_window);
     }
 }
@@ -208,6 +222,7 @@ void GLFWMainWindow::Initialise()
 
     /* Make the window's context current */
     glfwMakeContextCurrent(_window);
+    glfwSwapInterval(1); // Enable vsync
 
     GLenum err = glewInit();
     if (GLEW_OK != err)
@@ -224,14 +239,27 @@ void GLFWMainWindow::Initialise()
     IMGUI_CHECKVERSION();
     _imguiContext = ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
-    // io.ConfigFlags |= ImGui::ImGuiConfigFlags_ViewportsEnable;    
-    (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+    (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(_window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplOpenGL3_Init("#version 410");
 
     io.Fonts->AddFontDefault();
     // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Medium.ttf", 16.0f);
