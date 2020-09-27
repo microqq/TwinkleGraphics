@@ -44,12 +44,12 @@ void RenderTexture::Create(FrameBufferObject::Ptr framebuf)
 
     if(!_multisample)
     {
-        _texture = std::make_shared<Texture2D>();
+        _texture = std::make_shared<Texture2D>(false);
         _texture->Create(_width, _height, _internalformat, _format);
     }
     else
     {
-        _texture = std::make_shared<Texture2DMultiSample>(_samples);
+        _texture = std::make_shared<Texture2DMultiSample>(_samples, false);
         _texture->Create(_width, _height, _internalformat, _format);
     }
 

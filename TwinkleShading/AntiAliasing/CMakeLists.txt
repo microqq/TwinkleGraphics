@@ -29,7 +29,7 @@ if(ENABLE_DEBUG)
     target_compile_options(twAntiAliasing PRIVATE -Wall -Wno-extra)
 endif()
 
-target_link_libraries(twAntiAliasing twUtil twUiUtil)
+target_link_libraries(twAntiAliasing twGraphics)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twAntiAliasing PROPERTIES

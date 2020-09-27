@@ -149,19 +149,13 @@ void AntiAliasingView::OnGUI()
     }
     ImGui::End();
 
-    if (current_aa_option == AAOption::MSAA_SW)
-    {
-        if (current_msaa_sw_option == MSAASWOption::MSAA_SW_RESOLVE)
-        {
-            ImGui::Begin(u8"Sub window");
-            {
-                Texture::Ptr rt = scene->_rtScreen->GetTexture();
-                uint id = rt->GetRenderRes().id;
-                ImGui::Image((ImTextureID)id, ImVec2(512, 512), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-            }
-            ImGui::End();
-        }
-    }
+    // ImGui::Begin(u8"Sub window");
+    // {
+    //     Texture::Ptr rt = scene->_rtScreen->GetTexture();
+    //     uint id = rt->GetRenderRes().id;
+    //     ImGui::Image((ImTextureID)id, ImVec2(512, 512), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+    // }
+    // ImGui::End();
 
     Select3DModel();
 }

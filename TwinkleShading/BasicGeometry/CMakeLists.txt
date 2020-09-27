@@ -22,11 +22,11 @@ endif()
 
 target_include_directories(twBasicGeometry PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
-    ${CMAKE_CURRENT_LIST_DIR}/../../Common
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_link_libraries(twBasicGeometry twUtil)
+target_link_libraries(twBasicGeometry twGraphics)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwBasicGeometry.dll)

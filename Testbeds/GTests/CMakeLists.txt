@@ -27,15 +27,13 @@ add_executable(TWTests ${Tests_SRCs})
 
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(TWTests twEvent)
-    target_link_libraries(TWTests twCommon)
-    target_link_libraries(TWTests twUiUtil)
+    target_link_libraries(TWTests twGraphics)
     target_link_libraries(TWTests ${GTESTLIBDIR}/libgtest.a)
     target_link_libraries(TWTests ${GTESTLIBDIR}/libgtest_main.a)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(TWTests twCommon)
+    target_link_libraries(TWTests twGraphics)
     target_link_libraries(TWTests ${GTEST_BOTH_LIBRARIES})
     target_link_libraries(TWTests ${CMAKE_THREAD_LIBS_INIT})
 endif()

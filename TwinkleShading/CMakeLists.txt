@@ -12,6 +12,6 @@ add_subdirectory(AntiAliasing)
 add_executable(twShading ${CMAKE_CURRENT_LIST_DIR}/twShading.cpp)
 target_include_directories(twShading PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty
-    ${CMAKE_CURRENT_LIST_DIR}/../Common
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
 )
-target_link_libraries(twShading twCommon twUiUtil)
+target_link_libraries(twShading twGraphics)

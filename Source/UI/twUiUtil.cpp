@@ -1,6 +1,5 @@
 #include "imgui.h"
 #include "ImGuiFileDialog.h"
-
 #include "twUiUtil.h"
 
 namespace TwinkleGraphics

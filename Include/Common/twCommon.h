@@ -42,51 +42,22 @@
 #define __TWCOMExport __attribute__((__visibility__("default")))
 // #endif
 
-// #ifdef EXPORT_UIDLL
-#define __TWUIExport __attribute__((__visibility__("default")))
-// #endif
-
-// #ifdef EXPORT_UTILDLL
-#define __TWUTILExport __attribute__((__visibility__("default")))
-// #endif
-
 // #ifdef EXPORT_PLUGIN
 #define __TWPLUGINExport __attribute__((__visibility__("default")))
 // #endif
 
-// #ifdef EXPORT_EVENT
-#define __TWEVENTExport __attribute__((__visibility__("default")))
-// #endif
-
 #elif defined(_WIN32)
+
 #ifdef EXPORT_COMDLL
 #define __TWCOMExport __declspec(dllexport)
 #else
 #define __TWCOMExport __declspec(dllimport)
 #endif
 
-#ifdef EXPORT_UIDLL
-#define __TWUIExport __declspec(dllexport)
-#else
-#define __TWUIExport __declspec(dllimport)
-#endif
-
-#ifdef EXPORT_UTILDLL
-#define __TWUTILExport __declspec(dllexport)
-#else
-#define __TWUTILExport __declspec(dllimport)
-#endif
-
 #ifdef EXPORT_PLUGIN
 #define __TWPLUGINExport __declspec(dllexport)
 #else
 #define __TWPLUGINExport __declspec(dllimport)
-#endif
-
-#ifdef EXPORT_EVENT
-#define __TWEVENTExport __declspec(dllexport)
-#else
-#define __TWEVENTExport __declspec(dllimport)
 #endif
 
 #endif
