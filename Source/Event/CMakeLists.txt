@@ -20,7 +20,7 @@ target_include_directories(twEvent PUBLIC
 )
 
 if(ENABLE_DEBUG)
-    target_compile_options(twEvent PRIVATE "-Wall")
+    target_compile_options(twEvent PRIVATE -Wall -Wno-extra)
 endif()
 
 

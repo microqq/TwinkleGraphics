@@ -26,7 +26,7 @@ target_include_directories(twAntiAliasing PUBLIC
 )
 
 if(ENABLE_DEBUG)
-    target_compile_options(twAntiAliasing PRIVATE "-Wall")
+    target_compile_options(twAntiAliasing PRIVATE -Wall -Wno-extra)
 endif()
 
 target_link_libraries(twAntiAliasing twUtil twUiUtil)

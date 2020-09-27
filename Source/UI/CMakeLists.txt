@@ -23,7 +23,7 @@ target_include_directories(twUiUtil PUBLIC
 )
 
 if(ENABLE_DEBUG)
-    target_compile_options(twUiUtil PRIVATE "-Wall")
+    target_compile_options(twUiUtil PRIVATE -Wall -Wno-extra)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
