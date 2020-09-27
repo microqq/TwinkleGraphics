@@ -6,8 +6,8 @@
 namespace TwinkleGraphics
 {
 Sprite::Sprite(Texture::Ptr texture, MeshDataFlag flag)
-    : _perpixelunit(100),
-    Quad(flag)
+    : Quad(flag)
+    , _perpixelunit(100)
 {
     glm::vec2 size = glm::vec2(texture->GetWidth(0), texture->GetHeight(0)) / (float32)_perpixelunit * 2.0f;
     Quad::SetSize(size);
@@ -88,7 +88,6 @@ void SpriteRenderer::Init(Texture::Ptr texture)
     if(texture == nullptr) return;
 
     const RenderResourceHandle& res = texture->GetRenderRes();
-    ShaderManager& shaderMgr = ShaderMgrInstance();
     ShaderProgram::Ptr program = nullptr;
     if(res.type == (int)(TextureType::TEXTURE_1D))
     {

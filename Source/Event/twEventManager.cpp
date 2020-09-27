@@ -171,7 +171,7 @@ namespace TwinkleGraphics
 #ifdef _EVT_MULTTHREAD
             std::lock_guard<std::mutex> lock(_queue_mutex);
 #endif
-            while(event = _queue.PopFront())
+            while((event = _queue.PopFront()) != nullptr)
             {
                 HandleEvent(event->Sender(), event->EventArgs());
             }

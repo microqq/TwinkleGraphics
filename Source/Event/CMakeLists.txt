@@ -19,9 +19,12 @@ target_include_directories(twEvent PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Event
 )
 
+if(ENABLE_DEBUG)
+    target_compile_options(twEvent PRIVATE "-Wall")
+endif()
+
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twEvent PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
-
-target_link_libraries(twEvent twCommon)

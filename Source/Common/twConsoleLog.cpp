@@ -15,22 +15,20 @@ namespace TwinkleGraphics
 {
     namespace Console
     {
-        std::mutex ConsoleMutex_;
-
         namespace Internal
         {
 
-            __TWCOMExport void SetConsoleColor(Color &c)
+            void SetConsoleColor(Color &c)
             {
 #ifdef _WIN32
                 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
                 SetConsoleTextAttribute(hStdout, (WORD)c);
-#elif defined __linux__ ||defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__)
 
 #endif
             }
 
-            __TWCOMExport void ResetConsoleColor()
+            void ResetConsoleColor()
             {
                 Color c = Color::WHITE;
                 SetConsoleColor(c);

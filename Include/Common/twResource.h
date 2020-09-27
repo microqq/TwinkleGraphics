@@ -199,9 +199,9 @@ public:
             , CacheStoreHint hint = CacheStoreHint::TIMELIMITED
             , float limit = 100.0f)
         : _cachedObject(obj)
-        , _cacheId(id)
-        , _storeHint(hint)
         , _timeLimit(limit)
+        , _storeHint(hint)
+        , _cacheId(id)
     {}
 
     ~ResourceCache()

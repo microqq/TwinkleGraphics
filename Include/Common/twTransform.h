@@ -82,7 +82,8 @@ public:
     }
     Object::Ptr GetChild(int32 pos) 
     { 
-        if(pos >= 0 && pos < _children.size())
+        int size = _children.size();
+        if(pos >= 0 && pos < size)
         {
             return _children[pos];
         }

@@ -4,9 +4,9 @@
 namespace TwinkleGraphics
 {
     ReaderOption::ReaderOption()
-        : _cacheHint(CacheHint::CACHE_OBJECT)
-        , _successFuncList()
+        : _successFuncList()
         , _failedFuncList()
+        , _cacheHint(CacheHint::CACHE_OBJECT)
         , _storeHint(CacheStoreHint::TIMELIMITED)
         , _storeTime(100.0f)
     {}
@@ -38,7 +38,8 @@ namespace TwinkleGraphics
     
     void ReaderOption::AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func)
     {
-        if(insertPos == -1 || insertPos > _successFuncList.size() - 1)
+        int size = _successFuncList.size();
+        if(insertPos == -1 || insertPos > size - 1)
         {
             _successFuncList.emplace_back(func);
         }
@@ -54,7 +55,8 @@ namespace TwinkleGraphics
 
     void ReaderOption::AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func)
     {
-        if(insertPos == -1 || insertPos > _successFuncList.size() - 1)
+        int size = _successFuncList.size();
+        if(insertPos == -1 || insertPos > size - 1)
         {
             _failedFuncList.emplace_back(func);
         }

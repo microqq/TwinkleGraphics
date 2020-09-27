@@ -114,11 +114,7 @@ namespace TwinkleGraphics
         friend class Singleton<TextureManager>;
     };
 
-#ifdef __cplusplus
-        __TWCOMExport TextureManager& TextureMgrInstance();
-#endif    
-
-    typedef Singleton<TextureManager> TextureManagerInst;
+    __TWCOMExport TextureManager& TextureMgrInstance();
 } // namespace TwinkleGraphics
 
 

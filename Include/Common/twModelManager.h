@@ -54,12 +54,7 @@ namespace TwinkleGraphics
     };
 
 
-#ifdef __cplusplus
-        __TWCOMExport ModelManager& ModelMgrInstance();
-#endif
-
-    typedef Singleton<ModelManager> ModelManagerInst;
-
+    __TWCOMExport ModelManager& ModelMgrInstance();
 } // namespace TwinkleGraphics
 
 

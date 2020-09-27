@@ -21,6 +21,10 @@ target_include_directories(twUiUtil PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/UI
 )
 
+if(ENABLE_DEBUG)
+    target_compile_options(twUiUtil PRIVATE "-Wall")
+endif()
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twUiUtil PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)

@@ -389,7 +389,7 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius
     float32 x = radius * sin_pole_angle;
     float32 y = radius * cos_pole_angle;
     float32 z = x;
-    for(int32 i = 0, j = 5; i < 5, j < 10; i++, j++)
+    for(int32 i = 0, j = 5; j < 10; i++, j++)
     {
         float32 cos_azimuth = cos(azimuth_step * i);
         float32 sin_azimuth = sin(azimuth_step * i);

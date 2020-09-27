@@ -48,11 +48,7 @@ namespace TwinkleGraphics
         friend class Singleton<EventManager>;
     };
 
-#ifdef __cplusplus
-        __TWEVENTExport EventManager& EventMgrInstance();
-#endif    
-
-    typedef Singleton<EventManager> EventManagerInst;
+    __TWEVENTExport EventManager& EventMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

@@ -41,11 +41,7 @@ namespace TwinkleGraphics
         friend class Singleton<TextManager>;
     };
 
-#ifdef __cplusplus
-        __TWCOMExport TextManager& TextMgrInstance();
-#endif    
-
-    typedef Singleton<TextManager> TextManagerInst;
+    __TWCOMExport TextManager& TextMgrInstance();
 } // namespace TwinkleGraphics
 
 

@@ -26,7 +26,7 @@ namespace TwinkleGraphics
         {
             _optionData.macros = new char *[data.numMacros];
         }
-        for (uint i = 0; i < data.numMacros; i++)
+        for (int32 i = 0; i < data.numMacros; i++)
         {
             _optionData.macros[i] = data.macros[i];
         }
@@ -42,7 +42,7 @@ namespace TwinkleGraphics
         {
             _optionData.macros = new char *[_optionData.numMacros];
         }
-        for (uint i = 0; i < _optionData.numMacros; i++)
+        for (int32 i = 0; i < _optionData.numMacros; i++)
         {
             _optionData.macros[i] = src._optionData.macros[i];
         }
@@ -63,7 +63,7 @@ namespace TwinkleGraphics
         {
             _optionData.macros = new char *[_optionData.numMacros];
         }
-        for (uint i = 0; i < _optionData.numMacros; i++)
+        for (int32 i = 0; i < _optionData.numMacros; i++)
         {
             _optionData.macros[i] = src._optionData.macros[i];
         }
@@ -149,6 +149,10 @@ namespace TwinkleGraphics
 #ifdef _DEBUG
         GLenum error = glGetError();
         const GLubyte *error_str = glGetString(error);
+        if (error_str != nullptr)
+        {
+            Console::LogError("Shader:", error_str, "\n");
+        }
 #endif
 
         const char *source = _source->content.c_str();
@@ -227,6 +231,10 @@ namespace TwinkleGraphics
 #ifdef _DEBUG
         GLenum error = glGetError();
         const GLubyte *error_str = glGetString(error);
+        if (error_str != nullptr)
+        {
+            Console::LogError("Shader:", error_str, "\n");
+        }
 #endif
 
         //opengl programing guide 8th source code
@@ -396,7 +404,8 @@ namespace TwinkleGraphics
             return true;
         }
 
-        bool readyForLink = _linkShaderCount == _shaders.size();
+        int32 size = _shaders.size();
+        bool readyForLink = _linkShaderCount == size;
         if(!readyForLink)
         {
             return false;
@@ -416,6 +425,10 @@ namespace TwinkleGraphics
 #ifdef _DEBUG
         GLenum error = glGetError();
         const GLubyte *error_str = glGetString(error);
+        if (error_str != nullptr)
+        {
+            Console::LogError("ShaderProgram:", error_str, "\n");
+        }
 #endif
 
         for (int i = 0; i < _linkShaderCount; i++)
@@ -566,7 +579,7 @@ namespace TwinkleGraphics
     ReadResult<Shader> ShaderReader::Read(const char *filename)
     {
         std::string path(filename);
-        int len = path.find_last_of(":");
+        size_t len = path.find_last_of(":");
         if (len == std::string::npos)
         {
             len = path.length();

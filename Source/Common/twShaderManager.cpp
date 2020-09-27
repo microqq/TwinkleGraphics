@@ -76,7 +76,6 @@ namespace TwinkleGraphics
         //Todo: read program from cache first
 
         //read shader source
-        bool readyLink = true;
         ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(num);
         for (int i = 0; i < num; i++)
         {
@@ -120,7 +119,7 @@ namespace TwinkleGraphics
         for(int i = 0; i < num; i++)
         {
             auto path = option->_shaderOptions[i]._optionData.filename;
-            int pos = path.find_last_of("/");
+            size_t pos = path.find_last_of("/");
             if(pos == std::string::npos)
             {
                 pos = 0;

@@ -51,12 +51,7 @@ namespace TwinkleGraphics
         friend class Singleton<ShaderManager>;
     };
 
-#ifdef __cplusplus
-        __TWCOMExport ShaderManager& ShaderMgrInstance();
-#endif
-
-    typedef Singleton<ShaderManager> ShaderManagerInst;
-
+    __TWCOMExport ShaderManager& ShaderMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

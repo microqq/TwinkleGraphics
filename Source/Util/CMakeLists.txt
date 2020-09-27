@@ -16,6 +16,10 @@ target_include_directories(twUtil PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
+if(ENABLE_DEBUG)
+    target_compile_options(twUtil PRIVATE "-Wall")
+endif()
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twUtil PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)

@@ -109,7 +109,12 @@ public:
      * @param index 
      * @param pass 
      */
-    void SetRenderPass(int32 index, RenderPass::Ptr pass) { if(index < _passes.size()) _passes[index] = pass; }
+    void SetRenderPass(int32 index, RenderPass::Ptr pass)
+    {
+        int32 size = _passes.size(); 
+        if (index < size)
+            _passes[index] = pass;
+    }
 
     /**
      * @brief 
@@ -118,7 +123,13 @@ public:
      */
     void AddRenderPass(RenderPass::Ptr pass) { _passes.push_back(pass); }
 
-    RenderPass::Ptr GetRenderPass(int32 index) { if(index >= 0 && index < _passes.size()) return _passes[index]; return nullptr; }
+    RenderPass::Ptr GetRenderPass(int32 index) 
+    { 
+        int32 size = _passes.size();
+        if(index >= 0 && index < size) 
+            return _passes[index]; 
+        return nullptr; 
+    }
 
     /**
      * @brief Set the Main Texture object

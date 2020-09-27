@@ -30,11 +30,7 @@ namespace TwinkleGraphics
         friend class Singleton<ImageManager>;
     };
 
-#ifdef __cplusplus
-        __TWCOMExport ImageManager &ImageMgrInstance();
-#endif
-
-    typedef Singleton<ImageManager> ImageManagerInst;
+    __TWCOMExport ImageManager &ImageMgrInstance();
 
 } // namespace TwinkleGraphics
 

@@ -49,7 +49,6 @@ set(Common_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twRenderTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twHWBuffers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twConsoleLog.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twRingBuffer.cpp
 )
 
 add_library(twCommon SHARED ${Common_SRCs})
@@ -60,6 +59,9 @@ target_include_directories(twCommon PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/vermilion
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Common
 )
+if(ENABLE_DEBUG)
+    target_compile_options(twCommon PRIVATE -Wall -Wno-extra)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(twCommon PROPERTIES

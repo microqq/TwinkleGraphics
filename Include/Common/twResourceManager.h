@@ -8,9 +8,7 @@
 namespace TwinkleGraphics
 {
     class ResourceManager;
-#ifdef __cplusplus
-        __TWCOMExport ResourceManager &ResourceMgrInstance();
-#endif
+    __TWCOMExport ResourceManager &ResourceMgrInstance();
 
     typedef uint64_t ReadTaskId;
 
@@ -286,8 +284,8 @@ namespace TwinkleGraphics
         public:
             typedef std::shared_ptr<IPackedReadTask> Ptr;
             IPackedReadTask(ReadTaskId task, bool async = false)
-                : _asyncRead(async)
-                , _task(task)
+                : _task(task)
+                , _asyncRead(async)
             {}
 
             virtual void PushTask() = 0;
@@ -388,9 +386,6 @@ namespace TwinkleGraphics
 
         friend class Singleton<ResourceManager>;
     };
-
-    typedef Singleton<ResourceManager> ResourceManagerInst;
-
 } // namespace TwinkleGraphics
 
 #endif

@@ -58,7 +58,8 @@ public:
 
     const Material::Ptr GetMaterial(int32 index)
     { 
-        if(index < 0 || index >= _sharedMaterials.size())
+        int size = _sharedMaterials.size();
+        if(index < 0 || index >= size)
         {
             return nullptr; 
         }
@@ -115,7 +116,8 @@ public:
 
     VertexArrayObject::Ptr GetVertexArrayObject(int32 index) 
     {
-        if(index >= 0 && index < _vaos.size())
+        int32 size = _vaos.size();
+        if(index >= 0 && index < size)
         {
             return _vaos[index];
         }

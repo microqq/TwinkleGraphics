@@ -48,7 +48,8 @@ namespace TwinkleGraphics
 
     void Model::RemoveGeometry(int index)
     {
-        if(index >= 0 && index < _geometries.size())
+        int size = _geometries.size();
+        if(index >= 0 && index < size)
         {
             _geometries.erase(_geometries.begin() + index);
         }
@@ -56,7 +57,8 @@ namespace TwinkleGraphics
 
     Geometry::Ptr Model::GetGeometry(int index)
     {
-        if(index >= 0 && index < _geometries.size())
+        int size = _geometries.size();
+        if(index >= 0 && index < size)
         {
             return _geometries[index];
         }

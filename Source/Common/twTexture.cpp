@@ -33,6 +33,10 @@ Texture::~Texture()
 #ifdef _DEBUG
         GLenum error = glGetError();
         const GLubyte *error_str = glGetString(error);
+        if(error_str != nullptr)
+        {
+            Console::LogError("Texture:", error_str, "\n");
+        }
 #endif
     }
 }
@@ -311,7 +315,10 @@ void Texture::InitStorage()
 #ifdef _DEBUG
     GLenum error = glGetError();
     const GLubyte* error_str = glGetString(error);
-
+    if(error_str != nullptr)
+    {
+        Console::LogError("Texture:", error_str, "\n");
+    }
     assert(textures[0] != 0);
 #endif
 
@@ -322,6 +329,10 @@ void Texture::InitStorage()
 #ifdef _DEBUG
     error = glGetError();
     error_str = glGetString(error);
+    if(error_str != nullptr)
+    {
+        Console::LogError("Texture:", error_str, "\n");
+    }
 #endif
 
 }
@@ -458,7 +469,7 @@ void Texture::ApplyLodBias()
         samplerId = _sampler->GetRenderRes().id;
 
     // lod bias
-    if (lodbias_mask && _dirtyFlag & TexParameterDirtyFlag::TEXPARAMETER_LODBIAS_MASK != 0)
+    if (lodbias_mask && _dirtyFlag && (TexParameterDirtyFlag::TEXPARAMETER_LODBIAS_MASK != 0))
     {
         if(useSampler)
             glSamplerParameteri(samplerId, GL_TEXTURE_LOD_BIAS, _parameters.lodbias);
@@ -699,7 +710,6 @@ void Texture2D::InitStorage()
     
     if(srcimage != nullptr)
     {
-        const ImageData& image_source = _image->GetImageSource();
         if(_immutable)
         {
             glTexStorage2D(_res.type, srcimage->mipLevels, 
@@ -783,7 +793,6 @@ void Texture3D::InitStorage()
     
     if(srcimage != nullptr)
     {
-        const ImageData& image_source = _image->GetImageSource();
         if(_immutable)
         {
             glTexStorage3D(_res.type, srcimage->mipLevels, 
@@ -1132,7 +1141,6 @@ void Texture2DArray::InitStorage()
     
     if(srcimage != nullptr)
     {
-        const ImageData& image_source = _image->GetImageSource();
         if(_immutable)
         {
             glTexStorage3D(_res.type, srcimage->mipLevels, 
@@ -1197,7 +1205,6 @@ void TextureCubeArray::InitStorage()
     
     if(srcimage != nullptr)
     {
-        const ImageData &image_source = _image->GetImageSource();
         glTexStorage3D(_res.type, srcimage->mipLevels,
                        srcimage->internalFormat,
                        srcimage->mip[0].width,

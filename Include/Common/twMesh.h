@@ -229,14 +229,16 @@ namespace TwinkleGraphics
         }
         void RemoveSubMesh(int32 index)
         {
-            if (index < _submeshes.size())
+            int32 size = _submeshes.size(); 
+            if (index < size)
                 _submeshes.erase(_submeshes.begin() + index);
         }
         inline uint32 GetSubMeshCount() { return _submeshes.size(); }
 
         SubMesh::Ptr GetSubMesh(int32 index)
         {
-            if (index < _submeshes.size())
+            int32 size = _submeshes.size(); 
+            if (index < size)
                 return _submeshes[index];
             return nullptr;
         }

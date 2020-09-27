@@ -69,7 +69,7 @@ namespace TwinkleGraphics
 
         ImageManager& imgMgr = ImageMgrInstance();
         std::string texFilename = std::string(filename);
-        int pos = texFilename.find_first_of(":");
+        size_t pos = texFilename.find_first_of(":");
         if(pos != std::string::npos)
         {
             std::string imgFilename = texFilename.substr(pos + 1);

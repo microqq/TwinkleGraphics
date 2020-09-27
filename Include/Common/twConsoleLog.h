@@ -38,13 +38,17 @@ namespace TwinkleGraphics
         };
 #endif
 
-        extern std::mutex ConsoleMutex_;
-
         namespace Internal
         {
-            extern void SetConsoleColor(Color &c);
-            extern void ResetConsoleColor();
-
+#ifdef __cplusplus 
+        extern "C"
+        {
+#endif
+            __TWCOMExport void SetConsoleColor(Color &c);
+            __TWCOMExport void ResetConsoleColor();
+#ifdef __cplusplus
+        }
+#endif
             // https://www.codeproject.com/articles/16431/add-color-to-your-std-cout
             template <class _Elem, class _Traits>
             std::basic_ostream<_Elem, _Traits> &
@@ -97,7 +101,6 @@ namespace TwinkleGraphics
 #endif
         }
 
-
         template <class... Args>
         void LogInfo(Args... args)
         {
@@ -124,8 +127,6 @@ namespace TwinkleGraphics
             Internal::Log(Color::RED, args...);
 #endif
         }
-
-
     } // namespace Console
 } // namespace TwinkleGraphics
 

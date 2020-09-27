@@ -1,8 +1,9 @@
 #ifndef TW_RINGBUFFER_H
 #define TW_RINGBUFFER_H
 
+#include <assert.h>
 #include <array>
-#include "twConsoleLog.h"
+// #include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -45,7 +46,7 @@ namespace TwinkleGraphics
         {
             if(Length() == _capacity)
             {
-                Console::LogWarning("RingBuffer: There is no free space push back.\n");
+                // Console::LogWarning("RingBuffer: There is no free space push back.\n");
                 return nullptr;
             }
 
@@ -67,7 +68,7 @@ namespace TwinkleGraphics
             int retIndex = _head;
             if(length == 0)
             {
-                Console::LogWarning("RingBuffer: There is no more elements pop front.\n");
+                // Console::LogWarning("RingBuffer: There is no more elements pop front.\n");
                 return nullptr;
             }
             else if(1 == length)

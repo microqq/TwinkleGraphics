@@ -280,10 +280,6 @@ void AntiAliasingScene::CreateScene()
         CreateGeometry(_screenQuadMSAA, 9);
     }
 
-    // create screen quad material
-    char* vertMacros[1] = { const_cast<char*>(VertexLayoutDefines[3]) };
-    ShaderManager& shaderMgr = ShaderMgrInstance();
-
     /**
      * 
      * Debug Mode With GDB:

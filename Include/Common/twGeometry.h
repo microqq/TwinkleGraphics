@@ -1377,8 +1377,8 @@ public:
         SubMesh::Ptr subMesh = _mesh->GetSubMesh(0);
         glm::vec3* vertices = _mesh->GetVerticePos();
         glm::vec3* normals = _mesh->GetVerticeNormal();
-        glm::vec4* colos = _mesh->GetVerticeColor();
-        glm::vec4* uvs = _mesh->GetVerticeUV();
+        // glm::vec4* colors = _mesh->GetVerticeColor();
+        // glm::vec4* uvs = _mesh->GetVerticeUV();
         glm::uint32* indices = subMesh->GetIndice();
         int32 gen_point_index = 0;
         int32 gen_indice_index = 0;

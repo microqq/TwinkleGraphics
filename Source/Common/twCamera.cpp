@@ -6,21 +6,21 @@ namespace TwinkleGraphics
 
 Frustum::Frustum(float32 fov, float32 aspect, float32 n, float32 f)
     : Object()
-    , _frustumType(FrustumType::PERSPECTIVE)
     , _fov(fov)
     , _aspect(aspect)
     , _near(n)
     , _far(f)
+    , _frustumType(FrustumType::PERSPECTIVE)
 {
     _projectionMatrix = glm::perspective(fov, aspect, _near, _far);
 }
 
 Frustum::Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 n, float32 f)
     : Object()
-    , _frustumType(FrustumType::ORTHOGRAPHIC)
     , _aspect((right - left) / (top - bottom))
     , _near(n)
     , _far(n)
+    , _frustumType(FrustumType::ORTHOGRAPHIC)
 {
     _projectionMatrix = glm::ortho(left, right, bottom, top, _near, _far);
 }
