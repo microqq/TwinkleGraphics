@@ -12,6 +12,7 @@ SET(UiUtil_SRC
     ${CMAKE_CURRENT_LIST_DIR}/twUiUtil.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twHierarchy.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twInspector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
 )
 
 add_library(twUiUtil SHARED ${UiUtil_SRC})
@@ -30,4 +31,4 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
-target_link_libraries(twUiUtil imguiFileDialog)
+target_link_libraries(twUiUtil imguiFileDialog twCommon)

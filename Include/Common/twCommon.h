@@ -148,9 +148,8 @@ namespace TwinkleGraphics
         virtual void Destroy() = 0;
     };
 
-    extern const char *PlatformDefines[5];
-    extern std::vector<std::string> GLExtensions;
-    extern bool CheckSupportExtension(std::string exention);
+    __TWCOMExport extern std::vector<std::string> GLExtensions;
+    __TWCOMExport extern bool CheckSupportExtension(std::string exention);
 
 } // namespace TwinkleGraphics
 

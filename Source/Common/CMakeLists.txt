@@ -14,7 +14,6 @@ endif()
 
 set(Common_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/twCommon.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twDynLib.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twPluginManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twView.cpp

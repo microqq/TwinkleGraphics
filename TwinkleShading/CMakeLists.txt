@@ -14,4 +14,4 @@ target_include_directories(twShading PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../Common
 )
-target_link_libraries(twShading twCommon)
+target_link_libraries(twShading twCommon twUiUtil)
