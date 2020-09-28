@@ -2,17 +2,15 @@
 #define TW_VIEWWINDOW_H
 
 #include "imgui.h"
-#include "twCommon.h"
+#include "twWindow.h"
 
 namespace TwinkleGraphics
 {
-    class ViewWindow
+    class ViewWindow : public Window
     {
     public:
         explicit ViewWindow();
         virtual ~ViewWindow();
-
-    protected:
 
     private:
         uint32 _renderTarget = 0;

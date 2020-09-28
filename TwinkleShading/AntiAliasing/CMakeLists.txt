@@ -37,13 +37,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll)
-        file(COPY 
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll 
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-        )
-        file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwAntiAliasing.dll
-        )
-    endif()
+    set_target_properties(twAntiAliasing PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()

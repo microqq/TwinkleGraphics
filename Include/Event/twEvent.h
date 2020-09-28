@@ -9,7 +9,6 @@
 
 namespace TwinkleGraphics
 {
-
     class __TWCOMExport Event : public Object
     {
     public:

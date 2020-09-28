@@ -149,13 +149,19 @@ void AntiAliasingView::OnGUI()
     }
     ImGui::End();
 
-    // ImGui::Begin(u8"Sub window");
-    // {
-    //     Texture::Ptr rt = scene->_rtScreen->GetTexture();
-    //     uint id = rt->GetRenderRes().id;
-    //     ImGui::Image((ImTextureID)id, ImVec2(512, 512), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-    // }
-    // ImGui::End();
+    ImGui::Begin(u8"Window");
+    {
+        ImGui::BeginChild(u8"SubWindow", ImVec2(512.0f,512.0f), false
+            , ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_::ImGuiWindowFlags_NoMove);
+        {
+            Texture::Ptr rt = scene->_rtScreen->GetTexture();
+            uint id = rt->GetRenderRes().id;
+            ImGui::Image((ImTextureID)id, ImVec2(512, 512), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        }
+        ImGui::EndChild();
+    }
+    ImGui::End();
 
     Select3DModel();
 }

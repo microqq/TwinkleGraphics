@@ -15,11 +15,6 @@ add_library(twFirstTriangle SHARED
     ${FirstTriangle_SRCs}
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set_target_properties(twFirstTriangle PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
-endif()
-
 target_include_directories(twFirstTriangle PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
@@ -28,14 +23,13 @@ target_include_directories(twFirstTriangle PUBLIC
 
 target_link_libraries(twFirstTriangle twGraphics)
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set_target_properties(twFirstTriangle PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+endif()
+
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll)
-        file(COPY 
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll 
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/twShading/
-        )
-        file(REMOVE
-            ${CMAKE_CURRENT_LIST_DIR}/../../Output/libs/libtwFirstTriangle.dll
-        )
-    endif()
+    set_target_properties(twFirstTriangle PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
