@@ -1,11 +1,11 @@
 #ifndef TW_MOUSEEVENTARGS_H
 #define TW_MOUSEEVENTARGS_H
 
-#include "twEventArgs.h"
+#include "twInputEventArgs.h"
 
 namespace TwinkleGraphics
 {
-    class MouseEventArgs : public BaseEventArgs
+    class MouseEventArgs : public InputEventArgs
     {
     public:
         typedef std::shared_ptr<MouseEventArgs> Ptr;
@@ -13,7 +13,7 @@ namespace TwinkleGraphics
         static EventId ID;
 
         explicit MouseEventArgs()
-            : BaseEventArgs()
+            : InputEventArgs()
         {
         }
         virtual ~MouseEventArgs() {}

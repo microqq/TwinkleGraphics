@@ -35,10 +35,11 @@ namespace TwinkleGraphics
 
         MOVE = 12,
         RESIZE = 13,
+        CLOSE = 14,
 
-        WHEEL = 14,
+        WHEEL = 15,
         
-        QUIT = 15
+        QUIT = 16
     };
 
     class __TWCOMExport BaseEventArgs : public Object

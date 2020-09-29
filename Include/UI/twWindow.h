@@ -1,14 +1,14 @@
 #ifndef TW_WINDOW_H
 #define TW_WINDOW_H
 
-#include "twCommon.h"
+#include "twWidget.h"
 
 namespace TwinkleGraphics
 {
-    class Window
+    class Window : public Widget
     {
     public:
-        Window();
+        explicit Window(Widget* parent = nullptr);
         virtual ~Window();
 
     protected:

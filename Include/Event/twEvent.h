@@ -1,8 +1,6 @@
 #ifndef TW_EVENT_H
 #define TW_EVENT_H
 
-#include <utility>
-
 #include "twObject.h"
 #include "twEventArgs.h"
 #include "twEventHandler.h"

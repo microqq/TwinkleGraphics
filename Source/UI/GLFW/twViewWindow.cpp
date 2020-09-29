@@ -2,7 +2,8 @@
 
 namespace TwinkleGraphics
 {
-    ViewWindow::ViewWindow()
+    ViewWindow::ViewWindow(Widget* parent)
+        : Window(parent)
     {}
 
     ViewWindow::~ViewWindow()

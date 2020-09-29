@@ -9,7 +9,7 @@ namespace TwinkleGraphics
     class ViewWindow : public Window
     {
     public:
-        explicit ViewWindow();
+        explicit ViewWindow(Widget* parent = nullptr);
         virtual ~ViewWindow();
 
     private:

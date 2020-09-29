@@ -47,18 +47,21 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Common/twRenderTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twHWBuffers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twConsoleLog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Entry/twApplication.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twEventArgs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twEventHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twEventManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twInput.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Event/twMouseEventArgs.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Event/twKeyEventArgs.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Event/twInputEventArgs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twUiUtil.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twHierarchy.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twInspector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twMainFrame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWindow.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twViewWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWMainFrame.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twViewWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Util/twUtil.cpp
 )
 
@@ -70,8 +73,10 @@ target_include_directories(twGraphics PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage
     ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/vermilion
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/Entry
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Event
     ${CMAKE_CURRENT_LIST_DIR}/../Include/UI
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/UI/GLFW
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Util
 )
 if(ENABLE_DEBUG)

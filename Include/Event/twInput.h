@@ -142,7 +142,7 @@ namespace TwinkleGraphics
         RIGHT = 3
     };
 
-    class InputManager : public INonCopyable, public IUpdatable
+    class InputManager : public IUpdatable, public INonCopyable
     {
     public:
         virtual ~InputManager();
@@ -150,16 +150,25 @@ namespace TwinkleGraphics
 
         bool GetPressedKey(KeyCode key);
         bool GetPressedMouse(MouseButton button);
+        vec2 GetMousePosition() { return _mousePosition; }
 
         void SetPressedKey(KeyCode key, bool pressed);
         void SetPressedMouse(MouseButton button, bool pressed);
+        void SetMousePosition(vec2 pos);
+        void SetMousePosition(float x, float y);
+
+        void ReleasePressedMouseButtons();
+        void ReleasePressedKeys();
+        void Release();
 
     private:
         explicit InputManager();
 
     private:
+        vec2 _mousePosition;
         bool _pressedKeys[MAX_KEY_COUNT];
-        bool _pressedMouseButton[MAX_MOUSE_COUNT];
+        bool _pressedMouseButtons[MAX_MOUSE_COUNT];
+
 
         friend class Singleton<InputManager>;
     };

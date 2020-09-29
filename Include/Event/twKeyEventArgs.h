@@ -1,11 +1,11 @@
 #ifndef TW_KEYEVENT_H
 #define TW_KEYEVENT_H
 
-#include "twEventArgs.h"
+#include "twInputEventArgs.h"
 
 namespace TwinkleGraphics
 {
-    class KeyEventArgs : public BaseEventArgs
+    class KeyEventArgs : public InputEventArgs
     {
     public:
         typedef std::shared_ptr<KeyEventArgs> Ptr;
@@ -13,7 +13,7 @@ namespace TwinkleGraphics
         static EventId ID;
 
         explicit KeyEventArgs()
-            : BaseEventArgs()
+            : InputEventArgs()
         {
         }
         virtual ~KeyEventArgs() {}
