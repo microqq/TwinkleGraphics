@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-    class EditorWindow : public GLFWMainFrame
+    class __TWCOMExport EditorWindow : public GLFWMainFrame
     {
     public:
         explicit EditorWindow(uint32 width, uint32 height);

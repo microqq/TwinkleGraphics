@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-    class __TWCOMExport MainFrame : public Widget
+    class MainFrame : public Widget
     {
     public:
         MainFrame(uint32 width, uint32 height, Widget *parent = nullptr);
