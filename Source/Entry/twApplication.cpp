@@ -10,7 +10,7 @@ namespace TwinkleGraphics
     Application::~Application()
     {}
 
-    void Application::Update()
+    void Application::Update(float deltaTime)
     {}
 
     void Application::Destroy()
@@ -20,7 +20,22 @@ namespace TwinkleGraphics
     {}
 
     void Application::Run()
-    {}
+    {
+        if(_mainframe == nullptr)
+        {
+            return;
+        }
+
+        while(!_mainframe->CheckClose())
+        {
+            _mainframe->DispatchInputEvents();
+            _mainframe->BeginFrame();
+            {
+
+            }
+            _mainframe->EndFrame();
+        }
+    }
 
     void Application::Quit()
     {}

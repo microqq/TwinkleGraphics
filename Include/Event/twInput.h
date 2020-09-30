@@ -146,7 +146,7 @@ namespace TwinkleGraphics
     {
     public:
         virtual ~InputManager();
-        virtual void Update() override;
+        virtual void Update(float deltaTime = 0.0f) override;
 
         bool GetPressedKey(KeyCode key);
         bool GetPressedMouse(MouseButton button);

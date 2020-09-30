@@ -10,7 +10,7 @@ namespace TwinkleGraphics
         Destroy();
     }
 
-    void ResourceManager::Update()
+    void ResourceManager::Update(float deltaTime)
     {
         UpdateResourceCache(0.02f);
 

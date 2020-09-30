@@ -15,7 +15,7 @@ namespace TwinkleGraphics
         TextSource::Ptr ReadText(const char* filename);
         ReadResult<TextSource> ReadTextAsync(const char* filename);
 
-        virtual void Update() override {}
+        virtual void Update(float deltaTime = 0.0f) override {}
         virtual void Destroy() override
         {
             {

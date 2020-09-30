@@ -22,7 +22,7 @@ namespace TwinkleGraphics
         Destroy();
     }
 
-    void ShaderManager::Update()
+    void ShaderManager::Update(float deltaTime)
     {
         // try
         {

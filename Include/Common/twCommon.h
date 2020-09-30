@@ -93,7 +93,7 @@ namespace TwinkleGraphics
     class IUpdatable
     {
     public:
-        virtual void Update() = 0;
+        virtual void Update(float deltaTime = 0.0f) = 0;
 
     protected:
         IUpdatable() {}

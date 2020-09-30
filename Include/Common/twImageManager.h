@@ -13,7 +13,7 @@ namespace TwinkleGraphics
     {
     public:
         virtual ~ImageManager();
-        virtual void Update() override;
+        virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override;
 
         Image::Ptr ReadImage(const char *filename, ImageOption* option = nullptr);

@@ -1,6 +1,8 @@
 #ifndef TW_WIDGET_H
 #define TW_WIDGET_H
 
+#include <vector>
+
 #include "twCommon.h"
 #include "twMouseEventArgs.h"
 #include "twKeyEventArgs.h"
@@ -19,14 +21,15 @@ namespace TwinkleGraphics
         uint32 y;
     };
 
-    class Widget : public Object, public IUpdatable
+    class Widget : public Object, public IUpdatable, public IDestroyable, public INonCopyable
     {
     public:
         typedef std::function<void()> OnGuiFunction;
 
         explicit Widget(Widget *parent = nullptr);
         virtual ~Widget();
-        virtual void Update() override;
+        virtual void Update(float deltaTime = 0.0f) override;
+        virtual void Destroy() override;
 
         void SetPositoin(uint32 x, uint32 y) { _data->x = x; _data->y = y; }
         void SetSize(uint32 width, uint32 height) { _data->width = width, _data->height = height; }
@@ -40,6 +43,11 @@ namespace TwinkleGraphics
 
         virtual void OnGui() {}
         virtual void OnGui(OnGuiFunction& func) { func(); }
+
+        void SetParent(Widget* parent = nullptr);
+
+        void Show() { _visible = true; }
+        void Hide() { _visible = false; }
 
     protected:
         virtual void OnMousePressEvent(MouseEventArgs *e);
@@ -59,9 +67,15 @@ namespace TwinkleGraphics
         virtual void OnResizeEvent(ResizeEventArgs *e);
         virtual void OnCloseEvent(CloseEventArgs *e);
 
+        bool HasChild(Widget* widget);
+        void AddChild(Widget* widget);
+        void RemoveChild(Widget* Widget);
+
     protected:
+        std::vector<Widget*> _children;
         WidgetData *_data = nullptr;
         Widget *_parent = nullptr;
+        bool _visible = true;
     };
 } // namespace TwinkleGraphics
 

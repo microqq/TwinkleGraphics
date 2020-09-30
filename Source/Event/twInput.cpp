@@ -19,7 +19,7 @@ namespace TwinkleGraphics
     {
     }
 
-    void InputManager::Update()
+    void InputManager::Update(float deltaTime)
     {
     }
 

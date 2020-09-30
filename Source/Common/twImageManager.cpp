@@ -24,7 +24,7 @@ namespace TwinkleGraphics
 		Destroy();
 	}
 
-    void ImageManager::Update()
+    void ImageManager::Update(float deltaTime)
 	{
 		{
 			std::lock_guard<std::mutex> lock(_mutex);

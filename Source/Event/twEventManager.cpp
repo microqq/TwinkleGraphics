@@ -145,7 +145,7 @@ namespace TwinkleGraphics
         HandleEvent(sender, args);
     }
 
-    void EventManager::Update()
+    void EventManager::Update(float deltaTime)
     {
         // Pop event and handle it
         HandleEvent();

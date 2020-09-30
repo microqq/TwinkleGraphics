@@ -6,11 +6,11 @@
 
 namespace TwinkleGraphics
 {
-    class ViewWindow : public Window
+    class GLFWViewWindow : public Window
     {
     public:
-        explicit ViewWindow(Widget* parent = nullptr);
-        virtual ~ViewWindow();
+        explicit GLFWViewWindow(Widget* parent = nullptr);
+        virtual ~GLFWViewWindow();
 
     private:
         uint32 _renderTarget = 0;

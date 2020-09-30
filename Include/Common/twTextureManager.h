@@ -83,7 +83,7 @@ namespace TwinkleGraphics
         Texture::Ptr ReadTexture(const char* filename, TextureOption* option);
         ReadResult<Texture> ReadTextureAsync(const char* filename, TextureOption* option);
 
-        virtual void Update() override 
+        virtual void Update(float deltaTime = 0.0f) override 
         {
             {
                 std::lock_guard<std::mutex> lock(_mutex);

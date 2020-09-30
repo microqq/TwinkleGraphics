@@ -20,7 +20,7 @@ namespace TwinkleGraphics
          * @brief 
          * Update() must execute in main thread
          */
-        virtual void Update() override;
+        virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override;
 
         Shader::Ptr ReadShader(const char* filename, ShaderOption* option);

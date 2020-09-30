@@ -2,7 +2,8 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
-OPTION(ENABLE_EXPORT_COMDLL "build common dynamic library" ON)
+option(ENABLE_EXPORT_COMDLL "build common dynamic library" ON)
+
 if(DEFINE_FREEIMAGE_LIB)
     add_definitions(-DFREEIMAGE_LIB)
 endif()
@@ -61,7 +62,8 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWMainFrame.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twViewWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWViewWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditor.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Util/twUtil.cpp
 )
 
@@ -77,6 +79,7 @@ target_include_directories(twGraphics PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Event
     ${CMAKE_CURRENT_LIST_DIR}/../Include/UI
     ${CMAKE_CURRENT_LIST_DIR}/../Include/UI/GLFW
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/Editor
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Util
 )
 if(ENABLE_DEBUG)
@@ -100,3 +103,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_link_libraries(twGraphics imguiFileDialog)    
     target_link_libraries(twGraphics vermilion)
 endif()
+
+
+add_executable(twApp ${CMAKE_CURRENT_LIST_DIR}/Entry/twAppMain.cpp)
+target_include_directories(twApp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Include/Entry)
+target_link_libraries(twApp twGraphics)

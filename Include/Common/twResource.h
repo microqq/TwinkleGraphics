@@ -217,7 +217,7 @@ public:
         return _cacheId;
     }
 
-    bool Expired(float deltaTime)
+    bool Expired(float deltaTime = 0.0f)
     {
         if(CacheStoreHint::PERMERNANTLY == _storeHint)
         {

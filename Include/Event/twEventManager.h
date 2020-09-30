@@ -20,7 +20,7 @@ namespace TwinkleGraphics
     {
     public:
         virtual ~EventManager();
-        virtual void Update() override;
+        virtual void Update(float deltaTime = 0.0f) override;
 
         void Subscribe(EventId id, const EventHandlerFunctionPtr& func);
         void Subscribe(EventId id, const EventHandler& handler);
