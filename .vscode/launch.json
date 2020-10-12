@@ -28,7 +28,7 @@
             "name": "(gdb) TWEditor",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Output/twApp.exe",
+            "program": "${workspaceFolder}/Output/twEditor.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

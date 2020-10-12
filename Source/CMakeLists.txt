@@ -63,7 +63,7 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWMainFrame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWViewWindow.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Util/twUtil.cpp
 )
 
@@ -105,6 +105,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif()
 
 
-add_executable(twApp ${CMAKE_CURRENT_LIST_DIR}/Entry/twAppMain.cpp)
-target_include_directories(twApp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Include/Entry)
-target_link_libraries(twApp twGraphics)
+add_executable(twEditor ${CMAKE_CURRENT_LIST_DIR}/Entry/twEditor.cpp)
+target_include_directories(twEditor PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Include/Entry)
+target_link_libraries(twEditor twGraphics)

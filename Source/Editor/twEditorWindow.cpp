@@ -1,4 +1,4 @@
-#include "twEditor.h"
+#include "twEditorWindow.h"
 
 namespace TwinkleGraphics
 {

@@ -1,5 +1,5 @@
 #include "twApplication.h"
-#include "twEditor.h"
+#include "twEditorWindow.h"
 
 using namespace TwinkleGraphics;
 
