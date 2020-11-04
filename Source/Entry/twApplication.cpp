@@ -29,9 +29,10 @@ namespace TwinkleGraphics
         while(!_mainframe->CheckClose())
         {
             _mainframe->DispatchInputEvents();
+
             _mainframe->BeginFrame();
             {
-
+                _mainframe->OnGui();
             }
             _mainframe->EndFrame();
         }

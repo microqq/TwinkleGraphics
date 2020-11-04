@@ -55,14 +55,16 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Event/twInput.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twInputEventArgs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twUiUtil.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twHierarchy.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twInspector.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twMainFrame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twMainWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twSizePolicy.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWMainFrame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWViewWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twHierarchy.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twInspector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorMenu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Util/twUtil.cpp
 )

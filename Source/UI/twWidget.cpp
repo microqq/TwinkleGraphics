@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "twWidget.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics
 {
@@ -11,7 +12,6 @@ namespace TwinkleGraphics
         , INonCopyable()
         , _children()
         , _data(new WidgetData)
-        , _parent(parent)
     {
         SetParent(parent);
         Show();
@@ -50,7 +50,10 @@ namespace TwinkleGraphics
             return;
         }
         
-        _parent->RemoveChild(this);
+        if(_parent != nullptr)
+        {
+            _parent->RemoveChild(this);
+        }
         _parent = parent;
         _parent->AddChild(this);
     }
@@ -69,7 +72,11 @@ namespace TwinkleGraphics
     void Widget::OnEnterEvent(CursorEventArgs *e) {}
     void Widget::OnLeaveEvent(CursorEventArgs *e) {}
 
-    void Widget::OnResizeEvent(ResizeEventArgs *e) {}
+    void Widget::OnResizeEvent(ResizeEventArgs *e) 
+    {
+        
+    }
+
     void Widget::OnCloseEvent(CloseEventArgs *e) {}
 
     bool Widget::HasChild(Widget* widget)
@@ -78,7 +85,7 @@ namespace TwinkleGraphics
         Iter find = std::find_if(_children.begin(), _children.end()
         , [widget](Widget* w)
         {
-            return w = widget;
+            return w == widget;
         });
 
         return find != _children.end();
@@ -93,10 +100,7 @@ namespace TwinkleGraphics
 
         if(!HasChild(widget))
         {
-            if(widget != nullptr)
-            {
-                _children.emplace_back(widget);
-            }
+            _children.emplace_back(widget);
         }
     }
 
@@ -107,10 +111,13 @@ namespace TwinkleGraphics
             return;
         }
 
-        _children.erase(std::remove_if(_children.begin(), _children.end()
-        , [widget](Widget* w)
+        if(HasChild(widget))
         {
-            return w == widget;
-        }));
+            _children.erase(std::remove_if(_children.begin(), _children.end()
+            , [widget](Widget* w)
+            {
+                return w == widget;
+            }));
+        }
     }
 } // namespace TwinkleGraphics

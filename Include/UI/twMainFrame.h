@@ -18,7 +18,6 @@ namespace TwinkleGraphics
         virtual void BeginFrame() {}
         virtual void EndFrame() {}
 
-
     protected:
     };
 

@@ -23,7 +23,15 @@ namespace TwinkleGraphics
             return ResizeEventArgs::ID;
         }
 
+        void SetOldSize(ivec2 size) { _oldSize = size; }
+        void SetSize(ivec2 size) { _size = size; }
+
+        ivec2 OldSize() { return _oldSize; }
+        ivec2 Size() { return _size; }
+
     private:
+        ivec2 _oldSize;
+        ivec2 _size;
     };} // namespace TwinkleGraphics
 
 

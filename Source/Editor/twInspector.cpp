@@ -2,11 +2,17 @@
 
 namespace TwinkleGraphics
 {
-    Inspector::Inspector()
+    Inspector::Inspector(Widget* parent)
+        : Widget(parent)
     {}
 
     Inspector::~Inspector()
     {
         
-    }    
+    }
+
+    void Inspector::OnGui()
+    {
+    }
+
 } // namespace TwinkleGraphics

@@ -99,6 +99,13 @@ namespace TwinkleGraphics
 
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Other"))
+            {
+                if (ImGui::MenuItem("Sample Scenes"))
+                {
+                }
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu("Help"))
             {
                 ImGui::EndMenu();

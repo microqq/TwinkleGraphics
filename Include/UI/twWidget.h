@@ -10,11 +10,13 @@
 #include "twResizeEventArgs.h"
 #include "twCloseEventArgs.h"
 #include "twCursorEventArgs.h"
+#include "twSizePolicy.h"
 
 namespace TwinkleGraphics
 {
     struct WidgetData
     {
+        SizePolicy sizepolicy;
         uint32 width;
         uint32 height;
         uint32 x;
@@ -31,18 +33,33 @@ namespace TwinkleGraphics
         virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override;
 
+        void SetSizePolicy(SizePolicy sizePolicy) { _data->sizepolicy = sizePolicy; }
         void SetPositoin(uint32 x, uint32 y) { _data->x = x; _data->y = y; }
         void SetSize(uint32 width, uint32 height) { _data->width = width, _data->height = height; }
         void SetWidth(uint32 width) { _data->width = width; }
         void SetHeight(uint32 height) { _data->height = height; }
 
+        const SizePolicy& GetSizePolicy() { return _data->sizepolicy; }
         vec2 GetPosition() { return vec2(_data->x, _data->y); }
         vec2 GetSize() { return vec2(_data->width, _data->height); }
         uint32 GetWidth() { return _data->width; }
         uint32 GetHeight() { return _data->height; }
 
-        virtual void OnGui() {}
-        virtual void OnGui(OnGuiFunction& func) { func(); }
+        virtual void OnGui() 
+        {
+            for (auto child : _children)
+            {
+                if (child != nullptr)
+                {
+                    child->OnGui();
+                }
+            }
+        }
+        virtual void OnGui(OnGuiFunction& func) 
+        { 
+            func();
+            OnGui();
+        }
 
         void SetParent(Widget* parent = nullptr);
 

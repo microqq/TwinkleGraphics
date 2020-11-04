@@ -2,7 +2,8 @@
 
 namespace TwinkleGraphics
 {
-    Hierarchy::Hierarchy()
+    Hierarchy::Hierarchy(Widget* parent)
+        : Widget(parent)
     {
 
     }
@@ -11,5 +12,8 @@ namespace TwinkleGraphics
     {
         
     }
+
+    void Hierarchy::OnGui()
+    {}
 
 } // namespace TwinkkleGraphics

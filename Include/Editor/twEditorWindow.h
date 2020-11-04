@@ -2,6 +2,10 @@
 #define TW_EDITORAPPLICATION_H
 
 #include "twGLFWMainFrame.h"
+#include "twGLFWViewWindow.h"
+#include "twEditorMenu.h"
+#include "twHierarchy.h"
+#include "twInspector.h"
 
 namespace TwinkleGraphics
 {
@@ -12,7 +16,11 @@ namespace TwinkleGraphics
         virtual ~EditorWindow();
 
     private:
-
+        EditorMenu* _menu = nullptr;
+        Hierarchy* _hierachy = nullptr;
+        Inspector* _inspector = nullptr;
+        GLFWViewWindow* _sceneView = nullptr;
+        GLFWViewWindow* _gameView = nullptr;
     };
 
 } // namespace TwinkleGraphics
