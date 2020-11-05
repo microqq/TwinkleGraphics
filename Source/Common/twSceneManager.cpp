@@ -28,4 +28,10 @@ void Scene::Render()
     // }        
 }
 
+
+
+
+SceneManager::~SceneManager()
+{}
+
 } // namespace TwinkleGraphics

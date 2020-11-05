@@ -10,6 +10,7 @@ namespace TwinkleGraphics
     ShaderManager::ShaderManager()
         : IUpdatable()
         , INonCopyable()
+        , IDestroyable()
         , _futures()
         , _programFutures()
         , _mutex()

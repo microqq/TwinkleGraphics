@@ -11,57 +11,78 @@
 namespace TwinkleGraphics
 {
 
-class __TWCOMExport Scene : public Object
-{
-public:
-    typedef std::shared_ptr<Scene> Ptr;
-
-    Scene();
-    virtual ~Scene();
-
-    virtual void Init();
-    virtual void Update(float32 delta_time);
-    virtual void Render();
-
-    void SetMainCamera(Camera::Ptr cam)
-    { 
-        _maincamera = cam;
-    }
-
-    void AddCamera(Camera::Ptr cam)
+    class __TWCOMExport Scene : public Object
     {
-        if(cam == nullptr)
-            return;
-        _cameralists[++_validCameraCount] = cam;
-    }
-    void RemoveCamera(int32 index)
-    {
-        if(index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
+    public:
+        typedef std::shared_ptr<Scene> Ptr;
+
+        Scene();
+        virtual ~Scene();
+
+        virtual void Init();
+        virtual void Update(float32 delta_time);
+        virtual void Render();
+
+        void SetMainCamera(Camera::Ptr cam)
         {
-            return;
+            _maincamera = cam;
         }
-        _cameralists[index] = nullptr;
-    }
 
-    Camera::Ptr GetMainCamera() { return _maincamera; }
-    Camera::Ptr GetCamera(int32 index)
-    {
-        if(index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
+        void AddCamera(Camera::Ptr cam)
         {
-            return nullptr;
+            if (cam == nullptr)
+                return;
+            _cameralists[++_validCameraCount] = cam;
         }
-        return _cameralists[index];
-    }
+        void RemoveCamera(int32 index)
+        {
+            if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
+            {
+                return;
+            }
+            _cameralists[index] = nullptr;
+        }
 
-    void SortCamera() {}
+        Camera::Ptr GetMainCamera() { return _maincamera; }
+        Camera::Ptr GetCamera(int32 index)
+        {
+            if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
+            {
+                return nullptr;
+            }
+            return _cameralists[index];
+        }
 
-protected:
-    Camera::Ptr _maincamera;
-    Camera::Ptr _cameralists[MAX_SCENE_CAMERA_COUNT];
-    ISceneNode _sceneroot;
+        void SortCamera() {}
 
-    int32 _validCameraCount;
-};  
+    protected:
+        Camera::Ptr _maincamera;
+        Camera::Ptr _cameralists[MAX_SCENE_CAMERA_COUNT];
+        ISceneNode _sceneroot;
+
+        int32 _validCameraCount;
+    };
+
+    class SceneManager : public IUpdatable, public INonCopyable, public IDestroyable
+    {
+    public:
+        virtual ~SceneManager();
+
+        /**
+         * @brief 
+         * Update() must execute in main thread
+         */
+        virtual void Update(float deltaTime = 0.0f) override {}
+        virtual void Destroy() override {}
+
+    private:
+        explicit SceneManager()
+            : IUpdatable()
+            , INonCopyable()
+            , IDestroyable()
+        {}
+    };
+
 } // namespace TwinkleGraphics
 
 #endif

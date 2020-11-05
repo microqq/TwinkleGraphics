@@ -181,6 +181,7 @@ namespace TwinkleGraphics
         explicit ResourceManager()
             : IUpdatable()
             , INonCopyable()
+            , IDestroyable()
             , _workerPool(4)
         {}
 

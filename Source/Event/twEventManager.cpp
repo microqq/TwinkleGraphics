@@ -8,6 +8,7 @@ namespace TwinkleGraphics
     EventManager::EventManager()
         : IUpdatable()
         , INonCopyable()
+        , IDestroyable()
         , _queue()
         , _handlerCollection()
     {

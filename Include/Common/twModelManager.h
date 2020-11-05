@@ -40,6 +40,7 @@ namespace TwinkleGraphics
         explicit ModelManager()
             : IUpdatable()
             , INonCopyable()
+            , IDestroyable()
             , _futures()
             , _mutex()
         {}

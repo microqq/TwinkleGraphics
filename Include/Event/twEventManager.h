@@ -17,10 +17,12 @@ namespace TwinkleGraphics
 
     class __TWCOMExport EventManager : public IUpdatable
         , public INonCopyable
+        , public IDestroyable
     {
     public:
         virtual ~EventManager();
         virtual void Update(float deltaTime = 0.0f) override;
+        virtual void Destroy() override {}
 
         void Subscribe(EventId id, const EventHandlerFunctionPtr& func);
         void Subscribe(EventId id, const EventHandler& handler);

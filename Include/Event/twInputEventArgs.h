@@ -12,12 +12,13 @@ namespace TwinkleGraphics
 
         explicit InputEventArgs()
             : BaseEventArgs()
-        {}
+        {
+        }
         virtual ~InputEventArgs() = 0;
         virtual EventId GetEventId() = 0;
 
     private:
-    };} // namespace TwinkleGraphics
-
+    };
+} // namespace TwinkleGraphics
 
 #endif

@@ -24,7 +24,7 @@ namespace TwinkleGraphics
         }
 
     private:
-    };} // namespace TwinkleGraphics
-
+    };
+} // namespace TwinkleGraphics
 
 #endif

@@ -32,7 +32,7 @@ namespace TwinkleGraphics
     private:
         ivec2 _oldSize;
         ivec2 _size;
-    };} // namespace TwinkleGraphics
-
+    };
+} // namespace TwinkleGraphics
 
 #endif

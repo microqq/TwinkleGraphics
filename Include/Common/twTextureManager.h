@@ -103,6 +103,7 @@ namespace TwinkleGraphics
         explicit TextureManager()
             : IUpdatable()
             , INonCopyable()            
+            , IDestroyable()
         {}
         void OnReadTextureSuccess(Object::Ptr obj);
         void OnReadTextureFailed();

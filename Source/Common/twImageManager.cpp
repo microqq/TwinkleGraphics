@@ -8,6 +8,7 @@ namespace TwinkleGraphics
 	ImageManager::ImageManager()
         : IUpdatable()
         , INonCopyable()
+        , IDestroyable()
 	{
 // call this ONLY when linking with FreeImage as a static library
 #ifdef FREEIMAGE_LIB

@@ -28,7 +28,8 @@ namespace TwinkleGraphics
     private:
         explicit TextManager()
             : IUpdatable()
-            , INonCopyable()            
+            , INonCopyable()      
+            , IDestroyable()
         {}
         void OnReadTextSuccess(Object::Ptr obj);
         void OnReadTextFailed();
