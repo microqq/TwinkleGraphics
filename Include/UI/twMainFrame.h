@@ -13,7 +13,7 @@ namespace TwinkleGraphics
         virtual void Update(float deltaTime = 0.0f) override;
 
         virtual bool CheckClose() { return false; }
-        virtual void DispatchInputEvents() {}
+        virtual void PollInputEvents() {}
 
         virtual void BeginFrame() {}
         virtual void EndFrame() {}

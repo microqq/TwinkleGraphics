@@ -28,11 +28,11 @@ namespace TwinkleGraphics
 
         while(!_mainframe->CheckClose())
         {
-            _mainframe->DispatchInputEvents();
+            _mainframe->PollInputEvents();
 
             _mainframe->BeginFrame();
             {
-                _mainframe->OnGui();
+                _mainframe->PaintGui();
             }
             _mainframe->EndFrame();
         }

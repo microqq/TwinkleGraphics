@@ -19,7 +19,7 @@ namespace TwinkleGraphics
         virtual void Destroy() override;
 
         virtual bool CheckClose() override;
-        virtual void DispatchInputEvents() override;
+        virtual void PollInputEvents() override;
 
         virtual void BeginFrame() override;
         virtual void EndFrame() override;

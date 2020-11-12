@@ -3,6 +3,7 @@
 
 #include "twCommon.h"
 #include "twSingleton.h"
+#include "twEventManager.h"
 
 #define MAX_KEY_COUNT 350
 #define MAX_MOUSE_COUNT 4

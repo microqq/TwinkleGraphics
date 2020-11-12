@@ -45,26 +45,34 @@ namespace TwinkleGraphics
         uint32 GetWidth() { return _data->width; }
         uint32 GetHeight() { return _data->height; }
 
+        void PaintGui()
+        {
+            OnGuiBegin();
+            OnGui();
+            OnGuiEnd();
+        }
+
+        virtual void OnGuiBegin() {}
+        virtual void OnGuiEnd() {}
+
         virtual void OnGui() 
         {
             for (auto child : _children)
             {
                 if (child != nullptr)
                 {
-                    child->OnGui();
+                    child->PaintGui();
                 }
             }
-        }
-        virtual void OnGui(OnGuiFunction& func) 
-        { 
-            func();
-            OnGui();
         }
 
         void SetParent(Widget* parent = nullptr);
 
         void Show() { _visible = true; }
         void Hide() { _visible = false; }
+
+        bool IsFocused() { return _focused; }
+        bool IsHovered() { return _hovered; }
 
     protected:
         virtual void OnMousePressEvent(MouseEventArgs *e);
@@ -93,6 +101,8 @@ namespace TwinkleGraphics
         WidgetData *_data = nullptr;
         Widget *_parent = nullptr;
         bool _visible = true;
+        bool _focused = false;
+        bool _hovered = false;
     };
 } // namespace TwinkleGraphics
 

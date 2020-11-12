@@ -36,11 +36,19 @@ namespace TwinkleGraphics
     void InputManager::SetPressedKey(KeyCode key, bool pressed) 
     {
         _pressedKeys[(int)key] = pressed;
+
+        // fire keyevent
+        EventManager& eventMgrInst = EventMgrInstance();
+
     }
 
     void InputManager::SetPressedMouse(MouseButton button, bool pressed) 
     {
         _pressedMouseButtons[(int)button] = pressed;
+
+        // fire mousebuttonevent
+        EventManager& eventMgrInst = EventMgrInstance();
+
     }
 
     void InputManager::SetMousePosition(vec2 pos)

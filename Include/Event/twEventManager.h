@@ -36,8 +36,8 @@ namespace TwinkleGraphics
         explicit EventManager();
 
         EventHandler* FindFirstEventHandler(EventId id);
-        void HandleEvent();
-        void HandleEvent(Object::Ptr sender, BaseEventArgs::Ptr args);
+        void HandleEvents();
+        void HandleEvents(Object::Ptr sender, BaseEventArgs::Ptr args);
 
     private:
         EventQueue _queue;

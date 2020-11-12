@@ -150,7 +150,7 @@ namespace TwinkleGraphics
         return glfwWindowShouldClose(_window);
     }
 
-    void GLFWMainFrame::DispatchInputEvents()
+    void GLFWMainFrame::PollInputEvents()
     {
         glfwPollEvents();
     }

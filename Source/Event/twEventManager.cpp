@@ -143,13 +143,13 @@ namespace TwinkleGraphics
     void EventManager::FireImmediately(Object::Ptr sender, BaseEventArgs::Ptr args)
     {
         // HandlerEvent
-        HandleEvent(sender, args);
+        HandleEvents(sender, args);
     }
 
     void EventManager::Update(float deltaTime)
     {
         // Pop event and handle it
-        HandleEvent();
+        HandleEvents();
     }
 
     EventHandler* EventManager::FindFirstEventHandler(EventId id)
@@ -165,7 +165,7 @@ namespace TwinkleGraphics
         return nullptr;
     }
 
-    void EventManager::HandleEvent()
+    void EventManager::HandleEvents()
     {
         Event* event = nullptr;
         {
@@ -174,12 +174,12 @@ namespace TwinkleGraphics
 #endif
             while((event = _queue.PopFront()) != nullptr)
             {
-                HandleEvent(event->Sender(), event->EventArgs());
+                HandleEvents(event->Sender(), event->EventArgs());
             }
         }
     }
 
-    void EventManager::HandleEvent(Object::Ptr sender, BaseEventArgs::Ptr args)
+    void EventManager::HandleEvents(Object::Ptr sender, BaseEventArgs::Ptr args)
     {
         if(args == nullptr)
         {
