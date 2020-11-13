@@ -19,6 +19,14 @@ namespace TwinkleGraphics
         virtual void EndFrame() {}
 
     protected:
+        virtual void MouseInputCallback(int32 button, int32 action, int32 mods) {}
+        virtual void CursorPosCallback(float64 xpos, float64 ypos) {}
+        virtual void CursorEnterPosCallback(int32 entered) {}
+        virtual void ScrollCallback(float64 dx, float64 dy) {}
+        virtual void WindowSizeCallback(int32 w, int32 h) {}
+        virtual void KeyInputCallBack(int32 key, int32 scannode, int32 action, int32 mods) {}
+
+    protected:
     };
 
 } // namespace TwinkleGraphics

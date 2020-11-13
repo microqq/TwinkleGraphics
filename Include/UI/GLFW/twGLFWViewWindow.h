@@ -20,6 +20,8 @@ namespace TwinkleGraphics
         RenderTexture::Ptr GetViewRT() { return _viewRT; }
 
     private:
+        virtual void SetFocusedInternal() override;
+        virtual void SetHoveredInternal() override;
         void CreateViewRT();
 
     private:

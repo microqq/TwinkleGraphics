@@ -5,6 +5,8 @@
 
 namespace TwinkleGraphics
 {
+    class InputManager;
+
     class ResizeEventArgs : public InputEventArgs
     {
     public:
@@ -32,6 +34,8 @@ namespace TwinkleGraphics
     private:
         ivec2 _oldSize;
         ivec2 _size;
+
+        friend class InputManager;
     };
 } // namespace TwinkleGraphics
 

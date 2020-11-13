@@ -19,13 +19,6 @@ namespace TwinkleGraphics
 
         MainFrame* GetMainFrame() { return _mainframe; }
 
-        void MouseInputCallback(int32 button, int32 action, int32 mods) {}
-        void CursorPosCallback(float64 xpos, float64 ypos) {}
-        void CursorEnterPosCallback(int32 entered) {}
-        void ScrollCallback(float64 dx, float64 dy) {}
-        void WindowSizeCallback(int32 w, int32 h) {}
-        void KeyInputCallBack(int32 key, int32 scannode, int32 action, int32 mods) {}
-
     protected:
         explicit Application();
 

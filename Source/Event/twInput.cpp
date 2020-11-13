@@ -10,8 +10,8 @@ namespace TwinkleGraphics
     InputManager::InputManager()
         : IUpdatable()
         , INonCopyable()
-        , _pressedKeys{false}
-        , _pressedMouseButtons{false}
+        , _pressedKeys{KeyState::KEY_RELEASE}
+        , _pressedMouseButtons{MouseState::MOUSE_RELEASE}
     {
     }
 
@@ -23,28 +23,28 @@ namespace TwinkleGraphics
     {
     }
 
-    bool InputManager::GetPressedKey(KeyCode key) 
+    KeyState InputManager::GetPressedKey(KeyCode key) 
     {
         return _pressedKeys[(int)key];
     }
 
-    bool InputManager::GetPressedMouse(MouseButton button) 
+    MouseState InputManager::GetPressedMouse(MouseButton button) 
     {
         return _pressedMouseButtons[(int)button];
     }
 
-    void InputManager::SetPressedKey(KeyCode key, bool pressed) 
+    void InputManager::SetPressedKey(KeyCode key, KeyState state) 
     {
-        _pressedKeys[(int)key] = pressed;
+        _pressedKeys[(int)key] = state;
 
         // fire keyevent
         EventManager& eventMgrInst = EventMgrInstance();
 
     }
 
-    void InputManager::SetPressedMouse(MouseButton button, bool pressed) 
+    void InputManager::SetPressedMouse(MouseButton button, MouseState state) 
     {
-        _pressedMouseButtons[(int)button] = pressed;
+        _pressedMouseButtons[(int)button] = state;
 
         // fire mousebuttonevent
         EventManager& eventMgrInst = EventMgrInstance();
@@ -58,15 +58,27 @@ namespace TwinkleGraphics
 
     void InputManager::SetMousePosition(float x, float y)
     {
-        _mousePosition = vec2(x, y);
+        SetMousePosition(vec2(x, y));
     }
 
+    void InputManager::SetMouseMove(vec2 pos)
+    {
+        SetMousePosition(pos);
+
+        // fire mouse move event
+        EventManager& eventMgrInst = EventMgrInstance();
+    }
+
+    void InputManager::SetCursorEnter(vec2 pos, bool entered) 
+    { 
+        _cursorEntered = entered;
+    }
 
     void InputManager::ReleasePressedMouseButtons()
     {
         for(auto& key : _pressedKeys)
         {
-            key = false;
+            key = KeyState::KEY_RELEASE;
         }
     }
     
@@ -74,7 +86,7 @@ namespace TwinkleGraphics
     {
         for(auto& button : _pressedMouseButtons)
         {
-            button = false;
+            button = MouseState::MOUSE_RELEASE;
         }
     }
 

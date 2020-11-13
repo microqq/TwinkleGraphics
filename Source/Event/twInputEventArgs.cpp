@@ -1,4 +1,5 @@
 
+#include "twInputEventArgs.h"
 #include "twMouseEventArgs.h"
 #include "twKeyEventArgs.h"
 #include "twFocusEventArgs.h"
@@ -8,6 +9,7 @@
 
 namespace TwinkleGraphics
 {
+    DEFINE_EVENTID(InputEventArgs);
     DEFINE_EVENTID(MouseEventArgs);
     DEFINE_EVENTID(KeyEventArgs);
     DEFINE_EVENTID(FocusEventArgs);

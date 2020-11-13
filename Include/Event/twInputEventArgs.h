@@ -5,19 +5,28 @@
 
 namespace TwinkleGraphics
 {
+    class InputManager;
+
     class InputEventArgs : public BaseEventArgs
     {
     public:
         typedef std::shared_ptr<InputEventArgs> Ptr;
 
+        static EventId ID;
+
         explicit InputEventArgs()
             : BaseEventArgs()
         {
         }
-        virtual ~InputEventArgs() = 0;
-        virtual EventId GetEventId() = 0;
+        virtual ~InputEventArgs() {}
+        virtual EventId GetEventId() override
+        {
+            return InputEventArgs::ID;
+        }
 
     private:
+
+        friend class InputManager;
     };
 } // namespace TwinkleGraphics
 

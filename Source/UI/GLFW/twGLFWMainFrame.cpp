@@ -4,6 +4,8 @@
 
 #include "twGLFWMainFrame.h"
 #include "twConsoleLog.h"
+#include "twLambdaTraits.h"
+#include "twInput.h"
 
 namespace TwinkleGraphics
 {
@@ -119,6 +121,8 @@ namespace TwinkleGraphics
         glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_drawbuffers_count);
         Console::LogInfo("GL_MAX_DRAW_BUFFERS:", max_drawbuffers_count, "\n");
 #endif
+
+        SetInputEventCallbacks();
     }
 
     GLFWMainFrame::~GLFWMainFrame()
@@ -164,7 +168,6 @@ namespace TwinkleGraphics
         glViewport(_data->x, _data->y, _data->width, _data->height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         glClearColor(0.f, 0.0f, 0.0f, 1.0f);
-
     }
 
     void GLFWMainFrame::EndFrame()
@@ -175,13 +178,116 @@ namespace TwinkleGraphics
         ImGuiIO &io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            GLFWwindow *backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
 
         glfwSwapBuffers(_window);
+    }
+
+    void GLFWMainFrame::MouseInputCallback(int32 button, int32 action, int32 mods)
+    {
+        dvec2 cursorPos;
+        glfwGetCursorPos(_window, &(cursorPos.x), &(cursorPos.y));
+
+        InputManager& inputMgrInst = InputMgrInstance();
+
+        inputMgrInst.SetPressedMouse((MouseButton)button, (MouseState)action);
+        inputMgrInst.SetMousePosition(cursorPos);
+    }
+
+    void GLFWMainFrame::CursorPosCallback(float64 xpos, float64 ypos)
+    {
+        InputManager& inputMgrInst = InputMgrInstance();
+        dvec2 oldCursPos = inputMgrInst.GetMousePosition();
+        dvec2 cursorPos;
+        glfwGetCursorPos(_window, &(cursorPos.x), &(cursorPos.y));
+
+        if(oldCursPos != cursorPos)
+        {
+            inputMgrInst.SetMouseMove(cursorPos);  
+            // Console::LogInfo("Mouse motion x:", cursorPos.x, " y:", cursorPos.y, "\n");
+        }
+    }
+
+    void GLFWMainFrame::CursorEnterPosCallback(int32 entered)
+    {
+        dvec2 cursorPos;
+        glfwGetCursorPos(_window, &(cursorPos.x), &(cursorPos.y));
+
+        InputManager& inputMgrInst = InputMgrInstance();
+        inputMgrInst.SetCursorEnter(cursorPos, entered);
+    }
+
+    void GLFWMainFrame::ScrollCallback(float64 dx, float64 dy)
+    {
+        InputManager& inputMgrInst = InputMgrInstance();
+    }
+
+    void GLFWMainFrame::WindowSizeCallback(int32 w, int32 h)
+    {
+        ivec2 oldSize(_data->width, _data->height);
+        ivec2 newSize(w, h);
+
+        InputManager& inputMgrInst = InputMgrInstance();
+    }
+
+    void GLFWMainFrame::KeyInputCallBack(int32 key, int32 scannode, int32 action, int32 mods)
+    {
+        InputManager& inputMgrInst = InputMgrInstance();        
+    }
+
+    void GLFWMainFrame::SetInputEventCallbacks()
+    {
+        // Mouse Input
+        GLFWmousebuttonfun mouseInputCallback(cify([this](GLFWwindow *window, int32 button, int32 action, int32 mods) {
+            MouseInputCallback(button, action, mods);
+
+            // Console::LogInfo("Mouse Input.");
+        }));
+        glfwSetMouseButtonCallback(_window, mouseInputCallback);
+
+        // Cursor Input
+        GLFWcursorposfun cursorInputCallback(cify([this](GLFWwindow *window, double x, double y) {
+            CursorPosCallback(x, y);
+
+            // Console::LogInfo("Cursor Input.");
+        }));
+        glfwSetCursorPosCallback(_window, cursorInputCallback);
+
+        // CursorEnter Input
+        GLFWcursorenterfun cursorenterInputCallback(cify([this](GLFWwindow *window, int entered) {
+            CursorEnterPosCallback(entered);
+
+            // Console::LogInfo("Cursor Enter Input.");
+        }));
+        glfwSetCursorEnterCallback(_window, cursorenterInputCallback);
+
+        // Scroll Input
+        GLFWscrollfun scrollInputCallback(cify([this](GLFWwindow *window, double x, double y) {
+            ScrollCallback(x, y);
+
+            // Console::LogInfo("Scroll Input.");
+        }));
+        glfwSetScrollCallback(_window, scrollInputCallback);
+
+        // WindowSize Input
+        GLFWwindowsizefun windowSizeCallback(cify([this](GLFWwindow *window, int w, int h) {
+            WindowSizeCallback(w, h);
+
+            // Console::LogInfo("WindowSize Input.");
+        }));
+        glfwSetWindowSizeCallback(_window, windowSizeCallback);
+
+        // Key Input
+        GLFWkeyfun keyCallback(cify([this](GLFWwindow *window, int32 key, int32 scannode, int32 action, int32 mods) {
+            KeyInputCallBack(key, scannode, action, mods);
+
+            // Console::LogInfo("Key Input.");
+        }));
+        glfwSetKeyCallback(_window, keyCallback);
     }
 
 } // namespace TwinkleGraphics

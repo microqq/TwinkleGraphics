@@ -9,6 +9,7 @@ namespace TwinkleGraphics
         : Widget(parent)
     {
         SetSize(width, height);
+        SetDepth(0);
 
         Application& app = ApplicationInstance();
         app._mainframe = this;

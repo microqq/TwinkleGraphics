@@ -20,43 +20,11 @@ namespace TwinkleGraphics
 
     void GLFWViewWindow::OnGuiEnd()
     {
-        bool focused = ImGui::IsWindowFocused(ImGuiHoveredFlags_RootAndChildWindows);
-        if(_focused != focused)
-        {
-            _focused = focused;
-            if(_focused)
-            {
-                // focusedin
-            }
-            else
-            {
-                // focusedout
-            }
-        }
-
-        bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
-        if(_hovered != hovered)
-        {
-            _hovered = hovered;
-            if(_hovered)
-            {
-                
-            }
-            else
-            {
-                /* code */
-            }
-            
-        }
-
-        // if(_focused)
-        // {
-        //     Console::LogInfo("ViewWindow focused:", _focused, "\n");
-        // }
+        SetFocusedInternal();
+        SetHoveredInternal();
 
         // if(_hovered)
         // {
-        //     Console::LogInfo("ViewWindow hovered:", _hovered, "\n");
         // }
 
         ImGui::End();
@@ -74,6 +42,42 @@ namespace TwinkleGraphics
             ImGui::Image((ImTextureID)id, ImVec2(_data->width, _data->height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
         }
         ImGui::EndChild();
+    }
+
+    void GLFWViewWindow::SetFocusedInternal()
+    {
+        bool focused = ImGui::IsWindowFocused(ImGuiHoveredFlags_RootAndChildWindows);
+        if(_focused != focused)
+        {
+            _focused = focused;
+            if(_focused)
+            {
+                // focusedin
+            }
+            else
+            {
+                // focusedout
+            }
+            Console::LogInfo("ViewWindow focused:", _focused, "\n");
+        }
+    }
+
+    void GLFWViewWindow::SetHoveredInternal()
+    {
+        bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
+        if(_hovered != hovered)
+        {
+            _hovered = hovered;
+            if(_hovered)
+            {
+                
+            }
+            else
+            {
+                /* code */
+            }
+            Console::LogInfo("ViewWindow hovered:", _hovered, "\n");
+        }
     }
 
     void GLFWViewWindow::CreateViewRT()

@@ -5,6 +5,8 @@
 
 namespace TwinkleGraphics
 {
+    class InputManager;
+
     class CursorEventArgs : public InputEventArgs
     {
     public:
@@ -24,6 +26,8 @@ namespace TwinkleGraphics
         }
 
     private:
+
+        friend class InputManager;
     };
 } // namespace TwinkleGraphics
 

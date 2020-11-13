@@ -6,10 +6,18 @@
 #include "twEventManager.h"
 
 #define MAX_KEY_COUNT 350
-#define MAX_MOUSE_COUNT 4
+#define MAX_MOUSE_COUNT 12
 
 namespace TwinkleGraphics
 {
+    // class InputEventArgs;
+    // class MouseEventArgs;
+    // class KeyEventArgs;
+    // class FocusEventArgs;
+    // class ResizeEventArgs;
+    // class CloseEventArgs;
+    // class CursorEventArgs;
+
     enum KeyCode : uint32
     {
         // KEY_UNKNOWN = -1,
@@ -138,9 +146,33 @@ namespace TwinkleGraphics
 
     enum MouseButton : uint32
     {
-        LEFT = 1,
-        MIDDLE = 2,
-        RIGHT = 3
+        MOUSE_BUTTON_1 = 0,
+        MOUSE_BUTTON_2 = 1,
+        MOUSE_BUTTON_3 = 2,
+        MOUSE_BUTTON_4 = 3,
+        MOUSE_BUTTON_5 = 4,
+        MOUSE_BUTTON_6 = 5,
+        MOUSE_BUTTON_7 = 6,
+        MOUSE_BUTTON_8 = 7,
+        MOUSE_BUTTON_LAST = MOUSE_BUTTON_8,
+        MOUSE_BUTTON_LEFT = MOUSE_BUTTON_1,
+        MOUSE_BUTTON_RIGHT = MOUSE_BUTTON_2,
+        MOUSE_BUTTON_MIDDLE = MOUSE_BUTTON_3
+    };
+
+    enum MouseState : uint32
+    {
+        MOUSE_RELEASE = 0,
+        MOUSE_PRESS = 1,
+        MOUSE_MOVE = 2,
+        MOUSE_DRAG = MOUSE_PRESS | MOUSE_MOVE
+    };
+
+    enum KeyState : uint32
+    {
+        KEY_RELEASE = 0,
+        KEY_PRESS = 1,
+        KEY_REPEAT = 2
     };
 
     class InputManager : public IUpdatable, public INonCopyable
@@ -149,14 +181,16 @@ namespace TwinkleGraphics
         virtual ~InputManager();
         virtual void Update(float deltaTime = 0.0f) override;
 
-        bool GetPressedKey(KeyCode key);
-        bool GetPressedMouse(MouseButton button);
+        KeyState GetPressedKey(KeyCode key);
+        MouseState GetPressedMouse(MouseButton button);
         vec2 GetMousePosition() { return _mousePosition; }
 
-        void SetPressedKey(KeyCode key, bool pressed);
-        void SetPressedMouse(MouseButton button, bool pressed);
+        void SetPressedKey(KeyCode key, KeyState state);
+        void SetPressedMouse(MouseButton button, MouseState state);
         void SetMousePosition(vec2 pos);
         void SetMousePosition(float x, float y);
+        void SetMouseMove(vec2 pos);
+        void SetCursorEnter(vec2 pos, bool entered);
 
         void ReleasePressedMouseButtons();
         void ReleasePressedKeys();
@@ -167,11 +201,19 @@ namespace TwinkleGraphics
 
     private:
         vec2 _mousePosition;
-        bool _pressedKeys[MAX_KEY_COUNT];
-        bool _pressedMouseButtons[MAX_MOUSE_COUNT];
-
+        KeyState _pressedKeys[MAX_KEY_COUNT];
+        MouseState _pressedMouseButtons[MAX_MOUSE_COUNT];
+        bool _cursorEntered = false;
 
         friend class Singleton<InputManager>;
+
+        // friend class InputEventArgs;
+        // friend class MouseEventArgs;
+        // friend class KeyEventArgs;
+        // friend class FocusEventArgs;
+        // friend class ResizeEventArgs;
+        // friend class CloseEventArgs;
+        // friend class CursorEventArgs;
     };
 
     __TWCOMExport InputManager &InputMgrInstance();

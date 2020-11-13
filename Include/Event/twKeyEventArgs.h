@@ -5,6 +5,8 @@
 
 namespace TwinkleGraphics
 {
+    class InputManager;
+
     class KeyEventArgs : public InputEventArgs
     {
     public:
@@ -24,6 +26,9 @@ namespace TwinkleGraphics
         }
 
     private:
+        KeyCode _key;
+
+        friend class InputManager;
     };
 
 } // namespace TwinkleGraphics
