@@ -35,6 +35,7 @@ namespace TwinkleGraphics
 
             _mainframe->BeginFrame();
             {
+                _mainframe->Update();
                 _mainframe->PaintGui();
             }
             _mainframe->EndFrame();

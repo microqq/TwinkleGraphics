@@ -42,6 +42,8 @@ public:
         SAFE_DEL_ARR(bufs);
     }
 
+    virtual void Resize(int32 width, int32 height) {}
+
     virtual void InitBufferData(uint32 size, const void *data)
     {
         glBufferData(_resinstance.type, size, data, GL_DYNAMIC_DRAW);
@@ -233,6 +235,23 @@ public:
         }
         UnBind();
     }
+
+    virtual void Resize(int32 width, int32 height) override
+    {
+        _width = width;
+        _height = height;
+        Bind();
+        if(_multisample)
+        {
+            glRenderbufferStorageMultisample(GL_RENDERBUFFER, _samples, _internalformat, _width, _height);
+        }
+        else
+        {
+            glRenderbufferStorage(GL_RENDERBUFFER, _internalformat, _width, _height);
+        }
+        UnBind();
+    }
+
     virtual void Destroy() override 
     {
         uint32 bufs[1] = { _resinstance.id };

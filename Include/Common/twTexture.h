@@ -356,6 +356,11 @@ public:
         InitStorage();
     }
 
+    void Resize(int32 width, int32 height)
+    {
+        ResizeStorage(width, height);
+    }
+
     void Bind() { glBindTexture(_res.type, _res.id); }
     void UnBind() { glBindTexture(_res.type, 0); }
 
@@ -456,6 +461,7 @@ public:
 
 protected:
     virtual void InitStorage();
+    virtual void ResizeStorage(int32 width, int32 height) {}
     virtual void ApplyWrapParameter();
     virtual void ApplyFilterParameter();
     virtual void ApplySwizzleParameter();
@@ -564,6 +570,8 @@ public:
 
 protected:
     virtual void InitStorage() override;
+    virtual void ResizeStorage(int32 width, int32 height) override;
+
     virtual void ApplyWrapParameter() override
     {
         // wrap
@@ -606,6 +614,7 @@ public:
 
 protected:
     virtual void InitStorage() override;
+    virtual void ResizeStorage(int32 width, int32 height) override;
 
     virtual void ApplyTexParameters() override
     {

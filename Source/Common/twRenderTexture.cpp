@@ -91,6 +91,19 @@ void RenderTexture::Create(FrameBufferObject::Ptr framebuf)
     _framebuf->UnBind();
 }
 
+void RenderTexture::Resize(int32 width, int32 height)
+{
+    _width = width;
+    _height = height;
+    if(_texture != nullptr)
+    {
+        _texture->Resize(width, height);
+    }
+    if(_depthbuf != nullptr)
+    {
+        _depthbuf->Resize(width, height);
+    }
+}
 
 void RenderTexture::BlitColor(RenderTexture::Ptr dest)
 {

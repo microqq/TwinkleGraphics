@@ -21,6 +21,7 @@ public:
     virtual ~RenderTexture();
 
     void Create(FrameBufferObject::Ptr framebuf = nullptr);
+    void Resize(int32 width, int32 height);
     Texture::Ptr GetTexture() { return _texture; }
     RenderBufferObject::Ptr GetDepthBuffer() { return _depthbuf; }
     FrameBufferObject::Ptr GetFrameBuffer() { return _framebuf; }

@@ -5,11 +5,23 @@ namespace TwinkleGraphics
     GLFWViewWindow::GLFWViewWindow(const std::string &name, uint32 width, uint32 height, Widget *parent)
         : Window(name, width, height, parent)
     {
+        float ratio = (float)height / (float)width;
+        _viewSize.x = width;
+        _viewSize.y = width * ratio;
         CreateViewRT();
     }
 
     GLFWViewWindow::~GLFWViewWindow()
     {
+    }
+
+    void GLFWViewWindow::Update(float deltaTime)
+    {
+        if(_viewSizeDirty)
+        {
+            ResizeViewRT();
+            _viewSizeDirty = false;
+        }
     }
 
     void GLFWViewWindow::OnGuiBegin()
@@ -29,22 +41,35 @@ namespace TwinkleGraphics
     void GLFWViewWindow::OnGui()
     {
         // ImVec2 size = ImGui::GetWindowSize();
-        ImVec2 min = ImGui::GetWindowContentRegionMin();
-        ImVec2 max = ImGui::GetWindowContentRegionMax();
-        ImVec2 size(max.x - min.x, max.y - min.y);
-        
-        if(size.x == 0.0f) size.x = _data->width;
-        if(size.y == 0.0f) size.y = _data->height;
-        ImGui::BeginChild(u8"SubWindow", ImVec2(size.x, size.y), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar
-                          // | ImGuiWindowFlags_::ImGuiWindowFlags_NoMove
-        );
 
+        if(!ImGui::IsWindowCollapsed())
         {
-            Texture::Ptr tex = _viewRT->GetTexture();
-            uint id = tex->GetRenderRes().id;
-            ImGui::Image((ImTextureID)id, ImVec2(size.x, size.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+            ImVec2 viewSize = ImVec2(_viewSize.x, _viewSize.y);
+            if(_viewSizeInitialized)
+            {
+                ImVec2 windowSize = ImGui::GetWindowSize();
+
+                ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+                ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+                ImVec2 contentSize(contentMax.x - contentMin.x, contentMax.y - contentMin.y);
+                ImVec2 titleBarSize(windowSize.x - contentSize.x, windowSize.y - contentSize.y);
+
+                if(viewSize.x != contentSize.x || viewSize.y != contentSize.y)
+                {
+                    viewSize = contentSize;
+                    _viewSize.x = viewSize.x;
+                    _viewSize.y = viewSize.y;
+
+                    _viewSizeDirty = true;
+                }
+            }
+            else
+            {
+                _viewSizeInitialized = true;
+            }
+
+            PaintViewGui(viewSize);
         }
-        ImGui::EndChild();
     }
 
     void GLFWViewWindow::SetFocusedInternal()
@@ -94,6 +119,31 @@ namespace TwinkleGraphics
         _viewRT->Create(nullptr);
         _viewRT->GetTexture()->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR);
         _viewRT->GetTexture()->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
+    }
+
+    void GLFWViewWindow::ResizeViewRT()
+    {
+        if(_viewRT != nullptr)
+        {
+            _viewRT->Resize(_viewSize.x, _viewSize.y);
+        }
+    }
+
+    void GLFWViewWindow::PaintViewGui(ImVec2 viewSize)
+    {
+        ImGui::BeginChild(u8"SubWindow"
+            , viewSize
+            , false
+            , ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar
+                          // | ImGuiWindowFlags_::ImGuiWindowFlags_NoMove
+        );
+
+        {
+            Texture::Ptr tex = _viewRT->GetTexture();
+            uint id = tex->GetRenderRes().id;
+            ImGui::Image((ImTextureID)id, viewSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        }
+        ImGui::EndChild();
     }
 
 } // namespace TwinkleGraphics
