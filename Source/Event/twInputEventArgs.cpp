@@ -6,6 +6,7 @@
 #include "twResizeEventArgs.h"
 #include "twCloseEventArgs.h"
 #include "twCursorEventArgs.h"
+#include "twScrollEvetnArg.h"
 
 namespace TwinkleGraphics
 {
@@ -16,5 +17,6 @@ namespace TwinkleGraphics
     DEFINE_EVENTID(ResizeEventArgs);
     DEFINE_EVENTID(CloseEventArgs);
     DEFINE_EVENTID(CursorEventArgs);
+    DEFINE_EVENTID(ScrollEventArgs);
 } // namespace TwinkleGraphics
 

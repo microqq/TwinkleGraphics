@@ -148,6 +148,13 @@ namespace TwinkleGraphics
 
     void EventManager::Update(float deltaTime)
     {
+#ifdef _DEBUG
+        // u32 count = GetEventsCount();
+        // if(count > 0)
+        // {
+        //     Console::LogInfo("Events Count:", GetEventsCount(), "\n");
+        // }
+#endif
         // Pop event and handle it
         HandleEvents();
     }
@@ -201,5 +208,9 @@ namespace TwinkleGraphics
                 ++iter;
             }
         }
+    }
+
+    void EventManager::CompressEvents()
+    {
     }
 } // namespace TwinkleGraphics

@@ -167,7 +167,7 @@ namespace TwinkleGraphics
 
         glViewport(_data->x, _data->y, _data->width, _data->height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glClearColor(0.f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.4f, 0.2f, 0.0f, 1.0f);
     }
 
     void GLFWMainFrame::EndFrame()
@@ -224,19 +224,22 @@ namespace TwinkleGraphics
     void GLFWMainFrame::ScrollCallback(float64 dx, float64 dy)
     {
         InputManager& inputMgrInst = InputMgrInstance();
+        inputMgrInst.SetScroll(dx, dy);
     }
 
     void GLFWMainFrame::WindowSizeCallback(int32 w, int32 h)
     {
-        ivec2 oldSize(_data->width, _data->height);
-        ivec2 newSize(w, h);
-
         InputManager& inputMgrInst = InputMgrInstance();
+        inputMgrInst.SetWindowResize(vec2(w, h));
+
+        _data->width = w;
+        _data->height = h;
     }
 
     void GLFWMainFrame::KeyInputCallBack(int32 key, int32 scannode, int32 action, int32 mods)
     {
-        InputManager& inputMgrInst = InputMgrInstance();        
+        InputManager& inputMgrInst = InputMgrInstance();
+        inputMgrInst.SetPressedKey((KeyCode)key, (KeyState)action);
     }
 
     void GLFWMainFrame::SetInputEventCallbacks()

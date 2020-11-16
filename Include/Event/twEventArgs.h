@@ -52,7 +52,12 @@ namespace TwinkleGraphics
 
         virtual EventId GetEventId() = 0;
 
+        void SetCancelFlag(bool flag) { _cancelFlag = flag; }
+        bool GetCancelFlag() { return _cancelFlag; }
+
     protected:
+        bool _cancelFlag = false;
+        bool _shouldBeCompressed = false;
     };
 } // namespace TwinkleGraphics
 

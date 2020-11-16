@@ -10,6 +10,7 @@
 #include "twResizeEventArgs.h"
 #include "twCloseEventArgs.h"
 #include "twCursorEventArgs.h"
+#include "twScrollEvetnArg.h"
 #include "twSizePolicy.h"
 #include "twEventHandler.h"
 
@@ -17,7 +18,6 @@ namespace TwinkleGraphics
 {
     struct WidgetData
     {
-        SizePolicy sizepolicy;
         uint32 width;
         uint32 height;
         uint32 x;
@@ -34,8 +34,8 @@ namespace TwinkleGraphics
         virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override;
 
-        void SetSizePolicy(SizePolicy sizePolicy) { _data->sizepolicy = sizePolicy; }
-        void SetPositoin(uint32 x, uint32 y)
+        void SetSizePolicy(SizePolicy sizePolicy) { _sizepolicy = sizePolicy; }
+        void SetPosition(uint32 x, uint32 y)
         {
             _data->x = x;
             _data->y = y;
@@ -43,12 +43,14 @@ namespace TwinkleGraphics
         void SetSize(uint32 width, uint32 height) { _data->width = width, _data->height = height; }
         void SetWidth(uint32 width) { _data->width = width; }
         void SetHeight(uint32 height) { _data->height = height; }
+        void SetEventPropagation(bool propagation) { _eventPropagation = propagation; }
 
-        const SizePolicy &GetSizePolicy() { return _data->sizepolicy; }
+        const SizePolicy &GetSizePolicy() { return _sizepolicy; }
         vec2 GetPosition() { return vec2(_data->x, _data->y); }
         vec2 GetSize() { return vec2(_data->width, _data->height); }
         uint32 GetWidth() { return _data->width; }
         uint32 GetHeight() { return _data->height; }
+        bool GetEventPropagation() { return _eventPropagation; }
 
         virtual void OnGuiBegin() {}
         virtual void OnGuiEnd() {}
@@ -108,6 +110,7 @@ namespace TwinkleGraphics
         virtual void OnMouseReleaseEvent(MouseEventArgs *e);
         virtual void OnMouseDoubleClickEvent(MouseEventArgs *e);
         virtual void OnMouseMoveEvent(MouseEventArgs *e);
+        virtual void OnScrollEvent(MouseEventArgs *e);
 
         virtual void OnKeyPressEvent(KeyEventArgs *e);
         virtual void OnKeyReleaseEvent(KeyEventArgs *e);
@@ -135,15 +138,18 @@ namespace TwinkleGraphics
         void UnSubscribe();
 
     protected:
-        EventHandler _eventHandler;
-        EventHandlerFunctionPtr _eventHandlerFunc = nullptr;
         std::vector<Widget *> _children;
+        EventHandlerFunctionPtr _eventHandlerFunc = nullptr;
         WidgetData *_data = nullptr;
         Widget *_parent = nullptr;
+        EventHandler _eventHandler;
+        SizePolicy _sizepolicy;
         int _depth = -1;
         bool _visible = true;
         bool _focused = false;
         bool _hovered = false;
+        bool _needResize = false;
+        bool _eventPropagation = true;
     };
 } // namespace TwinkleGraphics
 

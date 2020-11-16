@@ -26,9 +26,12 @@ namespace TwinkleGraphics
             return;
         }
 
+        EventManager& eventMgrInst = EventMgrInstance();
+
         while(!_mainframe->CheckClose())
         {
             _mainframe->PollInputEvents();
+            eventMgrInst.Update();
 
             _mainframe->BeginFrame();
             {

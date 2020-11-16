@@ -191,6 +191,8 @@ namespace TwinkleGraphics
         void SetMousePosition(float x, float y);
         void SetMouseMove(vec2 pos);
         void SetCursorEnter(vec2 pos, bool entered);
+        void SetScroll(double dx, double dy);
+        void SetWindowResize(vec2 size);
 
         void ReleasePressedMouseButtons();
         void ReleasePressedKeys();

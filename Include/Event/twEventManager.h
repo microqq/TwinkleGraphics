@@ -12,7 +12,7 @@
 
 namespace TwinkleGraphics
 {
-    typedef RingBuffer<Event> EventQueue;
+    typedef RingBuffer<Event, 4096U> EventQueue;
     typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
 
     class __TWCOMExport EventManager : public IUpdatable
@@ -32,12 +32,16 @@ namespace TwinkleGraphics
         void Fire(Object::Ptr sender, BaseEventArgs::Ptr args);
         void FireImmediately(Object::Ptr sender, BaseEventArgs::Ptr args);
 
+        u32 GetEventsCount() { return _queue.Length(); }
+
     private:
         explicit EventManager();
 
         EventHandler* FindFirstEventHandler(EventId id);
         void HandleEvents();
         void HandleEvents(Object::Ptr sender, BaseEventArgs::Ptr args);
+
+        void CompressEvents();
 
     private:
         EventQueue _queue;

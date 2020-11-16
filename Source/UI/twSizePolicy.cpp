@@ -24,4 +24,15 @@ namespace TwinkleGraphics
     {
         _heightDependWidth = dependent;
     }
+
+    void SizePolicy::SetHorizontalStretch(float stretch)
+    {
+        _horStretch = stretch;
+    }
+
+    void SizePolicy::SetVerticalStretch(float stretch)
+    {
+        _verStretch = stretch;
+    }
+
 } // namespace TwinkleGraphics

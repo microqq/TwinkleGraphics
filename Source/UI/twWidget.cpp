@@ -66,30 +66,40 @@ namespace TwinkleGraphics
         InputEventArgs::Ptr inputEventPtr = std::dynamic_pointer_cast<InputEventArgs>(event);
         if(inputEventPtr != nullptr)
         {
-            InputEventArgs *event = inputEventPtr.get();
+            InputEventArgs *inputEvent = inputEventPtr.get();
             
-            MouseEventArgs* mouseEvent = dynamic_cast<MouseEventArgs*>(event);
+            MouseEventArgs* mouseEvent = dynamic_cast<MouseEventArgs*>(inputEvent);
             if (mouseEvent != nullptr)
             {
             }
 
-            KeyEventArgs* keyEvent = dynamic_cast<KeyEventArgs*>(event);
+            KeyEventArgs* keyEvent = dynamic_cast<KeyEventArgs*>(inputEvent);
             if (keyEvent != nullptr)
             {
             }
 
-            CursorEventArgs* cursorEvent = dynamic_cast<CursorEventArgs*>(event);
+            CursorEventArgs* cursorEvent = dynamic_cast<CursorEventArgs*>(inputEvent);
             if (cursorEvent != nullptr)
             {
             }
 
-            ResizeEventArgs* resizeEvent = dynamic_cast<ResizeEventArgs*>(event);
+            ResizeEventArgs* resizeEvent = dynamic_cast<ResizeEventArgs*>(inputEvent);
             if (resizeEvent != nullptr)
             {
                 OnResizeEvent(resizeEvent);
+
+                // if(_parent != nullptr)
+                // {
+                //     _parent->OnEvent(sender, event);
+                // }
+
+                // for(auto child : _children)
+                // {
+                //     // child->OnResizeEvent()
+                // }
             }
 
-            CloseEventArgs* closeEvent = dynamic_cast<CloseEventArgs*>(event);
+            CloseEventArgs* closeEvent = dynamic_cast<CloseEventArgs*>(inputEvent);
             if (closeEvent != nullptr)
             {
                 OnCloseEvent(closeEvent);
@@ -101,6 +111,7 @@ namespace TwinkleGraphics
     void Widget::OnMouseReleaseEvent(MouseEventArgs *e) {}
     void Widget::OnMouseDoubleClickEvent(MouseEventArgs *e) {}
     void Widget::OnMouseMoveEvent(MouseEventArgs *e) {}
+    void Widget::OnScrollEvent(MouseEventArgs *e) {}
 
     void Widget::OnKeyPressEvent(KeyEventArgs *e) {}
     void Widget::OnKeyReleaseEvent(KeyEventArgs *e) {}
@@ -113,7 +124,23 @@ namespace TwinkleGraphics
 
     void Widget::OnResizeEvent(ResizeEventArgs *e) 
     {
-        
+        ivec2 size = e->Size();
+
+        if(_sizepolicy.HeightForWidth())
+        {
+            float ratio = (float)_data->height / (float)_data->width;
+            float newHeight = size.x * ratio;
+
+            _data->width = size.x;
+            _data->height = newHeight;
+        }
+        else
+        {
+            _data->width = size.x;
+            _data->height = size.y;
+        }
+
+        _needResize = true;
     }
 
     void Widget::OnCloseEvent(CloseEventArgs *e) {}

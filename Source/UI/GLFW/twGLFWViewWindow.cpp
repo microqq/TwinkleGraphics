@@ -23,23 +23,26 @@ namespace TwinkleGraphics
         SetFocusedInternal();
         SetHoveredInternal();
 
-        // if(_hovered)
-        // {
-        // }
-
         ImGui::End();
     }
 
     void GLFWViewWindow::OnGui()
     {
-        ImGui::BeginChild(u8"SubWindow", ImVec2(_data->width, _data->height), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar
+        // ImVec2 size = ImGui::GetWindowSize();
+        ImVec2 min = ImGui::GetWindowContentRegionMin();
+        ImVec2 max = ImGui::GetWindowContentRegionMax();
+        ImVec2 size(max.x - min.x, max.y - min.y);
+        
+        if(size.x == 0.0f) size.x = _data->width;
+        if(size.y == 0.0f) size.y = _data->height;
+        ImGui::BeginChild(u8"SubWindow", ImVec2(size.x, size.y), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar
                           // | ImGuiWindowFlags_::ImGuiWindowFlags_NoMove
         );
 
         {
             Texture::Ptr tex = _viewRT->GetTexture();
             uint id = tex->GetRenderRes().id;
-            ImGui::Image((ImTextureID)id, ImVec2(_data->width, _data->height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+            ImGui::Image((ImTextureID)id, ImVec2(size.x, size.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
         }
         ImGui::EndChild();
     }
@@ -58,7 +61,7 @@ namespace TwinkleGraphics
             {
                 // focusedout
             }
-            Console::LogInfo("ViewWindow focused:", _focused, "\n");
+            // Console::LogInfo("ViewWindow focused:", _focused, "\n");
         }
     }
 
@@ -76,7 +79,7 @@ namespace TwinkleGraphics
             {
                 /* code */
             }
-            Console::LogInfo("ViewWindow hovered:", _hovered, "\n");
+            // Console::LogInfo("ViewWindow hovered:", _hovered, "\n");
         }
     }
 

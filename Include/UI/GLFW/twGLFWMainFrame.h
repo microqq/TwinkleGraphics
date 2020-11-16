@@ -30,7 +30,9 @@ namespace TwinkleGraphics
         virtual void CursorEnterPosCallback(int32 entered) override;
         virtual void ScrollCallback(float64 dx, float64 dy) override;
         virtual void WindowSizeCallback(int32 w, int32 h) override;
+        // virtual void FrameBufferSizeCallback(int32 w, int32 h) override;
         virtual void KeyInputCallBack(int32 key, int32 scannode, int32 action, int32 mods) override;
+
 
     private:
         void SetInputEventCallbacks();

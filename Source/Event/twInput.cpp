@@ -1,4 +1,6 @@
 #include "twInput.h"
+#include "twResizeEventArgs.h"
+#include "twMouseEventArgs.h"
 
 namespace TwinkleGraphics
 {
@@ -63,15 +65,37 @@ namespace TwinkleGraphics
 
     void InputManager::SetMouseMove(vec2 pos)
     {
-        SetMousePosition(pos);
+        _mousePosition = pos;
 
         // fire mouse move event
         EventManager& eventMgrInst = EventMgrInstance();
+        MouseEventArgs::Ptr event = std::make_shared<MouseEventArgs>();
+        eventMgrInst.Fire(nullptr, event);        
     }
 
     void InputManager::SetCursorEnter(vec2 pos, bool entered) 
     { 
+        _mousePosition = pos;
         _cursorEntered = entered;
+    }
+
+    void InputManager::SetScroll(double dx, double dy)
+    {
+        EventManager& eventMgrInst = EventMgrInstance();
+    }
+
+    void InputManager::SetWindowResize(vec2 size)
+    {
+        EventManager& eventMgrInst = EventMgrInstance();
+
+        // if(_pressedMouseButtons[MOUSE_BUTTON_LEFT] == MOUSE_RELEASE)
+        {
+            ResizeEventArgs::Ptr event = std::make_shared<ResizeEventArgs>();
+            event->SetSize(size);
+            eventMgrInst.Fire(nullptr, event);
+
+            // Console::LogInfo("Window Size X:", size.x, " Y:", size.y, "\n");
+        }
     }
 
     void InputManager::ReleasePressedMouseButtons()

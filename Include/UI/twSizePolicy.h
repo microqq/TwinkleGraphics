@@ -34,9 +34,22 @@ namespace TwinkleGraphics
         void SetVerticalPolicy(Policy policy);
         void SetHeightForWidth(bool dependent);
 
+        void SetHorizontalStretch(float stretch);
+        void SetVerticalStretch(float stretch);
+
+        Policy HorizatonPolicy() { return _horPolicy; }
+        Policy VerticalPolicy() { return _verPolicy; }
+        bool HeightForWidth() { return _heightDependWidth; }
+
+        float HorizatontalStretch() { return _horStretch; }
+        float VerticalStretch() { return _verStretch; }
+
     private:
         Policy _horPolicy = Preferred;
         Policy _verPolicy = Preferred;
+
+        float _horStretch = 1.0f;
+        float _verStretch = 1.0f;
 
         bool _heightDependWidth = true;
     };

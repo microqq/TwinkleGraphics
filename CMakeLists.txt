@@ -3,7 +3,7 @@ project(TwinkleGraphics VERSION 0.1.0)
 
 option(ENABLE_DEBUG "Enter debug mode" ON)
 option(ENABLE_TEMPORARY "Enter debug mode" OFF)
-option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" ON)
+option(ENALBE_EVENT_MULTTHREAD "Enable event multithreading mode" OFF)
 option(BUILD_GTESTS "build gtests" ON)
 
 if(ENALBE_EVENT_MULTTHREAD)
