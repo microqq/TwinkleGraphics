@@ -87,16 +87,6 @@ namespace TwinkleGraphics
             if (resizeEvent != nullptr)
             {
                 OnResizeEvent(resizeEvent);
-
-                // if(_parent != nullptr)
-                // {
-                //     _parent->OnEvent(sender, event);
-                // }
-
-                // for(auto child : _children)
-                // {
-                //     // child->OnResizeEvent()
-                // }
             }
 
             CloseEventArgs* closeEvent = dynamic_cast<CloseEventArgs*>(inputEvent);

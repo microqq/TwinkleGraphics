@@ -22,6 +22,8 @@ public:
 
     void Create(FrameBufferObject::Ptr framebuf = nullptr);
     void Resize(int32 width, int32 height);
+    int32 GetWidth() { return _width; }
+    int32 GetHeight() { return _height; }
     Texture::Ptr GetTexture() { return _texture; }
     RenderBufferObject::Ptr GetDepthBuffer() { return _depthbuf; }
     FrameBufferObject::Ptr GetFrameBuffer() { return _framebuf; }
@@ -36,9 +38,9 @@ public:
     void BlitDepthToBackBuffer(int backwidth, int backheight);
 
 private:
-    Texture::Ptr _texture;
-    RenderBufferObject::Ptr _depthbuf;
-    FrameBufferObject::Ptr _framebuf;
+    Texture::Ptr _texture = nullptr;
+    RenderBufferObject::Ptr _depthbuf = nullptr;
+    FrameBufferObject::Ptr _framebuf = nullptr;
 
     int32 _width;
     int32 _height;

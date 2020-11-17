@@ -5,9 +5,8 @@ namespace TwinkleGraphics
     GLFWViewWindow::GLFWViewWindow(const std::string &name, uint32 width, uint32 height, Widget *parent)
         : Window(name, width, height, parent)
     {
-        float ratio = (float)height / (float)width;
         _viewSize.x = width;
-        _viewSize.y = width * ratio;
+        _viewSize.y = height;
         CreateViewRT();
     }
 
@@ -44,11 +43,10 @@ namespace TwinkleGraphics
 
         if(!ImGui::IsWindowCollapsed())
         {
+            ImVec2 windowSize = ImGui::GetWindowSize();
             ImVec2 viewSize = ImVec2(_viewSize.x, _viewSize.y);
             if(_viewSizeInitialized)
             {
-                ImVec2 windowSize = ImGui::GetWindowSize();
-
                 ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
                 ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
                 ImVec2 contentSize(contentMax.x - contentMin.x, contentMax.y - contentMin.y);
@@ -67,6 +65,8 @@ namespace TwinkleGraphics
             {
                 _viewSizeInitialized = true;
             }
+            _data->width = windowSize.x;
+            _data->height = windowSize.y;
 
             PaintViewGui(viewSize);
         }

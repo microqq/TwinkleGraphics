@@ -55,4 +55,38 @@ Camera::~Camera()
 {
 }
 
+void Camera::Update(float deltaTime)
+{
+
+}
+
+void Camera::SetRenderToTarget(RenderTexture::Ptr rt)
+{ 
+    if(rt != nullptr)
+    {
+        int32 w = rt->GetWidth();
+        int32 h = rt->GetHeight();
+        SetViewportRect(Rect(0, 0, w, h));
+
+        _rendertarget = rt; 
+    }
+}
+
+void Camera::Bind()
+{
+    if(_rendertarget != nullptr)
+    {
+        _rendertarget->Bind();
+        this->ClearRenderContext();
+    }
+}
+
+void Camera::UnBind()
+{
+    if(_rendertarget != nullptr)
+    {
+        _rendertarget->UnBind();
+    }
+}
+
 } // namespace TwinkleGraphics

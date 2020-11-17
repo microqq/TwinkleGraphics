@@ -101,6 +101,8 @@ public:
     Camera(Viewport viewport, float32 near, float32 far);
     virtual ~Camera();
 
+    virtual void Update(float deltaTime = 0.0f);
+
     void LookAt(glm::vec3 center, glm::vec3 up) { _transform->LookAt(center, up); }
     void SetPosition(glm::vec3 position) { _transform->SetPosition(position); }
     void SetOrientation(glm::quat orientation) { _transform->SetOrientation(orientation); }
@@ -133,6 +135,9 @@ public:
     void SetViewport(const Viewport& viewport) { _viewport = viewport; _viewportDirty = true; }
     const Viewport& GetViewport() { return _viewport; }
 
+    void Bind();
+    void UnBind();
+
     void ClearRenderContext()
     {
         glViewport(_viewport.X(), _viewport.Y(), _viewport.Width(), _viewport.Height());
@@ -150,7 +155,7 @@ public:
         if ((_viewport.clearMask & GL_STENCIL_BUFFER_BIT) != 0)
         {
             glClearStencil(_viewport.clearStencil);
-        }        
+        }
     }
 
     glm::mat4 GetViewMatrix() { return _transform->GetWorldToLocalMatrix(); }
@@ -168,24 +173,29 @@ public:
                 //compute frustum left\right\bottom...
                 //_projection_matrix = glm::ortho(left, right, bottom, top, near, far);
             }
+
+            _viewportDirty = false;
         }
         return _projectionMatrix; 
     }
 
-    void SetRenderToTarget(RenderTexture::Ptr rt) { _rendertarget = rt; }
+    void SetRenderToTarget(RenderTexture::Ptr rt);
+    RenderTexture::Ptr GetRenderTarget() { return _rendertarget; }
     void SetCullingMask(CullingMask mask) { _cullingmask |= (int32)mask; }
     void SetCullingMask(int32 mask) { _cullingmask |= mask; }
+    int32 GetCullingMask() { return _cullingmask; }
 
+    void SetDepth(int32 depth) { _sortdepth = depth; }
     int32 GetDepth() { return _sortdepth; }
 
 private:
     Viewport _viewport;
-    RenderTexture::Ptr _rendertarget;
+    RenderTexture::Ptr _rendertarget = nullptr;
 
     int32 _cullingmask;
     int32 _sortdepth;
 
-    bool _viewportDirty;
+    bool _viewportDirty = true;
 };
 } // namespace TwinkleGraphics
 
