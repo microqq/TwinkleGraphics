@@ -17,11 +17,8 @@ void Scene::Init()
 
 void Scene::Update(float32 delta_time)
 {
-}
-
-void Scene::PreRender()
-{
     SortCamera();
+    Traverse();
 }
 
 void Scene::Render()
@@ -29,10 +26,6 @@ void Scene::Render()
     for(auto camera : _cameralists)
     {
     }
-}
-
-void Scene::PosRender()
-{
 }
 
 void Scene::Traverse()
@@ -46,16 +39,15 @@ SceneManager::~SceneManager()
     _sceneLists.clear();
 }
 
-void SceneManager::RenderScene()
+
+void SceneManager::Update(float deltaTime)
 {
     if(_currentScene == nullptr)
     {
         return;
     }
 
-    _currentScene->PreRender();
-    _currentScene->Render();
-    _currentScene->PosRender();
+    _currentScene->Update(deltaTime);
 }
 
 } // namespace TwinkleGraphics

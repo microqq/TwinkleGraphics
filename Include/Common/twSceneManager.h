@@ -23,9 +23,6 @@ namespace TwinkleGraphics
         virtual void Init();
         virtual void Render();
 
-        void PreRender();
-        void PosRender();
-
         void SetMainCamera(Camera::Ptr cam)
         {
             _maincamera = cam;
@@ -90,6 +87,9 @@ namespace TwinkleGraphics
             return _cameralists[index];
         }
 
+        int32 GetCameraCount() { return _cameralists.size(); }
+
+    private:
         void SortCamera() 
         {
             if(!_cameraSorted)
@@ -102,10 +102,6 @@ namespace TwinkleGraphics
                 _cameraSorted = true;
             }
         }
-
-        int32 GetCameraCount() { return _cameralists.size(); }
-
-    private:
         void Traverse();
 
     protected:
@@ -125,10 +121,8 @@ namespace TwinkleGraphics
          * @brief 
          * Update() must execute in main thread
          */
-        virtual void Update(float deltaTime = 0.0f) override {}
+        virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override {}
-
-        void RenderScene();
 
     private:
         explicit SceneManager()

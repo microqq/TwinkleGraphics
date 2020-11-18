@@ -19,4 +19,14 @@ const char* VertexLayoutDefines[11] =
 };
 
 
+
+
+RenderContext::RenderContext()
+{
+}
+
+RenderContext::~RenderContext()
+{
+}
+
 } // namespace TwinkleGraphics

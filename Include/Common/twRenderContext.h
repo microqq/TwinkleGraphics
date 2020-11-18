@@ -139,8 +139,6 @@ public:
     RenderContext();
     ~RenderContext();
 
-    void CreateVertexBuffer();
-
 };
 
 
