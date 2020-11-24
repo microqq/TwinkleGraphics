@@ -758,8 +758,7 @@ void TextureExploreView::CreateCube(Image::Ptr image)
 
         Transform::Ptr trans = _cube->GetTransform();
         trans->Translate(glm::vec3(0.0f, 0.0f, -15.0f));
-
-        trans->SetParent(_camera->GetTransform());
+        _camera->AddChild(_cube);
 
         MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
         Material::Ptr mat = std::make_shared<CubeMaterial>();

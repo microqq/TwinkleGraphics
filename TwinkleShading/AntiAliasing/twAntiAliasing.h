@@ -159,6 +159,7 @@ private:
     Cube::Ptr _skybox;
     Plane::Ptr _infinitePlane;
 
+    SceneNode::Ptr _rootNode;
     Transform::Ptr _rootTrans;
     Camera::Ptr _msaaCamera;
 

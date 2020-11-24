@@ -45,6 +45,7 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Common/twUniform.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twMaterial.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twSceneManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Common/twSceneNode.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twRenderTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twHWBuffers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twConsoleLog.cpp

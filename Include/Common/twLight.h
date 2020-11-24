@@ -13,7 +13,7 @@ enum class LightType
     POINT
 };
 
-class Light : public Object, public ISceneNode
+class Light : public SceneNode
 {
 public:
     typedef std::shared_ptr<Light> Ptr;

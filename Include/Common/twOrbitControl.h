@@ -16,6 +16,8 @@ public:
     OrbitControl(Camera::Ptr camera);
     virtual ~OrbitControl();
 
+    void SetTargetNode(SceneNode::Ptr target) { _target = target; }
+
     void SetMaxDistance(float32 max_distance) { _maxDistance = max_distance; _dirty = true; }
     void SetMinDistance(float32 min_distance) { _minDistance = min_distance; _dirty = true; }
     void SetDistance(float32 distance) { _distance = distance; _camera->Translate(glm::vec3(0.0f, 0.0f, _distance)); _dirty = true; }
@@ -44,8 +46,7 @@ protected:
     virtual void Pan(glm::vec2 p1, glm::vec2 p2);
     virtual void Trackball(glm::vec2 p1, glm::vec2 p2);
 
-    Transform::Ptr _transform;
-    Transform::Ptr _target;
+    SceneNode::Ptr _target = nullptr;
 
     glm::vec3 _center;
     float32 _maxDistance;

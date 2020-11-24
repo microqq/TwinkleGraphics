@@ -21,7 +21,7 @@ namespace TwinkleGraphics
 
         virtual void Update(float32 deltaTime = 0.0f);
         virtual void Init();
-        virtual void Render();
+        virtual void Render() {}
 
         void SetMainCamera(Camera::Ptr cam)
         {
@@ -102,12 +102,12 @@ namespace TwinkleGraphics
                 _cameraSorted = true;
             }
         }
-        void Traverse();
+        void TraverseScene();
 
     protected:
         std::vector<Camera::Ptr> _cameralists;
         Camera::Ptr _maincamera = nullptr;
-        ISceneNode::Ptr _rootNode = nullptr;
+        SceneNode::Ptr _rootNode = nullptr;
 
         bool _cameraSorted = false;
     };

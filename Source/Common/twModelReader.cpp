@@ -119,7 +119,6 @@ namespace TwinkleGraphics
         }
 
         Geometry::Ptr geom = std::make_shared<Geometry>();
-        Transform::Ptr parentTransform = geom->GetTransform();
         model->AddGeometry(geom);
 
         if (verticeNum > 0)
@@ -173,8 +172,7 @@ namespace TwinkleGraphics
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
             Geometry::Ptr childGeom = ProcessNode(node->mChildren[i], scene, dir, model, vecMats);
-            Transform::Ptr childTransform = childGeom->GetTransform();
-            childTransform->SetParent(parentTransform);
+            geom->AddChild(childGeom);
         }
 
         return geom;

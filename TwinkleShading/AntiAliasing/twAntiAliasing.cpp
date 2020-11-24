@@ -222,14 +222,15 @@ void AntiAliasingScene::CreateScene()
         CreateGeometry(_planeBack, 4);
     }
 
-    _rootTrans = std::make_shared<Transform>();
+    _rootNode = std::make_shared<SceneNode>();
+    _rootTrans = _rootNode->GetTransform();
 
     // icosphere
     _sphere.reset(CreateIcosahedronSphere(3.0f, 10, MeshDataFlag(MeshDataFlag::HAS_UV)));
     {
         trans = _sphere->GetTransform();
         trans->Translate(glm::vec3(-5.0f, -5.0f, 0.0f));
-        trans->SetParent(_rootTrans);
+        _rootNode->AddChild(_sphere);
 
         CreateGeometry(_sphere, 5);
 
@@ -248,7 +249,7 @@ void AntiAliasingScene::CreateScene()
     {
         trans = _cube->GetTransform();
         trans->Translate(glm::vec3(5.0f, -5.0f, 0.0f));
-        trans->SetParent(_rootTrans);
+        _rootNode->AddChild(_cube);
 
         CreateGeometry(_cube, 6);
     }

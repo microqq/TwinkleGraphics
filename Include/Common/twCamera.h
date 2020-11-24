@@ -10,6 +10,7 @@
 #include "twCommon.h"
 #include "twRenderTexture.h"
 #include "twSceneNode.h"
+#include "twFrustum.h"
 
 namespace TwinkleGraphics
 {
@@ -65,43 +66,23 @@ struct __TWCOMExport Viewport
     }
 };
 
-enum class FrustumType
-{
-    PERSPECTIVE,
-    ORTHOGRAPHIC
-};
 
-class Frustum : public Object
-{
-public:
-    typedef std::shared_ptr<Frustum> Ptr;
-
-    Frustum(float32 fov, float32 aspect, float32 near, float32 far);
-    Frustum(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far);
-    virtual ~Frustum()
-    {}
-
-protected:
-    glm::mat4 _projectionMatrix;
-    float32 _fov;
-    float32 _aspect;
-    float32 _near;
-    float32 _far;
-
-    FrustumType _frustumType;
-};
-
-
-class __TWCOMExport Camera : public Frustum, public ISceneNode
+class __TWCOMExport Camera : public SceneNode
 {
 public:
     typedef std::shared_ptr<Camera> Ptr;
 
-    Camera(Viewport viewport, float32 fov, float32 near, float32 far);
-    Camera(Viewport viewport, float32 near, float32 far);
+    enum Type
+    {
+        PERSPECTIVE,
+        ORTHOGRAPHIC
+    };
+
+    Camera(Viewport viewport, float32 fov, float32 near, float32 far, Camera::Type type = PERSPECTIVE);
+    Camera(Viewport viewport, float32 near, float32 far, Camera::Type type = PERSPECTIVE);
     virtual ~Camera();
 
-    virtual void Update(float deltaTime = 0.0f);
+    virtual void Update(float deltaTime = 0.0f) override;
 
     void LookAt(glm::vec3 center, glm::vec3 up) { _transform->LookAt(center, up); }
     void SetPosition(glm::vec3 position) { _transform->SetPosition(position); }
@@ -159,20 +140,12 @@ public:
     }
 
     glm::mat4 GetViewMatrix() { return _transform->GetWorldToLocalMatrix(); }
-    const glm::mat4& GetProjectionMatrix() 
-    { 
+    const glm::mat4& GetProjectionMatrix()
+    {
         if(_viewportDirty)
         {
             _aspect = _viewport.AspectRatio();
-            if (_frustumType == FrustumType::PERSPECTIVE)
-            {
-                _projectionMatrix = glm::perspective(_fov, _aspect, _near, _far);
-            }
-            else
-            {
-                //compute frustum left\right\bottom...
-                //_projection_matrix = glm::ortho(left, right, bottom, top, near, far);
-            }
+            SetupProjection();
 
             _viewportDirty = false;
         }
@@ -189,8 +162,20 @@ public:
     int32 GetDepth() { return _sortdepth; }
 
 private:
+    void SetupProjection();
+
+private:
     Viewport _viewport;
+    glm::mat4 _projectionMatrix;
     RenderTexture::Ptr _rendertarget = nullptr;
+    Frustum::Ptr _frustum = nullptr;
+
+    float32 _fov;
+    float32 _aspect;
+    float32 _near;
+    float32 _far;
+
+    Camera::Type _type;
 
     int32 _cullingmask;
     int32 _sortdepth;

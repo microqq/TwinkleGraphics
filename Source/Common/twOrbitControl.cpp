@@ -9,8 +9,6 @@ namespace TwinkleGraphics
 {
 OrbitControl::OrbitControl(Camera::Ptr camera)
     : CameraControl(camera)
-    , _transform(nullptr)
-    , _target(nullptr)
     , _center()
     , _maxDistance(500.0f)
     , _minDistance(5.0f)
@@ -32,19 +30,12 @@ void OrbitControl::Initialize()
 {
     if(_target == nullptr)
     {
-        _transform = std::make_shared<Transform>();
+        _target = std::make_shared<SceneNode>();
     }
-    else
-    {
-        _transform = _target;
-    }
-    _camera->ResetTransform();
-    _camera->GetTransform()->SetParent(_transform);
-    // _camera->LookAt(glm::vec3(0.0f, -10.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    _camera->Translate(glm::vec3(0.0f, 0.0f, _distance));
 
-    // _transform->Translate(_center);
-    // _transform->Rotate(glm::radians<float32>(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    _target->AddChild(_camera);
+    _camera->ResetTransform();
+    _camera->Translate(glm::vec3(0.0f, 0.0f, _distance));
 }
 
 void OrbitControl::UpdateCamera()
@@ -152,8 +143,10 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
         _rotateY += theta_y * factor;
     }
 
-    _transform->SetOrientation(glm::identity<glm::quat>());
-    _transform->Rotate(glm::vec3(+_rotateY, -_rotateX, 0.0f));
+    Transform::Ptr targetTrans = _target->GetTransform();
+
+    targetTrans->SetOrientation(glm::identity<glm::quat>());
+    targetTrans->Rotate(glm::vec3(+_rotateY, -_rotateX, 0.0f));
 
     _dirty = true;
 }

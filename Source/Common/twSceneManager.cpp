@@ -18,17 +18,10 @@ void Scene::Init()
 void Scene::Update(float32 delta_time)
 {
     SortCamera();
-    Traverse();
+    TraverseScene();
 }
 
-void Scene::Render()
-{
-    for(auto camera : _cameralists)
-    {
-    }
-}
-
-void Scene::Traverse()
+void Scene::TraverseScene()
 {
 
 }

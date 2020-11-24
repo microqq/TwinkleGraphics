@@ -18,7 +18,8 @@ namespace TwinkleGraphics
 
     void FirstPersonControl::HandleKeyPress(int32 key, int32 scannode, int32 action, int32 mods)
     {
-        if (_transform != nullptr)
+        Transform::Ptr targetTrans = _target->GetTransform();
+        if (targetTrans != nullptr)
         {
             glm::mat3 rotateMat = glm::mat3_cast(_camera->GetTransform()->GetLocalToWorldOrientation());
             // glm::mat3 rotateMatInv = glm::inverse(rotateMat);
@@ -28,25 +29,25 @@ namespace TwinkleGraphics
             case 87: // GLFW_KEY_W
             {
                 vec3 zAxisOffset = (rotateMat * vec3(0.0f, 0.0f, -_stepZ));
-                _transform->Translate(zAxisOffset);
+                targetTrans->Translate(zAxisOffset);
             }
                 break;
             case 83: // GLFW_KEY_S
             {
                 vec3 zAxisOffset = (rotateMat * vec3(0.0f, 0.0f, +_stepZ));
-                _transform->Translate(zAxisOffset);
+                targetTrans->Translate(zAxisOffset);
             }
                 break;
             case 65: // GLFW_KEY_A
             {
                 vec3 xAxisOffset = (rotateMat * vec3(-_stepX, 0.0f, 0.0f));
-                _transform->Translate(xAxisOffset);
+                targetTrans->Translate(xAxisOffset);
             }
                 break;
             case 68: // GLFW_KEY_D
             {
                 vec3 xAxisOffset = (rotateMat * vec3(+_stepX, 0.0f, 0.0f));
-                _transform->Translate(xAxisOffset);
+                targetTrans->Translate(xAxisOffset);
             }
                 break;
             default:

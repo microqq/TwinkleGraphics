@@ -4,9 +4,8 @@
 namespace TwinkleGraphics
 {
 Geometry::Geometry()
-    : Object()
-    , ISceneNode(true)
-    , IRenderableObject()
+    : SceneNode(true)
+    , RenderableObject()
     , _mesh(nullptr)
 {
 }
