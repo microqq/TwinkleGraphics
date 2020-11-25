@@ -68,9 +68,13 @@ namespace TwinkleGraphics
 
     void SceneNode::Traverse()
     {
+        // Frustum culling
+
+
         for(auto node : _children)
         {
 
+            node->Traverse();
         }
     }
 

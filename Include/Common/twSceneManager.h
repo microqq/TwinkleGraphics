@@ -89,6 +89,8 @@ namespace TwinkleGraphics
 
         int32 GetCameraCount() { return _cameralists.size(); }
 
+        SceneNode::Ptr GetRootNode() { return _rootNode; }
+
     private:
         void SortCamera() 
         {

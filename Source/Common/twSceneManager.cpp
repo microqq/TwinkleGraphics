@@ -4,8 +4,12 @@ namespace TwinkleGraphics
 {
 Scene::Scene()
     : Object()
+    , _cameralists()
     , _maincamera(nullptr)
-{}
+    , _rootNode(nullptr)
+{
+    _rootNode = std::make_shared<SceneNode>();
+}
 
 Scene::~Scene()
 {
@@ -23,7 +27,7 @@ void Scene::Update(float32 delta_time)
 
 void Scene::TraverseScene()
 {
-
+    _rootNode->Traverse();
 }
 
 
