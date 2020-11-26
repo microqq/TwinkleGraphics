@@ -92,7 +92,7 @@ namespace TwinkleGraphics
         SceneNode::Ptr GetRootNode() { return _rootNode; }
 
     private:
-        void SortCamera() 
+        void SortCamera()
         {
             if(!_cameraSorted)
             {
