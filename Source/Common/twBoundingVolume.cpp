@@ -2,8 +2,12 @@
 
 namespace TwinkleGraphics
 {
-    BoundingVolume::BoundingVolume() {}    
+    AABoundingBox::AABoundingBox()
+    {}
 
-    BoundingVolume::~BoundingVolume() {}    
+    AABoundingBox::AABoundingBox(const AABoundingBox& other)
+    {}
 
+    AABoundingBox::~AABoundingBox()
+    {}
 } // namespace TwinkleGraphics

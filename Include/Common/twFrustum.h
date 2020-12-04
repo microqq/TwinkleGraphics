@@ -2,6 +2,7 @@
 #define TW_FRUSTUM_H
 
 #include <memory>
+#include "twObject.h"
 
 namespace TwinkleGraphics
 {
