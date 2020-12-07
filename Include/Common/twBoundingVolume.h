@@ -6,67 +6,84 @@
 namespace TwinkleGraphics
 {
     class AABoundingBox;
-    class OrientedBoudingBox;
+    class OrientedBoundingBox;
     class BoundingSphere;
 
-    class AABoundingBox : public Object
+    class __TWCOMExport AABoundingBox : public Object
     {
     public:
         typedef std::shared_ptr<AABoundingBox> Ptr;
 
-        AABoundingBox();
+        AABoundingBox(vec3 min, vec3 max);
         AABoundingBox(const AABoundingBox &other);
         ~AABoundingBox();
 
+        vec3 GetCenterPosition() { return (_min + _max) * 0.5f; }
+
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
-        bool Intersect(const OrientedBoudingBox &other);
+        bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
+
+    private:
+        vec3 _min;
+        vec3 _max;
+
+        friend class OrientedBoundingBox;
+        friend class BoundingSphere;
+        friend class Frustum;
     };
 
-    class OrientedBoudingBox : public Object
+    class __TWCOMExport OrientedBoundingBox : public Object
     {
     public:
-        typedef std::shared_ptr<OrientedBoudingBox> Ptr;
+        typedef std::shared_ptr<OrientedBoundingBox> Ptr;
 
-        OrientedBoudingBox();
-        OrientedBoudingBox(const OrientedBoudingBox &other);
-        ~OrientedBoudingBox();
+        OrientedBoundingBox(vec3 min, vec3 max);
+        OrientedBoundingBox(const OrientedBoundingBox &other);
+        ~OrientedBoundingBox();
+
+        vec3 GetCenterPosition() { return (_min + _max) * 0.5f; }
 
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
-        bool Intersect(const OrientedBoudingBox &other);
+        bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
+
+    private:
+        vec3 _min;
+        vec3 _max;
+
+        friend class AABoundingBox;
+        friend class BoundingSphere;
+        friend class Frustum;
     };
 
-    class BoundingSphere : public Object
+    class __TWCOMExport BoundingSphere : public Object
     {
     public:
         typedef std::shared_ptr<BoundingSphere> Ptr;
 
-        BoundingSphere();
+        BoundingSphere(vec3 center, float radius);
         BoundingSphere(const BoundingSphere &other);
         ~BoundingSphere();
 
+        vec3 GetCenterPosition() { return _center; }
+
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
-        bool Intersect(const OrientedBoudingBox &other);
+        bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
-    };
-
-    template <class T>
-    class BoundingVolume
-    {
-    public:
-        BoundingVolume(T& volume);
-        BoundingVolume(const BoundingVolume &other);
-        virtual ~BoundingVolume();
-
-        bool Intersect();
 
     private:
-        T _volume;
+        vec3 _center;
+        float _radius;
+
+        friend class OrientedBoundingBox;
+        friend class AABoundingBox;
+        friend class Frustum;
     };
+
 } // namespace TwinkleGraphics
 
 #endif

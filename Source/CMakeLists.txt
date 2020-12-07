@@ -49,6 +49,8 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Common/twRenderTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twHWBuffers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twConsoleLog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Common/twBoundingVolume.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Common/twFrustum.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Entry/twApplication.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twEventArgs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/twEventHandler.cpp

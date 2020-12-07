@@ -12,6 +12,7 @@ set(Tests_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twRingBufferTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twThreadTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twReaderTest.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twBoundingVolumeTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/main.cpp
 )
 
