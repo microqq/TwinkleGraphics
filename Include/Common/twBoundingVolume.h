@@ -14,16 +14,24 @@ namespace TwinkleGraphics
     public:
         typedef std::shared_ptr<AABoundingBox> Ptr;
 
-        AABoundingBox(vec3 min, vec3 max);
+        AABoundingBox(const vec3& min, const vec3& max);
         AABoundingBox(const AABoundingBox &other);
-        ~AABoundingBox();
+        virtual ~AABoundingBox();
 
-        vec3 GetCenterPosition() { return (_min + _max) * 0.5f; }
+        vec3 GetSize() { return _max - _min; }
+        vec3 GetCorner(int index);
+        vec3 GetCenter() { return (_min + _max) * 0.5f; }
+        void ExpandByPoint(const vec3& point);
+        void ExpandByBox(const AABoundingBox& box);
+        void ExpandByScale(const vec3& scale);
+        bool ContainPoint(const vec3& point);
 
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
+        bool Intersect(const vec3& rayOrigin, const vec3& rayNormal, float delta);
+        bool Intersect(const vec3& planeNormal, float distance);
 
     private:
         vec3 _min;
@@ -39,16 +47,18 @@ namespace TwinkleGraphics
     public:
         typedef std::shared_ptr<OrientedBoundingBox> Ptr;
 
-        OrientedBoundingBox(vec3 min, vec3 max);
+        OrientedBoundingBox(const vec3& min, const vec3& max);
         OrientedBoundingBox(const OrientedBoundingBox &other);
-        ~OrientedBoundingBox();
+        virtual ~OrientedBoundingBox();
 
-        vec3 GetCenterPosition() { return (_min + _max) * 0.5f; }
+        vec3 GetCorner(int index);
+        vec3 GetCenter() { return (_min + _max) * 0.5f; }
 
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
+        bool Intersect(const vec3& rayOrigin, const vec3& rayNormal, float delta);
 
     private:
         vec3 _min;
@@ -64,16 +74,17 @@ namespace TwinkleGraphics
     public:
         typedef std::shared_ptr<BoundingSphere> Ptr;
 
-        BoundingSphere(vec3 center, float radius);
+        BoundingSphere(const vec3 center, float radius);
         BoundingSphere(const BoundingSphere &other);
-        ~BoundingSphere();
+        virtual ~BoundingSphere();
 
-        vec3 GetCenterPosition() { return _center; }
+        vec3 GetCenter() { return _center; }
 
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
+        bool Intersect(const vec3& rayOrigin, const vec3& rayNormal, float delta);
 
     private:
         vec3 _center;
