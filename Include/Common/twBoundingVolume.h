@@ -25,13 +25,20 @@ namespace TwinkleGraphics
         void ExpandByBox(const AABoundingBox& box);
         void ExpandByScale(const vec3& scale);
         bool ContainPoint(const vec3& point);
+        void MakeEmpty();
+        bool IsEmpty();
 
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
-        bool Intersect(const vec3& rayOrigin, const vec3& rayNormal, float delta);
+        bool Intersect(const vec3& origin, const vec3& dir, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max());
         bool Intersect(const vec3& planeNormal, float distance);
+
+    private:
+        bool IntersectRay(const vec3& origin, const vec3& dir);
+        bool IntersectLine(const vec3& origin, const vec3& dir);
+        bool IntersectLineSegment(const vec3& origin, const vec3& dir, float tMin, float tMax);
 
     private:
         vec3 _min;
@@ -58,7 +65,7 @@ namespace TwinkleGraphics
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
-        bool Intersect(const vec3& rayOrigin, const vec3& rayNormal, float delta);
+        bool Intersect(const vec3& origin, const vec3& dir, float tMin, float tMax);
 
     private:
         vec3 _min;
@@ -84,7 +91,7 @@ namespace TwinkleGraphics
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
-        bool Intersect(const vec3& rayOrigin, const vec3& rayNormal, float delta);
+        bool Intersect(const vec3& origin, const vec3& dir, float tMin, float tMax);
 
     private:
         vec3 _center;
