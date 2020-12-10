@@ -37,9 +37,24 @@ namespace TwinkleGraphics
 #pragma region HashFunction // https://www.partow.net/programming/hashfunctions/#DJBHashFunction
         __TWCOMExport unsigned int DJBHash(const char *str, unsigned int length);
 #pragma endregion HashFunction
+
+
+        // __TWCOMExport void Swap(float& a, float& b);
+        // __TWCOMExport void Swap(double& a, double& b);
+        // __TWCOMExport void Swap(int& a, int& b);
+
 #ifdef __cplusplus
         }
 #endif
+
+        template <class T>
+        void Swap(T &a, T &b)
+        {
+            a = a - b;
+            b = a + b;
+            a = b - a;
+        }
+
 } // namespace TwinkleGraphics
 
 #endif

@@ -106,7 +106,7 @@ namespace TwinkleGraphics
         {
 #ifdef _DEBUG
             //std::lock_guard<std::mutex> lock(ConsoleMutex_);
-            Internal::Log(Color::WHITE, "LogInformation: ",args...);
+            Internal::Log(Color::WHITE, "Information: ",args...);
 #endif
         }
 
@@ -115,7 +115,7 @@ namespace TwinkleGraphics
         {
 #ifdef _DEBUG
             //std::lock_guard<std::mutex> lock(ConsoleMutex_);
-            Internal::Log(Color::YELLOW, "LogWarning: ", args...);
+            Internal::Log(Color::YELLOW, "Warning: ", args...);
 #endif
         }
 
@@ -124,7 +124,7 @@ namespace TwinkleGraphics
         {
 #ifdef _DEBUG
             //std::lock_guard<std::mutex> lock(ConsoleMutex_);
-            Internal::Log(Color::RED, "LogError: ", args...);
+            Internal::Log(Color::RED, "Error: ", args...);
 #endif
         }
 
@@ -134,7 +134,7 @@ namespace TwinkleGraphics
 #ifdef _DEBUG
             if(!expression)
             {
-                Internal::Log(Color::RED, "LogAssertion: ", args...);
+                Internal::Log(Color::RED, "Assertion: ", args...);
             }
 #endif                
             assert(expression);

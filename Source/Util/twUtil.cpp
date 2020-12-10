@@ -207,4 +207,5 @@ namespace TwinkleGraphics
     }
 #pragma endregion HashFunction
 
+
 } // namespace TwinkleGraphics
