@@ -16,17 +16,20 @@ namespace TwinkleGraphics
     public:
         typedef std::shared_ptr<Frustum> Ptr;
 
-        Frustum();
+        Frustum(glm::mat4& matrix);
         Frustum(const Frustum &other);
         ~Frustum();
 
+        void FromMatrix(glm::mat4& matrix);
         bool Intersect(const AABoundingBox &other);
         bool Intersect(const BoundingSphere &other);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
 
     private:
-
+        // plane: (nx, ny,nz, d);
+        // 0-5: left, right, bottom, top, near, far
+        vec4 _planes[6];
 
         friend class OrientedBoundingBox;
         friend class BoundingSphere;

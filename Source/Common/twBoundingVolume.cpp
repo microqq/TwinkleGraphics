@@ -171,24 +171,55 @@ namespace TwinkleGraphics
                 return ret;
             }
 
-            Console::LogAssert(tMin == 0.0f || tMin == -infinity, "Ray(Line) tMin has a value error.", "\n");
+            Console::LogAssert(tMin == 0.0f || tMin == -infinity, "Ray(or Line) tMin has a value error.", "\n");
 
             return false;
         }
         else
         {
-            //if segment tMin != (-infinity || inifinity), tMax != (-infinity || inifinity)
-            Console::LogAssert(tMin != infinity, "Segment tMin has a value error.", "\n");
-            Console::LogAssert(tMax != infinity, "Segment tMax has a value error.", "\n");
-            Console::LogAssert(tMin >= 0.0f && tMax > tMin, "Segment tMax should greatre than tMin.", "\n");
+            //if segment, tMin != (-infinity || inifinity), tMax != (-infinity || inifinity)
+            Console::LogAssert(tMin != infinity, "LineSegment tMin has a value error.", "\n");
+            Console::LogAssert(tMax != infinity, "LineSegment tMax has a value error.", "\n");
+            Console::LogAssert(tMin >= 0.0f && tMax > tMin, "LineSegment tMax should greatre than tMin.", "\n");
 
             return IntersectLineSegment(origin, dir, tMin, tMax, t);
         }
     }
 
-    bool AABoundingBox::Intersect(const vec3 &planeNormal, float distance)
+    /**
+     * @brief 
+     *  <<Real-Time Rendering 4th Rendering>> Chapter22: Plane and box intersection, Page 971.
+     *  (1) "One way to determine whether a box intersects a plane is to insert all the vertices
+            of the box into the plane equation"
+        (2) "The idea behind both methods is that only two of the eight corners need to be
+            inserted into the plane equation"
+        (3) "Every box has four diagonals, formed by its corners. Taking the dot product of each diagonal’s direction with the
+            plane’s normal, the largest value identifies the diagonal with these two furthest points.
+            By testing just these two corners, the box as a whole is tested against a plane"
+        (4) "Why is this equivalent to finding the maximum of the eight different half diagonals
+            projections?"
+     * @param planeNormal 
+     * @param distance 
+     * @return true 
+     * @return false
+     */
+    bool AABoundingBox::Intersect(const vec3 &planeNormal, float distance, Intersection& intersection)
     {
-        return false;
+        // Plane Equation: Dot((A, B, C), (x, y, z)) + D = 0;
+        // Compute the maximum of the eight different half diagnoals projections.
+        // How? These eight half diagonals are the combinations: gi = (±hx, ±hy, ±hz), and we want to compute gi · n for all eight i.
+        vec3 halfDiagonal((_max - _min) * 0.5f);
+        // Compute projection of half diagonals vector along with plane normal.
+        float e = glm::dot(halfDiagonal, glm::abs(planeNormal));
+        
+        // Box center to plane Distance Equation: distance = Dot(Center, Normal) + D) / Dot(Normal, Normal).
+        // if Normal normalized, Dot(Normal, Normal) == 1. So, distance = Dot(Center, Normal) + D.
+        float s = glm::dot((_max + _min) * 0.5f, planeNormal) + distance;
+
+        // <<Real-Time Rendering 4th Rendering>> Chapter22: Figure 22.18, "Assuming that the “outside” of the plane is the positive half-space"
+        intersection = (s - e > 0.0f) ? OUTSIDE : (s + e < 0.0f) ? INSIDE : INTERSECTING;
+        
+        return intersection == INTERSECTING;
     }
 
     bool AABoundingBox::IntersectRay(const vec3 &origin, const vec3 &dir, float& t)
@@ -199,7 +230,7 @@ namespace TwinkleGraphics
             if(tMax < 0.0f)
                 return false;
 
-            t = tMin > 0 ? tMin : tMax;
+            t = tMin > 0.0f ? tMin : tMax;
             return true;
         }
     }
