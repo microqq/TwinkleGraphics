@@ -1,6 +1,6 @@
 #include "twBoundingVolume.h"
 #include "twConsoleLog.h"
-#include "twUtil.h"
+#include "twComUtil.h"
 
 namespace TwinkleGraphics
 {
@@ -203,7 +203,7 @@ namespace TwinkleGraphics
      * @return true 
      * @return false
      */
-    bool AABoundingBox::Intersect(const vec3 &planeNormal, float distance, Intersection& intersection)
+    bool AABoundingBox::Intersect(const vec3 &planeNormal, float d, Intersection& intersection)
     {
         // Plane Equation: Dot((A, B, C), (x, y, z)) + D = 0;
         // Compute the maximum of the eight different half diagnoals projections.
@@ -212,9 +212,10 @@ namespace TwinkleGraphics
         // Compute projection of half diagonals vector along with plane normal.
         float e = glm::dot(halfDiagonal, glm::abs(planeNormal));
         
-        // Box center to plane Distance Equation: distance = Dot(Center, Normal) + D) / Dot(Normal, Normal).
-        // if Normal normalized, Dot(Normal, Normal) == 1. So, distance = Dot(Center, Normal) + D.
-        float s = glm::dot((_max + _min) * 0.5f, planeNormal) + distance;
+        // Box center to plane Distance Equation: distance = -Dot(Center, Normal) + D) / Dot(Normal, Normal).
+        // if Normal normalized, Dot(Normal, Normal) == 1. So, distance = -Dot(Center, Normal) - D.
+        // optimise: we use distance = -distance
+        float s = glm::dot((_max + _min) * 0.5f, planeNormal) + d;
 
         // <<Real-Time Rendering 4th Rendering>> Chapter22: Figure 22.18, "Assuming that the “outside” of the plane is the positive half-space"
         intersection = (s - e > 0.0f) ? OUTSIDE : (s + e < 0.0f) ? INSIDE : INTERSECTING;

@@ -69,7 +69,8 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twInspector.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorMenu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorWindow.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Util/twUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Util/twGeoUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Util/twComUtil.cpp
 )
 
 add_library(twGraphics SHARED ${TWGraphics_SRCs})

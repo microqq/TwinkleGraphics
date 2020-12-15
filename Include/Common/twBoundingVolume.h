@@ -40,7 +40,7 @@ namespace TwinkleGraphics
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
         bool Intersect(const vec3& origin, const vec3& dir, float& t, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max());
-        bool Intersect(const vec3& planeNormal, float distance, Intersection& intersection);
+        bool Intersect(const vec3& planeNormal, float d, Intersection& intersection);
 
     private:
         bool IntersectRay(const vec3& origin, const vec3& dir, float& t);

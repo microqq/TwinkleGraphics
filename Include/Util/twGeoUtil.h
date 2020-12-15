@@ -1,7 +1,7 @@
 
 
-#ifndef TW_UTIL_H
-#define TW_UTIL_H
+#ifndef TW_GEOUTIL_H
+#define TW_GEOUTIL_H
 
 #include "twCommon.h"
 #include "twGeometry.h"
@@ -14,7 +14,7 @@ namespace TwinkleGraphics
         {
 #endif
 
-#pragma region CreateSceneNode
+#pragma region Geometry
         __TWCOMExport Triangle *CreateTriangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2);
         __TWCOMExport Line *CreateLine(glm::vec3 *points, int32 num);
         __TWCOMExport Quad *CreateQuad(glm::vec2 size, MeshDataFlag flag = MeshDataFlag::DEFAULT);
@@ -32,28 +32,11 @@ namespace TwinkleGraphics
 
         __TWCOMExport Sprite *CreateSprite(Texture2D::Ptr tex);
         __TWCOMExport Sprite *CreateSprite1D(Texture1D::Ptr tex, glm::vec2 size);
-#pragma endregion CreateSceneNode
-
-#pragma region HashFunction // https://www.partow.net/programming/hashfunctions/#DJBHashFunction
-        __TWCOMExport unsigned int DJBHash(const char *str, unsigned int length);
-#pragma endregion HashFunction
-
-
-        // __TWCOMExport void Swap(float& a, float& b);
-        // __TWCOMExport void Swap(double& a, double& b);
-        // __TWCOMExport void Swap(int& a, int& b);
+#pragma endregion Geometry
 
 #ifdef __cplusplus
         }
 #endif
-
-        template <class T>
-        void Swap(T &a, T &b)
-        {
-            a = a - b;
-            b = a + b;
-            a = b - a;
-        }
 
 } // namespace TwinkleGraphics
 

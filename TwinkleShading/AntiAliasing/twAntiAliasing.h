@@ -11,7 +11,7 @@
 #include "twMesh.h"
 #include "twCamera.h"
 #include "twFirstPersonControl.h"
-#include "twUtil.h"
+#include "twGeoUtil.h"
 #include "twSceneManager.h"
 #include "twRenderTexture.h"
 #include "twModelReader.h"
