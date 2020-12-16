@@ -26,6 +26,7 @@ namespace TwinkleGraphics
         bool Intersect(const BoundingSphere &other, Intersection& intersection);
         bool Intersect(const OrientedBoundingBox &other);
         bool Intersect(const Frustum &other);
+        bool ContainPoint(const vec3& point);
 
     private:
 

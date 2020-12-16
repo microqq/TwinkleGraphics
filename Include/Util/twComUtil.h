@@ -38,7 +38,7 @@ namespace TwinkleGraphics
      * @param d 
      * @return float: return signed distance
      */
-    float DistanceFromPointToPlane(const vec3& point, const vec3& normal, float d)
+    float DistancePoint2Plane(const vec3& point, const vec3& normal, float d)
     {
         // line that pass through point(p): L(t) = p + n * t
         // float t = -(glm::dot(point, normal) + d) / glm::dot(normal, normal);

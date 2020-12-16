@@ -13,7 +13,8 @@ namespace TwinkleGraphics
     {
         OUTSIDE,
         INSIDE,
-        INTERSECTING
+        INTERSECTING,
+        INTERSECTING = INSIDE | INTERSECTING
     };
 
     class __TWCOMExport AABoundingBox : public Object

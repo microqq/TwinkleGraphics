@@ -54,9 +54,43 @@ namespace TwinkleGraphics
         NormalizePlane(_planes[5]);
     }
 
+    /**
+     * @brief <<Real-Time Rendering 4th Edtion>> Chapter 22:
+     *  (1) Clippling test("Its self-contained simplicity
+            lends it to efficient use in a compute shader")
+     *  (2) Plane/Box intersection: find nearest/furthest corners.
+     *  
+     * @param other 
+     * @param intersection 
+     * @return true 
+     * @return false 
+     */
     bool Frustum::Intersect(const AABoundingBox &other, Intersection& intersection)
     {
-        return false;
+        //use method (2)
+        vec3 halfDiagonal = (other._max - other._min) * 0.5f;
+        vec3 n;
+        intersection = INSIDE;
+        for(int i = 0; i < 6; i++)
+        {
+            vec3 diagonal;
+
+            n.x = _planes[i].x;
+            n.y = _planes[i].y;
+            n.z = _planes[i].z;
+            float d = _planes[i].w;
+
+            if(n.x < 0.0f)
+                diagonal.x = -halfDiagonal.x;
+            if(n.y < 0.0f)
+                diagonal.y = -halfDiagonal.y;
+            if(n.z < 0.0f)
+                diagonal.z = -halfDiagonal.z;
+
+            diagonal = (other._min + other._max +diagonal) * 0.5f;
+        }
+
+        return true;
     }
 
     bool Frustum::Intersect(const BoundingSphere &other, Intersection& intersection)
@@ -68,7 +102,7 @@ namespace TwinkleGraphics
             vec3 n(_planes[i].x, _planes[i].y, _planes[i].z);
             float d = _planes[i].w;
 
-            float distance = DistanceFromPointToPlane(center, n, d);
+            float distance = DistancePoint2Plane(center, n, d);
             if(distance > radius)
             {
                 intersection = OUTSIDE;
@@ -87,13 +121,45 @@ namespace TwinkleGraphics
         return true;
     }
 
+    /**
+     * @brief <<Real-Time Rendering 4th Edtion>> Chapter 22:
+     *  (1) Clippling test
+     *  (2) Plane/Box intersection: find nearest/furthest corners.
+     * 
+     * @param other 
+     * @return true 
+     * @return false 
+     */
     bool Frustum::Intersect(const OrientedBoundingBox &other)
     {
-        return false;
+       //use method (3)
+ 
+         return false;
     }
 
     bool Frustum::Intersect(const Frustum &other)
     {
         return false;
+    }
+
+    bool Frustum::ContainPoint(const vec3 &point)
+    {
+        vec3 n;
+        float d;
+        for(int i = 0; i < 6; i++)
+        {
+            n.x = _planes[i].x;
+            n.y = _planes[i].y;
+            n.z = _planes[i].z;
+            d = _planes[i].w;
+
+            float distance = glm::dot(n, point) + d;
+            if(distance < 0.0f)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }; // namespace TwinkleGraphics
