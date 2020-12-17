@@ -119,6 +119,15 @@ namespace TwinkleGraphics
         virtual void Destroy() = 0;
     };
 
+    enum Intersection
+    {
+        OUTSIDE,
+        INSIDE,
+        INTERSECTING,
+        INTERSECT = INSIDE | INTERSECTING
+    };
+
+
     __TWCOMExport extern std::vector<std::string> GLExtensions;
     __TWCOMExport extern bool CheckSupportExtension(std::string exention);
 

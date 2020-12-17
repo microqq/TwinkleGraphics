@@ -10,7 +10,6 @@ namespace TwinkleGraphics
     class AABoundingBox;
     class OrientedBoundingBox;
     class BoundingSphere;
-    enum Intersection;
 
     class __TWCOMExport Frustum : public Object
     {
@@ -22,11 +21,10 @@ namespace TwinkleGraphics
         ~Frustum();
 
         void FromMatrix(glm::mat4& matrix);
-        bool Intersect(const AABoundingBox &other, Intersection& intersection);
-        bool Intersect(const BoundingSphere &other, Intersection& intersection);
-        bool Intersect(const OrientedBoundingBox &other);
-        bool Intersect(const Frustum &other);
-        bool ContainPoint(const vec3& point);
+        bool Intersect(const AABoundingBox &other, Intersection& intersection) const;
+        bool Intersect(const BoundingSphere &other, Intersection& intersection) const;
+        bool Intersect(const OrientedBoundingBox &other) const;
+        bool ContainPoint(const vec3& point) const;
 
     private:
 

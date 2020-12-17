@@ -25,7 +25,7 @@ namespace TwinkleGraphics
      * @param index 
      * @return vec3 
      */
-    vec3 AABoundingBox::GetCorner(int index)
+    vec3 AABoundingBox::GetCorner(int index) const
     {
         assert(index >= 0 && index <= 7);
 
@@ -77,25 +77,25 @@ namespace TwinkleGraphics
         _max = center + expandedSize;
     }
 
-    bool AABoundingBox::ContainPoint(const vec3 &point)
+    bool AABoundingBox::ContainPoint(const vec3 &point) const
     {
         return _max.x >= point.x && _min.x <= point.x &&
                _max.y >= point.y && _min.y <= point.y &&
                _max.z >= point.z && _min.z <= point.z;
     }
 
-    void AABoundingBox::MakeEmpty()
+    void AABoundingBox::MarkEmpty()
     {
         float const infinity = std::numeric_limits<float>::max();
         _min = _max = vec3(infinity, infinity, infinity);
     }
 
-    bool AABoundingBox::IsEmpty()
+    bool AABoundingBox::IsEmpty() const
     {
         return _max == _min;
     }
 
-    bool AABoundingBox::Intersect(const AABoundingBox &other)
+    bool AABoundingBox::Intersect(const AABoundingBox &other) const
     {
         // Console::LogAssert(0, "intersect error.");
 
@@ -107,7 +107,7 @@ namespace TwinkleGraphics
                _min.z <= other._max.z;
     }
 
-    bool AABoundingBox::Intersect(const BoundingSphere &other)
+    bool AABoundingBox::Intersect(const BoundingSphere &other) const
     {
         vec3 o1 = GetCenter();
         vec3 o2 = other._center;
@@ -119,14 +119,17 @@ namespace TwinkleGraphics
         return ContainPoint(p);
     }
 
-    bool AABoundingBox::Intersect(const OrientedBoundingBox &other)
+    bool AABoundingBox::Intersect(const OrientedBoundingBox &other) const
     {
         return false;
     }
 
-    bool AABoundingBox::Intersect(const Frustum &other)
+    bool AABoundingBox::Intersect(const Frustum &other, Intersection& intersection) const
     {
-        return false;
+        bool ret = other.Intersect(*this, intersection);
+        if(ret)
+            intersection = INTERSECT;
+        return ret;
     }
 
     /**
@@ -139,7 +142,7 @@ namespace TwinkleGraphics
      * @return true 
      * @return false 
      */
-    bool AABoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float& t, float tMin, float tMax)
+    bool AABoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float& t, float tMin, float tMax) const
     {
         float const infinity = std::numeric_limits<float>::max();
 
@@ -203,7 +206,7 @@ namespace TwinkleGraphics
      * @return true 
      * @return false
      */
-    bool AABoundingBox::Intersect(const vec3 &planeNormal, float d, Intersection& intersection)
+    bool AABoundingBox::Intersect(const vec3 &planeNormal, float d, Intersection& intersection) const
     {
         // Plane Equation: Dot((A, B, C), (x, y, z)) + D = 0;
         // Compute the maximum of the eight different half diagnoals projections.
@@ -223,7 +226,7 @@ namespace TwinkleGraphics
         return intersection == INTERSECTING;
     }
 
-    bool AABoundingBox::IntersectRay(const vec3 &origin, const vec3 &dir, float& t)
+    bool AABoundingBox::IntersectRay(const vec3 &origin, const vec3 &dir, float& t) const
     {
         float tMin, tMax;
         if(IntersectLine(origin, dir, tMin, tMax))
@@ -236,7 +239,7 @@ namespace TwinkleGraphics
         }
     }
 
-    bool AABoundingBox::IntersectLine(const vec3 &origin, const vec3 &dir, float& t1, float t2)
+    bool AABoundingBox::IntersectLine(const vec3 &origin, const vec3 &dir, float& t1, float t2) const
     {
         // line equation: Ray = o + t * n;
         // line intersect with box at p: o.x + t * n.x = p.x;
@@ -297,7 +300,7 @@ namespace TwinkleGraphics
         return true;
     }
 
-    bool AABoundingBox::IntersectLineSegment(const vec3 &origin, const vec3 &dir, float tMin, float tMax, float& t)
+    bool AABoundingBox::IntersectLineSegment(const vec3 &origin, const vec3 &dir, float tMin, float tMax, float& t) const
     {
         float t1, t2;
         if(IntersectLine(origin, dir, t1, t2))
@@ -338,31 +341,31 @@ namespace TwinkleGraphics
     {
     }
 
-    vec3 OrientedBoundingBox::GetCorner(int index)
+    vec3 OrientedBoundingBox::GetCorner(int index) const
     {
     }
 
-    bool OrientedBoundingBox::Intersect(const AABoundingBox &other)
-    {
-        return false;
-    }
-
-    bool OrientedBoundingBox::Intersect(const BoundingSphere &other)
+    bool OrientedBoundingBox::Intersect(const AABoundingBox &other) const
     {
         return false;
     }
 
-    bool OrientedBoundingBox::Intersect(const OrientedBoundingBox &other)
+    bool OrientedBoundingBox::Intersect(const BoundingSphere &other) const
     {
         return false;
     }
 
-    bool OrientedBoundingBox::Intersect(const Frustum &other)
+    bool OrientedBoundingBox::Intersect(const OrientedBoundingBox &other) const
     {
         return false;
     }
 
-    bool OrientedBoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax)
+    bool OrientedBoundingBox::Intersect(const Frustum &other) const
+    {
+        return false;
+    }
+
+    bool OrientedBoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax) const
     {
         return false;
     }
@@ -388,29 +391,86 @@ namespace TwinkleGraphics
     {
     }
 
-    bool BoundingSphere::Intersect(const AABoundingBox &other)
+    void BoundingSphere::ExpandByPoint(const vec3 &point)
+    {
+        if(ContainPoint(point))
+            return;
+        
+        float dist = DistancePoint2Point(_center, point);
+        _radius = dist;
+    }
+
+    bool BoundingSphere::ContainPoint(const vec3 &point) const
+    {
+        float squareDist = SquareDistancePoint2Point(_center, point);
+        return squareDist < _radius * _radius;
+    }
+
+    bool BoundingSphere::Intersect(const AABoundingBox &other) const
+    {
+        bool ret = other.Intersect(*this);
+        return ret;
+    }
+
+    bool BoundingSphere::Intersect(const BoundingSphere &other) const
+    {
+        float squareR = _radius + other._radius;
+        squareR = squareR * squareR;
+
+        return SquareDistancePoint2Point(_center, other._center) < squareR;
+    }
+
+    bool BoundingSphere::Intersect(const OrientedBoundingBox &other) const
     {
         return false;
     }
 
-    bool BoundingSphere::Intersect(const BoundingSphere &other)
+    bool BoundingSphere::Intersect(const Frustum &other, Intersection& intersection) const
     {
-        return false;
+        bool ret = other.Intersect(*this, intersection);
+        if(ret)
+            intersection = INTERSECT;
+        return ret;
     }
 
-    bool BoundingSphere::Intersect(const OrientedBoundingBox &other)
+    bool BoundingSphere::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax) const
     {
-        return false;
-    }
+        float const infinity = std::numeric_limits<float>::max();
 
-    bool BoundingSphere::Intersect(const Frustum &other)
-    {
-        return false;
-    }
+        // line equation: Ray = o + t * n;
+        vec3 intersectPoint;
+        float squareDist = SquareDistancePoint2Line(_center, origin, dir, intersectPoint);
+        float squareR = _radius * _radius;
+        if(squareDist > squareR)
+            return false;
 
-    bool BoundingSphere::Intersect(const vec3 &origin, const vec3 &dir, float& t, float tMin, float tMax)
-    {
-        return false;
-    }
+        if (tMax == infinity)
+        {
+            Console::LogAssert(tMin == 0.0f || tMin == -infinity, "Ray(or Line) tMin has a value error.", "\n");
 
+            //if ray, tMin == 0.0f, tMax == infinity
+            if (tMin == 0.0f)
+            {
+                float t;
+                if (dir.x != 0.0f)
+                    t = (intersectPoint.x - origin.x) / dir.x;
+                else if (dir.y != 0.0f)
+                    t = (intersectPoint.y - origin.y) / dir.y;
+                else
+                    t = (intersectPoint.z - origin.z) / dir.z;
+
+                return t >= 0.0f;
+            }
+
+            //if line, tMin == -infinity, tMax == inifinity
+            return true;
+        }
+        else
+        {
+            //if segment, tMin != (-infinity || inifinity), tMax != (-infinity || inifinity)
+            Console::LogAssert(tMin != infinity && tMax != infinity && tMin >= 0.0f && tMax > tMin, "LineSegment tMin/tMax has a value error.", "\n");
+        }
+
+        return true;
+    }
 } // namespace TwinkleGraphics

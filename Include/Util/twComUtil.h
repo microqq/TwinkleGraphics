@@ -38,27 +38,54 @@ namespace TwinkleGraphics
      * @param d 
      * @return float: return signed distance
      */
-    float DistancePoint2Plane(const vec3& point, const vec3& normal, float d)
-    {
-        // line that pass through point(p): L(t) = p + n * t
-        // float t = -(glm::dot(point, normal) + d) / glm::dot(normal, normal);
-        // optimize: we use t = -t;
-        float t = glm::dot(point, normal) + d;
-        return t;
-    }
+    float DistancePoint2Plane(const vec3& point, const vec3& normal, float d);
+
+    /**
+     * @brief 
+     * 
+     * @param p1 
+     * @param p2 
+     * @return float 
+     */
+    float DistancePoint2Point(const vec3& p1, const vec3& p2);
+
+    /**
+     * @brief 
+     * 
+     * @param p1 
+     * @param p2 
+     * @return float 
+     */
+    float SquareDistancePoint2Point(const vec3& p1, const vec3& p2);
+
+    /**
+     * @brief 
+     * 
+     * @param point 
+     * @param origin 
+     * @param dir: normalized direction
+     * @param intersectPoint 
+     * @return float 
+     */
+    float DistancePoint2Line(const vec3& point, const vec3& origin, const vec3& dir, vec3& intersectPoint);
+
+    /**
+     * @brief 
+     * 
+     * @param point 
+     * @param origin 
+     * @param dir 
+     * @param intersectPoint 
+     * @return float 
+     */
+    float SquareDistancePoint2Line(const vec3& point, const vec3& origin, const vec3& dir, vec3& intersectPoint);
 
     /**
      * @brief 
      * 
      * @param plane 
      */
-    void NormalizePlane(vec4& plane)
-    {
-        vec3 n(plane.x, plane.y, plane.z);
-        float mag = glm::length(n);
-
-        plane = plane / mag;
-    }
+    void NormalizePlane(vec4& plane);
 
 
 } // namespace TwinkleGraphics

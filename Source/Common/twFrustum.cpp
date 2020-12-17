@@ -60,40 +60,48 @@ namespace TwinkleGraphics
             lends it to efficient use in a compute shader")
      *  (2) Plane/Box intersection: find nearest/furthest corners.
      *  
+     *  it's inaccurate frustum/aabb intersection, 
+     *  eg: https://www.iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
+     * 
      * @param other 
      * @param intersection 
      * @return true 
      * @return false 
      */
-    bool Frustum::Intersect(const AABoundingBox &other, Intersection& intersection)
+    bool Frustum::Intersect(const AABoundingBox &other, Intersection& intersection) const
     {
-        //use method (2)
-        vec3 halfDiagonal = (other._max - other._min) * 0.5f;
-        vec3 n;
-        intersection = INSIDE;
         for(int i = 0; i < 6; i++)
         {
-            vec3 diagonal;
+            // 
+            float furthest = glm::max(_planes[i].x * other._min.x, _planes[i].x * other._max.x) +
+            glm::max(_planes[i].y * other._min.y, _planes[i].y * other._max.y) +
+            glm::max(_planes[i].z * other._min.z, _planes[i].z * other._max.z) +
+            _planes[i].w;
 
-            n.x = _planes[i].x;
-            n.y = _planes[i].y;
-            n.z = _planes[i].z;
-            float d = _planes[i].w;
+            if(furthest > 0.0f)
+            {
+                intersection = INSIDE;
+                continue;
+            }
 
-            if(n.x < 0.0f)
-                diagonal.x = -halfDiagonal.x;
-            if(n.y < 0.0f)
-                diagonal.y = -halfDiagonal.y;
-            if(n.z < 0.0f)
-                diagonal.z = -halfDiagonal.z;
+            float nearest = glm::min(_planes[i].x * other._min.x, _planes[i].x * other._max.x) +
+            glm::min(_planes[i].y * other._min.y, _planes[i].y * other._max.y) +
+            glm::min(_planes[i].z * other._min.z, _planes[i].z * other._max.z) +
+            _planes[i].w;
 
-            diagonal = (other._min + other._max +diagonal) * 0.5f;
+            if(nearest > 0.0f)
+            {
+                intersection = OUTSIDE;
+                return false;
+            }
+
+            intersection = INTERSECTING;
         }
 
         return true;
     }
 
-    bool Frustum::Intersect(const BoundingSphere &other, Intersection& intersection)
+    bool Frustum::Intersect(const BoundingSphere &other, Intersection& intersection) const
     {
         vec3 center = other._center;
         float radius = other._radius;
@@ -103,13 +111,13 @@ namespace TwinkleGraphics
             float d = _planes[i].w;
 
             float distance = DistancePoint2Plane(center, n, d);
-            if(distance > radius)
+            if(distance > 0.0f && distance > radius)
             {
                 intersection = OUTSIDE;
                 return false;
             }
 
-            if(-distance > radius)
+            if(distance < 0.0f && -distance >= radius)
             {
                 intersection = INSIDE;
                 continue;
@@ -130,19 +138,13 @@ namespace TwinkleGraphics
      * @return true 
      * @return false 
      */
-    bool Frustum::Intersect(const OrientedBoundingBox &other)
+    bool Frustum::Intersect(const OrientedBoundingBox &other) const
     {
-       //use method (3)
  
          return false;
     }
 
-    bool Frustum::Intersect(const Frustum &other)
-    {
-        return false;
-    }
-
-    bool Frustum::ContainPoint(const vec3 &point)
+    bool Frustum::ContainPoint(const vec3 &point) const
     {
         vec3 n;
         float d;
