@@ -54,11 +54,35 @@ namespace TwinkleGraphics
         NormalizePlane(_planes[5]);
     }
 
+    bool Frustum::ContainPoint(const vec3 &point) const
+    {
+        vec3 n;
+        float d;
+        for(int i = 0; i < 6; i++)
+        {
+            n.x = _planes[i].x;
+            n.y = _planes[i].y;
+            n.z = _planes[i].z;
+            d = _planes[i].w;
+
+            float dist = glm::dot(n, point) + d;
+            if(dist < 0.0f)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     /**
      * @brief <<Real-Time Rendering 4th Edtion>> Chapter 22:
+     *  http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-testing-boxes-ii/
+     * 
      *  (1) Clippling test("Its self-contained simplicity
             lends it to efficient use in a compute shader")
-     *  (2) Plane/Box intersection: find nearest/furthest corners.
+     *  (2) Plane/Box intersection: find the most positive/negative corners.
      *  
      *  it's inaccurate frustum/aabb intersection, 
      *  eg: https://www.iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
@@ -73,23 +97,23 @@ namespace TwinkleGraphics
         for(int i = 0; i < 6; i++)
         {
             // 
-            float furthest = glm::max(_planes[i].x * other._min.x, _planes[i].x * other._max.x) +
+            float positive = glm::max(_planes[i].x * other._min.x, _planes[i].x * other._max.x) +
             glm::max(_planes[i].y * other._min.y, _planes[i].y * other._max.y) +
             glm::max(_planes[i].z * other._min.z, _planes[i].z * other._max.z) +
             _planes[i].w;
 
-            if(furthest > 0.0f)
+            if(positive > 0.0f)
             {
                 intersection = INSIDE;
                 continue;
             }
 
-            float nearest = glm::min(_planes[i].x * other._min.x, _planes[i].x * other._max.x) +
+            float negative = glm::min(_planes[i].x * other._min.x, _planes[i].x * other._max.x) +
             glm::min(_planes[i].y * other._min.y, _planes[i].y * other._max.y) +
             glm::min(_planes[i].z * other._min.z, _planes[i].z * other._max.z) +
             _planes[i].w;
 
-            if(nearest > 0.0f)
+            if(negative > 0.0f)
             {
                 intersection = OUTSIDE;
                 return false;
@@ -110,14 +134,14 @@ namespace TwinkleGraphics
             vec3 n(_planes[i].x, _planes[i].y, _planes[i].z);
             float d = _planes[i].w;
 
-            float distance = DistancePoint2Plane(center, n, d);
-            if(distance > 0.0f && distance > radius)
+            float dist = DistancePoint2Plane(center, n, d);
+            if(dist > 0.0f && dist > radius)
             {
                 intersection = OUTSIDE;
                 return false;
             }
 
-            if(distance < 0.0f && -distance >= radius)
+            if(dist < 0.0f && -dist >= radius)
             {
                 intersection = INSIDE;
                 continue;
@@ -130,38 +154,99 @@ namespace TwinkleGraphics
     }
 
     /**
-     * @brief <<Real-Time Rendering 4th Edtion>> Chapter 22:
+     * @brief <<Real-Time Rendering 4th Edtion>> Chapter 22.
+     *  http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-testing-boxes-ii/
+     * 
      *  (1) Clippling test
-     *  (2) Plane/Box intersection: find nearest/furthest corners.
+     *  (2) Plane/Box intersection: find the most positive/negative corners.
+     * 
      * 
      * @param other 
      * @return true 
      * @return false 
      */
-    bool Frustum::Intersect(const OrientedBoundingBox &other) const
+    bool Frustum::Intersect(const OrientedBoundingBox &other, Intersection& intersection) const
     {
- 
-         return false;
-    }
-
-    bool Frustum::ContainPoint(const vec3 &point) const
-    {
-        vec3 n;
-        float d;
         for(int i = 0; i < 6; i++)
         {
-            n.x = _planes[i].x;
-            n.y = _planes[i].y;
-            n.z = _planes[i].z;
-            d = _planes[i].w;
+            vec3 planeNormal(_planes[i].x, _planes[i].y, _planes[i].z);
+            float projX = glm::dot(planeNormal, other._axis[0]);
+            float projY = glm::dot(planeNormal, other._axis[1]);
+            float projZ = glm::dot(planeNormal, other._axis[2]);
 
-            float distance = glm::dot(n, point) + d;
-            if(distance < 0.0f)
+            vec3 negativePoint = other._extents, positivePoint = -other._extents;
+            if(projX > 0.0f)
             {
+                negativePoint.x = -other._extents.x;
+                positivePoint.x = other._extents.x;
+            }
+
+            if(projY > 0.0f)
+            {
+                negativePoint.y = -other._extents.y;
+                positivePoint.y = other._extents.y;
+            }
+
+            if(projZ > 0.0f)
+            {
+                negativePoint.z = -other._extents.z;
+                positivePoint.z = other._extents.z;
+            }
+
+            negativePoint += other._center;
+            positivePoint += other._center;
+
+            float positive = DistancePoint2Plane(positivePoint, _planes[i]);
+            if(positive < 0.0f)
+            {
+                intersection = INSIDE;
+                continue;
+            }
+
+            float negative = DistancePoint2Plane(negativePoint, _planes[i]);
+            if(negative < 0.0f)
+            {
+                intersection = OUTSIDE;
                 return false;
             }
+            
+            intersection = INTERSECTING;
         }
 
         return true;
     }
+
+    bool Frustum::Intersect(const vec3 &origin, const vec3 &dir, float &t, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max()) const
+    {
+        return false;
+    }
+
+    bool Frustum::Intersect(const vec3 &planeNormal, float d, Intersection &intersection) const
+    {
+        return false;
+    }
+
+
+#pragma region Privates
+    float Frustum::GetMostPositive(const vec3 &p1, const vec3 &p2, const vec4& plane)
+    {
+        float positive = glm::max(plane.x * p1.x, plane.x * p2.x) +
+                         glm::max(plane.y * p1.y, plane.y * p2.y) +
+                         glm::max(plane.z * p1.z, plane.z * p2.z) +
+                         plane.w;
+
+        return positive;
+    }
+
+    float Frustum::GetMostNegative(const vec3 &p1, const vec3 &p2, const vec4& plane)
+    {
+        float negative = glm::min(plane.x * p1.x, plane.x * p2.x) +
+                        glm::min(plane.y * p1.y, plane.y * p2.y) +
+                        glm::min(plane.z * p1.z, plane.z * p2.z) +
+                        plane.w;
+
+        return negative;
+    }
+#pragma endregion Privates
+
 }; // namespace TwinkleGraphics

@@ -124,14 +124,6 @@ namespace TwinkleGraphics
         return false;
     }
 
-    bool AABoundingBox::Intersect(const Frustum &other, Intersection& intersection) const
-    {
-        bool ret = other.Intersect(*this, intersection);
-        if(ret)
-            intersection = INTERSECT;
-        return ret;
-    }
-
     /**
      * @brief 
      * <<Real-Time Rendering 4th editon>> Chapter22: Kay and Kajiya’s slab method
@@ -327,8 +319,11 @@ namespace TwinkleGraphics
 
 
 
-    OrientedBoundingBox::OrientedBoundingBox()
+    OrientedBoundingBox::OrientedBoundingBox(const vec3& center, const std::array<vec3, 3>& axis, const vec3& extents)
         : Object()
+        , _center(center)
+        , _axis(axis)
+        , _extents(extents)
     {
     }
 
@@ -341,15 +336,6 @@ namespace TwinkleGraphics
     {
     }
 
-    vec3 OrientedBoundingBox::GetCorner(int index) const
-    {
-    }
-
-    bool OrientedBoundingBox::Intersect(const AABoundingBox &other) const
-    {
-        return false;
-    }
-
     bool OrientedBoundingBox::Intersect(const BoundingSphere &other) const
     {
         return false;
@@ -360,10 +346,11 @@ namespace TwinkleGraphics
         return false;
     }
 
-    bool OrientedBoundingBox::Intersect(const Frustum &other) const
+    bool OrientedBoundingBox::Intersect(const vec3 &planeNormal, float d, Intersection& intersection) const
     {
-        return false;
+
     }
+
 
     bool OrientedBoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax) const
     {
@@ -406,12 +393,6 @@ namespace TwinkleGraphics
         return squareDist < _radius * _radius;
     }
 
-    bool BoundingSphere::Intersect(const AABoundingBox &other) const
-    {
-        bool ret = other.Intersect(*this);
-        return ret;
-    }
-
     bool BoundingSphere::Intersect(const BoundingSphere &other) const
     {
         float squareR = _radius + other._radius;
@@ -420,17 +401,10 @@ namespace TwinkleGraphics
         return SquareDistancePoint2Point(_center, other._center) < squareR;
     }
 
-    bool BoundingSphere::Intersect(const OrientedBoundingBox &other) const
+    bool BoundingSphere::Intersect(const vec3 &normal, float d)
     {
-        return false;
-    }
-
-    bool BoundingSphere::Intersect(const Frustum &other, Intersection& intersection) const
-    {
-        bool ret = other.Intersect(*this, intersection);
-        if(ret)
-            intersection = INTERSECT;
-        return ret;
+        float dist = DistancePoint2Plane(_center, vec4(normal, d));
+        return dist <= _radius;
     }
 
     bool BoundingSphere::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax) const

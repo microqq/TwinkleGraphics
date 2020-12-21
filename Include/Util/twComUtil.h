@@ -43,6 +43,25 @@ namespace TwinkleGraphics
     /**
      * @brief 
      * 
+     * @param point 
+     * @param plane 
+     * @return float 
+     */
+    float DistancePoint2Plane(const vec3& point, const vec4& plane);
+
+    /**
+     * @brief 
+     * 
+     * @param point 
+     * @param plane 
+     * @return float 
+     */
+    float SquareDistancePoint2Plane(const vec3& point, const vec4& plane);
+
+
+    /**
+     * @brief 
+     * 
      * @param p1 
      * @param p2 
      * @return float 

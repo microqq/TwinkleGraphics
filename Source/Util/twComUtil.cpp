@@ -26,6 +26,20 @@ namespace TwinkleGraphics
         return t;
     }
 
+    float DistancePoint2Plane(const vec3& point, const vec4& plane)
+    {
+        vec3 normal(plane.x, plane.y, plane.z);
+        return DistancePoint2Plane(point, normal, plane.w);
+    }
+
+
+    float SquareDistancePoint2Plane(const vec3& point, const vec4& plane)
+    {
+        // line: L(t) = o + n * t;
+        float dist = DistancePoint2Plane(point, plane);
+        return dist * dist;
+    }
+
 
     float DistancePoint2Point(const vec3& p1, const vec3& p2)
     {

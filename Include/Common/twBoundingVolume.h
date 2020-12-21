@@ -1,6 +1,8 @@
 #ifndef TW_BOUNDINGVOLUME_H
 #define TW_BOUNDINGVOLUME_H
 
+#include <array>
+
 #include "twFrustum.h"
 
 namespace TwinkleGraphics
@@ -31,8 +33,27 @@ namespace TwinkleGraphics
         bool Intersect(const AABoundingBox &other) const;
         bool Intersect(const BoundingSphere &other) const;
         bool Intersect(const OrientedBoundingBox &other) const;
-        bool Intersect(const Frustum &other, Intersection& intersection) const;
+        /**
+         * @brief Intersect with ray/line/line segment
+         * 
+         * @param origin 
+         * @param dir 
+         * @param t 
+         * @param tMin 
+         * @param tMax 
+         * @return true 
+         * @return false 
+         */
         bool Intersect(const vec3& origin, const vec3& dir, float& t, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max()) const;
+        /**
+         * @brief Intersect with plane
+         * 
+         * @param planeNormal 
+         * @param d 
+         * @param intersection 
+         * @return true 
+         * @return false 
+         */
         bool Intersect(const vec3& planeNormal, float d, Intersection& intersection) const;
 
     private:
@@ -54,25 +75,41 @@ namespace TwinkleGraphics
     public:
         typedef std::shared_ptr<OrientedBoundingBox> Ptr;
 
-        OrientedBoundingBox();
+        OrientedBoundingBox(const vec3& center, const std::array<vec3, 3>& axis, const vec3& extents);
         OrientedBoundingBox(const OrientedBoundingBox &other);
         virtual ~OrientedBoundingBox();
 
-        vec3 GetCorner(int index) const;
         vec3 GetCenter() const { return _center; }
-        vec3 GetSize() const { return _size; }
-        glm::quat GetOrientation() const { return _orientation; }
+        vec3 GetSize() const { return _extents; }
 
-        bool Intersect(const AABoundingBox &other) const;
         bool Intersect(const BoundingSphere &other) const;
         bool Intersect(const OrientedBoundingBox &other) const;
-        bool Intersect(const Frustum &other) const;
+        /**
+         * @brief Intersect with plane
+         * 
+         * @param planeNormal 
+         * @param d 
+         * @param intersection 
+         * @return true 
+         * @return false 
+         */
+        bool Intersect(const vec3 &planeNormal, float d, Intersection& intersection) const;
+        /**
+         * @brief Intersect with ray/line/line segment
+         * 
+         * @param origin 
+         * @param dir 
+         * @param tMin 
+         * @param tMax 
+         * @return true 
+         * @return false 
+         */
         bool Intersect(const vec3& origin, const vec3& dir, float tMin, float tMax) const;
 
     private:
+        std::array<vec3, 3> _axis;
         vec3 _center;
-        vec3 _size;
-        glm::quat _orientation;
+        vec3 _extents;
 
         friend class AABoundingBox;
         friend class BoundingSphere;
@@ -93,10 +130,27 @@ namespace TwinkleGraphics
         void ExpandByPoint(const vec3& point);
         bool ContainPoint(const vec3& point) const;
 
-        bool Intersect(const AABoundingBox &other) const;
         bool Intersect(const BoundingSphere &other) const;
-        bool Intersect(const OrientedBoundingBox &other) const;
-        bool Intersect(const Frustum &other, Intersection& intersection) const;
+        /**
+         * @brief Intersect with plane
+         * 
+         * @param normal 
+         * @param d 
+         * @return true 
+         * @return false 
+         */
+        bool Intersect(const vec3& normal, float d);
+
+        /**
+         * @brief Intersect with ray/line/line segment
+         * 
+         * @param origin 
+         * @param dir 
+         * @param tMin 
+         * @param tMax 
+         * @return true 
+         * @return false 
+         */
         bool Intersect(const vec3& origin, const vec3& dir, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max()) const;
 
     private:
