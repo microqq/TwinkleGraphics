@@ -216,7 +216,7 @@ namespace TwinkleGraphics
         return true;
     }
 
-    bool Frustum::Intersect(const vec3 &origin, const vec3 &dir, float &t, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max()) const
+    bool Frustum::Intersect(const vec3 &origin, const vec3 &dir, float &t, float tMin, float tMax) const
     {
         return false;
     }

@@ -169,7 +169,7 @@ void AntiAliasingView::OnGUI()
 void AntiAliasingView::Select3DModel()
 {
     ImGui::Begin(u8"选择模型");
-    FileDialogPanel(".obj,.OBJ,.fbx,.FBX,.3ds,.3DS,.gsm,.GSM,.lwo,.LWO,.meshdata,.MESHDATA,.geo,.GEO", _selectFileInfo);
+    FileDialogPanel(".obj,.OBJ,.fbx,.FBX,.3ds,.3DS,.gltf", _selectFileInfo);
     if(_selectFileInfo.selectChanged)
     {
         AntiAliasingScene *scene = dynamic_cast<AntiAliasingScene *>(_scene.get());

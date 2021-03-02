@@ -1,4 +1,3 @@
-
 #include <map>
 
 #include "twModelReader.h"
@@ -433,7 +432,7 @@ namespace TwinkleGraphics
         {
             aiString str;
             mat->GetTexture(type, i, &str);
-            
+
             // int32 a = 5;
             // if(std::string(str.C_Str()).find("sponza_arch_diff") && type == aiTextureType_DIFFUSE)
             // {
