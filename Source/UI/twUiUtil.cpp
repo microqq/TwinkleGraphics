@@ -4,8 +4,6 @@
 
 namespace TwinkleGraphics
 {
-    FileDialogSelectInfo SceneNodeFileSelectInfo;
-
     void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo)
     {
         // https://github.com/aiekick/ImGuiFileDialog
@@ -60,26 +58,6 @@ namespace TwinkleGraphics
                 if (ImGui::MenuItem("SceneNode Empty"))
                 {
                 }
-                // if (ImGui::MenuItem("SceneNode From File..."))
-                // {
-                //     const char* extensionFilter = ".obj,.OBJ,.fbx,.FBX,.3ds,.3DS,.gsm,.GSM,.lwo,.LWO,.meshdata,.MESHDATA,.geo,.GEO";
-                //     igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", extensionFilter, ".");
-                // }
-
-                // // display
-                // if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey"))
-                // {
-                //     // action if OK
-                //     if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-                //     {
-                //         SceneNodeFileSelectInfo.filePathName = igfd::ImGuiFileDialog::Instance()->GetFilepathName();
-                //         SceneNodeFileSelectInfo.filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
-                //         SceneNodeFileSelectInfo.fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
-                //         // action
-                //     }
-                //     // close
-                //     igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-                // }
 
                 if (ImGui::MenuItem("3D Object"))
                 {

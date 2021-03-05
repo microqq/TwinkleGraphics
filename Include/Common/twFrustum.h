@@ -26,26 +26,14 @@ namespace TwinkleGraphics
         bool Intersect(const AABoundingBox &other, Intersection& intersection) const;
         bool Intersect(const BoundingSphere &other, Intersection& intersection) const;
         bool Intersect(const OrientedBoundingBox &other, Intersection& intersection) const;
+
         /**
          * @brief Intersect with ray/line/line segment
-         * 
-         * @param origin 
-         * @param dir 
-         * @param t 
-         * @param tMin 
-         * @param tMax 
-         * @return true 
-         * @return false 
          */
         bool Intersect(const vec3& origin, const vec3& dir, float& t, float tMin = 0.0f, float tMax = std::numeric_limits<float>::max()) const;
+
         /**
          * @brief Intersect with plane
-         * 
-         * @param planeNormal 
-         * @param d 
-         * @param intersection 
-         * @return true 
-         * @return false 
          */
         bool Intersect(const vec3& planeNormal, float d, Intersection& intersection) const;
 

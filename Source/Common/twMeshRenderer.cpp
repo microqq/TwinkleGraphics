@@ -127,6 +127,7 @@ void MeshRenderer::SetupVAOs()
                 {
                     _vbo->UpdateBufferData(offset, verticeNum * 12, _mesh->GetVerticeBiNormal());
                     BindingVertexBuffer(3, 3, 3, offset, sizeof(vec3));
+                    offset += verticeNum * 12;
                 }
 
                 for(int32 k = 0; k < 8; k++)

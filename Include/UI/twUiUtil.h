@@ -12,7 +12,6 @@ namespace TwinkleGraphics
             std::string fileName;
             bool selectChanged = false;
         };
-        extern FileDialogSelectInfo SceneNodeFileSelectInfo;
 
 #ifdef __cplusplus
     extern "C"

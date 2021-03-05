@@ -166,17 +166,10 @@ namespace TwinkleGraphics
                 return ret;
             }
 
-            Console::LogAssert(tMin == 0.0f || tMin == -infinity, "Ray(or Line) tMin has a value error.", "\n");
-
             return false;
         }
         else
         {
-            //if segment, tMin != (-infinity || inifinity), tMax != (-infinity || inifinity)
-            Console::LogAssert(tMin != infinity, "LineSegment tMin has a value error.", "\n");
-            Console::LogAssert(tMax != infinity, "LineSegment tMax has a value error.", "\n");
-            Console::LogAssert(tMin >= 0.0f && tMax > tMin, "LineSegment tMax should greatre than tMin.", "\n");
-
             return IntersectLineSegment(origin, dir, tMin, tMax, t);
         }
     }
@@ -295,8 +288,8 @@ namespace TwinkleGraphics
     bool AABoundingBox::IntersectLineSegment(const vec3 &origin, const vec3 &dir, float tMin, float tMax, float& t) const
     {
         float t1, t2;
-        if(IntersectLine(origin, dir, t1, t2))
         {
+        if(IntersectLine(origin, dir, t1, t2))
             if(t2 < 0.0f)
                 return false;
 
@@ -329,6 +322,9 @@ namespace TwinkleGraphics
 
     OrientedBoundingBox::OrientedBoundingBox(const OrientedBoundingBox &other)
         : Object(other)
+        , _center(other._center)
+        , _axis(other._axis)
+        , _extents(other._extents)
     {
     }
 
@@ -350,7 +346,6 @@ namespace TwinkleGraphics
     {
 
     }
-
 
     bool OrientedBoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax) const
     {

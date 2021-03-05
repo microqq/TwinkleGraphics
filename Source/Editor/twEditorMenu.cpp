@@ -3,9 +3,12 @@
 #include "ImGuiFileDialog.h"
 
 #include "twEditorMenu.h"
+#include "twUiUtil.h"
 
 namespace TwinkleGraphics
 {
+    FileDialogSelectInfo modelFileSelectInfo;
+
     EditorMenu::EditorMenu(Widget *parent)
         : Widget(parent)
     {
@@ -17,6 +20,13 @@ namespace TwinkleGraphics
 
     void EditorMenu::OnGui()
     {
+                // display model select panel
+                std::string display = modelFileSelectInfo.filePathName;
+                if (display.empty())
+                {
+                    display = "\"Please select file.\"";
+                }
+
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -32,25 +42,11 @@ namespace TwinkleGraphics
                 if (ImGui::MenuItem("SceneNode Empty"))
                 {
                 }
+
                 if (ImGui::MenuItem("SceneNode From File..."))
                 {
-                    const char *extensionFilter = ".obj,.OBJ,.fbx,.FBX,.3ds,.3DS,.gsm,.GSM,.lwo,.LWO,.meshdata,.MESHDATA,.geo,.GEO";
-                    igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", extensionFilter, ".");
-                }
-
-                // display
-                if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey"))
-                {
-                    // action if OK
-                    if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-                    {
-                        // SceneNodeFileSelectInfo.filePathName = igfd::ImGuiFileDialog::Instance()->GetFilepathName();
-                        // SceneNodeFileSelectInfo.filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
-                        // SceneNodeFileSelectInfo.fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
-                        // action
-                    }
-                    // close
-                    igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+                    const char *extensionFilter = ".obj,.OBJ,.fbx,.FBX,.3ds,.3DS,.gltf";
+                    igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseModelDlgKey", "Choose File", extensionFilter, ".");
                 }
 
                 if (ImGui::MenuItem("3D Object"))
@@ -84,5 +80,25 @@ namespace TwinkleGraphics
             }
             ImGui::EndMainMenuBar();
         }
+
+                if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseModelDlgKey"))
+                {
+                    // action if OK
+                    if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+                    {
+                        modelFileSelectInfo.filePathName = igfd::ImGuiFileDialog::Instance()->GetFilepathName();
+                        modelFileSelectInfo.filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
+                        modelFileSelectInfo.fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
+                        // action
+
+                        if (modelFileSelectInfo.filePathName != display)
+                        {
+                            modelFileSelectInfo.selectChanged = true;
+                        }
+                    }
+                    // close
+                    igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseModelDlgKey");
+                }
+
     }
 } // namespace TwinkleGraphics

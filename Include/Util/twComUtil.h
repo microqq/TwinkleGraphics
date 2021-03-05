@@ -30,6 +30,10 @@ namespace TwinkleGraphics
         a = b - a;
     }
 
+    template <class T>
+    void SwapNumber(T& a, T& b);
+
+
     /**
      * @brief 
      * 

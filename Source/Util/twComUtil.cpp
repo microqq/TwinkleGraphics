@@ -17,6 +17,16 @@ namespace TwinkleGraphics
     }
 #pragma endregion HashFunction
 
+
+    template<>
+    void SwapNumber(int& a, int& b)
+    {
+        a = a - b;
+        b = a + b;
+        a = (b - a) / 2;
+    }
+
+
     float DistancePoint2Plane(const vec3& point, const vec3& normal, float d)
     {
         // line that pass through point(p): L(t) = p + n * t
