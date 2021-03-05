@@ -20,12 +20,12 @@ namespace TwinkleGraphics
 
     void EditorMenu::OnGui()
     {
-                // display model select panel
-                std::string display = modelFileSelectInfo.filePathName;
-                if (display.empty())
-                {
-                    display = "\"Please select file.\"";
-                }
+        // display model select panel
+        std::string display = modelFileSelectInfo.filePathName;
+        if (display.empty())
+        {
+            display = "\"Please select file.\"";
+        }
 
         if (ImGui::BeginMainMenuBar())
         {
@@ -81,24 +81,23 @@ namespace TwinkleGraphics
             ImGui::EndMainMenuBar();
         }
 
-                if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseModelDlgKey"))
+        if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseModelDlgKey"))
+        {
+            // action if OK
+            if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
+            {
+                modelFileSelectInfo.filePathName = igfd::ImGuiFileDialog::Instance()->GetFilepathName();
+                modelFileSelectInfo.filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
+                modelFileSelectInfo.fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
+                // action
+
+                if (modelFileSelectInfo.filePathName != display)
                 {
-                    // action if OK
-                    if (igfd::ImGuiFileDialog::Instance()->IsOk == true)
-                    {
-                        modelFileSelectInfo.filePathName = igfd::ImGuiFileDialog::Instance()->GetFilepathName();
-                        modelFileSelectInfo.filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
-                        modelFileSelectInfo.fileName = igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
-                        // action
-
-                        if (modelFileSelectInfo.filePathName != display)
-                        {
-                            modelFileSelectInfo.selectChanged = true;
-                        }
-                    }
-                    // close
-                    igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseModelDlgKey");
+                    modelFileSelectInfo.selectChanged = true;
                 }
-
+            }
+            // close
+            igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseModelDlgKey");
+        }
     }
 } // namespace TwinkleGraphics
