@@ -130,7 +130,7 @@ protected:
 
             this->SetValid(true);
         }
-    }    
+    }
 };
 
 class __TWCOMExport SpriteMaterial : public Material

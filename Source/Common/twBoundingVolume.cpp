@@ -127,12 +127,7 @@ namespace TwinkleGraphics
     /**
      * @brief 
      * <<Real-Time Rendering 4th editon>> Chapter22: Kay and Kajiya’s slab method
-     * @param origin 
-     * @param dir 
-     * @param tMin 
-     * @param tMax 
-     * @return true 
-     * @return false 
+     * 
      */
     bool AABoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float& t, float tMin, float tMax) const
     {

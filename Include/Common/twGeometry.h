@@ -108,10 +108,6 @@ private:
  * @brief 创建球面网格的基础算法（https://zh.wikipedia.org/wiki/%E7%90%83%E5%BA%A7%E6%A8%99%E7%B3%BB）
  * 球坐标系由点 p 到原点 o 的距离 r，极角（pole angle）和方位角（azimuth angle）构成，若已知这三个变量，
  * 可通过球坐标系转直角坐标系求得其直角坐标（x,y,z）
- * @param radius
- * @param longitude_count
- * @param latitude_count
- * @return Mesh::Ptr
  */
     Mesh::Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
@@ -256,9 +252,6 @@ private:
      * @brief 单位立方体均匀细分法（uniform subdive normalized cube）
      * 根据细分程度递归细分立方体六个面，新的顶点归一化，最后将得到顶点坐标乘以球半径 r
      *
-     * @param radius
-     * @param subdivide
-     * @return Mesh::Ptr
      */
     Mesh::Ptr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
@@ -406,9 +399,6 @@ private:
      * 球坐标系下， 首先生成一个正二十面体， 除两个极点（pole point）外，
      * 其他十个顶点根据极角 ((+26.565°/-26.565°)（tan^(-1)(0.5)) 和 方位角 72° * n (0 <= n <= 5) 生成
      *
-     * @param radius
-     * @param subdivide
-     * @return Mesh::Ptr
      */
     Mesh::Ptr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {

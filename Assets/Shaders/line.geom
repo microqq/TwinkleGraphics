@@ -127,18 +127,12 @@ void main()
     gl_Position = generateVertex(p0, p2, p1, 1.0f);
     EmitVertex();
 
-    lineStart = p1_screen;
-    lineEnd = p2_screen;
     gl_Position = generateVertex(p1, p3, p2, 1.0f);
     EmitVertex();
 
-    lineStart = p1_screen;
-    lineEnd = p2_screen;
     gl_Position = generateVertex(p0, p2, p1, -1.0f);
     EmitVertex();
 
-    lineStart = p1_screen;
-    lineEnd = p2_screen;
     gl_Position = generateVertex(p1, p3, p2, -1.0f);
     EmitVertex();
 
