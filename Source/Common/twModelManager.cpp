@@ -5,11 +5,11 @@ namespace TwinkleGraphics
 {
     ModelManager& ModelMgrInstance() { return Singleton<ModelManager>::Instance(); }
     
-    Model::Ptr ModelManager::ReadModel(const char* filename)
+    ModelPtr ModelManager::ReadModel(const char* filename)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
         ReadResult<Model> result = resMgr.Read<ModelReader, Model, ReaderOption>(filename, nullptr);
-        Model::Ptr model = result.GetSharedObject();
+        ModelPtr model = result.GetSharedObject();
 
         return model;
     }
@@ -29,7 +29,7 @@ namespace TwinkleGraphics
         }
     }    
 
-    void ModelManager::OnReadModelSuccess(Object::Ptr obj)
+    void ModelManager::OnReadModelSuccess(ObjectPtr obj)
     {
     }
 

@@ -46,16 +46,16 @@ namespace TwinkleGraphics
             return ReadResult<Model>(ReadResult<Model>::Status::FAILED);
         }
 
-        Model::Ptr model = std::make_shared<Model>();
+        ModelPtr model = std::make_shared<Model>();
         std::string path(filename);
         // retrieve the directory path of the filepath
         std::string directory = path.substr(0, path.find_last_of('\\'));
 
-        Material::Ptr* vectorMaterials = new Material::Ptr[scene->mNumMaterials]{nullptr};
-        // Material::Ptr vectorMaterials[30] = {nullptr};
+        MaterialPtr* vectorMaterials = new MaterialPtr[scene->mNumMaterials]{nullptr};
+        // MaterialPtr vectorMaterials[30] = {nullptr};
 
         // process ASSIMP's root node recursively
-        Geometry::Ptr rootGeom = ProcessNode(scene->mRootNode, scene, directory, model, vectorMaterials);
+        GeometryPtr rootGeom = ProcessNode(scene->mRootNode, scene, directory, model, vectorMaterials);
         model->SetRootGeometry(rootGeom);
 
         SAFE_DEL_ARR(vectorMaterials);
@@ -73,7 +73,7 @@ namespace TwinkleGraphics
     *   https://learnopengl.com/
     *   processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     */
-    Geometry::Ptr ModelReader::ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr* vecMats)
+    GeometryPtr ModelReader::ProcessNode(aiNode *node, const aiScene *scene, std::string dir, ModelPtr model, MaterialPtr* vecMats)
     {
         int32 verticeNum = 0;
         int32 meshFlag = (int32)(MeshDataFlag::DEFAULT);
@@ -117,15 +117,15 @@ namespace TwinkleGraphics
             }
         }
 
-        Geometry::Ptr geom = std::make_shared<Geometry>();
+        GeometryPtr geom = std::make_shared<Geometry>();
         model->AddGeometry(geom);
 
         if (verticeNum > 0)
         {
-            MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
+            MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
             geom->SetMeshRenderer(renderer);
 
-            Mesh::Ptr tMesh = std::make_shared<Mesh>();
+            MeshPtr tMesh = std::make_shared<Mesh>();
             tMesh->Initialize(verticeNum, MeshDataFlag(meshFlag));
 
             verticeNum = 0;
@@ -134,7 +134,7 @@ namespace TwinkleGraphics
                 // the node object only contains indices to index the actual objects in the scene.
                 // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
                 aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-                SubMesh::Ptr subMesh = ProcessMesh(mesh, tMesh, verticeNum, scene);
+                SubMeshPtr subMesh = ProcessMesh(mesh, tMesh, verticeNum, scene);
                 tMesh->AddSubMesh(subMesh);
 
                 if(vecMats[mesh->mMaterialIndex] != nullptr)
@@ -153,7 +153,7 @@ namespace TwinkleGraphics
                 }
                 else
                 {
-                    Material::Ptr material = ProcessMaterial(mesh, scene, scene->mMaterials[mesh->mMaterialIndex], dir, (VertexLayoutFlag)meshFlag);
+                    MaterialPtr material = ProcessMaterial(mesh, scene, scene->mMaterials[mesh->mMaterialIndex], dir, (VertexLayoutFlag)meshFlag);
 
                     subMesh->SetMaterialIndex(renderer->GetMaterialCount());
                     renderer->AddMaterial(material);
@@ -170,7 +170,7 @@ namespace TwinkleGraphics
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
-            Geometry::Ptr childGeom = ProcessNode(node->mChildren[i], scene, dir, model, vecMats);
+            GeometryPtr childGeom = ProcessNode(node->mChildren[i], scene, dir, model, vecMats);
             geom->AddChild(childGeom);
         }
 
@@ -180,9 +180,9 @@ namespace TwinkleGraphics
     /**
     *   https://learnopengl.com/
     */
-    SubMesh::Ptr ModelReader::ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene)
+    SubMeshPtr ModelReader::ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset, const aiScene *scene)
     {
-        SubMesh::Ptr subMesh = std::make_shared<SubMesh>();
+        SubMeshPtr subMesh = std::make_shared<SubMesh>();
 
         int32 indiceNum = 0;
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
@@ -331,7 +331,7 @@ namespace TwinkleGraphics
     /**
     *   https://learnopengl.com/
     */
-    Material::Ptr ModelReader::ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFlag)
+    MaterialPtr ModelReader::ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFlag)
     {
         std::string vertLayoutMacros("");
         int32 operand = 1;
@@ -362,53 +362,53 @@ namespace TwinkleGraphics
         // normal: texture_normalN
 
         // 1. diffuse maps
-        std::vector<Texture::Ptr> diffuseMaps = LoadTextures(aiMat, aiTextureType_DIFFUSE, dir);
+        std::vector<TexturePtr> diffuseMaps = LoadTextures(aiMat, aiTextureType_DIFFUSE, dir);
         SetMaterialTextures(diffuseMaps, material, "diffuseTex", "#define DIFFTEX");
 
         // 2. specular maps
-        std::vector<Texture::Ptr> specularMaps = LoadTextures(aiMat, aiTextureType_SPECULAR, dir);
+        std::vector<TexturePtr> specularMaps = LoadTextures(aiMat, aiTextureType_SPECULAR, dir);
         SetMaterialTextures(specularMaps, material, "specularTex", "#define DIFFTEX");
 
         // 3. normal maps
-        std::vector<Texture::Ptr> normalMaps = LoadTextures(aiMat, aiTextureType_NORMALS, dir);
+        std::vector<TexturePtr> normalMaps = LoadTextures(aiMat, aiTextureType_NORMALS, dir);
         SetMaterialTextures(normalMaps, material, "normalTex", "#define DIFFTEX");
         
         // 4. height maps
-        std::vector<Texture::Ptr> heightMaps = LoadTextures(aiMat, aiTextureType_HEIGHT, dir);
+        std::vector<TexturePtr> heightMaps = LoadTextures(aiMat, aiTextureType_HEIGHT, dir);
         SetMaterialTextures(heightMaps, material, "heightTex", "#define DIFFTEX");
 
         // 5. amibient maps
-        std::vector<Texture::Ptr> ambientMaps = LoadTextures(aiMat, aiTextureType_AMBIENT, dir);
+        std::vector<TexturePtr> ambientMaps = LoadTextures(aiMat, aiTextureType_AMBIENT, dir);
         SetMaterialTextures(ambientMaps, material, "ambientTex", "#define DIFFTEX");
 
         // 6. emissive maps
-        std::vector<Texture::Ptr> emissiveMaps = LoadTextures(aiMat, aiTextureType_EMISSIVE, dir);
+        std::vector<TexturePtr> emissiveMaps = LoadTextures(aiMat, aiTextureType_EMISSIVE, dir);
         SetMaterialTextures(emissiveMaps, material, "emissiveTex", "#define DIFFTEX");
 
         // 7. shininess maps
-        std::vector<Texture::Ptr> shininessMaps = LoadTextures(aiMat, aiTextureType_SHININESS, dir);
+        std::vector<TexturePtr> shininessMaps = LoadTextures(aiMat, aiTextureType_SHININESS, dir);
         SetMaterialTextures(shininessMaps, material, "shininessTex", "#define DIFFTEX");
 
         // 8. opacity maps
-        std::vector<Texture::Ptr> opacityMaps = LoadTextures(aiMat, aiTextureType_OPACITY, dir);
+        std::vector<TexturePtr> opacityMaps = LoadTextures(aiMat, aiTextureType_OPACITY, dir);
         SetMaterialTextures(opacityMaps, material, "opacityTex", "#define DIFFTEX");
 
         // 9. displacement maps
-        std::vector<Texture::Ptr> displacementMaps = LoadTextures(aiMat, aiTextureType_DISPLACEMENT, dir);
+        std::vector<TexturePtr> displacementMaps = LoadTextures(aiMat, aiTextureType_DISPLACEMENT, dir);
         SetMaterialTextures(displacementMaps, material, "displacementTex", "#define DIFFTEX");
 
         // 10. lightmap maps
-        std::vector<Texture::Ptr> lightmapMaps = LoadTextures(aiMat, aiTextureType_LIGHTMAP, dir);
+        std::vector<TexturePtr> lightmapMaps = LoadTextures(aiMat, aiTextureType_LIGHTMAP, dir);
         SetMaterialTextures(lightmapMaps, material, "lightmapTex", "#define DIFFTEX");
 
         // 11. reflection maps
-        std::vector<Texture::Ptr> reflectionMaps = LoadTextures(aiMat, aiTextureType_REFLECTION, dir);
+        std::vector<TexturePtr> reflectionMaps = LoadTextures(aiMat, aiTextureType_REFLECTION, dir);
         SetMaterialTextures(reflectionMaps, material, "reflectionTex", "#define DIFFTEX");
 
         return material;
     }
 
-    void ModelReader::SetMaterialTextures(std::vector<Texture::Ptr>& textures
+    void ModelReader::SetMaterialTextures(std::vector<TexturePtr>& textures
         , StandardMaterial::Ptr material
         , std::string texNamePrefix
         , std::string macroPrefix)
@@ -425,9 +425,9 @@ namespace TwinkleGraphics
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
     // the required info is returned as a Texture struct.
-    std::vector<Texture::Ptr> ModelReader::LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir)
+    std::vector<TexturePtr> ModelReader::LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir)
     {
-        std::vector<Texture::Ptr> textures;
+        std::vector<TexturePtr> textures;
         for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
@@ -440,14 +440,14 @@ namespace TwinkleGraphics
             //     std::cout << str.C_Str() << std::endl;
             // }
 
-            Texture2D::Ptr texture = std::make_shared<Texture2D>(true, true);
+            Texture2DPtr texture = std::make_shared<Texture2D>(true, true);
             ImageManager& imageMgr = ImageMgrInstance();
             std::string imgFilename{dir + "/" + std::string(str.C_Str())};
 
             ImageOption option;
             ReadSuccessCallbackFuncPtr funcPtr = std::make_shared<ReadSuccessCallbackFunc>(
-                [texture](Object::Ptr obj) {
-                    Image::Ptr image = std::dynamic_pointer_cast<Image>(obj);
+                [texture](ObjectPtr obj) {
+                    ImagePtr image = std::dynamic_pointer_cast<Image>(obj);
                     if (image != nullptr)
                     {
                         ImageData *imageData = image->GetImageSourcePtr();
@@ -478,7 +478,7 @@ namespace TwinkleGraphics
                 });
             option.AddSuccessFunc(-1, funcPtr);
             imageMgr.ReadImageAsync(imgFilename.c_str(), &option);
-            // Image::Ptr image = imageMgr.ReadImage(imgFilename.c_str(), new ImageOption);
+            // ImagePtr image = imageMgr.ReadImage(imgFilename.c_str(), new ImageOption);
             textures.push_back(texture);
         }
         return textures;

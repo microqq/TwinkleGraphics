@@ -70,7 +70,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void ReaderOption::OnReadSuccess(Object::Ptr obj) const
+    void ReaderOption::OnReadSuccess(ObjectPtr obj) const
     {
         for (auto &func : _successFuncList)
         {

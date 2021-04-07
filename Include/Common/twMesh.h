@@ -107,6 +107,8 @@ namespace TwinkleGraphics
         friend class NURBSSurface;
     };
 
+    typedef SubMesh::Ptr SubMeshPtr;
+
     class __TWCOMExport Mesh : public Object
     {
     public:
@@ -223,7 +225,7 @@ namespace TwinkleGraphics
             }
         }
 
-        void AddSubMesh(SubMesh::Ptr submesh)
+        void AddSubMesh(SubMeshPtr submesh)
         {
             _submeshes.push_back(submesh);
         }
@@ -235,7 +237,7 @@ namespace TwinkleGraphics
         }
         inline uint32 GetSubMeshCount() { return _submeshes.size(); }
 
-        SubMesh::Ptr GetSubMesh(int32 index)
+        SubMeshPtr GetSubMesh(int32 index)
         {
             int32 size = _submeshes.size(); 
             if (index < size)
@@ -291,7 +293,7 @@ namespace TwinkleGraphics
         MeshDataFlag GetMeshDataFlag() { return _dataFlag; }
 
     private:
-        std::vector<SubMesh::Ptr> _submeshes;
+        std::vector<SubMeshPtr> _submeshes;
         glm::vec3 *_verticePos;
         glm::vec4 *_verticeColor;
         glm::vec3 *_verticeBinormal;
@@ -322,6 +324,8 @@ namespace TwinkleGraphics
         friend class BezierSurface;
         friend class NURBSSurface;
     };
+
+    typedef Mesh::Ptr MeshPtr;
 } // namespace TwinkleGraphics
 
 #endif

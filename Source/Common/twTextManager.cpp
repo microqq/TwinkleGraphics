@@ -29,7 +29,7 @@ namespace TwinkleGraphics
     }
 
 
-    void TextManager::OnReadTextSuccess(Object::Ptr obj)
+    void TextManager::OnReadTextSuccess(ObjectPtr obj)
     {
         TextSource *text = dynamic_cast<TextSource *>(obj.get());
         if (text != nullptr)

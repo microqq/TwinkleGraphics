@@ -18,19 +18,19 @@ public:
     MeshRenderer();
     virtual ~MeshRenderer();
 
-    void AddMaterial(Material::Ptr material);
+    void AddMaterial(MaterialPtr material);
 
-    void SetMaterial(Material::Ptr material) 
+    void SetMaterial(MaterialPtr material) 
     { 
         _sharedMaterial = material;
     }
 
-    void SetSharedMaterial(Material::Ptr material) 
+    void SetSharedMaterial(MaterialPtr material) 
     { 
         _sharedMaterial = material; 
     }
 
-    const Material::Ptr GetMaterial()
+    const MaterialPtr GetMaterial()
     {
         if(_sharedMaterial == nullptr)
         {
@@ -51,12 +51,12 @@ public:
         return _material;
     }
 
-    const Material::Ptr GetSharedMaterial()
+    const MaterialPtr GetSharedMaterial()
     {
         return _sharedMaterial;
     }
 
-    const Material::Ptr GetMaterial(int32 index)
+    const MaterialPtr GetMaterial(int32 index)
     { 
         int size = _sharedMaterials.size();
         if(index < 0 || index >= size)
@@ -86,7 +86,7 @@ public:
         return _materials[index];
     }
 
-    int32 GetMaterialIndex(Material::Ptr mat)
+    int32 GetMaterialIndex(MaterialPtr mat)
     {
         if(mat == nullptr)
         {
@@ -110,11 +110,11 @@ public:
     int32 GetSharedMaterialCount() { return _sharedMaterials.size(); }
 
     //Todo: Shared mesh
-    void SetMesh(Mesh::Ptr mesh, bool setupVAO = false);
+    void SetMesh(MeshPtr mesh, bool setupVAO = false);
     void SetupVAOs();
-    const Mesh::Ptr GetMesh() { return _mesh; }
+    const MeshPtr GetMesh() { return _mesh; }
 
-    VertexArrayObject::Ptr GetVertexArrayObject(int32 index) 
+    VertexArrayObjectPtr GetVertexArrayObject(int32 index) 
     {
         int32 size = _vaos.size();
         if(index >= 0 && index < size)
@@ -131,18 +131,20 @@ private:
     void BindingVertexBuffer(int32 attribIndex, int32 attribSize, int32 bindingIndex, int32 offset, int32 stride);
 
 protected:
-    std::vector<Material::Ptr> _materials;
-    std::vector<Material::Ptr> _sharedMaterials;
-    Material::Ptr _material;
-    Material::Ptr _sharedMaterial;
-    Mesh::Ptr _mesh;
+    std::vector<MaterialPtr> _materials;
+    std::vector<MaterialPtr> _sharedMaterials;
+    MaterialPtr _material;
+    MaterialPtr _sharedMaterial;
+    MeshPtr _mesh;
 
-    std::vector<VertexArrayObject::Ptr> _vaos;
-    VertexBufferObject::Ptr _vbo;
-    std::vector<IndexBufferObject::Ptr> _ibos;
+    std::vector<VertexArrayObjectPtr> _vaos;
+    VertexBufferObjectPtr _vbo;
+    std::vector<IndexBufferObjectPtr> _ibos;
 
     int32 _fistInstantiateIndex = -1;
 };
+
+typedef MeshRenderer::Ptr MeshRendererPtr;
 
 } // namespace TwinkleGraphics
 

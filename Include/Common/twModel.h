@@ -17,11 +17,11 @@ namespace TwinkleGraphics
         virtual ~Model();
         virtual void SetValid(bool valid) override;
 
-        void AddGeometry(Geometry::Ptr geom);
+        void AddGeometry(GeometryPtr geom);
         void RemoveGeometry(int index);
-        void SetRootGeometry(Geometry::Ptr geom) { _rootGeometry = geom; }
-        Geometry::Ptr GetGeometry(int index);
-        Geometry::Ptr GetRootGeometry() { return _rootGeometry; }
+        void SetRootGeometry(GeometryPtr geom) { _rootGeometry = geom; }
+        GeometryPtr GetGeometry(int index);
+        GeometryPtr GetRootGeometry() { return _rootGeometry; }
         int32 GetGeometriesCount() { return _geometries.size(); }
 
         /**
@@ -30,8 +30,8 @@ namespace TwinkleGraphics
         void Render();
 
     protected:
-        std::vector<Geometry::Ptr> _geometries;
-        Geometry::Ptr _rootGeometry;
+        std::vector<GeometryPtr> _geometries;
+        GeometryPtr _rootGeometry;
     };
 
     class SkeletonModel : public Model
@@ -45,6 +45,7 @@ namespace TwinkleGraphics
     private:
     };
 
+    typedef Model::Ptr ModelPtr;
 
 } // namespace TwinkleGraphics
 #endif

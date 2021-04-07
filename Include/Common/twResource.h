@@ -31,7 +31,7 @@ class ResourceManager;
 typedef uint16_t ReaderId;
 typedef uint64_t CacheId;
 
-typedef std::function<void(Object::Ptr)> ReadSuccessCallbackFunc;
+typedef std::function<void(ObjectPtr)> ReadSuccessCallbackFunc;
 typedef std::function<void()> ReadFailedCallbackFunc;
 typedef std::shared_ptr<ReadSuccessCallbackFunc> ReadSuccessCallbackFuncPtr;
 typedef std::shared_ptr<ReadFailedCallbackFunc> ReadFailedCallbackFuncPtr;
@@ -75,7 +75,7 @@ public:
             , std::forward<Args>(args)...
         );
         ReadSuccessCallbackFuncPtr callback = std::make_shared<ReadSuccessCallbackFunc>(
-            [concreteCallback](Object::Ptr obj)
+            [concreteCallback](ObjectPtr obj)
             {
                 concreteCallback(obj);
             }
@@ -104,7 +104,7 @@ public:
 
     void AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func);
     void AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func);
-    void OnReadSuccess(Object::Ptr obj) const;
+    void OnReadSuccess(ObjectPtr obj) const;
     void OnReadFailed() const;
 
 protected:
@@ -134,6 +134,8 @@ protected:
     friend class ResourceManager;
 };
 
+typedef ResourceReader::Ptr ResourceReaderPtr;
+
 /**
  * @brief 
  * 
@@ -157,7 +159,7 @@ public:
         , _reader(nullptr)
         , _status(status)
     {}
-    ReadResult(ResourceReader::Ptr reader, typename T::Ptr obj, Status status = Status::NONE)
+    ReadResult(ResourceReaderPtr reader, typename T::Ptr obj, Status status = Status::NONE)
         : _sharedObject(obj)
         , _reader(reader)
         , _status(status)
@@ -181,11 +183,11 @@ public:
 
     inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
     inline Status GetStatus() const { return _status; }
-    inline ResourceReader::Ptr GetReader() { return _reader; }
+    inline ResourceReaderPtr GetReader() { return _reader; }
 
 private:
     typename T::Ptr _sharedObject;
-    ResourceReader::Ptr _reader;
+    ResourceReaderPtr _reader;
     Status _status;
 };
 
@@ -195,7 +197,7 @@ public:
     typedef std::shared_ptr<ResourceCache> Ptr;
 
     ResourceCache(CacheId id
-            , Object::Ptr obj
+            , ObjectPtr obj
             , CacheStoreHint hint = CacheStoreHint::TIMELIMITED
             , float limit = 100.0f)
         : _cachedObject(obj)
@@ -207,7 +209,7 @@ public:
     ~ResourceCache()
     {}
 
-    Object::Ptr GetCachedObject()
+    ObjectPtr GetCachedObject()
     {
         return _cachedObject;
     }
@@ -233,7 +235,7 @@ public:
     }
 
 private:
-    Object::Ptr _cachedObject = nullptr;
+    ObjectPtr _cachedObject = nullptr;
 
     // cache life time(seconds)
     float _timeLimit;

@@ -61,7 +61,7 @@ namespace TwinkleGraphics
         _parent->AddChild(this);
     }
 
-    void Widget::OnEvent(Object::Ptr sender, BaseEventArgs::Ptr event)
+    void Widget::OnEvent(ObjectPtr sender, BaseEventArgsPtr event)
     {
         InputEventArgs::Ptr inputEventPtr = std::dynamic_pointer_cast<InputEventArgs>(event);
         if(inputEventPtr != nullptr)

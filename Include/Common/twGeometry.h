@@ -24,14 +24,16 @@ public:
     virtual ~Geometry();
 
     virtual void GenerateMeshInternal(MeshDataFlag flag = MeshDataFlag::DEFAULT) {}
-    void SetMeshExternal(Mesh::Ptr mesh) { _mesh = mesh; }
-    Mesh::Ptr GetMesh() { return _mesh; }
+    void SetMeshExternal(MeshPtr mesh) { _mesh = mesh; }
+    MeshPtr GetMesh() { return _mesh; }
     
     MeshDataFlag GetMeshDataFlag() { if(_mesh != nullptr) return _mesh->GetMeshDataFlag(); else return MeshDataFlag::DEFAULT; }
 
 protected:
-    Mesh::Ptr _mesh;
+    MeshPtr _mesh;
 };
+
+typedef Geometry::Ptr GeometryPtr;
 
 class Triangle : public Geometry
 {
@@ -56,7 +58,7 @@ public:
             _mesh = std::make_shared<Mesh>();
             _mesh->Initialize(3, flag);
 
-            SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+            SubMeshPtr submesh = std::make_shared<SubMesh>();
             submesh->Initialize(3);
             _mesh->AddSubMesh(submesh);
 
@@ -75,6 +77,8 @@ private:
     glm::vec3 _p1;
     glm::vec3 _p2;
 };
+
+typedef Triangle::Ptr TrianglePtr;
 
 /**
  * @brief 
@@ -109,17 +113,17 @@ private:
  * 球坐标系由点 p 到原点 o 的距离 r，极角（pole angle）和方位角（azimuth angle）构成，若已知这三个变量，
  * 可通过球坐标系转直角坐标系求得其直角坐标（x,y,z）
  */
-    Mesh::Ptr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    MeshPtr CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
         int32 row_count = latitude_count - 1;
         int32 col_count = longitude_count;
         int32 num = col_count * row_count + 2;
 
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(num, flag);
         
         int indice_num = 6 * col_count + (row_count - 1) * col_count * 6;
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
         submesh->Initialize(indice_num);
         mesh->AddSubMesh(submesh);
 
@@ -224,6 +228,9 @@ private:
     int32 _subdivision;
 };
 
+typedef UVSphere::Ptr UVSpherePtr;
+
+
 class NormalizedCubeSphere : public Geometry
 {
 public:
@@ -253,16 +260,16 @@ private:
      * 根据细分程度递归细分立方体六个面，新的顶点归一化，最后将得到顶点坐标乘以球半径 r
      *
      */
-    Mesh::Ptr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    MeshPtr CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
         int32 row_count, col_count;
         row_count = col_count = subdivide + 1;
         int32 num = row_count * col_count * 6;
 
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(num, flag);
         
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
         submesh->Initialize(subdivide * subdivide * 36);
         mesh->AddSubMesh(submesh);
 
@@ -363,6 +370,8 @@ private:
     int32 _subdivision;
 };
 
+typedef NormalizedCubeSphere::Ptr NormalizedCubeSpherePtr;
+
 class IcosahedronSphere : public Geometry
 {
 public:
@@ -400,13 +409,13 @@ private:
      * 其他十个顶点根据极角 ((+26.565°/-26.565°)（tan^(-1)(0.5)) 和 方位角 72° * n (0 <= n <= 5) 生成
      *
      */
-    Mesh::Ptr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    MeshPtr CreateSphereMeshIcosahedron(float32 radius, int32 subdivide, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
         int32 num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide) / 2);
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(num, flag);
 
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
 
         int32 indice_num = 60 * subdivide * subdivide;
         submesh->Initialize(indice_num);
@@ -587,6 +596,9 @@ private:
     int32 _subdivision;
 };
 
+typedef IcosahedronSphere::Ptr IcosahedronSpherePtr;
+
+
 class Cube : public Geometry
 {
 public:
@@ -610,12 +622,12 @@ public:
     }
 
 private:
-    Mesh::Ptr CreateCubeMesh(float32 size, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    MeshPtr CreateCubeMesh(float32 size, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(8, flag);
 
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
         submesh->Initialize(36);
         mesh->AddSubMesh(submesh);
 
@@ -695,6 +707,8 @@ private:
     float32 _size;
 };
 
+typedef Cube::Ptr CubePtr;
+
 class Quad : public Geometry
 {
 public:
@@ -725,12 +739,12 @@ public:
     }
 
 protected:
-    Mesh::Ptr CreateQuadMesh(float32 x_size, float32 y_size, MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    MeshPtr CreateQuadMesh(float32 x_size, float32 y_size, MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(4, flag);
 
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
         submesh->Initialize(6);
         mesh->AddSubMesh(submesh);
 
@@ -785,6 +799,8 @@ protected:
     glm::vec2 _size;
 };
 
+typedef Quad::Ptr QuadPtr;
+
 
 class Plane : public Geometry
 {
@@ -811,15 +827,15 @@ public:
     }
 
 protected:
-    Mesh::Ptr CreatePlaneMesh(MeshDataFlag flag = MeshDataFlag::DEFAULT)
+    MeshPtr CreatePlaneMesh(MeshDataFlag flag = MeshDataFlag::DEFAULT)
     {
         int32 row_count = _subdivision + 1;
         int32 col_count = _subdivision + 1;
 
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(row_count * col_count, flag);
 
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
         submesh->Initialize(_subdivision * _subdivision * 6);
         mesh->AddSubMesh(submesh);
 
@@ -888,6 +904,7 @@ protected:
     float32 _width;
     int32 _subdivision;
 };
+typedef Plane::Ptr PlanePtr;
 
 class Line : public Geometry
 {
@@ -916,16 +933,16 @@ private:
      * 
      * @param points 
      * @param num 
-     * @return Mesh::Ptr 
+     * @return MeshPtr 
      */
-    Mesh::Ptr CreateLineMesh(glm::vec3 *points, int32 num)
+    MeshPtr CreateLineMesh(glm::vec3 *points, int32 num)
     {
-        Mesh::Ptr mesh = std::make_shared<Mesh>();
+        MeshPtr mesh = std::make_shared<Mesh>();
         mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
         //use line_adjency
         int32 indice_num = (num - 1) * 4;
-        SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+        SubMeshPtr submesh = std::make_shared<SubMesh>();
         submesh->Initialize(indice_num);
         mesh->AddSubMesh(submesh);
 
@@ -971,6 +988,8 @@ private:
 private:
 };
 
+typedef Line::Ptr LinePtr;
+
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
@@ -1005,6 +1024,7 @@ private:
     int32 _pointsCount; //points count: n + 1;
 };
 
+typedef BezierCurve::Ptr BezierCurvePtr;
 
 // template<>
 // class BezierCurve<2> : public Object
@@ -1112,7 +1132,7 @@ public:
             _mesh = Mesh::CreateLineMesh(nullptr, (_knotsCount - 1 - 2 * _degree) * _segments + 1);
         }
 
-        SubMesh::Ptr submesh = _mesh->GetSubMesh(0);
+        SubMeshPtr submesh = _mesh->GetSubMesh(0);
         glm::vec3* vertices = _mesh->GetVerticePos();
         int32 n = 0;
 
@@ -1194,6 +1214,8 @@ protected:
     int32 _segments = 64;
 };
 
+typedef BSplineCurve::Ptr BSplineCurvePtr;
+
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
@@ -1260,6 +1282,8 @@ private:
     int32 _u_degree;
     int32 _v_degree;
 };
+
+typedef NURBSCurve::Ptr NURBSCurvePtr;
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
@@ -1356,7 +1380,7 @@ public:
             _mesh->Initialize(v_count * u_count, flag
             );
 
-            SubMesh::Ptr subMesh = std::make_shared<SubMesh>();
+            SubMeshPtr subMesh = std::make_shared<SubMesh>();
             subMesh->Initialize((v_count - 1) * (u_count - 1) * 6);
             _mesh->AddSubMesh(subMesh);
 
@@ -1364,7 +1388,7 @@ public:
             InitializeAPDVSurface();
         }
 
-        SubMesh::Ptr subMesh = _mesh->GetSubMesh(0);
+        SubMeshPtr subMesh = _mesh->GetSubMesh(0);
         glm::vec3* vertices = _mesh->GetVerticePos();
         glm::vec3* normals = _mesh->GetVerticeNormal();
         // glm::vec4* colors = _mesh->GetVerticeColor();
@@ -1762,6 +1786,8 @@ private:
 
     bool _rational;
 };
+
+typedef NURBSSurface::Ptr NURBSSurfacePtr;
 
 
 } // namespace TwinkleGraphics

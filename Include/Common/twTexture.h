@@ -294,6 +294,8 @@ private:
 
 };
 
+typedef Sampler::Ptr SamplerPtr;
+
 
 /**
  * @brief 
@@ -308,7 +310,7 @@ public:
     Texture(bool immutable = true, bool genMipMap = false);
     virtual ~Texture();
 
-    void CreateFromImage(Image::Ptr image)
+    void CreateFromImage(ImagePtr image)
     { 
         if(_image == nullptr) 
         {
@@ -366,8 +368,8 @@ public:
 
     const RenderResourceHandle& GetTexResource() { return _res; }
 
-    void SetSampler(Sampler::Ptr sampler) { _sampler = sampler; }
-    Sampler::Ptr GetSampler() { return _sampler; }
+    void SetSampler(SamplerPtr sampler) { _sampler = sampler; }
+    SamplerPtr GetSampler() { return _sampler; }
 
     template<WrapParam Wrap>
     void SetWrap(WrapMode wrap);
@@ -393,8 +395,8 @@ public:
 
     void SetAnistropic(float32 anistropic = -1.0f, bool maxAnistropic = true);
 
-    void SetImage(Image::Ptr image) { _image = image; }
-    Image::Ptr GetImage() { return _image; }
+    void SetImage(ImagePtr image) { _image = image; }
+    ImagePtr GetImage() { return _image; }
     const TexParams& GetTexParams() { return _parameters; }
     int32 GetNumMipLevels() 
     { 
@@ -478,8 +480,8 @@ protected:
 protected:
     TexParams _parameters;
     RenderResourceHandle _res;
-    Image::Ptr _image;
-    Sampler::Ptr _sampler;
+    ImagePtr _image;
+    SamplerPtr _sampler;
     TexParameterMask _mask;
     TexParameterDirtyFlag _dirtyFlag;
 
@@ -496,11 +498,12 @@ protected:
     bool _generateMipMap;
 };
 
+typedef Texture::Ptr TexturePtr;
 
 struct TextureSlot
 {
     // std::string texname;
-    Texture::Ptr tex;
+    TexturePtr tex;
     int8 location;
     int8 slot;
 
@@ -509,7 +512,7 @@ struct TextureSlot
         const RenderResourceHandle &res = tex->GetRenderRes();
         glBindTexture(res.type, res.id);
 
-        Sampler::Ptr sampler = tex->GetSampler();
+        SamplerPtr sampler = tex->GetSampler();
         if(sampler != nullptr && sampler->IsValid())
         {
             glBindSampler(location, sampler->GetRenderRes().id);
@@ -727,13 +730,13 @@ public:
     }
     virtual ~TextureCube() {}
 
-    void SetPositiveX(Image::Ptr image);
-    void SetPositiveY(Image::Ptr image);
-    void SetPositiveZ(Image::Ptr image);
+    void SetPositiveX(ImagePtr image);
+    void SetPositiveY(ImagePtr image);
+    void SetPositiveZ(ImagePtr image);
 
-    void SetNegativeX(Image::Ptr image);
-    void SetNegativeY(Image::Ptr image);
-    void SetNegativeZ(Image::Ptr image);
+    void SetNegativeX(ImagePtr image);
+    void SetNegativeY(ImagePtr image);
+    void SetNegativeZ(ImagePtr image);
 
     void InitStorageByOthers() { InitStorage(); }
 
@@ -745,12 +748,12 @@ private:
     void InitTexStorage(ImageData *data);
 
 private:
-    Image::Ptr _imagePositiveX;
-    Image::Ptr _imageNegativeX;
-    Image::Ptr _imagePositiveY;
-    Image::Ptr _imageNegativeY;
-    Image::Ptr _imagePositiveZ;
-    Image::Ptr _imageNegativeZ;
+    ImagePtr _imagePositiveX;
+    ImagePtr _imageNegativeX;
+    ImagePtr _imagePositiveY;
+    ImagePtr _imageNegativeY;
+    ImagePtr _imagePositiveZ;
+    ImagePtr _imageNegativeZ;
 };
 
 class __TWCOMExport Texture1DArray : public Texture
@@ -835,6 +838,18 @@ private:
     int32 _samples;
     bool _fixedsampledlocation;
 };
+
+typedef Texture1D::Ptr Texture1DPtr;
+typedef Texture2D::Ptr Texture2DPtr;
+typedef Texture3D::Ptr Texture3DPtr;
+typedef Texture1DArray::Ptr Texture1DArrayPtr;
+typedef Texture2DArray::Ptr Texture2DArrayPtr;
+typedef TextureCube::Ptr TextureCubePtr;
+typedef TextureCubeArray::Ptr TextureCubeArrayPtr;
+typedef TextureRectangle::Ptr TextureRectanglePtr;
+typedef TextureBuffer::Ptr TextureBufferPtr;
+typedef Texture2DMultiSample::Ptr Texture2DMultiSamplePtr;
+typedef Texture2DMultiSampleArray::Ptr Texture2DMultiSampleArrayPtr;
 
 
 } // namespace TwinkleGraphics

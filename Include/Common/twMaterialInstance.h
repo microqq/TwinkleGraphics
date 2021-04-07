@@ -46,22 +46,22 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<StandardMaterial>(*this);
+        MaterialPtr clone = std::make_shared<StandardMaterial>(*this);
         return clone;
     }
 
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr || this->IsValid())
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -107,21 +107,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<BasicGeomMaterial>(*this);
+        MaterialPtr clone = std::make_shared<BasicGeomMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -163,21 +163,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<SpriteMaterial>(*this);
+        MaterialPtr clone = std::make_shared<SpriteMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -224,21 +224,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<Sprite1DMaterial>(*this);
+        MaterialPtr clone = std::make_shared<Sprite1DMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -286,21 +286,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 3);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<LineMaterial>(*this);
+        MaterialPtr clone = std::make_shared<LineMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -338,21 +338,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<InfinitePlaneMaterial>(*this);
+        MaterialPtr clone = std::make_shared<InfinitePlaneMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -391,21 +391,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }    
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<VolumnQuadMaterial>(*this);
+        MaterialPtr clone = std::make_shared<VolumnQuadMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -452,21 +452,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<CubeMaterial>(*this);
+        MaterialPtr clone = std::make_shared<CubeMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -508,21 +508,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<SphereMaterial>(*this);
+        MaterialPtr clone = std::make_shared<SphereMaterial>(*this);
         return clone;
     }
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -564,21 +564,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<SkyboxMaterial>(*this);
+        MaterialPtr clone = std::make_shared<SkyboxMaterial>(*this);
         return clone;
     }    
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -625,21 +625,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<ProjectionMappingMaterial>(*this);
+        MaterialPtr clone = std::make_shared<ProjectionMappingMaterial>(*this);
         return clone;
     }        
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -682,21 +682,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<ScreenQuadMaterial>(*this);
+        MaterialPtr clone = std::make_shared<ScreenQuadMaterial>(*this);
         return clone;
     }      
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 
@@ -738,21 +738,21 @@ protected:
         shaderMgr.ReadShadersAsync(&programOption, 2);
     }
 
-    virtual Material::Ptr SharedClone() override 
+    virtual MaterialPtr SharedClone() override 
     {
-        Material::Ptr clone = std::make_shared<MSAAResolveMaterial>(*this);
+        MaterialPtr clone = std::make_shared<MSAAResolveMaterial>(*this);
         return clone;
     }   
 
-    void OnMaterialSuccess(Object::Ptr obj)
+    void OnMaterialSuccess(ObjectPtr obj)
     {
         if(obj == nullptr)
             return;
 
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if(program != nullptr)
         {
-            RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+            RenderPassPtr pass = std::make_shared<RenderPass>(program);
             this->AddRenderPass(pass);
             this->ApplyRenderPass();
 

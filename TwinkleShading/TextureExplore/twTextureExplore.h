@@ -84,14 +84,14 @@ private:
     void CreateSprite1D();
     void CreateVolumnTexture();
     void CreateSkybox();
-    void CreateCube(Image::Ptr image);
-    void CreateIconSphere(Image::Ptr image);
+    void CreateCube(ImagePtr image);
+    void CreateIconSphere(ImagePtr image);
     void CreateNURBSSurface();
     
-    void CreateGeometry(Geometry::Ptr geom, uint32 index);
+    void CreateGeometry(GeometryPtr geom, uint32 index);
 
     void RenderGeometryEx(int index);
-    void RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face = GL_CCW);
+    void RenderGeometry(GeometryPtr geom, int32 index, GLenum front_face = GL_CCW);
 
     void OnWrapModeGUI(int32& wrap_mode_option);
     void OnFilterModeGUI(int32& filter_mode_option);
@@ -117,17 +117,17 @@ private:
 
     TexParams _texparams;
 
-    Sprite::Ptr _sprite;
-    Sprite::Ptr _sprite1D;
+    SpritePtr _sprite;
+    SpritePtr _sprite1D;
 
-    Quad::Ptr _volumnQuad;
-    Cube::Ptr _skybox;
-    Cube::Ptr _cube;
-    IcosahedronSphere::Ptr _sphere;
-    NURBSSurface::Ptr _nurbsSurface;
-    Quad::Ptr _projTexQuad;
+    QuadPtr _volumnQuad;
+    CubePtr _skybox;
+    CubePtr _cube;
+    IcosahedronSpherePtr _sphere;
+    NURBSSurfacePtr _nurbsSurface;
+    QuadPtr _projTexQuad;
 
-    Camera::Ptr _projTexCamera;
+    CameraPtr _projTexCamera;
 
     glm::vec4 _viewportParams;
     float32 _tintcolor[4];

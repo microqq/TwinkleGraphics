@@ -124,7 +124,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void EventManager::Fire(Object::Ptr sender, BaseEventArgs::Ptr args)
+    void EventManager::Fire(ObjectPtr sender, BaseEventArgsPtr args)
     {                
         if(args == nullptr)
         {
@@ -140,7 +140,7 @@ namespace TwinkleGraphics
         event->SetEventArgs(args);
     }
     
-    void EventManager::FireImmediately(Object::Ptr sender, BaseEventArgs::Ptr args)
+    void EventManager::FireImmediately(ObjectPtr sender, BaseEventArgsPtr args)
     {
         // HandlerEvent
         HandleEvents(sender, args);
@@ -186,7 +186,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void EventManager::HandleEvents(Object::Ptr sender, BaseEventArgs::Ptr args)
+    void EventManager::HandleEvents(ObjectPtr sender, BaseEventArgsPtr args)
     {
         if(args == nullptr)
         {

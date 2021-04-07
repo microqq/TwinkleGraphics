@@ -31,8 +31,6 @@ MainWindow::MainWindow(int width, int height)
 
 MainWindow::~MainWindow()
 {
-    for(auto view : _views)
-    { view = nullptr; }
 }
 
 void MainWindow::AddViews(View **views, int num)

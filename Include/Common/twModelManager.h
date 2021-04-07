@@ -31,7 +31,7 @@ namespace TwinkleGraphics
             }
         }
 
-        Model::Ptr ReadModel(const char *filename);
+        ModelPtr ReadModel(const char *filename);
         ReadResult<Model> ReadModelAsync(const char* filename, ReaderOption* option);
 
         void AddTaskFuture(std::future<ReadResult<Model>> future);
@@ -44,7 +44,7 @@ namespace TwinkleGraphics
             , _futures()
             , _mutex()
         {}
-        void OnReadModelSuccess(Object::Ptr obj);
+        void OnReadModelSuccess(ObjectPtr obj);
         void OnReadModelFailed();
 
     private:

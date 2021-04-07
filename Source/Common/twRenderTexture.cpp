@@ -30,7 +30,7 @@ RenderTexture::RenderTexture(int32 width, int32 height
 RenderTexture::~RenderTexture()
 {}
 
-void RenderTexture::Create(FrameBufferObject::Ptr framebuf)
+void RenderTexture::Create(FrameBufferObjectPtr framebuf)
 {
     if(framebuf == nullptr)
     {
@@ -105,14 +105,14 @@ void RenderTexture::Resize(int32 width, int32 height)
     }
 }
 
-void RenderTexture::BlitColor(RenderTexture::Ptr dest)
+void RenderTexture::BlitColor(RenderTexturePtr dest)
 {
     assert(_framebuf != nullptr);
 
     _framebuf->BlitColorTo(_width, _height, dest->_framebuf, dest->_width, dest->_height, GL_NEAREST);
 }
 
-void RenderTexture::BlitDepth(RenderTexture::Ptr dest)
+void RenderTexture::BlitDepth(RenderTexturePtr dest)
 {
     assert(_framebuf != nullptr);
 

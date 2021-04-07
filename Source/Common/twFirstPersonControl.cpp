@@ -4,7 +4,7 @@
 
 namespace TwinkleGraphics
 {
-    FirstPersonControl::FirstPersonControl(Camera::Ptr camera)
+    FirstPersonControl::FirstPersonControl(CameraPtr camera)
         : OrbitControl(camera)
         , _stepX(1.0f)
         , _stepZ(1.0f)
@@ -18,7 +18,7 @@ namespace TwinkleGraphics
 
     void FirstPersonControl::HandleKeyPress(int32 key, int32 scannode, int32 action, int32 mods)
     {
-        Transform::Ptr targetTrans = _target->GetTransform();
+        TransformPtr targetTrans = _target->GetTransform();
         if (targetTrans != nullptr)
         {
             glm::mat3 rotateMat = glm::mat3_cast(_camera->GetTransform()->GetLocalToWorldOrientation());

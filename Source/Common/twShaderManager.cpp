@@ -51,7 +51,7 @@ namespace TwinkleGraphics
         }
     }
 
-    Shader::Ptr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
+    ShaderPtr ShaderManager::ReadShader(const char* filename, ShaderOption* option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
 
@@ -67,20 +67,20 @@ namespace TwinkleGraphics
         }
 
         ReadResult<Shader> result = resMgr.Read<ShaderReader, Shader, ShaderOption>(shaderFilename.c_str(), option);
-        Shader::Ptr sharedShader = result.GetSharedObject();
+        ShaderPtr sharedShader = result.GetSharedObject();
 
         return sharedShader;
     }
 
-    ShaderProgram::Ptr ShaderManager::ReadShaders(ShaderOption options[], int32 num)
+    ShaderProgramPtr ShaderManager::ReadShaders(ShaderOption options[], int32 num)
     {
         //Todo: read program from cache first
 
         //read shader source
-        ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(num);
+        ShaderProgramPtr program = std::make_shared<ShaderProgram>(num);
         for (int i = 0; i < num; i++)
         {
-            Shader::Ptr shader = ReadShader(options[i]._optionData.filename.c_str(), &options[i]);
+            ShaderPtr shader = ReadShader(options[i]._optionData.filename.c_str(), &options[i]);
             if(shader != nullptr)
             {
                 program->AddShader(shader);
@@ -158,7 +158,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void ShaderManager::OnReadShaderSuccess(Object::Ptr obj)
+    void ShaderManager::OnReadShaderSuccess(ObjectPtr obj)
     {
         Shader *shader = dynamic_cast<Shader *>(obj.get());
         if (shader != nullptr)
@@ -173,9 +173,9 @@ namespace TwinkleGraphics
     void ShaderManager::OnReadShaderFailed() 
     {}
 
-    void ShaderManager::OnReadShadersSuccess(Object::Ptr obj)
+    void ShaderManager::OnReadShadersSuccess(ObjectPtr obj)
     {
-        ShaderProgram::Ptr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
+        ShaderProgramPtr program = std::dynamic_pointer_cast<ShaderProgram>(obj);
         if (program != nullptr)
         {
             program->Link();

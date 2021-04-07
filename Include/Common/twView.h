@@ -20,7 +20,7 @@ public:
     ~View();
 
     // [[deprecated]]
-    void SetViewCamera(Camera::Ptr camera) 
+    void SetViewCamera(CameraPtr camera) 
     { 
         if(camera == nullptr)
             return;
@@ -28,7 +28,7 @@ public:
     }
 
     // [[deprecated]]
-    void SetCameraControl(CameraControl::Ptr control) { _cameraControl = control; }
+    void SetCameraControl(CameraControlPtr control) { _cameraControl = control; }
 
     void AttachScene(Scene::Ptr scene) 
     {
@@ -143,9 +143,9 @@ private:
 
 protected:
     // [[deprecated]]
-    Camera::Ptr _camera;
+    CameraPtr _camera;
     // [[deprecated]]
-    CameraControl::Ptr _cameraControl;
+    CameraControlPtr _cameraControl;
 
     Scene::Ptr _scene;
 

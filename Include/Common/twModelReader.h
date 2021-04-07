@@ -43,11 +43,11 @@ namespace TwinkleGraphics
         DECLARE_READERID;
 
     private:
-        Geometry::Ptr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, Model::Ptr model, Material::Ptr* vecMats);
-        SubMesh::Ptr ProcessMesh(aiMesh *mesh, Mesh::Ptr tMesh, int32 offset, const aiScene *scene);
-        Material::Ptr ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFalg);
-        std::vector<Texture::Ptr> LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir);
-        void SetMaterialTextures(std::vector<Texture::Ptr>& textures
+        GeometryPtr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, ModelPtr model, MaterialPtr* vecMats);
+        SubMeshPtr ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset, const aiScene *scene);
+        MaterialPtr ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFalg);
+        std::vector<TexturePtr> LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir);
+        void SetMaterialTextures(std::vector<TexturePtr>& textures
             , StandardMaterial::Ptr material
             , std::string texNamePrefix
             , std::string macroPrefix);

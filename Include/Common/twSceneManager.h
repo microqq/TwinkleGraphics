@@ -23,13 +23,13 @@ namespace TwinkleGraphics
         virtual void Init();
         virtual void Render() {}
 
-        void SetMainCamera(Camera::Ptr cam)
+        void SetMainCamera(CameraPtr cam)
         {
             _maincamera = cam;
             AddCamera(cam);
         }
 
-        void AddCamera(Camera::Ptr cam)
+        void AddCamera(CameraPtr cam)
         {
             if (cam == nullptr)
                 return;
@@ -39,7 +39,7 @@ namespace TwinkleGraphics
                 return;
             }
 
-            std::vector<Camera::Ptr>::iterator findIter = std::find_if(_cameralists.begin(), _cameralists.end(), [cam](Camera::Ptr ele)
+            std::vector<CameraPtr>::iterator findIter = std::find_if(_cameralists.begin(), _cameralists.end(), [cam](CameraPtr ele)
             {
                 return cam == ele;
             });
@@ -60,14 +60,14 @@ namespace TwinkleGraphics
             _cameralists.erase(_cameralists.begin() + index);
         }
 
-        void RemoveCamera(Camera::Ptr cam)
+        void RemoveCamera(CameraPtr cam)
         {
             if(cam == nullptr)
             {
                 return;
             }
 
-            std::vector<Camera::Ptr>::iterator findIter = std::find_if(_cameralists.begin(), _cameralists.end(), [cam](Camera::Ptr ele)
+            std::vector<CameraPtr>::iterator findIter = std::find_if(_cameralists.begin(), _cameralists.end(), [cam](CameraPtr ele)
             {
                 return cam == ele;
             });
@@ -77,8 +77,8 @@ namespace TwinkleGraphics
             }
         }
 
-        Camera::Ptr GetMainCamera() { return _maincamera; }
-        Camera::Ptr GetCamera(int32 index)
+        CameraPtr GetMainCamera() { return _maincamera; }
+        CameraPtr GetCamera(int32 index)
         {
             if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
             {
@@ -89,14 +89,14 @@ namespace TwinkleGraphics
 
         int32 GetCameraCount() { return _cameralists.size(); }
 
-        SceneNode::Ptr GetRootNode() { return _rootNode; }
+        SceneNodePtr GetRootNode() { return _rootNode; }
 
     private:
         void SortCamera()
         {
             if(!_cameraSorted)
             {
-                std::sort(_cameralists.begin(), _cameralists.end(), [](Camera::Ptr a, Camera::Ptr b)
+                std::sort(_cameralists.begin(), _cameralists.end(), [](CameraPtr a, CameraPtr b)
                 {
                     return a->GetDepth() < b->GetDepth();
                 });
@@ -107,9 +107,9 @@ namespace TwinkleGraphics
         void TraverseScene();
 
     protected:
-        std::vector<Camera::Ptr> _cameralists;
-        Camera::Ptr _maincamera = nullptr;
-        SceneNode::Ptr _rootNode = nullptr;
+        std::vector<CameraPtr> _cameralists;
+        CameraPtr _maincamera = nullptr;
+        SceneNodePtr _rootNode = nullptr;
 
         bool _cameraSorted = false;
     };

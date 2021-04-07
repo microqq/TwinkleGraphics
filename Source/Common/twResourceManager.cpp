@@ -124,14 +124,14 @@ namespace TwinkleGraphics
         _workerPool.Stop(true);
     }
 
-    void ResourceManager::OnReadTaskSuccess(Object::Ptr obj
+    void ResourceManager::OnReadTaskSuccess(ObjectPtr obj
         , ReadTaskId taskid
         , CacheHint cachehint
         , CacheStoreHint storeHint
         , CacheId cacheid
         , float storeTime
         , ReaderId readerid
-        , ResourceReader::Ptr reader
+        , ResourceReaderPtr reader
         )
     {
         ResourceCache::Ptr cache = std::make_shared<ResourceCache>(cacheid, obj, storeHint, storeTime);
@@ -140,13 +140,13 @@ namespace TwinkleGraphics
         RecycleReader(readerid, reader);
     }
 
-    void ResourceManager::OnReadTaskFailed(ReadTaskId taskid, ReaderId readerid, ResourceReader::Ptr reader)
+    void ResourceManager::OnReadTaskFailed(ReadTaskId taskid, ReaderId readerid, ResourceReaderPtr reader)
     {
         ReleaseTask(nullptr, taskid, false);
         RecycleReader(readerid, reader);
     }
 
-    void ResourceManager::RecycleReader(ReaderId id, ResourceReader::Ptr reader)
+    void ResourceManager::RecycleReader(ReaderId id, ResourceReaderPtr reader)
     {
         std::lock_guard<std::mutex> lock(_readerMutex);
 
@@ -171,7 +171,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void ResourceManager::ReleaseTask(Object::Ptr obj, ReadTaskId taskid, bool success)
+    void ResourceManager::ReleaseTask(ObjectPtr obj, ReadTaskId taskid, bool success)
     {
         std::lock_guard<std::mutex> lock(_taskMutex);
 

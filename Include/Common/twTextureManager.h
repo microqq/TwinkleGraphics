@@ -80,7 +80,7 @@ namespace TwinkleGraphics
         {
             Destroy();
         }
-        Texture::Ptr ReadTexture(const char* filename, TextureOption* option);
+        TexturePtr ReadTexture(const char* filename, TextureOption* option);
         ReadResult<Texture> ReadTextureAsync(const char* filename, TextureOption* option);
 
         virtual void Update(float deltaTime = 0.0f) override 
@@ -105,7 +105,7 @@ namespace TwinkleGraphics
             , INonCopyable()            
             , IDestroyable()
         {}
-        void OnReadTextureSuccess(Object::Ptr obj);
+        void OnReadTextureSuccess(ObjectPtr obj);
         void OnReadTextureFailed();
 
     private:

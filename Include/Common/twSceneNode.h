@@ -17,11 +17,11 @@ public:
     RenderableObject() {}
     virtual ~RenderableObject() {}
 
-    virtual void SetMeshRenderer(MeshRenderer::Ptr renderer) { _renderer = renderer; }
-    virtual MeshRenderer::Ptr GetMeshRenderer() { return _renderer; }
+    virtual void SetMeshRenderer(MeshRendererPtr renderer) { _renderer = renderer; }
+    virtual MeshRendererPtr GetMeshRenderer() { return _renderer; }
 
 protected:
-    MeshRenderer::Ptr _renderer;
+    MeshRendererPtr _renderer;
 };
 
 enum class SceneLayerType
@@ -61,10 +61,10 @@ public:
     void AttachToParent(SceneNode::Ptr parent);
     void DetachFromParent();
     SceneNode::Ptr GetParent() { return _parent; }
-    Transform::Ptr GetParentTransform() { return _parent != nullptr ? _parent->_transform : nullptr; }
+    TransformPtr GetParentTransform() { return _parent != nullptr ? _parent->_transform : nullptr; }
     int32 GetChildrenCount() { return _children.size(); }
 
-    Transform::Ptr GetTransform() { return _transform; }
+    TransformPtr GetTransform() { return _transform; }
     void SetRenderable(bool renderable) { _renderable = renderable; }
     bool Renderable() { return _renderable; }
 
@@ -82,13 +82,15 @@ protected:
 
     std::vector<SceneNode::Ptr> _children;
     SceneNode::Ptr _parent = nullptr;
-    Transform::Ptr _transform;
+    TransformPtr _transform;
     bool _renderable = false;
     bool _enabled = true;
 
     friend class Scene;
     friend class SceneManager;
 };
+
+typedef SceneNode::Ptr SceneNodePtr;
     
 } // namespace TwinkleGraphics
 #endif

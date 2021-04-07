@@ -72,11 +72,11 @@ class __TWCOMExport Camera : public SceneNode
 public:
     typedef std::shared_ptr<Camera> Ptr;
 
-    enum Type
+    typedef enum Type
     {
         PERSPECTIVE,
         ORTHOGRAPHIC
-    };
+    }CaemraType;
 
     Camera(Viewport viewport, float32 fov, float32 near, float32 far, Camera::Type type = PERSPECTIVE);
     Camera(Viewport viewport, float32 near, float32 far, Camera::Type type = PERSPECTIVE);
@@ -152,8 +152,8 @@ public:
         return _projectionMatrix; 
     }
 
-    void SetRenderToTarget(RenderTexture::Ptr rt);
-    RenderTexture::Ptr GetRenderTarget() { return _rendertarget; }
+    void SetRenderToTarget(RenderTexturePtr rt);
+    RenderTexturePtr GetRenderTarget() { return _rendertarget; }
     void SetCullingMask(CullingMask mask) { _cullingmask |= (int32)mask; }
     void SetCullingMask(int32 mask) { _cullingmask |= mask; }
     int32 GetCullingMask() { return _cullingmask; }
@@ -167,21 +167,24 @@ private:
 private:
     Viewport _viewport;
     glm::mat4 _projectionMatrix;
-    RenderTexture::Ptr _rendertarget = nullptr;
-    Frustum::Ptr _frustum = nullptr;
+    RenderTexturePtr _rendertarget = nullptr;
+    FrustumPtr _frustum = nullptr;
 
     float32 _fov;
     float32 _aspect;
     float32 _near;
     float32 _far;
 
-    Camera::Type _type;
+    CaemraType _type;
 
     int32 _cullingmask;
     int32 _sortdepth;
 
     bool _viewportDirty = true;
 };
+
+typedef Camera::Ptr CameraPtr;
+
 } // namespace TwinkleGraphics
 
 #endif

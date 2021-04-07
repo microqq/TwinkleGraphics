@@ -43,19 +43,19 @@ public:
 
     static RenderPass::Ptr CreateRenderPassInstance(ShaderOption options[], int32 num);
 
-    RenderPass(ShaderProgram::Ptr shader = nullptr);
+    RenderPass(ShaderProgramPtr shader = nullptr);
     RenderPass(const RenderPass& src);
     virtual ~RenderPass();
 
     void SetCullMode(CullMode cull) {}
     void SetPolygonMode(PolygonMode polygonmode) {}
 
-    void SetShaderProgram(ShaderProgram::Ptr shader) { _program = shader; }
+    void SetShaderProgram(ShaderProgramPtr shader) { _program = shader; }
     void SetEnable(bool enable) { _enable = enable; }
 
     inline bool Enable() { return _enable; }
     inline const RenderState& GetRenderState() { return _state; }
-    inline const ShaderProgram::Ptr& GetShaderProgram() { return _program; }
+    inline const ShaderProgramPtr& GetShaderProgram() { return _program; }
     inline const std::map<std::string, TextureSlot>& GetTextureSlots() { return _slots; }
     inline const std::map<std::string, UniformLocation>& GetUniformLocations() { return _uniformlocations; }
 
@@ -64,20 +64,22 @@ public:
 #endif
 
 private:
-    void SetMaintexture(Texture::Ptr maintex) { SetTexture("mainTex", maintex); }
-    void SetTexture(const char* name, Texture::Ptr tex);
+    void SetMaintexture(TexturePtr maintex) { SetTexture("mainTex", maintex); }
+    void SetTexture(const char* name, TexturePtr tex);
     void SetUniform(const char* name, Uniform* uniform);
 
 private:
     std::map<std::string, TextureSlot> _slots;
     std::map<std::string, UniformLocation> _uniformlocations;
     RenderState _state;
-    ShaderProgram::Ptr _program;
+    ShaderProgramPtr _program;
 
     bool _enable = true;
 
     friend class Material;
 };
+
+typedef RenderPass::Ptr RenderPassPtr;
 
 
 /**
@@ -109,7 +111,7 @@ public:
      * @param index 
      * @param pass 
      */
-    void SetRenderPass(int32 index, RenderPass::Ptr pass)
+    void SetRenderPass(int32 index, RenderPassPtr pass)
     {
         int32 size = _passes.size(); 
         if (index < size)
@@ -121,9 +123,9 @@ public:
      * 
      * @param pass 
      */
-    void AddRenderPass(RenderPass::Ptr pass) { _passes.push_back(pass); }
+    void AddRenderPass(RenderPassPtr pass) { _passes.push_back(pass); }
 
-    RenderPass::Ptr GetRenderPass(int32 index) 
+    RenderPassPtr GetRenderPass(int32 index) 
     { 
         int32 size = _passes.size();
         if(index >= 0 && index < size) 
@@ -136,7 +138,7 @@ public:
      * 
      * @param maintex 
      */
-    void SetMainTexture(Texture::Ptr maintex);
+    void SetMainTexture(TexturePtr maintex);
 
     /**
      * @brief Set the Texture object
@@ -144,10 +146,10 @@ public:
      * @param name 
      * @param tex 
      */
-    void SetTexture(const char* name, Texture::Ptr tex);
+    void SetTexture(const char* name, TexturePtr tex);
 
-    Texture::Ptr GetMainTexture() { return GetTexture("mainTex"); }
-    Texture::Ptr GetTexture(const char* name);
+    TexturePtr GetMainTexture() { return GetTexture("mainTex"); }
+    TexturePtr GetTexture(const char* name);
 
     /**
      * @brief Set the Texture Tiling object
@@ -295,14 +297,15 @@ private:
 
 
 private:
-    std::vector<RenderPass::Ptr> _passes;
+    std::vector<RenderPassPtr> _passes;
     std::map<std::string, Uniform*> _uniforms;
-    std::map<std::string, Texture::Ptr> _textures;
+    std::map<std::string, TexturePtr> _textures;
     RenderState _state;
 
     friend class MeshRenderer;
 };
 
+typedef Material::Ptr MaterialPtr;
 
 } // namespace TwinkleGraphics
 

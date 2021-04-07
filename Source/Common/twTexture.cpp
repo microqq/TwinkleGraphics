@@ -964,28 +964,28 @@ TextureBuffer::~TextureBuffer()
 }
 
 
-void TextureCube::SetPositiveX(Image::Ptr image)
+void TextureCube::SetPositiveX(ImagePtr image)
 {
     _imagePositiveX = image;
 }
-void TextureCube::SetPositiveY(Image::Ptr image)
+void TextureCube::SetPositiveY(ImagePtr image)
 {
     _imagePositiveY = image;
 }
-void TextureCube::SetPositiveZ(Image::Ptr image)
+void TextureCube::SetPositiveZ(ImagePtr image)
 {
     _imagePositiveZ = image;
 }
 
-void TextureCube::SetNegativeX(Image::Ptr image)
+void TextureCube::SetNegativeX(ImagePtr image)
 {
     _imageNegativeX = image;
 }
-void TextureCube::SetNegativeY(Image::Ptr image)
+void TextureCube::SetNegativeY(ImagePtr image)
 {
     _imageNegativeY = image;
 }
-void TextureCube::SetNegativeZ(Image::Ptr image)
+void TextureCube::SetNegativeZ(ImagePtr image)
 {
     _imageNegativeZ = image;
 }

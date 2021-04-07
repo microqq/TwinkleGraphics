@@ -18,7 +18,7 @@ namespace TwinkleGraphics
         virtual void OnGui() override;
         virtual void OnGuiEnd()  override;
 
-        RenderTexture::Ptr GetViewRT() { return _viewRT; }
+        RenderTexturePtr GetViewRT() { return _viewRT; }
 
     private:
         virtual void SetFocusedInternal() override;
@@ -28,7 +28,7 @@ namespace TwinkleGraphics
         void PaintViewGui(ImVec2 viewSize);
 
     private:
-        RenderTexture::Ptr _viewRT = nullptr;
+        RenderTexturePtr _viewRT = nullptr;
         vec2 _viewSize;
         bool _viewSizeDirty = false;
         bool _viewSizeInitialized = false;

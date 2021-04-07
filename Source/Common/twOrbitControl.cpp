@@ -7,7 +7,7 @@
 
 namespace TwinkleGraphics
 {
-OrbitControl::OrbitControl(Camera::Ptr camera)
+OrbitControl::OrbitControl(CameraPtr camera)
     : CameraControl(camera)
     , _center()
     , _maxDistance(500.0f)
@@ -143,7 +143,7 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2)
         _rotateY += theta_y * factor;
     }
 
-    Transform::Ptr targetTrans = _target->GetTransform();
+    TransformPtr targetTrans = _target->GetTransform();
 
     targetTrans->SetOrientation(glm::identity<glm::quat>());
     targetTrans->Rotate(glm::vec3(+_rotateY, -_rotateX, 0.0f));

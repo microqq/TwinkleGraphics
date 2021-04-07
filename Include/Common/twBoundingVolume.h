@@ -58,6 +58,8 @@ namespace TwinkleGraphics
         friend class Frustum;
     };
 
+    typedef AABoundingBox::Ptr AABoundingBoxPtr;
+
     class __TWCOMExport OrientedBoundingBox : public Object
     {
     public:
@@ -92,6 +94,9 @@ namespace TwinkleGraphics
         friend class BoundingSphere;
         friend class Frustum;
     };
+
+    typedef OrientedBoundingBox::Ptr OrientedBoundingBoxPtr;
+
 
     class __TWCOMExport BoundingSphere : public Object
     {
@@ -128,6 +133,8 @@ namespace TwinkleGraphics
         friend class AABoundingBox;
         friend class Frustum;
     };
+
+    typedef BoundingSphere::Ptr BoundingSpherePtr;
 
 } // namespace TwinkleGraphics
 

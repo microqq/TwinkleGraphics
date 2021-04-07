@@ -22,7 +22,7 @@ namespace TwinkleGraphics
 
         for(auto geom : _geometries)
         {
-            MeshRenderer::Ptr renderer = geom->GetMeshRenderer();
+            MeshRendererPtr renderer = geom->GetMeshRenderer();
             if(renderer == nullptr)
             {
                 continue;
@@ -34,7 +34,7 @@ namespace TwinkleGraphics
         _valid = valid;
     }
 
-    void Model::AddGeometry(Geometry::Ptr geom)
+    void Model::AddGeometry(GeometryPtr geom)
     {
         if(geom != nullptr)
         {
@@ -55,7 +55,7 @@ namespace TwinkleGraphics
         }
     }
 
-    Geometry::Ptr Model::GetGeometry(int index)
+    GeometryPtr Model::GetGeometry(int index)
     {
         int size = _geometries.size();
         if(index >= 0 && index < size)
@@ -78,7 +78,7 @@ namespace TwinkleGraphics
 
         for(auto geom : _geometries)
         {
-            MeshRenderer::Ptr renderer = geom->GetMeshRenderer();
+            MeshRendererPtr renderer = geom->GetMeshRenderer();
             if(renderer == nullptr)
             {
                 continue;
@@ -87,23 +87,23 @@ namespace TwinkleGraphics
             int32 submeshCount = geom->GetMesh()->GetSubMeshCount();
             for(int i = 0; i < submeshCount; i++)
             {
-                SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(i);
-                VertexArrayObject::Ptr vao = renderer->GetVertexArrayObject(i);
+                SubMeshPtr submesh = geom->GetMesh()->GetSubMesh(i);
+                VertexArrayObjectPtr vao = renderer->GetVertexArrayObject(i);
                 if(vao == nullptr)
                 {
                     continue;
                 }
 
-                Material::Ptr mat = renderer->GetMaterial(submesh->GetMaterialIndex());
+                MaterialPtr mat = renderer->GetMaterial(submesh->GetMaterialIndex());
                 if(mat != nullptr)
                 {
-                    RenderPass::Ptr pass = mat->GetRenderPass(0);
+                    RenderPassPtr pass = mat->GetRenderPass(0);
                     if(pass == nullptr)
                     {
                         continue;
                     }
 
-                    ShaderProgram::Ptr shader = pass->GetShaderProgram();
+                    ShaderProgramPtr shader = pass->GetShaderProgram();
 
                     for (auto tex_slot : pass->GetTextureSlots())
                     {

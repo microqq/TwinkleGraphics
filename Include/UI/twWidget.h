@@ -104,7 +104,7 @@ namespace TwinkleGraphics
         void SetParent(Widget *parent = nullptr);
 
     protected:
-        virtual void OnEvent(Object::Ptr sender, BaseEventArgs::Ptr event);
+        virtual void OnEvent(ObjectPtr sender, BaseEventArgsPtr event);
 
         virtual void OnMousePressEvent(MouseEventArgs *e);
         virtual void OnMouseReleaseEvent(MouseEventArgs *e);

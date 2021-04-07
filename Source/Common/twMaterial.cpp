@@ -4,16 +4,16 @@ namespace TwinkleGraphics
 {
 /*------------------------------RenderPass--------------------------*/
 
-RenderPass::Ptr RenderPass::CreateRenderPassInstance(ShaderOption options[], int32 num)
+RenderPassPtr RenderPass::CreateRenderPassInstance(ShaderOption options[], int32 num)
 {
     ShaderManager& shaderMgr = ShaderMgrInstance();
-    ShaderProgram::Ptr program = shaderMgr.ReadShaders(options, num);
+    ShaderProgramPtr program = shaderMgr.ReadShaders(options, num);
 
-    RenderPass::Ptr pass = std::make_shared<RenderPass>(program);
+    RenderPassPtr pass = std::make_shared<RenderPass>(program);
     return pass;
 }
 
-RenderPass::RenderPass(ShaderProgram::Ptr shader)
+RenderPass::RenderPass(ShaderProgramPtr shader)
     : Object()
     , _slots()
     , _program(shader)
@@ -54,7 +54,7 @@ RenderPass::~RenderPass()
     _uniformlocations.clear();
 }
 
-void RenderPass::SetTexture(const char *name, Texture::Ptr tex)
+void RenderPass::SetTexture(const char *name, TexturePtr tex)
 {
     if(tex == nullptr)
         return;
@@ -163,7 +163,7 @@ Material::Material(const Material &src)
 {
     for(auto srcPass : src._passes)
     {
-        RenderPass::Ptr pass = std::make_shared<RenderPass>(*(srcPass.get()));
+        RenderPassPtr pass = std::make_shared<RenderPass>(*(srcPass.get()));
         _passes.push_back(pass);
     }
 
@@ -250,17 +250,17 @@ void Material::ApplyRenderPass()
     }
 }
 
-void Material::SetMainTexture(Texture::Ptr maintex)
+void Material::SetMainTexture(TexturePtr maintex)
 {
     SetTexture("mainTex", maintex);
 }
 
-void Material::SetTexture(const char *name, Texture::Ptr tex)
+void Material::SetTexture(const char *name, TexturePtr tex)
 {
-    std::map<std::string, Texture::Ptr>::iterator it = _textures.find(name);
+    std::map<std::string, TexturePtr>::iterator it = _textures.find(name);
     if (it == _textures.end())
     {
-        _textures.insert(std::map<std::string, Texture::Ptr>::value_type(name, tex));
+        _textures.insert(std::map<std::string, TexturePtr>::value_type(name, tex));
 
         for (auto pass : _passes)
         {
@@ -286,9 +286,9 @@ void Material::SetTexture(const char *name, Texture::Ptr tex)
     }
 }
 
-Texture::Ptr Material::GetTexture(const char *name)
+TexturePtr Material::GetTexture(const char *name)
 {
-    std::map<std::string, Texture::Ptr>::iterator it = _textures.find(name);
+    std::map<std::string, TexturePtr>::iterator it = _textures.find(name);
     if (it == _textures.end())
     {
         return nullptr;

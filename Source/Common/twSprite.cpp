@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics
 {
-Sprite::Sprite(Texture::Ptr texture, MeshDataFlag flag)
+Sprite::Sprite(TexturePtr texture, MeshDataFlag flag)
     : Quad(flag)
     , _perpixelunit(100)
 {
@@ -16,7 +16,7 @@ Sprite::Sprite(Texture::Ptr texture, MeshDataFlag flag)
     InitRenderer(texture);
 }
 
-Sprite::Sprite(Texture::Ptr texture, glm::vec2 size, MeshDataFlag flag)
+Sprite::Sprite(TexturePtr texture, glm::vec2 size, MeshDataFlag flag)
     : Quad(size
         , flag)
     , _perpixelunit(100)
@@ -49,7 +49,7 @@ void Sprite::SetColor(vec4 &color)
  *
  * @param texture
  */
-void Sprite::SetTexture(Texture::Ptr texture)
+void Sprite::SetTexture(TexturePtr texture)
 {
     if(_spriteRenderer != nullptr)
     {
@@ -58,7 +58,7 @@ void Sprite::SetTexture(Texture::Ptr texture)
 }
 
 
-void Sprite::InitRenderer(Texture::Ptr texture)
+void Sprite::InitRenderer(TexturePtr texture)
 {
 #ifdef _DEBUG
 #endif
@@ -72,7 +72,7 @@ void Sprite::InitRenderer(Texture::Ptr texture)
 /*-------------------------------Sprite Renderer-------------------------------*/
 
 
-SpriteRenderer::SpriteRenderer(Texture::Ptr texture)
+SpriteRenderer::SpriteRenderer(TexturePtr texture)
     : MeshRenderer()
 {
     Init(texture);
@@ -83,22 +83,22 @@ SpriteRenderer::~SpriteRenderer()
 }
 
 
-void SpriteRenderer::Init(Texture::Ptr texture)
+void SpriteRenderer::Init(TexturePtr texture)
 {
     if(texture == nullptr) return;
 
     const RenderResourceHandle& res = texture->GetRenderRes();
-    ShaderProgram::Ptr program = nullptr;
+    ShaderProgramPtr program = nullptr;
     if(res.type == (int)(TextureType::TEXTURE_1D))
     {
-        Material::Ptr mat = std::make_shared<Sprite1DMaterial>();
+        MaterialPtr mat = std::make_shared<Sprite1DMaterial>();
         SetMaterial(mat);
         mat = GetMaterial(); 
         mat->SetMainTexture(texture);
     }
     else if(res.type == (int)(TextureType::TEXTURE_2D))
     {
-        Material::Ptr mat = std::make_shared<SpriteMaterial>();
+        MaterialPtr mat = std::make_shared<SpriteMaterial>();
         SetMaterial(mat);
         mat = GetMaterial(); 
         GetMaterial()->SetMainTexture(texture);

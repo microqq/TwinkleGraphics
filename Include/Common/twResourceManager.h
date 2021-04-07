@@ -191,7 +191,7 @@ namespace TwinkleGraphics
             std::unique_lock<std::mutex> lock(_readerMutex, std::defer_lock);
 
             lock.lock();
-            ResourceReader::Ptr reader = PopIdleReader(R::ID);
+            ResourceReaderPtr reader = PopIdleReader(R::ID);
             lock.unlock();
 
             if (reader != nullptr)
@@ -215,14 +215,14 @@ namespace TwinkleGraphics
             return derivedReader;
         }
 
-        ResourceReader::Ptr PopIdleReader(ReaderId id)
+        ResourceReaderPtr PopIdleReader(ReaderId id)
         {
             using MIterator = MultMapReaders::iterator;
             MIterator iter = _idleReaders.find(id);
             MIterator end = _idleReaders.end();
             if (iter != end)
             {
-                ResourceReader::Ptr reader = iter->second;
+                ResourceReaderPtr reader = iter->second;
                 _idleReaders.erase(iter);
 
                 return reader;
@@ -231,7 +231,7 @@ namespace TwinkleGraphics
             return nullptr;
         }
 
-        void PushLoadingReader(ReaderId id, ResourceReader::Ptr reader)
+        void PushLoadingReader(ReaderId id, ResourceReaderPtr reader)
         {
             _loadingReaders.insert(std::make_pair(id, reader));
         }
@@ -253,27 +253,27 @@ namespace TwinkleGraphics
 
         void ClearWorkerPool();
 
-        void OnReadTaskSuccess(Object::Ptr obj
+        void OnReadTaskSuccess(ObjectPtr obj
             , ReadTaskId taskid
             , CacheHint cachehint
             , CacheStoreHint storeHint
             , CacheId cacheid
             , float storeTime
             , ReaderId readerid
-            , ResourceReader::Ptr reader
+            , ResourceReaderPtr reader
             );
         void OnReadTaskFailed(ReadTaskId taskid
             , ReaderId readerid
-            , ResourceReader::Ptr reader
+            , ResourceReaderPtr reader
             );
         
-        void OnRecycleReader(Object::Ptr obj, ReaderId id, ResourceReader::Ptr reader)
+        void OnRecycleReader(ObjectPtr obj, ReaderId id, ResourceReaderPtr reader)
         {
             RecycleReader(id, reader);
         }
 
-        void RecycleReader(ReaderId id, ResourceReader::Ptr reader);
-        void ReleaseTask(Object::Ptr obj, ReadTaskId taskid, bool success);
+        void RecycleReader(ReaderId id, ResourceReaderPtr reader);
+        void ReleaseTask(ObjectPtr obj, ReadTaskId taskid, bool success);
 
         bool AddResourceCache(CacheHint hint, ResourceCache::Ptr cache);
         ResourceCache::Ptr GetResourceCache(CacheHint hint, CacheId id);
@@ -293,7 +293,7 @@ namespace TwinkleGraphics
 
         protected:
             virtual void InvokeSuccess() = 0;
-            virtual void InvokeSuccess(Object::Ptr obj) = 0;
+            virtual void InvokeSuccess(ObjectPtr obj) = 0;
             virtual void InvokeFailed() = 0;
 
         protected:
@@ -333,7 +333,7 @@ namespace TwinkleGraphics
                 }
             }
 
-            virtual void InvokeSuccess(Object::Ptr obj) override
+            virtual void InvokeSuccess(ObjectPtr obj) override
             {
                 ReaderOption* option = _reader->GetReaderOption();
                 if(option != nullptr)
@@ -357,7 +357,7 @@ namespace TwinkleGraphics
             friend class ResourceManager;
         };
 
-        typedef std::multimap<ReaderId, ResourceReader::Ptr> MultMapReaders;
+        typedef std::multimap<ReaderId, ResourceReaderPtr> MultMapReaders;
 #if defined(_WIN32)        
         typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
 #elif defined(__linux__) or defined(__APPLE__)

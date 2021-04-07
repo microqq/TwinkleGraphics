@@ -141,7 +141,7 @@ namespace TwinkleGraphics
         );
 
         {
-            Texture::Ptr tex = _viewRT->GetTexture();
+            TexturePtr tex = _viewRT->GetTexture();
             uint id = tex->GetRenderRes().id;
             ImGui::Image((ImTextureID)id, viewSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
         }

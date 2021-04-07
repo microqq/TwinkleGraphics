@@ -28,15 +28,15 @@ TEST(MaterialTests, UniformSetting)
 
 
     // material
-    RenderPass::Ptr pass0 = std::make_shared<RenderPass>();
-    Material::Ptr material = std::make_shared<Material>();
+    RenderPassPtr pass0 = std::make_shared<RenderPass>();
+    MaterialPtr material = std::make_shared<Material>();
     material->AddRenderPass(pass0);
 
     vec4 tintColor(2.0f, 3.0f, 4.0f, 5.0f);
     material->SetVecUniformValue<float32, 4>("tintColor", tintColor);
 
     //material2
-    Material::Ptr material2 = std::make_shared<Material>(*(material.get()));
+    MaterialPtr material2 = std::make_shared<Material>(*(material.get()));
     const VecUniform<float32, 4> *cast_vec4 = dynamic_cast<const VecUniform<float32, 4>* >(material2->GetUniform("tintColor"));
     ASSERT_EQ(cast_vec4->vector, vec4(2.0f, 3.0f, 4.0f, 5.0f));
 

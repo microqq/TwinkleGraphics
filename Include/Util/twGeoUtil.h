@@ -30,8 +30,8 @@ namespace TwinkleGraphics
 
         __TWCOMExport Plane *CreateInifinitePlane(glm::vec3 normal, float distance, float32 width, int32 subdivision = 32, MeshDataFlag flag = MeshDataFlag::DEFAULT);
 
-        __TWCOMExport Sprite *CreateSprite(Texture2D::Ptr tex);
-        __TWCOMExport Sprite *CreateSprite1D(Texture1D::Ptr tex, glm::vec2 size);
+        __TWCOMExport Sprite *CreateSprite(Texture2DPtr tex);
+        __TWCOMExport Sprite *CreateSprite1D(Texture1DPtr tex, glm::vec2 size);
 #pragma endregion Geometry
 
 #ifdef __cplusplus

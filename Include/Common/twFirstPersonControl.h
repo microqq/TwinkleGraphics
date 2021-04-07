@@ -14,7 +14,7 @@ class __TWCOMExport FirstPersonControl : public OrbitControl
 public:
     typedef std::shared_ptr<FirstPersonControl> Ptr;
 
-    FirstPersonControl(Camera::Ptr camera); 
+    FirstPersonControl(CameraPtr camera); 
     virtual ~FirstPersonControl();
 
     void SetStep(float stepx, float stepz)
@@ -38,6 +38,9 @@ private:
     float _stepX; 
     float _stepZ;
 }; 
+
+typedef FirstPersonControl::Ptr FirstPersonControlPtr;
+
 } // namespace TwinkleGraphics
 
 

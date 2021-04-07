@@ -163,10 +163,8 @@ namespace TwinkleGraphics
 
             return false;
         }
-        else
-        {
-            return IntersectLineSegment(origin, dir, tMin, tMax, t);
-        }
+        
+        return IntersectLineSegment(origin, dir, tMin, tMax, t);
     }
 
     /**
@@ -217,6 +215,8 @@ namespace TwinkleGraphics
             t = tMin > 0.0f ? tMin : tMax;
             return true;
         }
+
+        return false;
     }
 
     bool AABoundingBox::IntersectLine(const vec3 &origin, const vec3 &dir, float& t1, float t2) const
@@ -283,8 +283,8 @@ namespace TwinkleGraphics
     bool AABoundingBox::IntersectLineSegment(const vec3 &origin, const vec3 &dir, float tMin, float tMax, float& t) const
     {
         float t1, t2;
-        {
         if(IntersectLine(origin, dir, t1, t2))
+        {
             if(t2 < 0.0f)
                 return false;
 
@@ -299,26 +299,22 @@ namespace TwinkleGraphics
                 return true;
             }
 
-            return false;
         }
+        return false;
     }
-
-
-
-
 
     OrientedBoundingBox::OrientedBoundingBox(const vec3& center, const std::array<vec3, 3>& axis, const vec3& extents)
         : Object()
-        , _center(center)
         , _axis(axis)
+        , _center(center)
         , _extents(extents)
     {
     }
 
     OrientedBoundingBox::OrientedBoundingBox(const OrientedBoundingBox &other)
         : Object(other)
-        , _center(other._center)
         , _axis(other._axis)
+        , _center(other._center)
         , _extents(other._extents)
     {
     }
@@ -339,7 +335,7 @@ namespace TwinkleGraphics
 
     bool OrientedBoundingBox::Intersect(const vec3 &planeNormal, float d, Intersection& intersection) const
     {
-
+        return false;
     }
 
     bool OrientedBoundingBox::Intersect(const vec3 &origin, const vec3 &dir, float tMin, float tMax) const
@@ -429,12 +425,9 @@ namespace TwinkleGraphics
             //if line, tMin == -infinity, tMax == inifinity
             return true;
         }
-        else
-        {
-            //if segment, tMin != (-infinity || inifinity), tMax != (-infinity || inifinity)
-            Console::LogAssert(tMin != infinity && tMax != infinity && tMin >= 0.0f && tMax > tMin, "LineSegment tMin/tMax has a value error.", "\n");
-        }
 
+        //if segment, tMin != (-infinity || inifinity), tMax != (-infinity || inifinity)
+        Console::LogAssert(tMin != infinity && tMax != infinity && tMin >= 0.0f && tMax > tMin, "LineSegment tMin/tMax has a value error.", "\n");
         return true;
     }
 } // namespace TwinkleGraphics

@@ -95,7 +95,7 @@ namespace TwinkleGraphics
 		if (vglLoadDDS(filename, &data))
 		{
 			Console::LogInfo("Load image ", filename, " successed.\n");
-			Image::Ptr image = std::make_shared<Image>(filename, data);
+			ImagePtr image = std::make_shared<Image>(filename, data);
 			return ReadResult<Image>(shared_from_this(), image, ReadResult<Image>::Status::SUCCESS);
 		}
 
@@ -162,7 +162,7 @@ namespace TwinkleGraphics
 		data.mip[0].mipStride = data.totalDataSize;
 		data.mip[0].data = bits;
 
-		Image::Ptr ret_image = std::make_shared<Image>(filename, data);
+		ImagePtr ret_image = std::make_shared<Image>(filename, data);
 
 		//Free FreeImage's copy of the data
 		FreeImage_Unload(dib);
@@ -173,9 +173,9 @@ namespace TwinkleGraphics
 		return ReadResult<Image>(shared_from_this(), ret_image, ReadResult<Image>::Status::SUCCESS);
 	}
 
-    void ImageReader::OnReadImageSuccess(Object::Ptr obj)
+    void ImageReader::OnReadImageSuccess(ObjectPtr obj)
     {
-        Image::Ptr image = std::dynamic_pointer_cast<Image>(obj);
+        ImagePtr image = std::dynamic_pointer_cast<Image>(obj);
         if (image != nullptr)
         {
 			if(_option != nullptr)

@@ -12,11 +12,11 @@ class __TWCOMExport CameraControl : public Object
 public:
     typedef std::shared_ptr<CameraControl> Ptr;
 
-    CameraControl(Camera::Ptr camera) : _camera(camera) {}
+    CameraControl(CameraPtr camera) : _camera(camera) {}
     virtual ~CameraControl() {}
 
-    void SetCamera(Camera::Ptr camera) { _camera = camera; }
-    Camera::Ptr GetCamera() { return _camera; }
+    void SetCamera(CameraPtr camera) { _camera = camera; }
+    CameraPtr GetCamera() { return _camera; }
     virtual void UpdateCamera() {}
 
     virtual void HandleMouseMove(glm::dvec2 move) {}
@@ -33,8 +33,11 @@ public:
         , int32 mods) {}
 
 protected:
-    Camera::Ptr _camera;
+    CameraPtr _camera;
 };
+
+typedef CameraControl::Ptr CameraControlPtr;
+
 } // namespace TwinkleGraphics
 
 

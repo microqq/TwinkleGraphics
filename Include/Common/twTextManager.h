@@ -31,7 +31,7 @@ namespace TwinkleGraphics
             , INonCopyable()      
             , IDestroyable()
         {}
-        void OnReadTextSuccess(Object::Ptr obj);
+        void OnReadTextSuccess(ObjectPtr obj);
         void OnReadTextFailed();
 
     private:

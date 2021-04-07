@@ -12,7 +12,7 @@
 
 #define MemEventHandlerPart1 typedef void
 #define MemEventHandlerPart2(T) (T::*T ##MemFuncType)
-#define MemEventHandlerPart3 (Object::Ptr, BaseEventArgs::Ptr)
+#define MemEventHandlerPart3 (ObjectPtr, BaseEventArgsPtr)
 
 #define DefMemEventHandlerType(T) MemEventHandlerPart1 MemEventHandlerPart2(T)MemEventHandlerPart3
 #define MemEventHandlerType(T) T##MemFuncType
@@ -25,8 +25,8 @@
 namespace TwinkleGraphics
 {
     typedef unsigned int HandlerId;
-    typedef void (*EventHandlerFuncPointer)(Object::Ptr, BaseEventArgs::Ptr);
-    typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> EventHandlerFunction;
+    typedef void (*EventHandlerFuncPointer)(ObjectPtr, BaseEventArgsPtr);
+    typedef std::function<void(ObjectPtr, BaseEventArgsPtr)> EventHandlerFunction;
     typedef std::shared_ptr<EventHandlerFunction> EventHandlerFunctionPtr;
 
     class __TWCOMExport EventHandler : public Object
@@ -128,7 +128,7 @@ namespace TwinkleGraphics
             return _handlerId == other._handlerId;
         }
 
-        void operator()(Object::Ptr sender, BaseEventArgs::Ptr args)
+        void operator()(ObjectPtr sender, BaseEventArgsPtr args)
         {
             Invoke(sender, args);
         }
@@ -156,7 +156,7 @@ namespace TwinkleGraphics
             _handlerFuncList.clear();
         }
 
-        void Invoke(Object::Ptr sender, BaseEventArgs::Ptr args)
+        void Invoke(ObjectPtr sender, BaseEventArgsPtr args)
         {
             for(auto func : _handlerFuncList)
             {

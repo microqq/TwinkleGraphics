@@ -29,8 +29,8 @@ namespace TwinkleGraphics
         void UnSubscribe(EventId id, const EventHandlerFunctionPtr& func);
         void UnSubscribe(EventId id, const EventHandler& handler);
 
-        void Fire(Object::Ptr sender, BaseEventArgs::Ptr args);
-        void FireImmediately(Object::Ptr sender, BaseEventArgs::Ptr args);
+        void Fire(ObjectPtr sender, BaseEventArgsPtr args);
+        void FireImmediately(ObjectPtr sender, BaseEventArgsPtr args);
 
         u32 GetEventsCount() { return _queue.Length(); }
 
@@ -39,7 +39,7 @@ namespace TwinkleGraphics
 
         EventHandler* FindFirstEventHandler(EventId id);
         void HandleEvents();
-        void HandleEvents(Object::Ptr sender, BaseEventArgs::Ptr args);
+        void HandleEvents(ObjectPtr sender, BaseEventArgsPtr args);
 
         void CompressEvents();
 

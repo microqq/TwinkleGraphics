@@ -77,7 +77,7 @@ namespace TwinkleGraphics
         SAFE_DEL(_optionData.macros);
     }
 
-    Shader::Shader(ShaderType type, ShaderSource::Ptr source)
+    Shader::Shader(ShaderType type, ShaderSourcePtr source)
         : Object()
         , _res()
         , _compiled(false)
@@ -113,7 +113,7 @@ namespace TwinkleGraphics
         _source = nullptr;
     }
 
-    void Shader::SetShaderSource(ShaderSource::Ptr source)
+    void Shader::SetShaderSource(ShaderSourcePtr source)
     {
         if(source == nullptr)
         {
@@ -338,7 +338,7 @@ namespace TwinkleGraphics
 
                 std::string directory = _source->filename.substr(0, position) + "/";                
                 std::string textFilename{ directory + sm.str() };
-                ShaderIncludeSource::Ptr includeSource = textMgr.ReadText(textFilename.c_str());
+                ShaderIncludeSourcePtr includeSource = textMgr.ReadText(textFilename.c_str());
 
                 assert(includeSource != nullptr);
                 includeSource->filename = sm.str();
@@ -350,7 +350,7 @@ namespace TwinkleGraphics
         }
     }
 
-    ShaderProgramUse::ShaderProgramUse(ShaderProgram::Ptr program)
+    ShaderProgramUse::ShaderProgramUse(ShaderProgramPtr program)
     {
         if (program != nullptr)
         {
@@ -387,7 +387,7 @@ namespace TwinkleGraphics
         }
     }
 
-    void ShaderProgram::AddShader(Shader::Ptr shader)
+    void ShaderProgram::AddShader(ShaderPtr shader)
     {
         _shaders.emplace_back(shader);
     }
@@ -574,7 +574,7 @@ namespace TwinkleGraphics
      * @tparam  
      * @param filename 
      * @param option 
-     * @return ReadResult<Shader::Ptr> 
+     * @return ReadResult<ShaderPtr> 
      */
     ReadResult<Shader> ShaderReader::Read(const char *filename)
     {
@@ -604,13 +604,13 @@ namespace TwinkleGraphics
             fp = nullptr;
 
             source[len] = 0;
-            ShaderSource::Ptr sourcePtr = std::make_shared<ShaderSource>();
+            ShaderSourcePtr sourcePtr = std::make_shared<ShaderSource>();
             sourcePtr->filename = subFilename;
             sourcePtr->content = std::string(source);
             SAFE_DEL_ARR(source);
 
             ShaderOption* shaderOption = dynamic_cast<ShaderOption*>(_option);
-            Shader::Ptr sharedShader = std::make_shared<Shader>(
+            ShaderPtr sharedShader = std::make_shared<Shader>(
                 shaderOption->_optionData.type
                 , sourcePtr);
             sharedShader->SetDefineMacros(
@@ -648,8 +648,8 @@ namespace TwinkleGraphics
         ShaderProgramOption* option = dynamic_cast<ShaderProgramOption*>(_option);
         if(option != nullptr)
         {
-            Shader::Ptr shader = nullptr;
-            ShaderProgram::Ptr program = std::make_shared<ShaderProgram>(option->_numShaderOption);
+            ShaderPtr shader = nullptr;
+            ShaderProgramPtr program = std::make_shared<ShaderProgram>(option->_numShaderOption);
             for(int i = 0, num = option->_numShaderOption; i < num; i++)
             {
                 ShaderOption& shaderOption = option->_shaderOptions[i];

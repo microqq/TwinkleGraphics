@@ -23,7 +23,7 @@ namespace TwinkleGraphics
                     if (ret)
                     {
                         ReadResult<T> result = future.get();
-                        ResourceReader::Ptr reader = result.GetReader();
+                        ResourceReaderPtr reader = result.GetReader();
                         if (reader != nullptr)
                         {
                             ReaderOption *option = reader->GetReaderOption();

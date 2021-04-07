@@ -59,6 +59,8 @@ namespace TwinkleGraphics
         bool _cancelFlag = false;
         bool _shouldBeCompressed = false;
     };
+
+    typedef BaseEventArgs::Ptr BaseEventArgsPtr;
 } // namespace TwinkleGraphics
 
 

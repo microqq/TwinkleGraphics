@@ -107,11 +107,11 @@ private:
     void RenderCube();
     void RenderQuad();
 
-    void CreateGeometry(Mesh::Ptr mesh, uint32 index);
+    void CreateGeometry(MeshPtr mesh, uint32 index);
 
-    void RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front_face = GL_CCW);
+    void RenderGeometry(MeshPtr mesh, int32 index, GLenum front_face = GL_CCW);
     void RenderInfinitePlane();
-    void RenderLine(Mesh::Ptr mesh, int32 index = 5);
+    void RenderLine(MeshPtr mesh, int32 index = 5);
 
     void OnParametersGUI();
 
@@ -131,22 +131,22 @@ private:
 
     glm::vec3* _linePoints;
 
-    ShaderProgram::Ptr _program;
-    ShaderProgram::Ptr _lineProgram;
+    ShaderProgramPtr _program;
+    ShaderProgramPtr _lineProgram;
 
-    Mesh::Ptr _uvsphere;
-    Mesh::Ptr _norcubesphere;
-    Mesh::Ptr _icosphere;
-    Mesh::Ptr _cube;
-    Mesh::Ptr _quad;
-    Mesh::Ptr _line;
-    Mesh::Ptr _currentMesh;
-    Mesh::Ptr _quadbezierline;
-    Mesh::Ptr _cubicbezierline;
-    BSplineCurve::Ptr _bspline;
-    NURBSSurface::Ptr _nurbsSurface;
-    Mesh::Ptr _nurbsControlLine;
-    Plane::Ptr _infinitePlane;
+    MeshPtr _uvsphere;
+    MeshPtr _norcubesphere;
+    MeshPtr _icosphere;
+    MeshPtr _cube;
+    MeshPtr _quad;
+    MeshPtr _line;
+    MeshPtr _currentMesh;
+    MeshPtr _quadbezierline;
+    MeshPtr _cubicbezierline;
+    BSplineCurvePtr _bspline;
+    NURBSSurfacePtr _nurbsSurface;
+    MeshPtr _nurbsControlLine;
+    PlanePtr _infinitePlane;
 
     uint32 _mvpMatLoc;
 

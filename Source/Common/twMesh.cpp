@@ -42,19 +42,19 @@ Mesh::~Mesh()
  * @param radius
  * @param longitude_count
  * @param latitude_count
- * @return Mesh::Ptr
+ * @return MeshPtr
  */
-Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count)
+MeshPtr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, int32 latitude_count)
 {
     int32 row_count = latitude_count - 1;
     int32 col_count = longitude_count;
     int32 num = col_count * row_count + 2;
 
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
     int indice_num = 6 * col_count + (row_count - 1) * col_count * 6;
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(indice_num);
     mesh->AddSubMesh(submesh);
 
@@ -162,19 +162,19 @@ Mesh::Ptr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count, 
  *
  * @param radius
  * @param subdivide
- * @return Mesh::Ptr
+ * @return MeshPtr
  */
-Mesh::Ptr Mesh::CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide)
+MeshPtr Mesh::CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide)
 {
     int32 row_count, col_count;
     row_count = col_count = subdivide + 1;
     int32 num = row_count * col_count * 6;
 
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
     int32 indiceNum = subdivide * subdivide * 36;
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(indiceNum);
 
     mesh->AddSubMesh(submesh);
@@ -286,16 +286,16 @@ Mesh::Ptr Mesh::CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide)
  *
  * @param radius
  * @param subdivide
- * @return Mesh::Ptr
+ * @return MeshPtr
  */
-Mesh::Ptr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
+MeshPtr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide)
 {
     int32 num = 20 * ((subdivide + 1) + (subdivide + 1) * (subdivide ) / 2);
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
     int32 indice_num = 60 * subdivide * subdivide;
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(indice_num);
     mesh->AddSubMesh(submesh);
 
@@ -469,12 +469,12 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32* indice, float32 radius
     }
 }
 
-Mesh::Ptr Mesh::CreateQuadMesh(float32 x_size, float32 y_size)
+MeshPtr Mesh::CreateQuadMesh(float32 x_size, float32 y_size)
 {
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(4, MeshDataFlag::DEFAULT);
 
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(6);
     mesh->AddSubMesh(submesh);
 
@@ -500,12 +500,12 @@ Mesh::Ptr Mesh::CreateQuadMesh(float32 x_size, float32 y_size)
     return mesh;
 }
 
-Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
+MeshPtr Mesh::CreateCubeMesh(float32 size)
 {
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(8, MeshDataFlag::DEFAULT);
 
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(36);
     mesh->AddSubMesh(submesh);
     
@@ -587,16 +587,16 @@ Mesh::Ptr Mesh::CreateCubeMesh(float32 size)
  * 
  * @param points 
  * @param num 
- * @return Mesh::Ptr 
+ * @return MeshPtr 
  */
-Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
+MeshPtr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
 {
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
     //use line_adjency
     int32 indice_num = (num - 1) * 4;
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(indice_num);
     mesh->AddSubMesh(submesh);
 
@@ -636,14 +636,14 @@ Mesh::Ptr Mesh::CreateLineMesh(glm::vec3 *points, int32 num)
     return mesh;
 }
 
-Mesh::Ptr Mesh::CreateLineMeshEx(glm::vec4 *points, int32 num)
+MeshPtr Mesh::CreateLineMeshEx(glm::vec4 *points, int32 num)
 {
-    Mesh::Ptr mesh = std::make_shared<Mesh>();
+    MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
     //use line_adjency
     int32 indice_num = (num - 1) * 4;
-    SubMesh::Ptr submesh = std::make_shared<SubMesh>();
+    SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(indice_num);
     mesh->AddSubMesh(submesh);
 
@@ -683,11 +683,11 @@ Mesh::Ptr Mesh::CreateLineMeshEx(glm::vec4 *points, int32 num)
     return mesh;
 }
 
-Mesh::Ptr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments)
+MeshPtr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments)
 {
-    Mesh::Ptr mesh = CreateLineMesh(nullptr, segments + 1);
+    MeshPtr mesh = CreateLineMesh(nullptr, segments + 1);
 
-    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+    SubMeshPtr submesh = mesh->GetSubMesh(0);
     glm::vec3 *vertices = mesh->GetVerticePos();
     vertices[0] = points[0];
     vertices[segments] = points[num - 1];
@@ -717,9 +717,9 @@ Mesh::Ptr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments)
  * @param points 
  * @param num 
  * @param segments 
- * @return Mesh::Ptr 
+ * @return MeshPtr 
  */
-Mesh::Ptr Mesh::CreateQuadraticBezierLine(glm::vec3 *points, int32 segments)
+MeshPtr Mesh::CreateQuadraticBezierLine(glm::vec3 *points, int32 segments)
 {
     return CreateBezierLine(points, 3, segments);
 }
@@ -730,9 +730,9 @@ Mesh::Ptr Mesh::CreateQuadraticBezierLine(glm::vec3 *points, int32 segments)
  * @param points 
  * @param num 
  * @param segments 
- * @return Mesh::Ptr 
+ * @return MeshPtr 
  */
-Mesh::Ptr Mesh::CreateCubicBezierLine(glm::vec3 *points, int32 segments)
+MeshPtr Mesh::CreateCubicBezierLine(glm::vec3 *points, int32 segments)
 {
     return CreateBezierLine(points, 4, segments);
 }

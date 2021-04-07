@@ -26,7 +26,7 @@ MeshRenderer::~MeshRenderer()
     _ibos.clear();
 }
 
-void MeshRenderer::SetMesh(Mesh::Ptr mesh, bool setupVAO)
+void MeshRenderer::SetMesh(MeshPtr mesh, bool setupVAO)
 {
     if(_mesh != mesh)
     {
@@ -82,10 +82,10 @@ void MeshRenderer::SetupVAOs()
     int32 count = _mesh->GetSubMeshCount();
     for(int i = 0; i < count; i++)
     {
-        SubMesh::Ptr submesh = _mesh->GetSubMesh(i);
+        SubMeshPtr submesh = _mesh->GetSubMesh(i);
 
-        VertexArrayObject::Ptr vao = std::make_shared<VertexArrayObject>();
-        IndexBufferObject::Ptr ibo = std::make_shared<IndexBufferObject>();
+        VertexArrayObjectPtr vao = std::make_shared<VertexArrayObject>();
+        IndexBufferObjectPtr ibo = std::make_shared<IndexBufferObject>();
         _vaos.push_back(vao);
         _ibos.push_back(ibo);
 
@@ -153,12 +153,12 @@ void MeshRenderer::BindingVertexBuffer(int32 attribIndex, int32 attribSize, int3
     glVertexAttribBinding(attribIndex, bindingIndex);
 }
 
-void MeshRenderer::AddMaterial(Material::Ptr material)
+void MeshRenderer::AddMaterial(MaterialPtr material)
 {
     if(material == nullptr)
         return;
 
-    std::vector<Material::Ptr>::iterator it = std::find(_sharedMaterials.begin()
+    std::vector<MaterialPtr>::iterator it = std::find(_sharedMaterials.begin()
         , _sharedMaterials.end()
         , material
     );

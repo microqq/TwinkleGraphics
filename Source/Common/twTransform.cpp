@@ -72,7 +72,7 @@ namespace TwinkleGraphics
 
     glm::vec3 Transform::GetWorldPosition()
     {
-        Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+        TransformPtr ownerParentTrans = _owner->GetParentTransform();
         if (ownerParentTrans == nullptr)
         {
             return GetPosition();
@@ -86,7 +86,7 @@ namespace TwinkleGraphics
 
     glm::quat Transform::GetWorldToLocalOrientation()
     {
-        Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+        TransformPtr ownerParentTrans = _owner->GetParentTransform();
         if (ownerParentTrans == nullptr)
         {
             return _orientation;
@@ -99,7 +99,7 @@ namespace TwinkleGraphics
 
     glm::quat Transform::GetLocalToWorldOrientation()
     {
-        Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+        TransformPtr ownerParentTrans = _owner->GetParentTransform();
         if (ownerParentTrans == nullptr)
         {
             return glm::inverse(_orientation);
@@ -112,7 +112,7 @@ namespace TwinkleGraphics
 
     glm::vec3 Transform::GetWorldScale()
     {
-        Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+        TransformPtr ownerParentTrans = _owner->GetParentTransform();
         if (ownerParentTrans == nullptr)
         {
             return GetScale();
@@ -128,7 +128,7 @@ namespace TwinkleGraphics
         ComputeLocalMatrix();
 
         glm::mat4 result;
-        Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+        TransformPtr ownerParentTrans = _owner->GetParentTransform();
         if (ownerParentTrans != nullptr)
         {
             result = _localMatrix * ownerParentTrans->GetWorldToLocalMatrix();
@@ -155,7 +155,7 @@ namespace TwinkleGraphics
 
     bool Transform::WorldDirty()
     {
-        Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+        TransformPtr ownerParentTrans = _owner->GetParentTransform();
         if (ownerParentTrans == nullptr)
             return _localDirty;
         else
@@ -187,7 +187,7 @@ namespace TwinkleGraphics
         {
             ComputeLocalMatrix();
 
-            Transform::Ptr ownerParentTrans = _owner->GetParentTransform();
+            TransformPtr ownerParentTrans = _owner->GetParentTransform();
             if (ownerParentTrans != nullptr)
             {
                 _worldMatrix = ownerParentTrans->GetLocalToWorldMatrix() * glm::inverse(_localMatrix);

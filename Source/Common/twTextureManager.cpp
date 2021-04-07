@@ -31,7 +31,7 @@ namespace TwinkleGraphics
 
     ReadResult<Texture> TextureReader::Read(const char *filename)
     {
-        Texture::Ptr texture = nullptr;
+        TexturePtr texture = nullptr;
         TextureOption* option = dynamic_cast<TextureOption*>(_option);
         TextureType texType = option->_textureType;
         switch (texType)
@@ -74,7 +74,7 @@ namespace TwinkleGraphics
         {
             std::string imgFilename = texFilename.substr(pos + 1);
             ImageOption imageOption;
-            Image::Ptr image = imgMgr.ReadImage(imgFilename.c_str(), &imageOption);
+            ImagePtr image = imgMgr.ReadImage(imgFilename.c_str(), &imageOption);
             if(image != nullptr)
             {
                 texture->SetImage(image);
@@ -98,12 +98,12 @@ namespace TwinkleGraphics
 
     TextureManager& TextureMgrInstance() { return Singleton<TextureManager>::Instance(); }
 
-    Texture::Ptr TextureManager::ReadTexture(const char* filename, TextureOption* option)
+    TexturePtr TextureManager::ReadTexture(const char* filename, TextureOption* option)
     {
         ResourceManager& resMgr = ResourceMgrInstance();
         std::string texFilename = "Texture:" + std::string(filename);
         ReadResult<Texture> result = resMgr.Read<TextureReader, Texture, TextureOption>(texFilename.c_str(), option);
-        Texture::Ptr texture = result.GetSharedObject();
+        TexturePtr texture = result.GetSharedObject();
 
         return texture;
     }
@@ -129,7 +129,7 @@ namespace TwinkleGraphics
     }
 
 
-    void TextureManager::OnReadTextureSuccess(Object::Ptr obj)
+    void TextureManager::OnReadTextureSuccess(ObjectPtr obj)
     {
         Texture *texture = dynamic_cast<Texture *>(obj.get());
         if (texture != nullptr)

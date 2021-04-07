@@ -108,6 +108,8 @@ namespace TwinkleGraphics
 
         bool _localDirty;
     };
+
+    typedef Transform::Ptr TransformPtr;
 } // namespace TwinkleGraphics
 
 #endif

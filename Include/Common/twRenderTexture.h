@@ -20,13 +20,13 @@ public:
         , bool fixedsampledlocation = true);
     virtual ~RenderTexture();
 
-    void Create(FrameBufferObject::Ptr framebuf = nullptr);
+    void Create(FrameBufferObjectPtr framebuf = nullptr);
     void Resize(int32 width, int32 height);
     int32 GetWidth() { return _width; }
     int32 GetHeight() { return _height; }
-    Texture::Ptr GetTexture() { return _texture; }
-    RenderBufferObject::Ptr GetDepthBuffer() { return _depthbuf; }
-    FrameBufferObject::Ptr GetFrameBuffer() { return _framebuf; }
+    TexturePtr GetTexture() { return _texture; }
+    RenderBufferObjectPtr GetDepthBuffer() { return _depthbuf; }
+    FrameBufferObjectPtr GetFrameBuffer() { return _framebuf; }
     
     void Bind() { assert(_framebuf != nullptr); _framebuf->Bind(); }
     void UnBind() { assert(_framebuf != nullptr); _framebuf->UnBind(); }
@@ -38,9 +38,9 @@ public:
     void BlitDepthToBackBuffer(int backwidth, int backheight);
 
 private:
-    Texture::Ptr _texture = nullptr;
-    RenderBufferObject::Ptr _depthbuf = nullptr;
-    FrameBufferObject::Ptr _framebuf = nullptr;
+    TexturePtr _texture = nullptr;
+    RenderBufferObjectPtr _depthbuf = nullptr;
+    FrameBufferObjectPtr _framebuf = nullptr;
 
     int32 _width;
     int32 _height;
@@ -54,6 +54,8 @@ private:
     bool _multisample;
     bool _fixedsampledlocation;
 };
+
+typedef RenderTexture::Ptr RenderTexturePtr;
 
 } // namespace TwinkleGraphics
 

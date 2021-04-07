@@ -48,7 +48,7 @@ private:
     uint32* _vbos;
     uint32* _ebos;
 
-    ShaderProgram::Ptr _program;
+    ShaderProgramPtr _program;
 
     uint32 _modelMatLoc;
     uint32 _viewMatLoc;

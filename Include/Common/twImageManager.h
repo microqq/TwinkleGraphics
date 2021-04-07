@@ -16,7 +16,7 @@ namespace TwinkleGraphics
         virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override;
 
-        Image::Ptr ReadImage(const char *filename, ImageOption* option = nullptr);
+        ImagePtr ReadImage(const char *filename, ImageOption* option = nullptr);
         ReadResult<Image> ReadImageAsync(const char *filename, ImageOption* option = nullptr);
 
         void AddTaskFuture(std::future<ReadResult<Image>> future);

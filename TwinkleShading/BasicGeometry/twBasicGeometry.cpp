@@ -44,7 +44,7 @@ void BasicGeometryView::Initialize()
         return;
 
     Viewport viewport(Rect(0, 0, _rect.z, _rect.w), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 5000.0f);
+    CameraPtr camera = std::make_shared<Camera>(viewport, 45.0f, 1.0f, 5000.0f);
     this->SetViewCamera(camera);
 
     _cameraControl = std::make_shared<FirstPersonControl>(camera);
@@ -140,7 +140,7 @@ void BasicGeometryView::Advance(float64 delta_time)
     _projectionMat = _camera->GetProjectionMatrix();
     _mvpMat = _projectionMat * _viewMat;
 
-    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
+    MaterialPtr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
     material->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
 }
 
@@ -433,9 +433,9 @@ void BasicGeometryView::Destroy()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void BasicGeometryView::CreateGeometry(Mesh::Ptr mesh, uint32 index)
+void BasicGeometryView::CreateGeometry(MeshPtr mesh, uint32 index)
 {
-    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+    SubMeshPtr submesh = mesh->GetSubMesh(0);
     //bind vertex array object
     glBindVertexArray(_vaos[index]);
 
@@ -454,7 +454,7 @@ void BasicGeometryView::CreateGeometry(Mesh::Ptr mesh, uint32 index)
     glBindVertexArray(0);
 }
 
-void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front_face)
+void BasicGeometryView::RenderGeometry(MeshPtr mesh, int32 index, GLenum front_face)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -489,7 +489,7 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
     //shader uniform setting
     glUniformMatrix4fv(_mvpMatLoc, 1, GL_FALSE, glm::value_ptr(_mvpMat));
 
-    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+    SubMeshPtr submesh = mesh->GetSubMesh(0);
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[index]);
@@ -508,14 +508,14 @@ void BasicGeometryView::RenderGeometry(Mesh::Ptr mesh, int32 index, GLenum front
  */
 void BasicGeometryView::RenderInfinitePlane()
 {
-    Material::Ptr mat = _infinitePlane->GetMeshRenderer()->GetMaterial();
-    RenderPass::Ptr pass = mat->GetRenderPass(0);
+    MaterialPtr mat = _infinitePlane->GetMeshRenderer()->GetMaterial();
+    RenderPassPtr pass = mat->GetRenderPass(0);
     if(pass == nullptr)
     {
         return;
     }
 
-    ShaderProgram::Ptr shader = pass->GetShaderProgram();
+    ShaderProgramPtr shader = pass->GetShaderProgram();
 
     for (auto tex_slot : pass->GetTextureSlots())
     {
@@ -541,7 +541,7 @@ void BasicGeometryView::RenderInfinitePlane()
     // glBlendFunc(GL_ONE, GL_ONE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    SubMesh::Ptr submesh = _infinitePlane->GetMesh()->GetSubMesh(0);
+    SubMeshPtr submesh = _infinitePlane->GetMesh()->GetSubMesh(0);
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[6]);
@@ -559,7 +559,7 @@ void BasicGeometryView::RenderInfinitePlane()
  * @brief 直线绘制参考（感谢文章作者）：https://zhuanlan.zhihu.com/p/59541559，文中引文值得仔细阅读。
  * 另外，GPU gems 3（chapter 25：https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch25.html）有一篇关于 gpu 绘制向量图的方法介绍。
  */
-void BasicGeometryView::RenderLine(Mesh::Ptr mesh, int32 index)
+void BasicGeometryView::RenderLine(MeshPtr mesh, int32 index)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -585,7 +585,7 @@ void BasicGeometryView::RenderLine(Mesh::Ptr mesh, int32 index)
         glUniform4fv(_viewportLoc, 1, glm::value_ptr(_viewportParams));
         glUniform3fv(_lineColorLoc, 1, glm::value_ptr(_lineColor));
 
-        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+        SubMeshPtr submesh = mesh->GetSubMesh(0);
 
         //draw command use vertex array object
         glBindVertexArray(_vaos[index]);
@@ -672,9 +672,9 @@ void BasicGeometryView::CreateInfinitePlane()
 
     ImageManager& imageMgr = ImageMgrInstance();
     std::string imageFilename = {"Assets/Textures/grid.png"};
-    Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
+    ImagePtr image = imageMgr.ReadImage(imageFilename.c_str());
 
-    Texture2D::Ptr texture = nullptr;
+    Texture2DPtr texture = nullptr;
     texture = std::make_shared<Texture2D>(true, true);
     texture->CreateFromImage(image);
 
@@ -685,7 +685,7 @@ void BasicGeometryView::CreateInfinitePlane()
     texture->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
     texture->SetAnistropic();
 
-    Material::Ptr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
+    MaterialPtr material = _infinitePlane->GetMeshRenderer()->GetMaterial();
     material->SetMainTexture(texture);
 
     CreateGeometry(_infinitePlane->GetMesh(), 6);
@@ -754,7 +754,7 @@ void BasicGeometryView::CreateBSpline()
 
         _bspline = std::make_shared<BSplineCurve>(5, 3, 9, knots, control_points);
 
-        Mesh::Ptr mesh = _bspline->GetMesh();
+        MeshPtr mesh = _bspline->GetMesh();
         CreateGeometry(mesh, 9);
 
         SAFE_DEL_ARR(control_points);
@@ -844,7 +844,7 @@ void BasicGeometryView::CreateNURBSSurface()
         // _nurbsSurface->SetVKnots(v_knots, 9);
         // _nurbsSurface->GenerateMeshInternal();
 
-        Mesh::Ptr mesh = _nurbsSurface->GetMesh();
+        MeshPtr mesh = _nurbsSurface->GetMesh();
         CreateGeometry(mesh, 10);
 
         SAFE_DEL_ARR(control_points);

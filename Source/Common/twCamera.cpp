@@ -44,7 +44,7 @@ void Camera::Update(float deltaTime)
 
 }
 
-void Camera::SetRenderToTarget(RenderTexture::Ptr rt)
+void Camera::SetRenderToTarget(RenderTexturePtr rt)
 { 
     if(rt != nullptr)
     {

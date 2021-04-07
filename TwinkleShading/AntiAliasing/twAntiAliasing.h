@@ -94,11 +94,11 @@ private:
     void RenderScene();
     void DestroyScene();
 
-    void CreateGeometry(Geometry::Ptr geom, uint32 index);
+    void CreateGeometry(GeometryPtr geom, uint32 index);
     void CreateSkybox();
     void CreateInfinitePlane();
 
-    void RenderGeometry(Geometry::Ptr geom, int32 index);
+    void RenderGeometry(GeometryPtr geom, int32 index);
     void RenderGeometrys();
     void RenderScreenQuad();
     void RenderSkybox();
@@ -145,32 +145,32 @@ private:
 
     glm::vec4 _viewportParams;
 
-    Plane::Ptr _planeLeft;
-    Plane::Ptr _planeTop;
-    Plane::Ptr _planeRight;
-    Plane::Ptr _planeBottom;
-    Plane::Ptr _planeBack;
+    PlanePtr _planeLeft;
+    PlanePtr _planeTop;
+    PlanePtr _planeRight;
+    PlanePtr _planeBottom;
+    PlanePtr _planeBack;
 
-    IcosahedronSphere::Ptr _sphere;
-    Cube::Ptr _cube;
-    Triangle::Ptr _triangleBack;
-    Triangle::Ptr _triangle_front;
+    IcosahedronSpherePtr _sphere;
+    CubePtr _cube;
+    TrianglePtr _triangleBack;
+    TrianglePtr _triangle_front;
 
-    Cube::Ptr _skybox;
-    Plane::Ptr _infinitePlane;
+    CubePtr _skybox;
+    PlanePtr _infinitePlane;
 
-    SceneNode::Ptr _rootNode;
-    Transform::Ptr _rootTrans;
-    Camera::Ptr _msaaCamera;
+    SceneNodePtr _rootNode;
+    TransformPtr _rootTrans;
+    CameraPtr _msaaCamera;
 
     // msaa resovle filter
-    RenderTexture::Ptr _rtMSAA;
-    RenderTexture::Ptr _rtScreen;
-    Quad::Ptr _screenQuadMSAA;
-    Material::Ptr _screenQuadMat;
-    Material::Ptr _msaaResolveMat;
+    RenderTexturePtr _rtMSAA;
+    RenderTexturePtr _rtScreen;
+    QuadPtr _screenQuadMSAA;
+    MaterialPtr _screenQuadMat;
+    MaterialPtr _msaaResolveMat;
 
-    Model::Ptr _model = nullptr;
+    ModelPtr _model = nullptr;
 
     uint32 *_vaos;
     uint32 *_vbos;

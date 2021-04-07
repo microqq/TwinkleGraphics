@@ -41,11 +41,11 @@ namespace TwinkleGraphics
         }
 	}
 
-	Image::Ptr ImageManager::ReadImage(const char* filename, ImageOption* option)
+	ImagePtr ImageManager::ReadImage(const char* filename, ImageOption* option)
 	{
         ResourceManager& resMgr = ResourceMgrInstance();
 		ReadResult<Image> result = resMgr.Read<ImageReader, Image, ImageOption>(filename, option);
-		Image::Ptr image = result.GetSharedObject();
+		ImagePtr image = result.GetSharedObject();
 
 		return image;
 	}

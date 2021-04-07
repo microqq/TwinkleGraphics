@@ -151,6 +151,7 @@ public:
     }
 };
 
+typedef VertexArrayObject::Ptr VertexArrayObjectPtr;
 
 
 /*------------------------------Vertex Buffer--------------------------*/
@@ -172,6 +173,8 @@ public:
     }
 };
 
+typedef VertexBufferObject::Ptr VertexBufferObjectPtr;
+
 
 
 /*------------------------------Index Buffer--------------------------*/
@@ -192,6 +195,8 @@ public:
         Destroy();
     }
 };
+
+typedef IndexBufferObject::Ptr IndexBufferObjectPtr;
 
 
 /*------------------------------RenderBuffer--------------------------*/
@@ -274,6 +279,7 @@ private:
     GLenum _internalformat;
     bool _multisample;
 };
+typedef RenderBufferObject::Ptr RenderBufferObjectPtr;
 
 
 /*------------------------------FrameBuffer--------------------------*/
@@ -355,7 +361,7 @@ public:
         glBlitFramebuffer(0, 0, src_width, src_height, 0, 0, dest_width, dest_height, GL_DEPTH_BUFFER_BIT, filter);        
     }
 
-    void AttachColor(Texture::Ptr tex, int32 index = 0)
+    void AttachColor(TexturePtr tex, int32 index = 0)
     {
         assert(index >= 0 && index < 16);
 
@@ -374,7 +380,7 @@ public:
         glFramebufferTexture2D(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + attachindex, res.type, res.id, 0);
 
     }
-    void AttachColor(RenderBufferObject::Ptr rbobj, int32 index = 0)
+    void AttachColor(RenderBufferObjectPtr rbobj, int32 index = 0)
     {
         assert(index >= 0 && index < 16);
 
@@ -392,27 +398,27 @@ public:
         const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::COLOR_ATTACHMENT + attachindex, res.type, res.id);
     }
-    void AttachDepth(Texture::Ptr tex)
+    void AttachDepth(TexturePtr tex)
     {
         const RenderResourceHandle& res = tex->GetTexResource();
         glFramebufferTexture2D(_resinstance.type, AttachmentType::DEPTH_ATTACHMENT, res.type, res.id, 0);
     }
-    void AttachDepth(RenderBufferObject::Ptr rbobj)
+    void AttachDepth(RenderBufferObjectPtr rbobj)
     {
         const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::DEPTH_ATTACHMENT, res.type, res.id);
     }
-    void AttachStencil(RenderBufferObject::Ptr rbobj)
+    void AttachStencil(RenderBufferObjectPtr rbobj)
     {
         const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::STENCIL_ATTACHMENT, res.type, res.id);
     }
-    void AttachDepthStencil(Texture::Ptr tex)
+    void AttachDepthStencil(TexturePtr tex)
     {
         const RenderResourceHandle& res = tex->GetTexResource();
         glFramebufferTexture2D(_resinstance.type, AttachmentType::DEPTH_STENCIL, res.type, res.id, 0);
     }
-    void AttachDepthStencil(RenderBufferObject::Ptr rbobj)
+    void AttachDepthStencil(RenderBufferObjectPtr rbobj)
     {
         const RenderResourceHandle& res = rbobj->GetResource();
         glFramebufferRenderbuffer(_resinstance.type, AttachmentType::DEPTH_STENCIL, res.type, res.id);
@@ -436,6 +442,8 @@ public:
 private:
     int32 _colorAttachments;
 };
+
+typedef FrameBufferObject::Ptr FrameBufferObjectPtr;
 
 } // namespace TwinkleGraphics
 

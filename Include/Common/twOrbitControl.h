@@ -13,10 +13,10 @@ class __TWCOMExport OrbitControl : public CameraControl
 public:
     typedef std::shared_ptr<OrbitControl> Ptr;
 
-    OrbitControl(Camera::Ptr camera);
+    OrbitControl(CameraPtr camera);
     virtual ~OrbitControl();
 
-    void SetTargetNode(SceneNode::Ptr target) { _target = target; }
+    void SetTargetNode(SceneNodePtr target) { _target = target; }
 
     void SetMaxDistance(float32 max_distance) { _maxDistance = max_distance; _dirty = true; }
     void SetMinDistance(float32 min_distance) { _minDistance = min_distance; _dirty = true; }
@@ -46,7 +46,7 @@ protected:
     virtual void Pan(glm::vec2 p1, glm::vec2 p2);
     virtual void Trackball(glm::vec2 p1, glm::vec2 p2);
 
-    SceneNode::Ptr _target = nullptr;
+    SceneNodePtr _target = nullptr;
 
     glm::vec3 _center;
     float32 _maxDistance;
@@ -61,6 +61,9 @@ protected:
 
     bool _dirty;
 };
+
+typedef OrbitControl::Ptr OrbitControlPtr;
+
 } // namespace TwinkleGraphics
 
 #endif

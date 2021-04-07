@@ -27,6 +27,8 @@ protected:
     bool _valid = false;
 };
 
+typedef Object::Ptr ObjectPtr;
+
 } // namespace TwinkleGraphics
 
 #endif

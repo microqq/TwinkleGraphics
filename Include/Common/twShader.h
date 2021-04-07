@@ -35,6 +35,8 @@ namespace TwinkleGraphics
 
     typedef TextSource ShaderSource;
     typedef TextSource ShaderIncludeSource;
+    typedef ShaderSource::Ptr ShaderSourcePtr;
+    typedef ShaderIncludeSource::Ptr ShaderIncludeSourcePtr;
 
     class Shader final : public Object
     {
@@ -43,7 +45,7 @@ namespace TwinkleGraphics
         typedef std::weak_ptr<Shader> WeakPtr;
 
         // Shader(ShaderResourceInfo::Ptr source);
-        Shader(ShaderType type, ShaderSource::Ptr source = nullptr);
+        Shader(ShaderType type, ShaderSourcePtr source = nullptr);
         // Shader(ShaderType type, const char *source);
         Shader(const Shader &);
         virtual ~Shader();
@@ -52,8 +54,8 @@ namespace TwinkleGraphics
         const RenderResourceHandle &GetRenderResource() { return _res; }
         bool Compiled() { return _compiled; }
 
-        ShaderSource::Ptr GetShaderSource() { return _source; }
-        void SetShaderSource(ShaderSource::Ptr source);
+        ShaderSourcePtr GetShaderSource() { return _source; }
+        void SetShaderSource(ShaderSourcePtr source);
         void SetDefineMacros(const char* macros[], int length);
         void SetupCompile();
         bool Compile();
@@ -64,8 +66,8 @@ namespace TwinkleGraphics
         void ParseShaderIncludes(const char *source);
 
     private:
-        std::vector<ShaderIncludeSource::Ptr> _includeSouces;
-        ShaderSource::Ptr _source = nullptr;
+        std::vector<ShaderIncludeSourcePtr> _includeSouces;
+        ShaderSourcePtr _source = nullptr;
         RenderResourceHandle _res;
 
         bool _setupCompile = false;
@@ -73,6 +75,8 @@ namespace TwinkleGraphics
 
         friend class ShaderManager;
     };
+
+    typedef Shader::Ptr ShaderPtr;
 
     class ShaderProgram final : public Object
     {
@@ -83,7 +87,7 @@ namespace TwinkleGraphics
         ShaderProgram(int32 shaderCount);
         virtual ~ShaderProgram();
 
-        void AddShader(Shader::Ptr shader);
+        void AddShader(ShaderPtr shader);
         void ClearShader();
         bool Link();
         void SetRenderResource(RenderResourceHandle &res) { _res = res; }
@@ -101,13 +105,15 @@ namespace TwinkleGraphics
         int32 GetAttributeLocation(char *name);
 
     private:
-        std::vector<Shader::Ptr> _shaders;
+        std::vector<ShaderPtr> _shaders;
         RenderResourceHandle _res;
         int32 _linkShaderCount = 0;
         GLint _linked = false;
 
         friend class ShaderManager;
     };
+
+    typedef ShaderProgram::Ptr ShaderProgramPtr;
 
     class __TWCOMExport ShaderOption final : public ReaderOption
     {
@@ -187,7 +193,7 @@ namespace TwinkleGraphics
     class __TWCOMExport ShaderProgramUse
     {
     public:
-        ShaderProgramUse(ShaderProgram::Ptr program);
+        ShaderProgramUse(ShaderProgramPtr program);
         ~ShaderProgramUse();
     };
 

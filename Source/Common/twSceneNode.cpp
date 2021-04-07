@@ -12,26 +12,26 @@ namespace TwinkleGraphics
         _transform->Update();
     }
 
-    void SceneNode::AddChild(SceneNode::Ptr node)
+    void SceneNode::AddChild(SceneNodePtr node)
     {
         if(HasChild(node))
         {
             return;
         }
 
-        SceneNode::Ptr oldParent = node->_parent;
+        SceneNodePtr oldParent = node->_parent;
         if(oldParent != nullptr)
         {
             oldParent->RemoveChild(node);
         }
         _children.emplace_back(node);
 
-        SceneNode::Ptr thisParent = std::dynamic_pointer_cast<SceneNode>(shared_from_this());
+        SceneNodePtr thisParent = std::dynamic_pointer_cast<SceneNode>(shared_from_this());
         node->_parent = thisParent;
         node->_transform->MarkDirty();
     }
 
-    void SceneNode::RemoveChild(SceneNode::Ptr node)
+    void SceneNode::RemoveChild(SceneNodePtr node)
     {
         Iterator iter = FindChild(node);
         if(iter == _children.end())
@@ -44,14 +44,14 @@ namespace TwinkleGraphics
         node->_transform->MarkDirty();
     }
 
-    void SceneNode::AttachToParent(SceneNode::Ptr parent)
+    void SceneNode::AttachToParent(SceneNodePtr parent)
     {
         if(parent == nullptr || _parent == parent)
         {
             return;
         }
 
-        SceneNode::Ptr thisNode = std::dynamic_pointer_cast<SceneNode>(shared_from_this());
+        SceneNodePtr thisNode = std::dynamic_pointer_cast<SceneNode>(shared_from_this());
         parent->AddChild(thisNode);
     }
 
@@ -62,7 +62,7 @@ namespace TwinkleGraphics
             return;
         }
         
-        SceneNode::Ptr thisNode = std::dynamic_pointer_cast<SceneNode>(shared_from_this());
+        SceneNodePtr thisNode = std::dynamic_pointer_cast<SceneNode>(shared_from_this());
         _parent->RemoveChild(thisNode);
     }
 
@@ -78,12 +78,12 @@ namespace TwinkleGraphics
         }
     }
 
-    bool SceneNode::HasChild(SceneNode::Ptr node)
+    bool SceneNode::HasChild(SceneNodePtr node)
     {
         return FindChild(node) != _children.end();
     }
 
-    SceneNode::Iterator SceneNode::FindChild(SceneNode::Ptr node)
+    SceneNode::Iterator SceneNode::FindChild(SceneNodePtr node)
     {
         if(node == nullptr)
         {
@@ -91,7 +91,7 @@ namespace TwinkleGraphics
         }
 
         Iterator iter = std::find_if(_children.begin(), _children.end()
-            , [node](SceneNode::Ptr child)
+            , [node](SceneNodePtr child)
             {
             return child == node;
             }

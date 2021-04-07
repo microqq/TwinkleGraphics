@@ -108,12 +108,12 @@ public:
         eventMgrInst.UnSubscribe(SampleEventArgsA::ID, _handler);
     }
 
-    void OnBaseEvent(Object::Ptr sender, BaseEventArgs::Ptr e) const
+    void OnBaseEvent(ObjectPtr sender, BaseEventArgsPtr e) const
     {
         Console::LogGTestInfo("SampleListener Instance ", _sequence, "'s Handler(Id) ", _handler.GetHandlerId(), " Add OnBaseEvent EventHandler.\n");
     }
 
-    void OnHitEvent(Object::Ptr sender, BaseEventArgs::Ptr e) const
+    void OnHitEvent(ObjectPtr sender, BaseEventArgsPtr e) const
     {
         Console::LogGTestInfo("SampleListener Instance ", _sequence, "'s Handler(Id) ", _handler.GetHandlerId(), " Add OnHitEvent EventHandler.\n");
     }
@@ -128,16 +128,16 @@ int SampleListener::counter = 0;
 
 
 // en.cppreference.com/w/cpp/utility/functional/function/target.html
-void f(Object::Ptr, BaseEventArgs::Ptr) 
+void f(ObjectPtr, BaseEventArgsPtr) 
 {
     Console::LogGTestInfo("Initialise Global f(******) EventHandler.\n");
 }
-void g(Object::Ptr, BaseEventArgs::Ptr) {  }
-void test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)> arg)
+void g(ObjectPtr, BaseEventArgsPtr) {  }
+void test(std::function<void(ObjectPtr, BaseEventArgsPtr)> arg)
 { 
-    typedef void (*FPTR)(Object::Ptr, BaseEventArgs::Ptr);
-    // void (*const* ptr)(Object::Ptr, BaseEventArgs::Ptr) = 
-    //     arg.target<void(*)(Object::Ptr, BaseEventArgs::Ptr)>();
+    typedef void (*FPTR)(ObjectPtr, BaseEventArgsPtr);
+    // void (*const* ptr)(ObjectPtr, BaseEventArgsPtr) = 
+    //     arg.target<void(*)(ObjectPtr, BaseEventArgsPtr)>();
 
     FPTR* ptr= arg.target<FPTR>();
 
@@ -156,7 +156,7 @@ void test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)> arg)
 
     if(ptr == nullptr)
     {
-        typedef void (SampleListener::*MEMFPTR)(Object::Ptr, BaseEventArgs::Ptr) const;
+        typedef void (SampleListener::*MEMFPTR)(ObjectPtr, BaseEventArgsPtr) const;
         MEMFPTR fnPtr = &SampleListener::OnBaseEvent;
         
         using BindFunctionType = decltype(std::bind((MEMFPTR)nullptr, (SampleListener*)nullptr, std::placeholders::_1, std::placeholders::_2));
@@ -181,14 +181,14 @@ TEST(EventTests, AddEventHandler)
 {
     //EventHandler(const EventHandlerFunction& func)
     EventHandler handler(std::make_shared<EventHandlerFunction>(
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+        [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Initialise EventHandler.\n");
         })
     );
 
     //Lambda handler function
     EventHandlerFunctionPtr lambdaPtr = std::make_shared<EventHandlerFunction>(
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+        [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
         }
     );
@@ -208,7 +208,7 @@ TEST(EventTests, AddEventHandler)
     );
     handler += baseFuncPtr;
 
-    Object::Ptr objectPtr = std::make_shared<Object>();
+    ObjectPtr objectPtr = std::make_shared<Object>();
     SampleEventArgs::Ptr sampleEvent1 = std::make_shared<SampleEventArgs>();
     SampleEventArgs::Ptr sampleEvent2 = std::make_shared<SampleEventArgs>();
     SampleEventArgsA::Ptr sampleEventA = std::make_shared<SampleEventArgsA>();
@@ -233,20 +233,20 @@ TEST(EventTests, FireEvent)
 
     //EventHandler(const EventHandlerFunction& func)
     EventHandler handler(std::make_shared<EventHandlerFunction>(
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+        [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Initialise EventHandler.\n");
         })
     );
 
     //Lambda handler function
     EventHandlerFunctionPtr lambdaPtr = std::make_shared<EventHandlerFunction>(
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+        [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
         }
     );
 
     EventHandlerFunctionPtr lambdaPtr2 = MakeEventHandlerFunPtr(
-                [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+                [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Add Lambda Num(2) EventHandler.\n");
         }
     );
@@ -300,15 +300,15 @@ TEST(EventTests, FireEvent)
     eventMgrInst.FireImmediately(nullptr, sampleEventA);
 
     // en.cppreference.com/w/cpp/utility/functional/function.html
-    // std::function<void(const SampleListener&, Object::Ptr, BaseEventArgs::Ptr)> fffFunc = &SampleListener::OnBaseEvent;
+    // std::function<void(const SampleListener&, ObjectPtr, BaseEventArgsPtr)> fffFunc = &SampleListener::OnBaseEvent;
     std::function<void(const Foo&, int)> f_add_display = &Foo::print_add;
     const Foo foo(314159);
     f_add_display(foo, 1);
     f_add_display(314159, 1);
 
     // en.cppreference.com/w/cpp/utility/functional/function/target.html
-    test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(f));
-    test(std::function<void(Object::Ptr, BaseEventArgs::Ptr)>(g));
+    test(std::function<void(ObjectPtr, BaseEventArgsPtr)>(f));
+    test(std::function<void(ObjectPtr, BaseEventArgsPtr)>(g));
 
     SampleListener* listener4 = new SampleListener;
     EventHandlerFunction bindOnBaseEvent = std::bind(&SampleListener::OnBaseEvent
@@ -371,20 +371,20 @@ TEST(EventTests, FireInThreadingMode)
 
     //EventHandler(const EventHandlerFunction& func)
     EventHandler handler(std::make_shared<EventHandlerFunction>(
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+        [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Initialise EventHandler.\n");
         })
     );
 
     //Lambda handler function
     EventHandlerFunctionPtr lambdaPtr = std::make_shared<EventHandlerFunction>(
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+        [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Add Lambda Num(1) EventHandler.\n");
         }
     );
 
     EventHandlerFunctionPtr lambdaPtr2 = MakeEventHandlerFunPtr(
-                [](Object::Ptr sender, BaseEventArgs::Ptr args) {
+                [](ObjectPtr sender, BaseEventArgsPtr args) {
             Console::LogGTestInfo("Add Lambda Num(2) EventHandler.\n");
         }
     );

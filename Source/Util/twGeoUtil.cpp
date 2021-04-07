@@ -11,8 +11,8 @@ namespace TwinkleGraphics
         Triangle *triangle = new Triangle(p0, p1, p2);
         // triangle->GenerateMeshInternal();
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<BasicGeomMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<BasicGeomMaterial>();
         renderer->SetMaterial(mat);
         mat = renderer->GetMaterial();
 
@@ -42,8 +42,8 @@ namespace TwinkleGraphics
         Cube *cube = new Cube(size, flag);
         // cube->GenerateMeshInternal();
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<CubeMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<CubeMaterial>();
         renderer->SetMaterial(mat);
         mat = renderer->GetMaterial();
         mat->SetSimpleUniformValue<float32, 1>("size", size);
@@ -59,8 +59,8 @@ namespace TwinkleGraphics
         UVSphere *uvsphere = new UVSphere(radius, subdivision, flag);
         // uvsphere->GenerateMeshInternal();
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<SphereMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<SphereMaterial>();
         renderer->SetMaterial(mat);
         mat = renderer->GetMaterial();
 
@@ -75,8 +75,8 @@ namespace TwinkleGraphics
         NormalizedCubeSphere *norcube_sphere = new NormalizedCubeSphere(radius, subdivision, flag);
         // norcube_sphere->GenerateMeshInternal();
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<SphereMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<SphereMaterial>();
         renderer->SetMaterial(mat);
         mat = renderer->GetMaterial();
 
@@ -91,8 +91,8 @@ namespace TwinkleGraphics
         IcosahedronSphere *icosphere = new IcosahedronSphere(radius, subdivision, flag);
         // icosphere->GenerateMeshInternal();
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<SphereMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<SphereMaterial>();
         renderer->SetMaterial(mat);
         mat = renderer->GetMaterial();
 
@@ -138,8 +138,8 @@ namespace TwinkleGraphics
         Plane *plane = new Plane(normal, width, subdivision, flag);
         // plane->GenerateMeshInternal();
 
-        MeshRenderer::Ptr planeRenderer = std::make_shared<MeshRenderer>();
-        Material::Ptr planeMat = std::make_shared<BasicGeomMaterial>();
+        MeshRendererPtr planeRenderer = std::make_shared<MeshRenderer>();
+        MaterialPtr planeMat = std::make_shared<BasicGeomMaterial>();
         planeRenderer->SetMaterial(planeMat);
         planeMat = planeRenderer->GetMaterial();
 
@@ -154,8 +154,8 @@ namespace TwinkleGraphics
         Plane *plane = new Plane(glm::vec3(0.0f, 0.0f, 1.0f), width, subdivision, flag);
         // plane->GenerateMeshInternal();
 
-        MeshRenderer::Ptr planeRenderer = std::make_shared<MeshRenderer>();
-        Material::Ptr planeMat = std::make_shared<InfinitePlaneMaterial>();
+        MeshRendererPtr planeRenderer = std::make_shared<MeshRenderer>();
+        MaterialPtr planeMat = std::make_shared<InfinitePlaneMaterial>();
         planeRenderer->SetMaterial(planeMat);
         planeMat = planeRenderer->GetMaterial();
 
@@ -178,13 +178,13 @@ namespace TwinkleGraphics
         return plane;
     }
 
-    Sprite *CreateSprite(Texture2D::Ptr tex)
+    Sprite *CreateSprite(Texture2DPtr tex)
     {
         Sprite *sprite = new Sprite(tex);
         return sprite;
     }
 
-    Sprite *CreateSprite1D(Texture1D::Ptr tex, glm::vec2 size)
+    Sprite *CreateSprite1D(Texture1DPtr tex, glm::vec2 size)
     {
         Sprite *sprite = new Sprite(tex, size);
         return sprite;

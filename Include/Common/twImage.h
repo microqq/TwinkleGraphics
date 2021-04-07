@@ -26,6 +26,8 @@ struct ImageSource : public Object
     std::string filename;
 };
 
+typedef ImageSource::Ptr ImageSourcePtr;
+
 class __TWCOMExport Image : public Object
 {
 public:
@@ -43,8 +45,10 @@ public:
     const std::string& GetFilename() { return _source->filename; }
 
 private:
-    ImageSource::Ptr _source;
+    ImageSourcePtr _source;
 };
+
+typedef Image::Ptr ImagePtr;
 
 class ImageOption final : public ReaderOption
 {
@@ -98,7 +102,7 @@ private:
     ReadResult<Image> ReadDDS(const char *filename);
     ReadResult<Image> ReadOthers(const char *filename);
 
-    void OnReadImageSuccess(Object::Ptr obj);
+    void OnReadImageSuccess(ObjectPtr obj);
     void OnReadImageFailed();
 
     DECLARE_READERID;

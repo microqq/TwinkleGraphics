@@ -23,8 +23,8 @@ namespace TwinkleGraphics
         virtual void Update(float deltaTime = 0.0f) override;
         virtual void Destroy() override;
 
-        Shader::Ptr ReadShader(const char* filename, ShaderOption* option);
-        ShaderProgram::Ptr ReadShaders(ShaderOption options[], int32 num);
+        ShaderPtr ReadShader(const char* filename, ShaderOption* option);
+        ShaderProgramPtr ReadShaders(ShaderOption options[], int32 num);
 
         ReadResult<Shader> ReadShaderAsync(const char* filename, ShaderOption* option);
         ReadResult<ShaderProgram> ReadShadersAsync(ShaderProgramOption* option, int32 num);
@@ -36,10 +36,10 @@ namespace TwinkleGraphics
         typedef std::vector<std::future<ReadResult<ShaderProgram>>> ShaderProgramFutures;
 
         explicit ShaderManager();
-        void OnReadShaderSuccess(Object::Ptr obj);
+        void OnReadShaderSuccess(ObjectPtr obj);
         void OnReadShaderFailed();
 
-        void OnReadShadersSuccess(Object::Ptr obj);
+        void OnReadShadersSuccess(ObjectPtr obj);
         void OnReadShadersFailed();
 
     private:

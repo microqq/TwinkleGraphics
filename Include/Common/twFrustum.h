@@ -51,6 +51,8 @@ namespace TwinkleGraphics
         friend class BoundingSphere;
         friend class AABoundingBox;
     };
+
+    typedef Frustum::Ptr FrustumPtr;
 } // namespace TwinkleGraphics
 
 #endif

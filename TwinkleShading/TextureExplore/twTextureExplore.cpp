@@ -46,10 +46,10 @@ void TextureExploreView::Initialize()
         return;
 
     Viewport viewport(Rect(0, 0, _rect.z, _rect.w), 17664U, RGBA(0.0f, 0.f, 0.f, 1.f));
-    Camera::Ptr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 5000.0f);
+    CameraPtr camera = std::make_shared<Camera>(viewport, 45.0f, 0.1f, 5000.0f);
     this->SetViewCamera(camera);
     
-    FirstPersonControl::Ptr cameraControl = std::make_shared<FirstPersonControl>(camera);
+    FirstPersonControlPtr cameraControl = std::make_shared<FirstPersonControl>(camera);
     cameraControl->SetMinDistance(-5000.0f);
     cameraControl->SetMaxDistance(5000.0f);
     cameraControl->SetDistance(25.0f);
@@ -102,7 +102,7 @@ void TextureExploreView::Advance(float64 delta_time)
 
     // sprite setting
     {
-        Sprite::Ptr sprite = nullptr;
+        SpritePtr sprite = nullptr;
         if (_currentTexOption == 0)
             sprite = _sprite1D;
         else if (_currentTexOption == 1)
@@ -110,7 +110,7 @@ void TextureExploreView::Advance(float64 delta_time)
 
         if (sprite != nullptr)
         {
-            Material::Ptr mat = nullptr;
+            MaterialPtr mat = nullptr;
             mat = sprite->GetMaterial();
             mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
             vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
@@ -119,7 +119,7 @@ void TextureExploreView::Advance(float64 delta_time)
             mat->SetTextureOffset("mainTex", _texOffset);
 
             // set sprite texture parameters
-            Texture::Ptr tex = sprite->GetTexture();
+            TexturePtr tex = sprite->GetTexture();
             tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
             if(sprite == _sprite)
                 tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
@@ -132,18 +132,18 @@ void TextureExploreView::Advance(float64 delta_time)
     }
     // skybox setting
     {
-        Geometry::Ptr geom = nullptr;
+        GeometryPtr geom = nullptr;
         if (_currentTexOption == 3 || _enableSkybox)
         {
             geom = _skybox;
-            Material::Ptr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
+            MaterialPtr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
             mat4 rotate_mat = glm::mat4_cast(_camera->GetOrientation());
             // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
             mat4 mvp = _projectionMat * rotate_mat;
             
             skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
             
-            Texture::Ptr skyboxtex = skyboxmat->GetMainTexture();
+            TexturePtr skyboxtex = skyboxmat->GetMainTexture();
             skyboxtex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
             skyboxtex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
             skyboxtex->SetWrap<WrapParam::WRAP_R>(_texparams.wrapModes[2]);
@@ -153,22 +153,22 @@ void TextureExploreView::Advance(float64 delta_time)
 
             if(_currentTexOption == 3)
             {
-                Transform::Ptr cubetrans = _cube->GetTransform();
+                TransformPtr cubetrans = _cube->GetTransform();
                 cubetrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 
-                Material::Ptr cubemat = _cube->GetMeshRenderer()->GetMaterial();
+                MaterialPtr cubemat = _cube->GetMeshRenderer()->GetMaterial();
                 mvp = _mvpMat * cubetrans->GetLocalToWorldMatrix();
                 cubemat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
                 cubemat->SetSimpleUniformValue<float32, 1>("size", 5.0f);
 
-                Transform::Ptr spheretrans = _sphere->GetTransform();
+                TransformPtr spheretrans = _sphere->GetTransform();
                 spheretrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 
-                Material::Ptr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
+                MaterialPtr spheremat = _sphere->GetMeshRenderer()->GetMaterial();
                 mvp = _mvpMat * spheretrans->GetLocalToWorldMatrix();
                 spheremat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
-                Texture::Ptr spheretex = spheremat->GetMainTexture();
+                TexturePtr spheretex = spheremat->GetMainTexture();
                 spheretex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
                 spheretex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
                 spheretex->SetWrap<WrapParam::WRAP_R>(_texparams.wrapModes[2]);
@@ -180,7 +180,7 @@ void TextureExploreView::Advance(float64 delta_time)
     }
     // volumn quad material setting
     {
-        Geometry::Ptr geom = nullptr;
+        GeometryPtr geom = nullptr;
         if(_currentTexOption == 2)
             geom = _volumnQuad;
 
@@ -195,7 +195,7 @@ void TextureExploreView::Advance(float64 delta_time)
                             glm::rotate(rotmat, _updateTime * glm::radians<float32>(10.0f), y_axis) *
                             glm::rotate(rotmat, _updateTime * glm::radians<float32>(10.0f), z_axis);
 
-            Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
+            MaterialPtr mat = geom->GetMeshRenderer()->GetMaterial();
             mat->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
             vec4 tintColor(_tintcolor[0], _tintcolor[1], _tintcolor[1], _tintcolor[3]);
             mat->SetVecUniformValue<float32, 4>("tintColor", tintColor);
@@ -204,7 +204,7 @@ void TextureExploreView::Advance(float64 delta_time)
             mat->SetMatrixUniformValue<float32, 4, 4>("rotmat", unifmat);
 
             // set sprite texture parameters
-            Texture::Ptr tex = mat->GetTexture("mainTex");
+            TexturePtr tex = mat->GetTexture("mainTex");
             tex->SetWrap<WrapParam::WRAP_S>(_texparams.wrapModes[0]);
             tex->SetWrap<WrapParam::WRAP_T>(_texparams.wrapModes[1]);
             tex->SetWrap<WrapParam::WRAP_R>(_texparams.wrapModes[2]);
@@ -216,7 +216,7 @@ void TextureExploreView::Advance(float64 delta_time)
         }
     }
     {
-        Geometry::Ptr geom = nullptr;
+        GeometryPtr geom = nullptr;
         if(_currentTexOption == 6)
             geom = _nurbsSurface;
 
@@ -226,18 +226,18 @@ void TextureExploreView::Advance(float64 delta_time)
             mat4 mat_tex_proj = _projTexCamera->GetProjectionMatrix();
             mat4 mat_tex_vp = mat_tex_proj * mat_tex_view;
 
-            Transform::Ptr nurbs_trans = _nurbsSurface->GetTransform();
+            TransformPtr nurbs_trans = _nurbsSurface->GetTransform();
             // nurbs_trans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
 
             mat4 world = nurbs_trans->GetLocalToWorldMatrix();
             mat4 mvp = _mvpMat * world;
 
-            Material::Ptr nurbs_mat = _nurbsSurface->GetMeshRenderer()->GetMaterial();
+            MaterialPtr nurbs_mat = _nurbsSurface->GetMeshRenderer()->GetMaterial();
             nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
             nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
-            Material::Ptr quadMat = _projTexQuad->GetMeshRenderer()->GetMaterial();
-            Transform::Ptr quadTrans = _projTexQuad->GetTransform();
+            MaterialPtr quadMat = _projTexQuad->GetMeshRenderer()->GetMaterial();
+            TransformPtr quadTrans = _projTexQuad->GetTransform();
             world = quadTrans->GetLocalToWorldMatrix();
             mvp = _mvpMat * world;
             quadMat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
@@ -288,7 +288,7 @@ void TextureExploreView::OnGUI()
 
             ImageManager& imageMgr = ImageMgrInstance();
             std::string imageFilename = {"Assets/Textures/TantolundenCube.dds"};
-            Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
+            ImagePtr image = imageMgr.ReadImage(imageFilename.c_str());
 
             CreateCube(image);
             CreateIconSphere(image);
@@ -586,15 +586,15 @@ void TextureExploreView::CreateSprite()
                 
     ImageManager& imageMgr = ImageMgrInstance();
     std::string imageFilename = {"Assets/Textures/test3.png"};
-    Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
+    ImagePtr image = imageMgr.ReadImage(imageFilename.c_str());
 
-    Texture2D::Ptr texture = nullptr;
+    Texture2DPtr texture = nullptr;
     if (image != nullptr)
     {
         texture = std::make_shared<Texture2D>(true);
         texture->CreateFromImage(image);
 
-        // Sampler::Ptr sampler = std::make_shared<Sampler>();
+        // SamplerPtr sampler = std::make_shared<Sampler>();
         // texture->SetSampler(sampler);
     }
 
@@ -630,10 +630,10 @@ void TextureExploreView::CreateSprite1D()
                                         };
         data.mip[0].data = bytes;
 
-        Image::Ptr image = std::make_shared<Image>();
+        ImagePtr image = std::make_shared<Image>();
         image->SetImageSource(std::move(data));
 
-        Texture1D::Ptr texture1D = std::make_shared<Texture1D>(true);
+        Texture1DPtr texture1D = std::make_shared<Texture1D>(true);
         texture1D->CreateFromImage(image);
 
         _sprite1D = std::make_shared<Sprite>(texture1D, glm::vec2(5, 5));
@@ -650,16 +650,16 @@ void TextureExploreView::CreateVolumnTexture()
         _volumnQuad = std::make_shared<Quad>(size, MeshDataFlag(8));
         // _volumnQuad->GenerateMeshInternal();
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<VolumnQuadMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<VolumnQuadMaterial>();
         renderer->SetMaterial(mat);
         mat = renderer->GetMaterial();
 
         ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename = {"Assets/Textures/cloud.dds"};
-        Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
+        ImagePtr image = imageMgr.ReadImage(imageFilename.c_str());
 
-        Texture3D::Ptr volumntex = std::make_shared<Texture3D>(true);
+        Texture3DPtr volumntex = std::make_shared<Texture3D>(true);
         volumntex->CreateFromImage(image);
         mat->SetMainTexture(volumntex);
 
@@ -677,52 +677,52 @@ void TextureExploreView::CreateSkybox()
         _skybox = std::make_shared<Cube>(2.0f, MeshDataFlag::DEFAULT);
         // _skybox->GenerateMeshInternal();
         
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<SkyboxMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<SkyboxMaterial>();
 
-        TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+        TextureCubePtr cubemap = std::make_shared<TextureCube>(true);
         ImageManager& imageMgr = ImageMgrInstance();
         // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
-        // Image::Ptr image = imageMgr.ReadImage(imageFilename);
+        // ImagePtr image = imageMgr.ReadImage(imageFilename);
 
         // ImageReadInfo front_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"};
-        // Image::Ptr front_image = imageMgr.ReadImage(front_info);
+        // ImagePtr front_image = imageMgr.ReadImage(front_info);
         // ImageReadInfo back_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"};
-        // Image::Ptr back_image = imageMgr.ReadImage(back_info);
+        // ImagePtr back_image = imageMgr.ReadImage(back_info);
         // ImageReadInfo left_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"};
-        // Image::Ptr left_image = imageMgr.ReadImage(left_info);
+        // ImagePtr left_image = imageMgr.ReadImage(left_info);
         // ImageReadInfo right_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"};
-        // Image::Ptr right_image = imageMgr.ReadImage(right_info);
+        // ImagePtr right_image = imageMgr.ReadImage(right_info);
         // ImageReadInfo top_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"};
-        // Image::Ptr top_image = imageMgr.ReadImage(top_info);
+        // ImagePtr top_image = imageMgr.ReadImage(top_info);
         // ImageReadInfo down_info = {"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"};
-        // Image::Ptr down_image = imageMgr.ReadImage(down_info);
+        // ImagePtr down_image = imageMgr.ReadImage(down_info);
 
         std::string front_info = {"Assets/Textures/skybox/front.png"};
-        Image::Ptr front_image = imageMgr.ReadImage(front_info.c_str());
+        ImagePtr front_image = imageMgr.ReadImage(front_info.c_str());
         std::string back_info = {"Assets/Textures/skybox/back.png"};
-        Image::Ptr back_image = imageMgr.ReadImage(back_info.c_str());
+        ImagePtr back_image = imageMgr.ReadImage(back_info.c_str());
         std::string left_info = {"Assets/Textures/skybox/left.png"};
-        Image::Ptr left_image = imageMgr.ReadImage(left_info.c_str());
+        ImagePtr left_image = imageMgr.ReadImage(left_info.c_str());
         std::string right_info = {"Assets/Textures/skybox/right.png"};
-        Image::Ptr right_image = imageMgr.ReadImage(right_info.c_str());
+        ImagePtr right_image = imageMgr.ReadImage(right_info.c_str());
         std::string top_info = {"Assets/Textures/skybox/top.png"};
-        Image::Ptr top_image = imageMgr.ReadImage(top_info.c_str());
+        ImagePtr top_image = imageMgr.ReadImage(top_info.c_str());
         std::string down_info = {"Assets/Textures/skybox/bottom.png"};
-        Image::Ptr down_image = imageMgr.ReadImage(down_info.c_str());
+        ImagePtr down_image = imageMgr.ReadImage(down_info.c_str());
 
         // ImageReadInfo front_info = {"Assets/Textures/sor_sea/sea_ft.png"};
-        // Image::Ptr front_image = imageMgr.ReadImage(front_info);
+        // ImagePtr front_image = imageMgr.ReadImage(front_info);
         // ImageReadInfo back_info = {"Assets/Textures/sor_sea/sea_bk.png"};
-        // Image::Ptr back_image = imageMgr.ReadImage(back_info);
+        // ImagePtr back_image = imageMgr.ReadImage(back_info);
         // ImageReadInfo left_info = {"Assets/Textures/sor_sea/sea_lf.png"};
-        // Image::Ptr left_image = imageMgr.ReadImage(left_info);
+        // ImagePtr left_image = imageMgr.ReadImage(left_info);
         // ImageReadInfo right_info = {"Assets/Textures/sor_sea/sea_rt.png"};
-        // Image::Ptr right_image = imageMgr.ReadImage(right_info);
+        // ImagePtr right_image = imageMgr.ReadImage(right_info);
         // ImageReadInfo top_info = {"Assets/Textures/sor_sea/sea_up.png"};
-        // Image::Ptr top_image = imageMgr.ReadImage(top_info);
+        // ImagePtr top_image = imageMgr.ReadImage(top_info);
         // ImageReadInfo down_info = {"Assets/Textures/sor_sea/sea_dn.png"};
-        // Image::Ptr down_image = imageMgr.ReadImage(down_info);
+        // ImagePtr down_image = imageMgr.ReadImage(down_info);
 
         // cubemap->CreateFromImage(image);
 
@@ -749,21 +749,21 @@ void TextureExploreView::CreateSkybox()
     }
 }
 
-void TextureExploreView::CreateCube(Image::Ptr image)
+void TextureExploreView::CreateCube(ImagePtr image)
 {
     if(_cube == nullptr)
     {
         _cube = std::make_shared<Cube>(5.0f, MeshDataFlag::DEFAULT);
         // _cube->GenerateMeshInternal();
 
-        Transform::Ptr trans = _cube->GetTransform();
+        TransformPtr trans = _cube->GetTransform();
         trans->Translate(glm::vec3(0.0f, 0.0f, -15.0f));
         _camera->AddChild(_cube);
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<CubeMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<CubeMaterial>();
 
-        TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+        TextureCubePtr cubemap = std::make_shared<TextureCube>(true);
         cubemap->CreateFromImage(image);
 
         renderer->SetMaterial(mat);
@@ -776,20 +776,20 @@ void TextureExploreView::CreateCube(Image::Ptr image)
         CreateGeometry(_cube, 15);
     }
 }
-void TextureExploreView::CreateIconSphere(Image::Ptr image)
+void TextureExploreView::CreateIconSphere(ImagePtr image)
 {
     if(_sphere == nullptr)
     {
         _sphere = std::make_shared<IcosahedronSphere>(2.5f, 50, MeshDataFlag::DEFAULT);
         // _sphere->GenerateMeshInternal();
 
-        Transform::Ptr trans = _sphere->GetTransform();
+        TransformPtr trans = _sphere->GetTransform();
         trans->Translate(glm::vec3(-3.5f, 0.0f, 0.0f));
         
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<SphereMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<SphereMaterial>();
 
-        TextureCube::Ptr cubemap = std::make_shared<TextureCube>(true);
+        TextureCubePtr cubemap = std::make_shared<TextureCube>(true);
         cubemap->CreateFromImage(image);
 
         renderer->SetMaterial(mat);
@@ -881,20 +881,20 @@ void TextureExploreView::CreateNURBSSurface()
         // _nurbsSurface->SetVKnots(v_knots, 9);
         // _nurbsSurface->GenerateMeshInternal();
 
-        Transform::Ptr trans = _nurbsSurface->GetTransform();
+        TransformPtr trans = _nurbsSurface->GetTransform();
         trans->Translate(glm::vec3(-6.0f, 0.0f, 0.0f));
 
-        Mesh::Ptr mesh = _nurbsSurface->GetMesh();
-        SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+        MeshPtr mesh = _nurbsSurface->GetMesh();
+        SubMeshPtr submesh = mesh->GetSubMesh(0);
 
-        MeshRenderer::Ptr renderer = std::make_shared<MeshRenderer>();
-        Material::Ptr mat = std::make_shared<ProjectionMappingMaterial>();
+        MeshRendererPtr renderer = std::make_shared<MeshRenderer>();
+        MaterialPtr mat = std::make_shared<ProjectionMappingMaterial>();
 
         ImageManager& imageMgr = ImageMgrInstance();
         std::string imageFilename = {"Assets/Textures/test3.png"};
-        Image::Ptr image = imageMgr.ReadImage(imageFilename.c_str());
+        ImagePtr image = imageMgr.ReadImage(imageFilename.c_str());
 
-        Texture2D::Ptr texture = nullptr;
+        Texture2DPtr texture = nullptr;
         texture = std::make_shared<Texture2D>(true);
         texture->CreateFromImage(image);
 
@@ -915,11 +915,11 @@ void TextureExploreView::CreateNURBSSurface()
         _projTexQuad = std::make_shared<Quad>(size, MeshDataFlag(8));
         // _projTexQuad->GenerateMeshInternal();
 
-        Transform::Ptr quadTrans = _projTexQuad->GetTransform();
+        TransformPtr quadTrans = _projTexQuad->GetTransform();
         quadTrans->Translate(glm::vec3(6.0f, 0.0f, 0.0f));
 
-        MeshRenderer::Ptr quadRenderer = std::make_shared<MeshRenderer>();
-        Material::Ptr quadMat = std::make_shared<ProjectionMappingMaterial>();
+        MeshRendererPtr quadRenderer = std::make_shared<MeshRenderer>();
+        MaterialPtr quadMat = std::make_shared<ProjectionMappingMaterial>();
 
         quadRenderer->SetMaterial(quadMat);
         quadMat = quadRenderer->GetMaterial();
@@ -944,7 +944,7 @@ void TextureExploreView::RenderGeometryEx(int index)
         RenderGeometry(_skybox, 3);
     }
 
-    Geometry::Ptr geom = nullptr;
+    GeometryPtr geom = nullptr;
     switch (index)
     {
     case 0:
@@ -976,10 +976,10 @@ void TextureExploreView::RenderGeometryEx(int index)
     }
 }
 
-void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
+void TextureExploreView::CreateGeometry(GeometryPtr geom, uint32 index)
 {
-    Mesh::Ptr mesh = geom->GetMesh();    
-    SubMesh::Ptr submesh = mesh->GetSubMesh(0);
+    MeshPtr mesh = geom->GetMesh();    
+    SubMeshPtr submesh = mesh->GetSubMesh(0);
 
     //bind vertex array object
     glBindVertexArray(_vaos[index]);
@@ -1024,16 +1024,16 @@ void TextureExploreView::CreateGeometry(Geometry::Ptr geom, uint32 index)
     glBindVertexArray(0);
 }
 
-void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum front_face)
+void TextureExploreView::RenderGeometry(GeometryPtr geom, int32 index, GLenum front_face)
 {
-    Material::Ptr mat = geom->GetMeshRenderer()->GetMaterial();
-    RenderPass::Ptr pass = mat->GetRenderPass(0);
+    MaterialPtr mat = geom->GetMeshRenderer()->GetMaterial();
+    RenderPassPtr pass = mat->GetRenderPass(0);
     if(pass == nullptr)
     {
         return;
     }
 
-    ShaderProgram::Ptr shader = pass->GetShaderProgram();
+    ShaderProgramPtr shader = pass->GetShaderProgram();
 
     for (auto tex_slot : pass->GetTextureSlots())
     {
@@ -1061,7 +1061,7 @@ void TextureExploreView::RenderGeometry(Geometry::Ptr geom, int32 index, GLenum 
     glFrontFace(front_face);
     glDisable(GL_CULL_FACE);
 
-    SubMesh::Ptr submesh = geom->GetMesh()->GetSubMesh(0);
+    SubMeshPtr submesh = geom->GetMesh()->GetSubMesh(0);
 
     //draw command use vertex array object
     glBindVertexArray(_vaos[index]);

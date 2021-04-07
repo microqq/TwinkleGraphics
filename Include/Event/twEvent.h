@@ -16,7 +16,7 @@ namespace TwinkleGraphics
             : Object()
         {}
 
-        Event(Object::Ptr sender, BaseEventArgs::Ptr args)
+        Event(ObjectPtr sender, BaseEventArgsPtr args)
             : Object()
             , _sender(sender)
             , _eventArgs(args)
@@ -59,15 +59,18 @@ namespace TwinkleGraphics
             return *this;
         }
 
-        Object::Ptr Sender() { return _sender; }
-        BaseEventArgs::Ptr EventArgs() { return _eventArgs; }
-        void SetSender(Object::Ptr sender) { _sender = sender; }
-        void SetEventArgs(BaseEventArgs::Ptr args) { _eventArgs = args; }
+        ObjectPtr Sender() { return _sender; }
+        BaseEventArgsPtr EventArgs() { return _eventArgs; }
+        void SetSender(ObjectPtr sender) { _sender = sender; }
+        void SetEventArgs(BaseEventArgsPtr args) { _eventArgs = args; }
 
     private:
-        Object::Ptr _sender;
-        BaseEventArgs::Ptr _eventArgs;
+        ObjectPtr _sender;
+        BaseEventArgsPtr _eventArgs;
     };
+
+    typedef Event::Ptr EventPtr;
+
 } // namespace TwinkleGraphics
 
 #endif
