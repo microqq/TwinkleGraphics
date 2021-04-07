@@ -27,6 +27,8 @@ namespace TwinkleGraphics
     {
         assert(_viewRT != nullptr);
         ImGui::Begin(_windowname.c_str());
+        // ImGui::Text(_windowname.c_str());
+        // ImGui::Separator();
     }
 
     void GLFWViewWindow::OnGuiEnd()

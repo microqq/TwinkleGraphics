@@ -31,14 +31,18 @@ namespace TwinkleGraphics
         {
             if (ImGui::BeginMenu("File"))
             {
+                ImGui::Separator();
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Edit"))
             {
+                ImGui::Separator();
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("SceneNode"))
             {
+                ImGui::Separator();
+
                 if (ImGui::MenuItem("SceneNode Empty"))
                 {
                 }
@@ -69,13 +73,12 @@ namespace TwinkleGraphics
             }
             if (ImGui::BeginMenu("Sample Scenes"))
             {
-                // if (ImGui::MenuItem("Sample Scenes"))
-                // {
-                // }
+                ImGui::Separator();
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Help"))
             {
+                ImGui::Separator();
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();

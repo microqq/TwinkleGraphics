@@ -163,7 +163,7 @@ auto ThreadPool::PushTask(Func&& f, Args&&... args)
 {
     if(_stoped.load())
     {
-        Console::LogWarning("ThreadPool: ThreadPool stoped, we can't push task in.\n");
+        Console::LogWarning("ThreadPool stoped, we can't push task in.\n");
         throw std::runtime_error("Push Task While ThreadPool Has Stoped.");
     }
 
@@ -209,7 +209,7 @@ inline void ThreadPool::Stop(bool delay)
         {
             worker.join();
 
-            Console::LogInfo("ThreadPool: WorkThread---", worker.get_id(), " stoped.\n");
+            Console::LogInfo("ThreadPool WorkThread---", worker.get_id(), " stoped.\n");
         }
     }
 

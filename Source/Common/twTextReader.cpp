@@ -33,7 +33,7 @@ namespace TwinkleGraphics
         fp = fopen(filename, "rb");
         if (fp)
         {
-            Console::LogInfo("Text: TextReader open text file ", filename, " successed.\n");
+            Console::LogInfo("TextReader open text file ", filename, " successed.\n");
 
             //opengl programing guide 8th source code
             //read source
@@ -54,7 +54,7 @@ namespace TwinkleGraphics
             return ReadResult<TextSource>(shared_from_this(), textSource, ReadResult<TextSource>::Status::SUCCESS);
         }
 
-        Console::LogWarning("Text: TextReader open text file ", filename, " failed.\n");
+        Console::LogWarning("TextReader open text file ", filename, " failed.\n");
 
         return ReadResult<TextSource>(ReadResult<TextSource>::Status::FAILED);
     }

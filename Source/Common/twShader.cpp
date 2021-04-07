@@ -93,7 +93,7 @@ namespace TwinkleGraphics
 
     Shader::~Shader()
     {
-        Console::LogInfo("Shader: Shader ", _res.id, "(hash: ", _res.hash, ") deconstruct.\n");
+        Console::LogInfo("Shader ", _res.id, "(hash: ", _res.hash, ") deconstruct.\n");
 
         if (_res.id != GL_NONE)
         {
@@ -151,7 +151,7 @@ namespace TwinkleGraphics
         const GLubyte *error_str = glGetString(error);
         if (error_str != nullptr)
         {
-            Console::LogError("Shader:", error_str, "\n");
+            Console::LogError("Shader ", error_str, "\n");
         }
 #endif
 
@@ -233,7 +233,7 @@ namespace TwinkleGraphics
         const GLubyte *error_str = glGetString(error);
         if (error_str != nullptr)
         {
-            Console::LogError("Shader:", error_str, "\n");
+            Console::LogError("Shader ", error_str, "\n");
         }
 #endif
 
@@ -248,7 +248,7 @@ namespace TwinkleGraphics
 
             GLchar *log = new GLchar[len + 1];
             glGetShaderInfoLog(_res.id, len, &len, log);
-            Console::LogError("Shader: Shader ", _res.id, "  compilation failed: ", log, "\n");
+            Console::LogError("Shader ", _res.id, "  compilation failed: ", log, "\n");
             SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
@@ -345,7 +345,7 @@ namespace TwinkleGraphics
                 ParseShaderIncludes(includeSource->content.c_str());
                 _includeSouces.push_back(includeSource);
 
-                // Console::LogInfo("ShaderInclude: Shader ", _res.id, " include ", sm.str(), "\n");
+                // Console::LogInfo("Shader ", _res.id, " include ", sm.str(), "\n");
             }
         }
     }
@@ -379,7 +379,7 @@ namespace TwinkleGraphics
 
     ShaderProgram::~ShaderProgram()
     {
-        Console::LogInfo("Shader: Shader Program ", _res.id, "(hash: ", _res.hash, ") deconstruct\n");
+        Console::LogInfo("Shader Program ", _res.id, "(hash: ", _res.hash, ") deconstruct\n");
 
         if(_res.id != GL_NONE)
         {
@@ -427,7 +427,7 @@ namespace TwinkleGraphics
         const GLubyte *error_str = glGetString(error);
         if (error_str != nullptr)
         {
-            Console::LogError("ShaderProgram:", error_str, "\n");
+            Console::LogError("ShaderProgram ", error_str, "\n");
         }
 #endif
 
@@ -449,7 +449,7 @@ namespace TwinkleGraphics
 
             GLchar *log = new GLchar[len + 1];
             glGetProgramInfoLog(_res.id, len, &len, log);
-            Console::LogError("Shader: Shader linking failed: ", log, "\n");
+            Console::LogError("Shader linking failed: ", log, "\n");
             SAFE_DEL_ARR(log);
 #endif /* DEBUG */
 
@@ -590,7 +590,7 @@ namespace TwinkleGraphics
         fp = fopen(subFilename.c_str(), "rb");
         if (fp)
         {
-            Console::LogInfo("Shader: ShaderReader open shader file ", subFilename, " successed.\n");
+            Console::LogInfo("ShaderReader open shader file ", subFilename, " successed.\n");
 
             //opengl programing guide 8th source code
             //read source
@@ -624,7 +624,7 @@ namespace TwinkleGraphics
         else
         {
 #ifdef _DEBUG
-            Console::LogError("Shader: ShaderReader open shader file ", subFilename, " failed\n");
+            Console::LogError("ShaderReader open shader file ", subFilename, " failed\n");
 #endif
 
             ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);

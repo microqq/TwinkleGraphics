@@ -35,7 +35,7 @@ Texture::~Texture()
         const GLubyte *error_str = glGetString(error);
         if(error_str != nullptr)
         {
-            Console::LogError("Texture:", error_str, "\n");
+            Console::LogError("Texture ", error_str, "\n");
         }
 #endif
     }
@@ -317,7 +317,7 @@ void Texture::InitStorage()
     const GLubyte* error_str = glGetString(error);
     if(error_str != nullptr)
     {
-        Console::LogError("Texture:", error_str, "\n");
+        Console::LogError("Texture ", error_str, "\n");
     }
     assert(textures[0] != 0);
 #endif
@@ -331,7 +331,7 @@ void Texture::InitStorage()
     error_str = glGetString(error);
     if(error_str != nullptr)
     {
-        Console::LogError("Texture:", error_str, "\n");
+        Console::LogError("Texture ", error_str, "\n");
     }
 #endif
 

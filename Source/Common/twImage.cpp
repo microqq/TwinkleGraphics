@@ -94,12 +94,12 @@ namespace TwinkleGraphics
 		vglImageData data;
 		if (vglLoadDDS(filename, &data))
 		{
-			Console::LogInfo("Image: Load image ", filename, " successed.\n");
+			Console::LogInfo("Load image ", filename, " successed.\n");
 			Image::Ptr image = std::make_shared<Image>(filename, data);
 			return ReadResult<Image>(shared_from_this(), image, ReadResult<Image>::Status::SUCCESS);
 		}
 
-		Console::LogWarning("Image: Load image ", filename, " failed.\n");
+		Console::LogWarning("Load image ", filename, " failed.\n");
 
 		return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 	}
@@ -130,7 +130,7 @@ namespace TwinkleGraphics
 		//if the image failed to load, return failure
 		if (!dib)
 		{
-			Console::LogWarning("Image: Load image ", filename, " failed.\n");
+			Console::LogWarning("Load image ", filename, " failed.\n");
 			return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 		}
 
@@ -145,7 +145,7 @@ namespace TwinkleGraphics
 		//if this somehow one of these failed (they shouldn't), return failure
 		if ((bits == 0) || (width == 0) || (height == 0))
 		{
-			Console::LogWarning("Image: Load image ", filename, " failed(...).\n");
+			Console::LogWarning("Load image ", filename, " failed(...).\n");
 			return ReadResult<Image>(ReadResult<Image>::Status::FAILED);
 		}
 
@@ -167,7 +167,7 @@ namespace TwinkleGraphics
 		//Free FreeImage's copy of the data
 		FreeImage_Unload(dib);
 
-		Console::LogInfo("Image: Load image ", filename, " successed.\n");
+		Console::LogInfo("Load image ", filename, " successed.\n");
 
 		//return success
 		return ReadResult<Image>(shared_from_this(), ret_image, ReadResult<Image>::Status::SUCCESS);

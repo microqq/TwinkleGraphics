@@ -85,7 +85,7 @@ void RenderTexture::Create(FrameBufferObject::Ptr framebuf)
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        Console::LogError("FrameBuffer: Framebuffer is not complete!\n");
+        Console::LogError("Framebuffer is not complete!\n");
     }
 
     _framebuf->UnBind();

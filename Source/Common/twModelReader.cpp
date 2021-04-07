@@ -42,7 +42,7 @@ namespace TwinkleGraphics
         // check for errors
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
-            Console::LogError("ERROR::ASSIMP:: ", importer.GetErrorString(), "\n");
+            Console::LogError("Assimp importer ", importer.GetErrorString(), "\n");
             return ReadResult<Model>(ReadResult<Model>::Status::FAILED);
         }
 

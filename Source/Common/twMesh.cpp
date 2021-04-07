@@ -17,7 +17,7 @@ void SubMesh::Initialize(int32 indice_num)
 
 Mesh::~Mesh()
 {
-    Console::LogInfo("Mesh: Mesh Deconstruct.\n");
+    Console::LogInfo("Mesh Deconstructed.\n");
 
     _submeshes.clear();
 

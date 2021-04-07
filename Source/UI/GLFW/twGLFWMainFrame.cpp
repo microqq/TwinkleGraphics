@@ -40,10 +40,10 @@ namespace TwinkleGraphics
             /* Problem: glewInit failed, something is seriously wrong. */
             // fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 
-            Console::LogError("Error:", glewGetErrorString(err), "\n");
+            Console::LogError("Opengl Initialise ", glewGetErrorString(err), "\n");
         }
         // fprintf(stdout, "Status:Using GLEW %s\n", glewGetString(GLEW_VERSION));
-        Console::LogInfo("Status:Using GLEW-", glewGetString(GLEW_VERSION), "\n");
+        Console::LogInfo("OpenGL using GLEW-", glewGetString(GLEW_VERSION), "\n");
 
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
@@ -64,7 +64,7 @@ namespace TwinkleGraphics
         // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Cousine-Regular.ttf", 15.0f);
         // io.Fonts->AddFontFromFileTTF("Assets/Fonts/DroidSans.ttf", 16.0f);
         // io.Fonts->AddFontFromFileTTF("Assets/Fonts/ProggyTiny.ttf", 10.0f);
-        ImFont *font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/simhei.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+        ImFont *font = io.Fonts->AddFontFromFileTTF("Assets/Fonts/Nowar-Neo-Sans-CN-Regular.ttf", 16.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
         IM_ASSERT(font != NULL);
         ImGui::GetIO().FontDefault = font;
 
@@ -76,8 +76,11 @@ namespace TwinkleGraphics
         ImGuiStyle &style = ImGui::GetStyle();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            style.WindowRounding = 0.0f;
-            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+            style.WindowBorderSize = 1;
+            style.WindowRounding = 4;
+            style.FrameRounding = 4;
+            style.GrabMinSize = 10;
+            style.GrabRounding = 4;
 
             // color scheme adapted from
             // https://github.com/ocornut/imgui/pull/511#issuecomment-175719267
@@ -147,29 +150,29 @@ namespace TwinkleGraphics
             GLExtensions.push_back(std::string(reinterpret_cast<const char *>(bytes)));
         }
 
-        Console::LogInfo("Vendor:" + std::string(vendor) + "\n");
-        Console::LogInfo("Render:", renderer, "\n");
-        Console::LogInfo("OGL Version:", version, "\n");
+        Console::LogInfo("Vendor:=" + std::string(vendor) + "\n");
+        Console::LogInfo("Render:=", renderer, "\n");
+        Console::LogInfo("OpenGL Version:=", version, "\n");
 
         int attrib_counts;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attrib_counts);
-        Console::LogInfo("GL_MAX_VERTEX_ATTRIBS:", attrib_counts, "\n");
+        Console::LogInfo("GL_MAX_VERTEX_ATTRIBS:=", attrib_counts, "\n");
 
         int32 texunit_count;
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texunit_count);
-        Console::LogInfo("GL_MAX_TEXTURE_IMAGE_UNITS:", texunit_count, "\n");
+        Console::LogInfo("GL_MAX_TEXTURE_IMAGE_UNITS:=", texunit_count, "\n");
 
         int32 combinedtexunit_count;
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedtexunit_count);
-        Console::LogInfo("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:", combinedtexunit_count, "\n");
+        Console::LogInfo("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:=", combinedtexunit_count, "\n");
 
         int32 max_colorattachment_count;
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_colorattachment_count);
-        Console::LogInfo("GL_MAX_COLOR_ATTACHMENTS:", max_colorattachment_count, "\n");
+        Console::LogInfo("GL_MAX_COLOR_ATTACHMENTS:=", max_colorattachment_count, "\n");
 
         int32 max_drawbuffers_count;
         glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_drawbuffers_count);
-        Console::LogInfo("GL_MAX_DRAW_BUFFERS:", max_drawbuffers_count, "\n");
+        Console::LogInfo("GL_MAX_DRAW_BUFFERS:=", max_drawbuffers_count, "\n");
 #endif
 
         SetInputEventCallbacks();
@@ -217,7 +220,7 @@ namespace TwinkleGraphics
 
         glViewport(_data->x, _data->y, _data->width, _data->height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glClearColor(0.4f, 0.2f, 0.0f, 1.0f);
+        glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
     }
 
     void GLFWMainFrame::EndFrame()
