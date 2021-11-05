@@ -1,37 +1,29 @@
 #ifndef TW_KEYEVENT_H
 #define TW_KEYEVENT_H
 
+#include "twInput.h"
 #include "twInputEventArgs.h"
 
-namespace TwinkleGraphics
-{
-    class InputManager;
+namespace TwinkleGraphics {
+class InputManager;
 
-    class KeyEventArgs : public InputEventArgs
-    {
-    public:
-        typedef std::shared_ptr<KeyEventArgs> Ptr;
+class KeyEventArgs : public InputEventArgs {
+public:
+  typedef std::shared_ptr<KeyEventArgs> Ptr;
 
-        static EventId ID;
+  static EventId ID;
 
-        explicit KeyEventArgs()
-            : InputEventArgs()
-        {
-        }
-        virtual ~KeyEventArgs() {}
+  explicit KeyEventArgs() : InputEventArgs() {}
+  virtual ~KeyEventArgs() {}
 
-        virtual EventId GetEventId() override
-        {
-            return KeyEventArgs::ID;
-        }
+  virtual EventId GetEventId() override { return KeyEventArgs::ID; }
 
-    private:
-        KeyCode _key;
+private:
+  KeyCode _key;
 
-        friend class InputManager;
-    };
+  friend class InputManager;
+};
 
 } // namespace TwinkleGraphics
-
 
 #endif

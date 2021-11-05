@@ -2,245 +2,229 @@
 #ifndef TW_SHADER_H
 #define TW_SHADER_H
 
+#include <stdio.h>
 #include <string>
 #include <vector>
-#include <stdio.h>
 
-#include <glew/glew.h>
+
 #include "twCommon.h"
+#include <glew/glew.h>
 
-#include "twResource.h"
+
 #include "twRenderContext.h"
-#include "twTextReader.h"
+#include "twResource.h"
 #include "twTextManager.h"
+#include "twTextReader.h"
 
-namespace TwinkleGraphics
-{
-    class Shader;
-    class ShaderProgram;
-    class ShaderResource;
-    class ShaderOption;
-    class ShaderReader;
-    class ShaderManager;
 
-    enum class ShaderType
-    {
-        VERTEX_SHADER = GL_VERTEX_SHADER,
-        TCS_SHADER = GL_TESS_CONTROL_SHADER,
-        TES_SHADER = GL_TESS_EVALUATION_SHADER,
-        GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
-        FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
-        COMPUTE_SHADER = GL_COMPUTE_SHADER
-    };
+namespace TwinkleGraphics {
+class Shader;
+class ShaderProgram;
+class ShaderResource;
+class ShaderOption;
+class ShaderReader;
+class ShaderManager;
 
-    typedef TextSource ShaderSource;
-    typedef TextSource ShaderIncludeSource;
-    typedef ShaderSource::Ptr ShaderSourcePtr;
-    typedef ShaderIncludeSource::Ptr ShaderIncludeSourcePtr;
+enum class ShaderType {
+  VERTEX_SHADER = GL_VERTEX_SHADER,
+  TCS_SHADER = GL_TESS_CONTROL_SHADER,
+  TES_SHADER = GL_TESS_EVALUATION_SHADER,
+  GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
+  FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
+  COMPUTE_SHADER = GL_COMPUTE_SHADER
+};
 
-    class Shader final : public Object
-    {
-    public:
-        typedef std::shared_ptr<Shader> Ptr;
-        typedef std::weak_ptr<Shader> WeakPtr;
+typedef TextSource ShaderSource;
+typedef TextSource ShaderIncludeSource;
+typedef ShaderSource::Ptr ShaderSourcePtr;
+typedef ShaderIncludeSource::Ptr ShaderIncludeSourcePtr;
 
-        // Shader(ShaderResourceInfo::Ptr source);
-        Shader(ShaderType type, ShaderSourcePtr source = nullptr);
-        // Shader(ShaderType type, const char *source);
-        Shader(const Shader &);
-        virtual ~Shader();
+class Shader final : public Object {
+public:
+  typedef std::shared_ptr<Shader> Ptr;
+  typedef std::weak_ptr<Shader> WeakPtr;
 
-        void SetRenderResource(RenderResourceHandle &res) { _res = res; }
-        const RenderResourceHandle &GetRenderResource() { return _res; }
-        bool Compiled() { return _compiled; }
+  // Shader(ShaderResourceInfo::Ptr source);
+  Shader(ShaderType type, ShaderSourcePtr source = nullptr);
+  // Shader(ShaderType type, const char *source);
+  Shader(const Shader &);
+  virtual ~Shader();
 
-        ShaderSourcePtr GetShaderSource() { return _source; }
-        void SetShaderSource(ShaderSourcePtr source);
-        void SetDefineMacros(const char* macros[], int length);
-        void SetupCompile();
-        bool Compile();
-        bool CheckShadingLanguageIncludeARB();
+  void SetRenderResource(RenderResourceHandle &res) { _res = res; }
+  const RenderResourceHandle &GetRenderResource() { return _res; }
+  bool Compiled() { return _compiled; }
 
-    private:
-        void InsertDefMacros(const char* defMacros[], int length);
-        void ParseShaderIncludes(const char *source);
+  ShaderSourcePtr GetShaderSource() { return _source; }
+  void SetShaderSource(ShaderSourcePtr source);
+  void SetDefineMacros(const char *macros[], int length);
+  void SetupCompile();
+  bool Compile();
+  bool CheckShadingLanguageIncludeARB();
 
-    private:
-        std::vector<ShaderIncludeSourcePtr> _includeSouces;
-        ShaderSourcePtr _source = nullptr;
-        RenderResourceHandle _res;
+private:
+  void InsertDefMacros(const char *defMacros[], int length);
+  void ParseShaderIncludes(const char *source);
 
-        bool _setupCompile = false;
-        bool _compiled = false;
+private:
+  std::vector<ShaderIncludeSourcePtr> _includeSouces;
+  ShaderSourcePtr _source = nullptr;
+  RenderResourceHandle _res;
 
-        friend class ShaderManager;
-    };
+  bool _setupCompile = false;
+  bool _compiled = false;
 
-    typedef Shader::Ptr ShaderPtr;
+  friend class ShaderManager;
+};
 
-    class ShaderProgram final : public Object
-    {
-    public:
-        typedef std::shared_ptr<ShaderProgram> Ptr;
-        typedef std::weak_ptr<ShaderProgram> WeakPtr;
+typedef Shader::Ptr ShaderPtr;
 
-        ShaderProgram(int32 shaderCount);
-        virtual ~ShaderProgram();
+class ShaderProgram final : public Object {
+public:
+  typedef std::shared_ptr<ShaderProgram> Ptr;
+  typedef std::weak_ptr<ShaderProgram> WeakPtr;
 
-        void AddShader(ShaderPtr shader);
-        void ClearShader();
-        bool Link();
-        void SetRenderResource(RenderResourceHandle &res) { _res = res; }
-        const RenderResourceHandle &GetRenderResource() { return _res; }
+  ShaderProgram(int32 shaderCount);
+  virtual ~ShaderProgram();
 
-        int32 GetActiveAtrtribsCount();
-        int32 GetActiveUniformsCount();
-        int32 GetActiveUniformBlocksCount();
-        int32 GetActiveUniformBlock(uint32 index);
-        void GetActiveUniform(uint32 index, char *name);
+  void AddShader(ShaderPtr shader);
+  void ClearShader();
+  bool Link();
+  void SetRenderResource(RenderResourceHandle &res) { _res = res; }
+  const RenderResourceHandle &GetRenderResource() { return _res; }
 
-        int32 GetUniformLocation(const char *name) { return glGetUniformLocation(_res.id, name); }
+  int32 GetActiveAtrtribsCount();
+  int32 GetActiveUniformsCount();
+  int32 GetActiveUniformBlocksCount();
+  int32 GetActiveUniformBlock(uint32 index);
+  void GetActiveUniform(uint32 index, char *name);
 
-        void GetActiveAttribute(uint32 index, char *name);
-        int32 GetAttributeLocation(char *name);
+  int32 GetUniformLocation(const char *name) {
+    return glGetUniformLocation(_res.id, name);
+  }
 
-    private:
-        std::vector<ShaderPtr> _shaders;
-        RenderResourceHandle _res;
-        int32 _linkShaderCount = 0;
-        GLint _linked = false;
+  void GetActiveAttribute(uint32 index, char *name);
+  int32 GetAttributeLocation(char *name);
 
-        friend class ShaderManager;
-    };
+private:
+  std::vector<ShaderPtr> _shaders;
+  RenderResourceHandle _res;
+  int32 _linkShaderCount = 0;
+  GLint _linked = false;
 
-    typedef ShaderProgram::Ptr ShaderProgramPtr;
+  friend class ShaderManager;
+};
 
-    class __TWCOMExport ShaderOption final : public ReaderOption
-    {
-    public:
-        struct OptionData
-        {
-            std::string filename;
-            ShaderType type;
-            int32 numMacros = 0;
-            char **macros = nullptr;
-        };
+typedef ShaderProgram::Ptr ShaderProgramPtr;
 
-        ShaderOption();
-        ShaderOption(const OptionData& data);
-        ShaderOption(const ShaderOption &src);
-        const ShaderOption &operator=(const ShaderOption &src);
-        virtual ~ShaderOption();
+class __TWCOMExport ShaderOption final : public ReaderOption {
+public:
+  struct OptionData {
+    std::string filename;
+    ShaderType type;
+    int32 numMacros = 0;
+    char **macros = nullptr;
+  };
 
-    private:
-        OptionData _optionData;
+  ShaderOption();
+  ShaderOption(const OptionData &data);
+  ShaderOption(const ShaderOption &src);
+  const ShaderOption &operator=(const ShaderOption &src);
+  virtual ~ShaderOption();
 
-        friend class ShaderReader;
-        friend class ShaderManager;
-    };
+private:
+  OptionData _optionData;
 
-    class __TWCOMExport ShaderProgramOption final : public ReaderOption
-    {
-    public:
-        ShaderProgramOption(ShaderOption* options, int num)
-            : ReaderOption()
-            , _macros()
-        {
-            FillShaderOptions(options, num);
-        }
+  friend class ShaderReader;
+  friend class ShaderManager;
+};
 
-        ShaderProgramOption(const ShaderProgramOption &src)
-            : ReaderOption(src)
-            , _macros(src._macros)
-        {
-            FillShaderOptions(src._shaderOptions, src._numShaderOption);
-        }
+class __TWCOMExport ShaderProgramOption final : public ReaderOption {
+public:
+  ShaderProgramOption(ShaderOption *options, int num)
+      : ReaderOption(), _macros() {
+    FillShaderOptions(options, num);
+  }
 
-        const ShaderProgramOption &operator=(const ShaderProgramOption &src) = delete;
+  ShaderProgramOption(const ShaderProgramOption &src)
+      : ReaderOption(src), _macros(src._macros) {
+    FillShaderOptions(src._shaderOptions, src._numShaderOption);
+  }
 
-        virtual ~ShaderProgramOption() 
-        {
-            SAFE_DEL_ARR(_shaderOptions);
-        }
+  const ShaderProgramOption &operator=(const ShaderProgramOption &src) = delete;
 
-        void SetMacros(std::string macros) { _macros = macros; }
-    private:
-        void FillShaderOptions(ShaderOption* options, int num)
-        {
-            if(options == nullptr)
-                return;
-            
-            SAFE_DEL_ARR(_shaderOptions);
+  virtual ~ShaderProgramOption() { SAFE_DEL_ARR(_shaderOptions); }
 
-            _shaderOptions = new ShaderOption[num];
-            _numShaderOption = num;
+  void SetMacros(std::string macros) { _macros = macros; }
 
-            for(int i = 0; i < num; i++)
-            {
-                _shaderOptions[i] = options[i];
-            }
-        }
+private:
+  void FillShaderOptions(ShaderOption *options, int num) {
+    if (options == nullptr)
+      return;
 
-    private:
-        std::string _macros;
-        ShaderOption* _shaderOptions = nullptr;
-        int _numShaderOption;
+    SAFE_DEL_ARR(_shaderOptions);
 
-        friend class ShaderReader;
-        friend class ShaderManager;
-    };
+    _shaderOptions = new ShaderOption[num];
+    _numShaderOption = num;
 
-    class __TWCOMExport ShaderProgramUse
-    {
-    public:
-        ShaderProgramUse(ShaderProgramPtr program);
-        ~ShaderProgramUse();
-    };
+    for (int i = 0; i < num; i++) {
+      _shaderOptions[i] = options[i];
+    }
+  }
 
-    class __TWCOMExport ShaderReader : public ResourceReader
-        , public Reference<ShaderReader>
-        , public INonCopyable
-    {
-    public:
-        typedef std::shared_ptr<ShaderReader> Ptr;
+private:
+  std::string _macros;
+  ShaderOption *_shaderOptions = nullptr;
+  int _numShaderOption;
 
-        ShaderReader();
-        ShaderReader(ShaderOption* option);
-        ShaderReader(ShaderProgramOption* option);
-        virtual ~ShaderReader();
+  friend class ShaderReader;
+  friend class ShaderManager;
+};
 
-        ReadResult<Shader> Read(const char *filename);
-        ReadResult<Shader> ReadAsync(std::string filename);
-        ReadResult<ShaderProgram> ReadProgramAsync(std::string filename);
+class __TWCOMExport ShaderProgramUse {
+public:
+  ShaderProgramUse(ShaderProgramPtr program);
+  ~ShaderProgramUse();
+};
 
-        void SetOption(ShaderOption* option)
-        {
-            if(option == nullptr)
-                return;
+class __TWCOMExport ShaderReader : public ResourceReader,
+                                   public Reference<ShaderReader>,
+                                   public INonCopyable {
+public:
+  typedef std::shared_ptr<ShaderReader> Ptr;
 
-            if(_option != nullptr)
-            {
-                SAFE_DEL(_option);
-            }
-            _option = new ShaderOption(*option);
-        }
+  ShaderReader();
+  ShaderReader(ShaderOption *option);
+  ShaderReader(ShaderProgramOption *option);
+  virtual ~ShaderReader();
 
-        void SetOption(ShaderProgramOption* option)
-        {
-            if(option == nullptr)
-                return;
+  ReadResult<Shader> Read(const char *filename);
+  ReadResult<Shader> ReadAsync(std::string filename);
+  ReadResult<ShaderProgram> ReadProgramAsync(std::string filename);
 
-            if(_option != nullptr)
-            {
-                SAFE_DEL(_option);
-            }
-            _option = new ShaderProgramOption(*option);
-        }
+  void SetOption(ShaderOption *option) {
+    if (option == nullptr)
+      return;
 
-        DECLARE_READERID;
+    if (_option != nullptr) {
+      SAFE_DEL(_option);
+    }
+    _option = new ShaderOption(*option);
+  }
 
-    private:
-    };
+  void SetOption(ShaderProgramOption *option) {
+    if (option == nullptr)
+      return;
+
+    if (_option != nullptr) {
+      SAFE_DEL(_option);
+    }
+    _option = new ShaderProgramOption(*option);
+  }
+
+  DECLARE_READERID;
+
+private:
+};
 
 } // namespace TwinkleGraphics
 

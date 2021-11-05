@@ -4,16 +4,12 @@
 
 #include <memory>
 
-namespace TwinkleGraphics
-{
-template<class T>
-class Reference : public std::enable_shared_from_this<T>
-{
+namespace TwinkleGraphics {
+template <class T> class Reference : public std::enable_shared_from_this<T> {
 public:
-    Reference() {}
-    virtual ~Reference() {}
-}; 
+  Reference() {}
+  virtual ~Reference() {}
+};
 } // namespace TwinkleGraphics
-
 
 #endif

@@ -5,34 +5,30 @@
 
 #include "twTextureExplore.h"
 
-namespace TwinkleGraphics
-{
-    static TextureExplore *plugin = nullptr;
+namespace TwinkleGraphics {
+static TextureExplore *plugin = nullptr;
 
 #ifdef __cplusplus
-    extern "C"
-    {
+extern "C" {
 #endif
-        __TWPLUGINExport Plugin *InstallPlugin(PluginManager *);
-        __TWPLUGINExport void UnInstallPlugin(PluginManager *);
+__TWPLUGINExport Plugin *InstallPlugin(PluginManager *);
+__TWPLUGINExport void UnInstallPlugin(PluginManager *);
 
-        Plugin *InstallPlugin(PluginManager *pluginMgr)
-        {
-            std::string name = "3.TextureExplore";
-            plugin = new TextureExplore(name);
+Plugin *InstallPlugin(PluginManager *pluginMgr) {
+  std::string name = "3.TextureExplore";
+  plugin = new TextureExplore(name);
 
-            pluginMgr->InstallPlugin(plugin);
+  pluginMgr->InstallPlugin(plugin);
 
-            return plugin;
-        }
+  return plugin;
+}
 
-        void UnInstallPlugin(PluginManager *pluginMgr)
-        {
-            pluginMgr->UnInstallPlugin(plugin);
-            SAFE_DEL(plugin);
-        }
+void UnInstallPlugin(PluginManager *pluginMgr) {
+  pluginMgr->UnInstallPlugin(plugin);
+  SAFE_DEL(plugin);
+}
 #ifdef __cplusplus
-    }
+}
 #endif
 
 } // namespace TwinkleGraphics

@@ -5,24 +5,20 @@
 
 #include "twRenderPipeline.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
-class DeferredPipeline : public RenderPipeline
-{
+class DeferredPipeline : public RenderPipeline {
 public:
-    DeferredPipeline();
-    ~DeferredPipeline();
+  DeferredPipeline();
+  ~DeferredPipeline();
 };
 
 typedef Singleton<DeferredPipeline> Deferred;
 
 } // namespace TwinkleGraphics
-
-
 
 #endif

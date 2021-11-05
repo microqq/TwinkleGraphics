@@ -1,18 +1,10 @@
 #include "twInspector.h"
 
-namespace TwinkleGraphics
-{
-    Inspector::Inspector(Widget* parent)
-        : Widget(parent)
-    {}
+namespace TwinkleGraphics {
+Inspector::Inspector(Widget *parent) : Widget(parent) {}
 
-    Inspector::~Inspector()
-    {
-        
-    }
+Inspector::~Inspector() {}
 
-    void Inspector::OnGui()
-    {
-    }
+void Inspector::OnGui() {}
 
 } // namespace TwinkleGraphics

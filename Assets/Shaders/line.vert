@@ -3,7 +3,4 @@
 
 #include </GLSLIncludes/vertexLayout.glsl>
 
-void main()
-{
-    gl_Position = vec4(vertexPos, 1.0f);
-}
+void main() { gl_Position = vec4(vertexPos, 1.0f); }

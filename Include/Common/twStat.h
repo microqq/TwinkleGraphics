@@ -4,21 +4,15 @@
 
 #include "twView.h"
 
-namespace TwinkleGraphics
-{
-struct StatsData
-{
-        
-};
+namespace TwinkleGraphics {
+struct StatsData {};
 
-class Stats
-{
+class Stats {
 public:
-    Stats(View& view);
-    ~Stats();
+  Stats(View &view);
+  ~Stats();
 };
 
 } // namespace TwinkleGraphics
-
 
 #endif

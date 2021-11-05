@@ -3,154 +3,148 @@
 
 #include <vector>
 
-#include "twCommon.h"
-#include "twMouseEventArgs.h"
-#include "twKeyEventArgs.h"
-#include "twFocusEventArgs.h"
-#include "twResizeEventArgs.h"
 #include "twCloseEventArgs.h"
+#include "twCommon.h"
 #include "twCursorEventArgs.h"
+#include "twEventHandler.h"
+#include "twFocusEventArgs.h"
+#include "twKeyEventArgs.h"
+#include "twMouseEventArgs.h"
+#include "twResizeEventArgs.h"
 #include "twScrollEvetnArg.h"
 #include "twSizePolicy.h"
-#include "twEventHandler.h"
 
-namespace TwinkleGraphics
-{
-    struct WidgetData
-    {
-        uint32 width;
-        uint32 height;
-        uint32 x;
-        uint32 y;
-    };
 
-    class Widget : public Object, public IUpdatable, public IDestroyable, public INonCopyable
-    {
-    public:
-        typedef std::function<void()> OnGuiFunction;
+namespace TwinkleGraphics {
+struct WidgetData {
+  uint32 width;
+  uint32 height;
+  uint32 x;
+  uint32 y;
+};
 
-        explicit Widget(Widget *parent = nullptr);
-        virtual ~Widget();
-        virtual void Update(float deltaTime = 0.0f) override;
-        virtual void Destroy() override;
+class Widget : public Object,
+               public IUpdatable,
+               public IDestroyable,
+               public INonCopyable {
+public:
+  typedef std::function<void()> OnGuiFunction;
 
-        void SetSizePolicy(SizePolicy sizePolicy) { _sizepolicy = sizePolicy; }
-        void SetPosition(uint32 x, uint32 y)
-        {
-            _data->x = x;
-            _data->y = y;
-        }
-        void SetSize(uint32 width, uint32 height) { _data->width = width, _data->height = height; }
-        void SetWidth(uint32 width) { _data->width = width; }
-        void SetHeight(uint32 height) { _data->height = height; }
-        void SetEventPropagation(bool propagation) { _eventPropagation = propagation; }
+  explicit Widget(Widget *parent = nullptr);
+  virtual ~Widget();
+  virtual void Update(float deltaTime = 0.0f) override;
+  virtual void Destroy() override;
 
-        const SizePolicy &GetSizePolicy() { return _sizepolicy; }
-        vec2 GetPosition() { return vec2(_data->x, _data->y); }
-        vec2 GetSize() { return vec2(_data->width, _data->height); }
-        uint32 GetWidth() { return _data->width; }
-        uint32 GetHeight() { return _data->height; }
-        bool GetEventPropagation() { return _eventPropagation; }
+  void SetSizePolicy(SizePolicy sizePolicy) { _sizepolicy = sizePolicy; }
+  void SetPosition(uint32 x, uint32 y) {
+    _data->x = x;
+    _data->y = y;
+  }
+  void SetSize(uint32 width, uint32 height) {
+    _data->width = width, _data->height = height;
+  }
+  void SetWidth(uint32 width) { _data->width = width; }
+  void SetHeight(uint32 height) { _data->height = height; }
+  void SetEventPropagation(bool propagation) {
+    _eventPropagation = propagation;
+  }
 
-        virtual void OnGuiBegin() {}
-        virtual void OnGuiEnd() {}
+  const SizePolicy &GetSizePolicy() { return _sizepolicy; }
+  vec2 GetPosition() { return vec2(_data->x, _data->y); }
+  vec2 GetSize() { return vec2(_data->width, _data->height); }
+  uint32 GetWidth() { return _data->width; }
+  uint32 GetHeight() { return _data->height; }
+  bool GetEventPropagation() { return _eventPropagation; }
 
-        virtual void OnGui()
-        {
-            for (auto child : _children)
-            {
-                if (child != nullptr)
-                {
-                    child->PaintGui();
-                }
-            }
-        }
+  virtual void OnGuiBegin() {}
+  virtual void OnGuiEnd() {}
 
-        void PaintGui()
-        {
-            OnGuiBegin();
-            OnGui();
-            OnGuiEnd();
-        }
+  virtual void OnGui() {
+    for (auto child : _children) {
+      if (child != nullptr) {
+        child->PaintGui();
+      }
+    }
+  }
 
-        void Show() { _visible = true; }
-        void Hide() { _visible = false; }
+  void PaintGui() {
+    OnGuiBegin();
+    OnGui();
+    OnGuiEnd();
+  }
 
-        bool IsFocused() { return _focused; }
-        bool IsHovered() { return _hovered; }
+  void Show() { _visible = true; }
+  void Hide() { _visible = false; }
 
-        void InstallEventHandler()
-        {
-            if (_eventHandlerFunc == nullptr)
-            {
-                _eventHandlerFunc = MakeClassEventHandlerFunPtr(
-                    &Widget::OnEvent,
-                    this);
-                _eventHandler += _eventHandlerFunc;
+  bool IsFocused() { return _focused; }
+  bool IsHovered() { return _hovered; }
 
-                Subscribe();
-            }
-        }
+  void InstallEventHandler() {
+    if (_eventHandlerFunc == nullptr) {
+      _eventHandlerFunc = MakeClassEventHandlerFunPtr(&Widget::OnEvent, this);
+      _eventHandler += _eventHandlerFunc;
 
-        void UnInstallEventHandler()
-        {
-            if (_eventHandlerFunc != nullptr)
-            {
-                _eventHandler -= _eventHandlerFunc;
-                UnSubscribe();
-            }
-        }
+      Subscribe();
+    }
+  }
 
-        void SetParent(Widget *parent = nullptr);
+  void UnInstallEventHandler() {
+    if (_eventHandlerFunc != nullptr) {
+      _eventHandler -= _eventHandlerFunc;
+      UnSubscribe();
+    }
+  }
 
-    protected:
-        virtual void OnEvent(ObjectPtr sender, BaseEventArgsPtr event);
+  void SetParent(Widget *parent = nullptr);
 
-        virtual void OnMousePressEvent(MouseEventArgs *e);
-        virtual void OnMouseReleaseEvent(MouseEventArgs *e);
-        virtual void OnMouseDoubleClickEvent(MouseEventArgs *e);
-        virtual void OnMouseMoveEvent(MouseEventArgs *e);
-        virtual void OnScrollEvent(MouseEventArgs *e);
+protected:
+  virtual void OnEvent(ObjectPtr sender, BaseEventArgsPtr event);
 
-        virtual void OnKeyPressEvent(KeyEventArgs *e);
-        virtual void OnKeyReleaseEvent(KeyEventArgs *e);
+  virtual void OnMousePressEvent(MouseEventArgs *e);
+  virtual void OnMouseReleaseEvent(MouseEventArgs *e);
+  virtual void OnMouseDoubleClickEvent(MouseEventArgs *e);
+  virtual void OnMouseMoveEvent(MouseEventArgs *e);
+  virtual void OnScrollEvent(MouseEventArgs *e);
 
-        virtual void OnFocusInEvent(FocusEventArgs *e);
-        virtual void OnFocusOutEvent(FocusEventArgs *e);
+  virtual void OnKeyPressEvent(KeyEventArgs *e);
+  virtual void OnKeyReleaseEvent(KeyEventArgs *e);
 
-        virtual void OnEnterEvent(CursorEventArgs *e);
-        virtual void OnLeaveEvent(CursorEventArgs *e);
+  virtual void OnFocusInEvent(FocusEventArgs *e);
+  virtual void OnFocusOutEvent(FocusEventArgs *e);
 
-        virtual void OnResizeEvent(ResizeEventArgs *e);
-        virtual void OnCloseEvent(CloseEventArgs *e);
+  virtual void OnEnterEvent(CursorEventArgs *e);
+  virtual void OnLeaveEvent(CursorEventArgs *e);
 
-        virtual void SetFocusedInternal() {}
-        virtual void SetHoveredInternal() {}
+  virtual void OnResizeEvent(ResizeEventArgs *e);
+  virtual void OnCloseEvent(CloseEventArgs *e);
 
-        bool HasChild(Widget *widget);
-        void AddChild(Widget *widget);
-        void RemoveChild(Widget *Widget);
+  virtual void SetFocusedInternal() {}
+  virtual void SetHoveredInternal() {}
 
-        void SetDepth(int depth = -1) { _depth = depth; }
-        int GetDepth() { return _depth; }
+  bool HasChild(Widget *widget);
+  void AddChild(Widget *widget);
+  void RemoveChild(Widget *Widget);
 
-        void Subscribe();
-        void UnSubscribe();
+  void SetDepth(int depth = -1) { _depth = depth; }
+  int GetDepth() { return _depth; }
 
-    protected:
-        std::vector<Widget *> _children;
-        EventHandlerFunctionPtr _eventHandlerFunc = nullptr;
-        WidgetData *_data = nullptr;
-        Widget *_parent = nullptr;
-        EventHandler _eventHandler;
-        SizePolicy _sizepolicy;
-        int _depth = -1;
-        bool _visible = true;
-        bool _focused = false;
-        bool _hovered = false;
-        bool _needResize = false;
-        bool _eventPropagation = true;
-    };
+  void Subscribe();
+  void UnSubscribe();
+
+protected:
+  std::vector<Widget *> _children;
+  EventHandlerFunctionPtr _eventHandlerFunc = nullptr;
+  WidgetData *_data = nullptr;
+  Widget *_parent = nullptr;
+  EventHandler _eventHandler;
+  SizePolicy _sizepolicy;
+  int _depth = -1;
+  bool _visible = true;
+  bool _focused = false;
+  bool _hovered = false;
+  bool _needResize = false;
+  bool _eventPropagation = true;
+};
 } // namespace TwinkleGraphics
 
 #endif

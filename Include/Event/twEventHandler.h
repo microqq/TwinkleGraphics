@@ -1,218 +1,184 @@
 #ifndef TW_EVENTHANDLER_H
 #define TW_EVENTHANDLER_H
 
-#include <functional>
-#include <vector>
 #include <algorithm>
 #include <atomic>
+#include <functional>
+#include <vector>
 
-#include "twObject.h"
-#include "twEventArgs.h"
+
 #include "twConsoleLog.h"
+#include "twEventArgs.h"
+#include "twObject.h"
+
 
 #define MemEventHandlerPart1 typedef void
-#define MemEventHandlerPart2(T) (T::*T ##MemFuncType)
+#define MemEventHandlerPart2(T) (T::*T##MemFuncType)
 #define MemEventHandlerPart3 (ObjectPtr, BaseEventArgsPtr)
 
-#define DefMemEventHandlerType(T) MemEventHandlerPart1 MemEventHandlerPart2(T)MemEventHandlerPart3
+#define DefMemEventHandlerType(T)                                              \
+  MemEventHandlerPart1 MemEventHandlerPart2(T) MemEventHandlerPart3
 #define MemEventHandlerType(T) T##MemFuncType
 
-#define MakeClassEventHandlerFunPtr(TFUNC, TPTR) std::make_shared<EventHandlerFunction>( \
-    std::bind(TFUNC, TPTR, std::placeholders::_1, std::placeholders::_2))
+#define MakeClassEventHandlerFunPtr(TFUNC, TPTR)                               \
+  std::make_shared<EventHandlerFunction>(                                      \
+      std::bind(TFUNC, TPTR, std::placeholders::_1, std::placeholders::_2))
 
-#define MakeEventHandlerFunPtr(FUNC) std::make_shared<EventHandlerFunction>(FUNC)
+#define MakeEventHandlerFunPtr(FUNC)                                           \
+  std::make_shared<EventHandlerFunction>(FUNC)
 
-namespace TwinkleGraphics
-{
-    typedef unsigned int HandlerId;
-    typedef void (*EventHandlerFuncPointer)(ObjectPtr, BaseEventArgsPtr);
-    typedef std::function<void(ObjectPtr, BaseEventArgsPtr)> EventHandlerFunction;
-    typedef std::shared_ptr<EventHandlerFunction> EventHandlerFunctionPtr;
+namespace TwinkleGraphics {
+typedef unsigned int HandlerId;
+typedef void (*EventHandlerFuncPointer)(ObjectPtr, BaseEventArgsPtr);
+typedef std::function<void(ObjectPtr, BaseEventArgsPtr)> EventHandlerFunction;
+typedef std::shared_ptr<EventHandlerFunction> EventHandlerFunctionPtr;
 
-    class __TWCOMExport EventHandler : public Object
-    {
-    public:
-        typedef std::shared_ptr<EventHandler> Ptr;
+class __TWCOMExport EventHandler : public Object {
+public:
+  typedef std::shared_ptr<EventHandler> Ptr;
 
-        using HFuncIterator = std::vector<EventHandlerFunctionPtr>::iterator;
+  using HFuncIterator = std::vector<EventHandlerFunctionPtr>::iterator;
 
-        EventHandler()
-            : Object()
-        {
-            _handlerId = ++HandlerIdCounter;
-        }
+  EventHandler() : Object() { _handlerId = ++HandlerIdCounter; }
 
-        EventHandler(const EventHandlerFunctionPtr& func)
-            : Object()
-        {
-            _handlerFuncList.push_back(func);
-            _handlerId = ++HandlerIdCounter;
-        }
+  EventHandler(const EventHandlerFunctionPtr &func) : Object() {
+    _handlerFuncList.push_back(func);
+    _handlerId = ++HandlerIdCounter;
+  }
 
-        EventHandler(const EventHandler &src)
-            : Object()
-        {
-            _handlerFuncList = src._handlerFuncList;
-            _handlerId = src._handlerId;
-        }
+  EventHandler(const EventHandler &src) : Object() {
+    _handlerFuncList = src._handlerFuncList;
+    _handlerId = src._handlerId;
+  }
 
-        EventHandler(EventHandler &&src)
-            : Object()
-        {
-            _handlerFuncList = std::move(src._handlerFuncList);
-            _handlerId = src._handlerId;
-        }
+  EventHandler(EventHandler &&src) : Object() {
+    _handlerFuncList = std::move(src._handlerFuncList);
+    _handlerId = src._handlerId;
+  }
 
-        virtual ~EventHandler()
-        {
-            _handlerFuncList.clear();
-        }
+  virtual ~EventHandler() { _handlerFuncList.clear(); }
 
-        const EventHandlerFunctionPtr& operator[](int index)
-        {
-            int size = _handlerFuncList.size();
-            assert(index >= 0 && index < size);
+  const EventHandlerFunctionPtr &operator[](int index) {
+    int size = _handlerFuncList.size();
+    assert(index >= 0 && index < size);
 
-            return _handlerFuncList[index];
-        }
+    return _handlerFuncList[index];
+  }
 
-        EventHandler& operator=(const EventHandler& src)
-        {
-            _handlerFuncList = src._handlerFuncList;
-            _handlerId = src._handlerId;
+  EventHandler &operator=(const EventHandler &src) {
+    _handlerFuncList = src._handlerFuncList;
+    _handlerId = src._handlerId;
 
-            return *this;
-        }
+    return *this;
+  }
 
-        EventHandler& operator=(EventHandler&& src)
-        {
-            std::swap(_handlerFuncList, src._handlerFuncList);
-            _handlerId = src._handlerId;
+  EventHandler &operator=(EventHandler &&src) {
+    std::swap(_handlerFuncList, src._handlerFuncList);
+    _handlerId = src._handlerId;
 
-            return *this;
-        }
+    return *this;
+  }
 
-        EventHandler& operator+=(const EventHandlerFunctionPtr& func)
-        {
-            HFuncIterator iter = FindHandlerFunc(func);
-            if (iter != _handlerFuncList.end())
-            {
-                return *this;
-            }
+  EventHandler &operator+=(const EventHandlerFunctionPtr &func) {
+    HFuncIterator iter = FindHandlerFunc(func);
+    if (iter != _handlerFuncList.end()) {
+      return *this;
+    }
 
-            Add(func);
+    Add(func);
 
-            return *this;
-        }
+    return *this;
+  }
 
-        EventHandler& operator-=(const EventHandlerFunctionPtr& func)
-        {
-            HFuncIterator iter = FindHandlerFunc(func);
-            if(iter != _handlerFuncList.end())
-            {
-                Remove(iter);
-            }
+  EventHandler &operator-=(const EventHandlerFunctionPtr &func) {
+    HFuncIterator iter = FindHandlerFunc(func);
+    if (iter != _handlerFuncList.end()) {
+      Remove(iter);
+    }
 
-            return *this;
-        }
+    return *this;
+  }
 
-        EventHandler &operator-=(int index)
-        {
-            Remove(index);
+  EventHandler &operator-=(int index) {
+    Remove(index);
 
-            return *this;
-        }
+    return *this;
+  }
 
-        bool operator==(const EventHandler& other)
-        {
-            return _handlerId == other._handlerId;
-        }
+  bool operator==(const EventHandler &other) {
+    return _handlerId == other._handlerId;
+  }
 
-        void operator()(ObjectPtr sender, BaseEventArgsPtr args)
-        {
-            Invoke(sender, args);
-        }
+  void operator()(ObjectPtr sender, BaseEventArgsPtr args) {
+    Invoke(sender, args);
+  }
 
-        inline HandlerId GetHandlerId() const { return _handlerId; }
-        inline int GetHandlerFuncSize() { return _handlerFuncList.size(); }
+  inline HandlerId GetHandlerId() const { return _handlerId; }
+  inline int GetHandlerFuncSize() { return _handlerFuncList.size(); }
 
-        void Remove(int index)
-        {
-            int size = _handlerFuncList.size();
-            assert(index >= 0 && index < size);
+  void Remove(int index) {
+    int size = _handlerFuncList.size();
+    assert(index >= 0 && index < size);
 
-            HFuncIterator iter = _handlerFuncList.begin();
-            HFuncIterator end = _handlerFuncList.end();
-            iter += index;
+    HFuncIterator iter = _handlerFuncList.begin();
+    HFuncIterator end = _handlerFuncList.end();
+    iter += index;
 
-            if(iter != end)
-            {
-                _handlerFuncList.erase(iter);
-            }
-        }
+    if (iter != end) {
+      _handlerFuncList.erase(iter);
+    }
+  }
 
-        void Clear()
-        {
-            _handlerFuncList.clear();
-        }
+  void Clear() { _handlerFuncList.clear(); }
 
-        void Invoke(ObjectPtr sender, BaseEventArgsPtr args)
-        {
-            for(auto func : _handlerFuncList)
-            {
-                (*func)(sender, args);
-            }
-        }
+  void Invoke(ObjectPtr sender, BaseEventArgsPtr args) {
+    for (auto func : _handlerFuncList) {
+      (*func)(sender, args);
+    }
+  }
 
-        HFuncIterator FindHandlerFunc(const EventHandlerFunctionPtr &func)
-        {
-            HFuncIterator begin = _handlerFuncList.begin();
-            HFuncIterator end = _handlerFuncList.end();
+  HFuncIterator FindHandlerFunc(const EventHandlerFunctionPtr &func) {
+    HFuncIterator begin = _handlerFuncList.begin();
+    HFuncIterator end = _handlerFuncList.end();
 
-            if(func == nullptr)
-            {
-                return end;
-            }
+    if (func == nullptr) {
+      return end;
+    }
 
-            while (begin != end)
-            {
-                if (*begin == nullptr)
-                {
-                    ++begin;
-                    continue;
-                }
+    while (begin != end) {
+      if (*begin == nullptr) {
+        ++begin;
+        continue;
+      }
 
-                EventHandlerFunctionPtr pointer = *begin;
-                if (pointer == func)
-                {
-                    return begin;
-                }
-                ++begin;
-            }
-            return end;
-        }
+      EventHandlerFunctionPtr pointer = *begin;
+      if (pointer == func) {
+        return begin;
+      }
+      ++begin;
+    }
+    return end;
+  }
 
-    private:
-        void Add(const EventHandlerFunctionPtr& func)
-        {
-            _handlerFuncList.emplace_back(func);
-        }
-        void Remove(HFuncIterator iter)
-        {
-            if(iter != _handlerFuncList.end())
-            {
-                _handlerFuncList.erase(iter);
-            }
-        }
+private:
+  void Add(const EventHandlerFunctionPtr &func) {
+    _handlerFuncList.emplace_back(func);
+  }
+  void Remove(HFuncIterator iter) {
+    if (iter != _handlerFuncList.end()) {
+      _handlerFuncList.erase(iter);
+    }
+  }
 
-    private:
-        // try to traverse std::vector<std::function<***>> find element makes compile error : "no match for 'operator=='"
-        // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
+private:
+  // try to traverse std::vector<std::function<***>> find element makes compile
+  // error : "no match for 'operator=='"
+  // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
 
-        std::vector<EventHandlerFunctionPtr> _handlerFuncList;
-        HandlerId _handlerId;
-        static std::atomic_uint HandlerIdCounter;
-    };
+  std::vector<EventHandlerFunctionPtr> _handlerFuncList;
+  HandlerId _handlerId;
+  static std::atomic_uint HandlerIdCounter;
+};
 } // namespace TwinkleGraphics
 
 #endif

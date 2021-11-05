@@ -3,24 +3,22 @@
 
 #include "twCommon.h"
 
-namespace TwinkleGraphics
-{
-        struct FileDialogSelectInfo
-        {
-            std::string filePathName;
-            std::string filePath;
-            std::string fileName;
-            bool selectChanged = false;
-        };
+namespace TwinkleGraphics {
+struct FileDialogSelectInfo {
+  std::string filePathName;
+  std::string filePath;
+  std::string fileName;
+  bool selectChanged = false;
+};
 
 #ifdef __cplusplus
-    extern "C"
-    {
+extern "C" {
 #endif
-        __TWCOMExport void FileDialogPanel(std::string externalFilter, FileDialogSelectInfo &selectInfo);
-        __TWCOMExport void MainMenuBar();
+__TWCOMExport void FileDialogPanel(std::string externalFilter,
+                                   FileDialogSelectInfo &selectInfo);
+__TWCOMExport void MainMenuBar();
 #ifdef __cplusplus
-    }
+}
 #endif
 
 } // namespace TwinkleGraphics

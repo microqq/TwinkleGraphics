@@ -5,11 +5,10 @@
 
 out vec4 texcoord;
 
-uniform mat4 mvp; 
+uniform mat4 mvp;
 uniform mat4 texvp;
 
-void main()
-{
-    texcoord = texvp * vec4(vertexPos, 1.0f);
-    gl_Position = mvp * vec4(vertexPos, 1.0f);
+void main() {
+  texcoord = texvp * vec4(vertexPos, 1.0f);
+  gl_Position = mvp * vec4(vertexPos, 1.0f);
 }

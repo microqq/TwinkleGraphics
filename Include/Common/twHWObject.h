@@ -3,30 +3,24 @@
 
 #include "twCommon.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 
-class IHWObject : public Reference<IHWObject>
-{
+class IHWObject : public Reference<IHWObject> {
 public:
-    typedef std::shared_ptr<IHWObject> Ptr;
+  typedef std::shared_ptr<IHWObject> Ptr;
 
-    IHWObject(int32 type)
-        : Reference<IHWObject>()
-    {
-        _resinstance.type = type;
-    }
-    virtual ~IHWObject() {}
+  IHWObject(int32 type) : Reference<IHWObject>() { _resinstance.type = type; }
+  virtual ~IHWObject() {}
 
-    virtual void Create() = 0;
-    virtual void Destroy() = 0;
-    virtual void Bind() = 0;
-    virtual void UnBind() = 0;
+  virtual void Create() = 0;
+  virtual void Destroy() = 0;
+  virtual void Bind() = 0;
+  virtual void UnBind() = 0;
 
-    const RenderResourceHandle& GetResource() { return _resinstance; }
+  const RenderResourceHandle &GetResource() { return _resinstance; }
 
 protected:
-    RenderResourceHandle _resinstance;
+  RenderResourceHandle _resinstance;
 };
 
 } // namespace TwinkleGraphics

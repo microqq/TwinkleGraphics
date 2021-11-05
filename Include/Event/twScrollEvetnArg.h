@@ -3,33 +3,25 @@
 
 #include "twInputEventArgs.h"
 
-namespace TwinkleGraphics
-{
-    class InputManager;
+namespace TwinkleGraphics {
+class InputManager;
 
-    class ScrollEventArgs : public InputEventArgs
-    {
-    public:
-        typedef std::shared_ptr<ScrollEventArgs> Ptr;
+class ScrollEventArgs : public InputEventArgs {
+public:
+  typedef std::shared_ptr<ScrollEventArgs> Ptr;
 
-        static EventId ID;
+  static EventId ID;
 
-        explicit ScrollEventArgs()
-            : InputEventArgs()
-        {
-        }
-        virtual ~ScrollEventArgs() {}
+  explicit ScrollEventArgs() : InputEventArgs() {}
+  virtual ~ScrollEventArgs() {}
 
-        virtual EventId GetEventId() override
-        {
-            return ScrollEventArgs::ID;
-        }
+  virtual EventId GetEventId() override { return ScrollEventArgs::ID; }
 
-    private:
-        dvec2 _offset;
+private:
+  dvec2 _offset;
 
-        friend class InputManager;
-    };
+  friend class InputManager;
+};
 } // namespace TwinkleGraphics
 
 #endif

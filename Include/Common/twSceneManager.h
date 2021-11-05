@@ -3,140 +3,121 @@
 #ifndef TW_SCENEMANAGEMENT_H
 #define TW_SCENEMANAGEMENT_H
 
-#include "twCommon.h"
 #include "twCamera.h"
+#include "twCommon.h"
+
 
 #define MAX_SCENE_CAMERA_COUNT 128
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 
-    class __TWCOMExport Scene : public Object
-    {
-    public:
-        typedef std::shared_ptr<Scene> Ptr;
+class __TWCOMExport Scene : public Object {
+public:
+  typedef std::shared_ptr<Scene> Ptr;
 
-        Scene();
-        virtual ~Scene();
+  Scene();
+  virtual ~Scene();
 
-        virtual void Update(float32 deltaTime = 0.0f);
-        virtual void Init();
-        virtual void Render() {}
+  virtual void Update(float32 deltaTime = 0.0f);
+  virtual void Init();
+  virtual void Render() {}
 
-        void SetMainCamera(CameraPtr cam)
-        {
-            _maincamera = cam;
-            AddCamera(cam);
-        }
+  void SetMainCamera(CameraPtr cam) {
+    _maincamera = cam;
+    AddCamera(cam);
+  }
 
-        void AddCamera(CameraPtr cam)
-        {
-            if (cam == nullptr)
-                return;
+  void AddCamera(CameraPtr cam) {
+    if (cam == nullptr)
+      return;
 
-            if(_cameralists.size() == MAX_SCENE_CAMERA_COUNT)
-            {
-                return;
-            }
+    if (_cameralists.size() == MAX_SCENE_CAMERA_COUNT) {
+      return;
+    }
 
-            std::vector<CameraPtr>::iterator findIter = std::find_if(_cameralists.begin(), _cameralists.end(), [cam](CameraPtr ele)
-            {
-                return cam == ele;
-            });
-            if(findIter != _cameralists.end())
-            {
-                _cameralists.emplace_back(cam);
-                _cameraSorted = false;
-            }
-        }
+    std::vector<CameraPtr>::iterator findIter =
+        std::find_if(_cameralists.begin(), _cameralists.end(),
+                     [cam](CameraPtr ele) { return cam == ele; });
+    if (findIter != _cameralists.end()) {
+      _cameralists.emplace_back(cam);
+      _cameraSorted = false;
+    }
+  }
 
-        void RemoveCamera(int32 index)
-        {
-            if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
-            {
-                return;
-            }
+  void RemoveCamera(int32 index) {
+    if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT) {
+      return;
+    }
 
-            _cameralists.erase(_cameralists.begin() + index);
-        }
+    _cameralists.erase(_cameralists.begin() + index);
+  }
 
-        void RemoveCamera(CameraPtr cam)
-        {
-            if(cam == nullptr)
-            {
-                return;
-            }
+  void RemoveCamera(CameraPtr cam) {
+    if (cam == nullptr) {
+      return;
+    }
 
-            std::vector<CameraPtr>::iterator findIter = std::find_if(_cameralists.begin(), _cameralists.end(), [cam](CameraPtr ele)
-            {
-                return cam == ele;
-            });
-            if(findIter != _cameralists.end())
-            {
-                _cameralists.erase(findIter);
-            }
-        }
+    std::vector<CameraPtr>::iterator findIter =
+        std::find_if(_cameralists.begin(), _cameralists.end(),
+                     [cam](CameraPtr ele) { return cam == ele; });
+    if (findIter != _cameralists.end()) {
+      _cameralists.erase(findIter);
+    }
+  }
 
-        CameraPtr GetMainCamera() { return _maincamera; }
-        CameraPtr GetCamera(int32 index)
-        {
-            if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT)
-            {
-                return nullptr;
-            }
-            return _cameralists[index];
-        }
+  CameraPtr GetMainCamera() { return _maincamera; }
+  CameraPtr GetCamera(int32 index) {
+    if (index < 0 || index >= MAX_SCENE_CAMERA_COUNT) {
+      return nullptr;
+    }
+    return _cameralists[index];
+  }
 
-        int32 GetCameraCount() { return _cameralists.size(); }
+  int32 GetCameraCount() { return _cameralists.size(); }
 
-        SceneNodePtr GetRootNode() { return _rootNode; }
+  SceneNodePtr GetRootNode() { return _rootNode; }
 
-    private:
-        void SortCamera()
-        {
-            if(!_cameraSorted)
-            {
-                std::sort(_cameralists.begin(), _cameralists.end(), [](CameraPtr a, CameraPtr b)
-                {
-                    return a->GetDepth() < b->GetDepth();
+private:
+  void SortCamera() {
+    if (!_cameraSorted) {
+      std::sort(_cameralists.begin(), _cameralists.end(),
+                [](CameraPtr a, CameraPtr b) {
+                  return a->GetDepth() < b->GetDepth();
                 });
 
-                _cameraSorted = true;
-            }
-        }
-        void TraverseScene();
+      _cameraSorted = true;
+    }
+  }
+  void TraverseScene();
 
-    protected:
-        std::vector<CameraPtr> _cameralists;
-        CameraPtr _maincamera = nullptr;
-        SceneNodePtr _rootNode = nullptr;
+protected:
+  std::vector<CameraPtr> _cameralists;
+  CameraPtr _maincamera = nullptr;
+  SceneNodePtr _rootNode = nullptr;
 
-        bool _cameraSorted = false;
-    };
+  bool _cameraSorted = false;
+};
 
-    class SceneManager : public IUpdatable, public INonCopyable, public IDestroyable
-    {
-    public:
-        virtual ~SceneManager();
+class SceneManager : public IUpdatable,
+                     public INonCopyable,
+                     public IDestroyable {
+public:
+  virtual ~SceneManager();
 
-        /**
-         * @brief 
-         * Update() must execute in main thread
-         */
-        virtual void Update(float deltaTime = 0.0f) override;
-        virtual void Destroy() override {}
+  /**
+   * @brief
+   * Update() must execute in main thread
+   */
+  virtual void Update(float deltaTime = 0.0f) override;
+  virtual void Destroy() override {}
 
-    private:
-        explicit SceneManager()
-            : IUpdatable()
-            , INonCopyable()
-            , IDestroyable()
-        {}
+private:
+  explicit SceneManager() : IUpdatable(), INonCopyable(), IDestroyable() {}
 
-    private:
-        std::vector<Scene::Ptr> _sceneLists;
-        Scene::Ptr _currentScene = nullptr;
-    };
+private:
+  std::vector<Scene::Ptr> _sceneLists;
+  Scene::Ptr _currentScene = nullptr;
+};
 
 } // namespace TwinkleGraphics
 

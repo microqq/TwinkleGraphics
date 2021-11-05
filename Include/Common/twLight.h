@@ -22,8 +22,11 @@ public:
     virtual ~Light();
 
 
+private:
+    Light::Ptr _light{nullptr};
 };
 
+typedef Light::Ptr LightPtr;
 
 } // namespace TwinkleGraphics
 

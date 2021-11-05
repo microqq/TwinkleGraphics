@@ -5,34 +5,28 @@
 #include <memory>
 #include <mutex>
 
-
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 /**
- * @brief 
- * 
- * @tparam T 
+ * @brief
+ *
+ * @tparam T
  */
-template <typename T>
-class Singleton
-{
+template <typename T> class Singleton {
 public:
-    Singleton(const Singleton<T> &copy) = delete;
-    Singleton(Singleton<T> &&) = delete;
-    Singleton<T> &operator=(const Singleton<T> &copy) = delete;
-    Singleton<T> &operator=(Singleton<T> &&) = delete;
+  Singleton(const Singleton<T> &copy) = delete;
+  Singleton(Singleton<T> &&) = delete;
+  Singleton<T> &operator=(const Singleton<T> &copy) = delete;
+  Singleton<T> &operator=(Singleton<T> &&) = delete;
 
-    static T& Instance();
+  static T &Instance();
+
 private:
-    Singleton() = default;
+  Singleton() = default;
 };
 
-
-template <typename T>
-T &Singleton<T>::Instance()
-{
-    static T instance{};
-    return instance;
+template <typename T> T &Singleton<T>::Instance() {
+  static T instance{};
+  return instance;
 }
 } // namespace TwinkleGraphics
 

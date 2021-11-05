@@ -12,13 +12,12 @@ out vec2 texcoord;
 uniform vec2 mainTexTiling;
 uniform vec2 mainTexOffset;
 
-uniform mat4 mvp; 
+uniform mat4 mvp;
 uniform bvec2 flip;
 
-void main()
-{
-    gl_Position = mvp * vec4(vertexPos, 1.0f);
+void main() {
+  gl_Position = mvp * vec4(vertexPos, 1.0f);
 
-    vec2 tempTexcoord = FLIP_TEX(vertexUV.xy, flip);
-    texcoord = TRANSFORM_TEX(tempTexcoord, mainTex);
+  vec2 tempTexcoord = FLIP_TEX(vertexUV.xy, flip);
+  texcoord = TRANSFORM_TEX(tempTexcoord, mainTex);
 }

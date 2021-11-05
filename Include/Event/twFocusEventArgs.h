@@ -3,32 +3,23 @@
 
 #include "twInputEventArgs.h"
 
-namespace TwinkleGraphics
-{
-    class InputManager;
+namespace TwinkleGraphics {
+class InputManager;
 
-    class FocusEventArgs : public InputEventArgs
-    {
-    public:
-        typedef std::shared_ptr<FocusEventArgs> Ptr;
+class FocusEventArgs : public InputEventArgs {
+public:
+  typedef std::shared_ptr<FocusEventArgs> Ptr;
 
-        static EventId ID;
+  static EventId ID;
 
-        explicit FocusEventArgs()
-            : InputEventArgs()
-        {
-        }
-        virtual ~FocusEventArgs() {}
+  explicit FocusEventArgs() : InputEventArgs() {}
+  virtual ~FocusEventArgs() {}
 
-        virtual EventId GetEventId() override
-        {
-            return FocusEventArgs::ID;
-        }
+  virtual EventId GetEventId() override { return FocusEventArgs::ID; }
 
-    private:
-
-        friend class InputManager;
-    };
+private:
+  friend class InputManager;
+};
 } // namespace TwinkleGraphics
 
 #endif

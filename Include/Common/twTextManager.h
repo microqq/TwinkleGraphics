@@ -3,47 +3,39 @@
 
 #include "twTextReader.h"
 
-namespace TwinkleGraphics
-{
-    class __TWCOMExport TextManager : public IUpdatable, public INonCopyable, public IDestroyable
+namespace TwinkleGraphics {
+class __TWCOMExport TextManager : public IUpdatable,
+                                  public INonCopyable,
+                                  public IDestroyable {
+public:
+  virtual ~TextManager() { Destroy(); }
+  TextSource::Ptr ReadText(const char *filename);
+  ReadResult<TextSource> ReadTextAsync(const char *filename);
+
+  virtual void Update(float deltaTime = 0.0f) override {}
+  virtual void Destroy() override {
     {
-    public:
-        virtual ~TextManager() 
-        {
-            Destroy();
-        }
-        TextSource::Ptr ReadText(const char* filename);
-        ReadResult<TextSource> ReadTextAsync(const char* filename);
+      std::lock_guard<std::mutex> lock(_mutex);
+      _futures.clear();
+    }
+  }
 
-        virtual void Update(float deltaTime = 0.0f) override {}
-        virtual void Destroy() override
-        {
-            {
-                std::lock_guard<std::mutex> lock(_mutex);
-                _futures.clear();
-            }
-        }
+  void AddTaskFuture(std::future<ReadResult<TextSource>> future);
 
-        void AddTaskFuture(std::future<ReadResult<TextSource>> future);
-    private:
-        explicit TextManager()
-            : IUpdatable()
-            , INonCopyable()      
-            , IDestroyable()
-        {}
-        void OnReadTextSuccess(ObjectPtr obj);
-        void OnReadTextFailed();
+private:
+  explicit TextManager() : IUpdatable(), INonCopyable(), IDestroyable() {}
+  void OnReadTextSuccess(ObjectPtr obj);
+  void OnReadTextFailed();
 
-    private:
-        std::vector<std::future<ReadResult<TextSource>>> _futures;
-        std::vector<TextSource::Ptr> _texts;
-        std::mutex _mutex;
+private:
+  std::vector<std::future<ReadResult<TextSource>>> _futures;
+  std::vector<TextSource::Ptr> _texts;
+  std::mutex _mutex;
 
-        friend class Singleton<TextManager>;
-    };
+  friend class Singleton<TextManager>;
+};
 
-    __TWCOMExport TextManager& TextMgrInstance();
+__TWCOMExport TextManager &TextMgrInstance();
 } // namespace TwinkleGraphics
-
 
 #endif

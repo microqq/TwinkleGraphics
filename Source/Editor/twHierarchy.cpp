@@ -1,19 +1,10 @@
 #include "twHierarchy.h"
 
-namespace TwinkleGraphics
-{
-    Hierarchy::Hierarchy(Widget* parent)
-        : Widget(parent)
-    {
+namespace TwinkleGraphics {
+Hierarchy::Hierarchy(Widget *parent) : Widget(parent) {}
 
-    }
+Hierarchy::~Hierarchy() {}
 
-    Hierarchy::~Hierarchy()
-    {
-        
-    }
+void Hierarchy::OnGui() {}
 
-    void Hierarchy::OnGui()
-    {}
-
-} // namespace TwinkkleGraphics
+} // namespace TwinkleGraphics

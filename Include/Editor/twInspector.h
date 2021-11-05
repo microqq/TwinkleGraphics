@@ -3,18 +3,16 @@
 
 #include "twWidget.h"
 
-namespace TwinkleGraphics
-{
-    class Inspector : public Widget
-    {
-    public:
-        explicit Inspector(Widget *parent = nullptr);
-        virtual ~Inspector();
+namespace TwinkleGraphics {
+class Inspector : public Widget {
+public:
+  explicit Inspector(Widget *parent = nullptr);
+  virtual ~Inspector();
 
-        virtual void OnGui() override;
+  virtual void OnGui() override;
 
-    private:
-    };
+private:
+};
 } // namespace TwinkleGraphics
 
 #endif

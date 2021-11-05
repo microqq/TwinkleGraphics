@@ -1,114 +1,82 @@
 
 #include "twResource.h"
 
-namespace TwinkleGraphics
-{
-    ReaderOption::ReaderOption()
-        : _successFuncList()
-        , _failedFuncList()
-        , _cacheHint(CacheHint::CACHE_OBJECT)
-        , _storeHint(CacheStoreHint::TIMELIMITED)
-        , _storeTime(100.0f)
-    {}
+namespace TwinkleGraphics {
+ReaderOption::ReaderOption()
+    : _successFuncList(), _failedFuncList(),
+      _cacheHint(CacheHint::CACHE_OBJECT),
+      _storeHint(CacheStoreHint::TIMELIMITED), _storeTime(100.0f) {}
 
-    ReaderOption::ReaderOption(const ReaderOption& src)
-    {
-        _cacheHint = src._cacheHint;
-        _successFuncList = src._successFuncList;
-        _failedFuncList = src._failedFuncList;
-        _storeHint = src._storeHint;
-        _storeTime = src._storeTime;
-    }
-    
-    ReaderOption::~ReaderOption()
-    {
-        _successFuncList.clear();
-        _failedFuncList.clear();
-    }
+ReaderOption::ReaderOption(const ReaderOption &src) {
+  _cacheHint = src._cacheHint;
+  _successFuncList = src._successFuncList;
+  _failedFuncList = src._failedFuncList;
+  _storeHint = src._storeHint;
+  _storeTime = src._storeTime;
+}
 
-    void ReaderOption::SetCacheHint(CacheHint hint) { _cacheHint = hint; }
-    CacheHint ReaderOption::GetCacheHint() { return _cacheHint; }
-    void ReaderOption::SetStoreHint(CacheStoreHint hint, float storeTime) 
-    { 
-        _storeHint = hint;
-        _storeTime = storeTime; 
-    }
-    CacheStoreHint ReaderOption::GetStoreHint() { return _storeHint; }
-    float ReaderOption::GetStoreTime() { return _storeTime; }
-    
-    void ReaderOption::AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func)
-    {
-        int size = _successFuncList.size();
-        if(insertPos == -1 || insertPos > size - 1)
-        {
-            _successFuncList.emplace_back(func);
-        }
-        else
-        {
-            using iterator = std::vector<ReadSuccessCallbackFuncPtr>::iterator;
-            iterator it = _successFuncList.begin();
+ReaderOption::~ReaderOption() {
+  _successFuncList.clear();
+  _failedFuncList.clear();
+}
 
-            it += insertPos;
-            _successFuncList.insert(it, func);
-        }
-    }
+void ReaderOption::SetCacheHint(CacheHint hint) { _cacheHint = hint; }
+CacheHint ReaderOption::GetCacheHint() { return _cacheHint; }
+void ReaderOption::SetStoreHint(CacheStoreHint hint, float storeTime) {
+  _storeHint = hint;
+  _storeTime = storeTime;
+}
+CacheStoreHint ReaderOption::GetStoreHint() { return _storeHint; }
+float ReaderOption::GetStoreTime() { return _storeTime; }
 
-    void ReaderOption::AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func)
-    {
-        int size = _successFuncList.size();
-        if(insertPos == -1 || insertPos > size - 1)
-        {
-            _failedFuncList.emplace_back(func);
-        }
-        else
-        {
-            using iterator = std::vector<ReadFailedCallbackFuncPtr>::iterator;
-            iterator it = _failedFuncList.begin();
+void ReaderOption::AddSuccessFunc(int insertPos,
+                                  ReadSuccessCallbackFuncPtr func) {
+  int size = _successFuncList.size();
+  if (insertPos == -1 || insertPos > size - 1) {
+    _successFuncList.emplace_back(func);
+  } else {
+    using iterator = std::vector<ReadSuccessCallbackFuncPtr>::iterator;
+    iterator it = _successFuncList.begin();
 
-            it += insertPos;
-            _failedFuncList.insert(it, func);
-        }
-    }
+    it += insertPos;
+    _successFuncList.insert(it, func);
+  }
+}
 
-    void ReaderOption::OnReadSuccess(ObjectPtr obj) const
-    {
-        for (auto &func : _successFuncList)
-        {
-            (*func)(obj);
-        }
-    }
+void ReaderOption::AddFailedFunc(int insertPos,
+                                 ReadFailedCallbackFuncPtr func) {
+  int size = _successFuncList.size();
+  if (insertPos == -1 || insertPos > size - 1) {
+    _failedFuncList.emplace_back(func);
+  } else {
+    using iterator = std::vector<ReadFailedCallbackFuncPtr>::iterator;
+    iterator it = _failedFuncList.begin();
 
-    void ReaderOption::OnReadFailed() const
-    {
-        for (auto &func : _failedFuncList)
-        {
-            (*func)();
-        }
-    }
+    it += insertPos;
+    _failedFuncList.insert(it, func);
+  }
+}
 
+void ReaderOption::OnReadSuccess(ObjectPtr obj) const {
+  for (auto &func : _successFuncList) {
+    (*func)(obj);
+  }
+}
 
+void ReaderOption::OnReadFailed() const {
+  for (auto &func : _failedFuncList) {
+    (*func)();
+  }
+}
 
+ResourceReader::~ResourceReader() { SAFE_DEL(_option); }
+ResourceReader::ResourceReader() : _option(nullptr) {}
 
+ReaderOption *ResourceReader::GetReaderOption() { return _option; }
 
-
-
-
-
-
-    ResourceReader::~ResourceReader() 
-    {
-        SAFE_DEL(_option);
-    }
-    ResourceReader::ResourceReader()
-        : _option(nullptr)
-    {}
-
-    ReaderOption* ResourceReader::GetReaderOption() { return _option; }
-
-    void ResourceReader::Reset()
-    {
-        SAFE_DEL(_option);
-        _asynchronize = false;
-    }
+void ResourceReader::Reset() {
+  SAFE_DEL(_option);
+  _asynchronize = false;
+}
 
 } // namespace TwinkleGraphics

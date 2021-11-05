@@ -7,8 +7,7 @@ out vec4 fragcolor;
 uniform sampler2D mainTex;
 uniform vec4 tintColor;
 
-void main()
-{
-    vec4 texColor = texture(mainTex, texcoord);
-    fragcolor = texColor * tintColor;
+void main() {
+  vec4 texColor = texture(mainTex, texcoord);
+  fragcolor = texColor * tintColor;
 }

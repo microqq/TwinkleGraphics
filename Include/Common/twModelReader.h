@@ -3,55 +3,56 @@
 #define TW_MODELREADER_H
 
 #include "assimp/Importer.hpp"
-#include "assimp/scene.h"
 #include "assimp/postprocess.h"
+#include "assimp/scene.h"
 
-#include "twResource.h"
-#include "twModel.h"
+
 #include "twMaterialInstance.h"
+#include "twModel.h"
+#include "twResource.h"
 
-namespace TwinkleGraphics
-{
-    class __TWCOMExport ModelReader final : public ResourceReader
-        , public Reference<ModelReader>
-        , public INonCopyable
-    {
-    public:
-        typedef std::shared_ptr<ModelReader> Ptr;
 
-        ModelReader();
-        ModelReader(ReaderOption* option);
-        virtual ~ModelReader();
+namespace TwinkleGraphics {
+class __TWCOMExport ModelReader final : public ResourceReader,
+                                        public Reference<ModelReader>,
+                                        public INonCopyable {
+public:
+  typedef std::shared_ptr<ModelReader> Ptr;
 
-        ReadResult<Model> Read(const char *filename);
-        ReadResult<Model> ReadAsync(std::string filename);
+  ModelReader();
+  ModelReader(ReaderOption *option);
+  virtual ~ModelReader();
 
-        void SetOption(ReaderOption* option) 
-        {
-            if(option == nullptr)
-            {
-                return;                
-            }
+  ReadResult<Model> Read(const char *filename);
+  ReadResult<Model> ReadAsync(std::string filename);
 
-            if (_option != nullptr)
-            {
-                SAFE_DEL(_option);
-            }            
-            _option = new ReaderOption(*option);
-        }
+  void SetOption(ReaderOption *option) {
+    if (option == nullptr) {
+      return;
+    }
 
-        DECLARE_READERID;
+    if (_option != nullptr) {
+      SAFE_DEL(_option);
+    }
+    _option = new ReaderOption(*option);
+  }
 
-    private:
-        GeometryPtr ProcessNode(aiNode *node, const aiScene *scene, std::string dir, ModelPtr model, MaterialPtr* vecMats);
-        SubMeshPtr ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset, const aiScene *scene);
-        MaterialPtr ProcessMaterial(aiMesh *mesh, const aiScene *scene, aiMaterial *mat, std::string dir, VertexLayoutFlag layoutFalg);
-        std::vector<TexturePtr> LoadTextures(aiMaterial *mat, aiTextureType type, std::string dir);
-        void SetMaterialTextures(std::vector<TexturePtr>& textures
-            , StandardMaterial::Ptr material
-            , std::string texNamePrefix
-            , std::string macroPrefix);
-    };
+  DECLARE_READERID;
+
+private:
+  GeometryPtr ProcessNode(aiNode *node, const aiScene *scene, std::string dir,
+                          ModelPtr model, MaterialPtr *vecMats);
+  SubMeshPtr ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset,
+                         const aiScene *scene);
+  MaterialPtr ProcessMaterial(aiMesh *mesh, const aiScene *scene,
+                              aiMaterial *mat, std::string dir,
+                              VertexLayoutFlag layoutFalg);
+  std::vector<TexturePtr> LoadTextures(aiMaterial *mat, aiTextureType type,
+                                       std::string dir);
+  void SetMaterialTextures(std::vector<TexturePtr> &textures,
+                           StandardMaterial::Ptr material,
+                           std::string texNamePrefix, std::string macroPrefix);
+};
 
 } // namespace TwinkleGraphics
 

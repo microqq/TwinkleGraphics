@@ -4,23 +4,20 @@
 
 #include "twRenderPipeline.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
-class ForwardPipeline : public RenderPipeline
-{
+class ForwardPipeline : public RenderPipeline {
 public:
-    ForwardPipeline();
-    ~ForwardPipeline();  
+  ForwardPipeline();
+  ~ForwardPipeline();
 };
 
 typedef Singleton<ForwardPipeline> Forward;
 
 } // namespace TwinkleGraphics
-
 
 #endif

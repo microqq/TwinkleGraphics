@@ -3,39 +3,37 @@
 #ifndef TW_COMMON_H
 #define TW_COMMON_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include "twSingleton.h"
 #include "twObject.h"
+#include "twSingleton.h"
+#include <glm/ext.hpp>
+#include <glm/glm.hpp>
 
 #ifndef MAX_VIEWPORT_COUNT
 #define MAX_VIEWPORT_COUNT 8
 #endif
 
 #ifndef SAFE_DEL
-#define SAFE_DEL(ptr)     \
-    if ((ptr) != nullptr) \
-    {                     \
-        delete (ptr);     \
-        (ptr) = nullptr;  \
-    }
+#define SAFE_DEL(ptr)                                                          \
+  if ((ptr) != nullptr) {                                                      \
+    delete (ptr);                                                              \
+    (ptr) = nullptr;                                                           \
+  }
 #endif
 
 #ifndef SAFE_DEL_ARR
-#define SAFE_DEL_ARR(ptr) \
-    if ((ptr) != nullptr) \
-    {                     \
-        delete[](ptr);    \
-        (ptr) = nullptr;  \
-    }
+#define SAFE_DEL_ARR(ptr)                                                      \
+  if ((ptr) != nullptr) {                                                      \
+    delete[](ptr);                                                             \
+    (ptr) = nullptr;                                                           \
+  }
 #endif
 
 /**
  * @brief Refer to ogre plugin system. (https://ogrecave.github.io/ogre/)
- * 
+ *
  */
 #if defined(__linux__) || defined(__APPLE__)
 // #ifdef EXPORT_COMDLL
@@ -62,74 +60,65 @@
 
 #endif
 
-namespace TwinkleGraphics
-{
-    using namespace glm;
+namespace TwinkleGraphics {
+using namespace glm;
 
-    class Plugin;
-    class PluginManager;
-    typedef Plugin *(*INSTALL_PLUGIN_FUNC)(PluginManager *);
-    typedef void (*UNINSTALL_PLUGIN_FUNC)(PluginManager *);
-    typedef void (*IMGUI_FUNC)(void);
+class Plugin;
+class PluginManager;
+typedef Plugin *(*INSTALL_PLUGIN_FUNC)(PluginManager *);
+typedef void (*UNINSTALL_PLUGIN_FUNC)(PluginManager *);
+typedef void (*IMGUI_FUNC)(void);
 
-    typedef void (*RENDER_ROUTINE)(void);
+typedef void (*RENDER_ROUTINE)(void);
 
-    typedef ivec4 Rect;
-    typedef vec4 RGBA;
+typedef ivec4 Rect;
+typedef vec4 RGBA;
 
-    struct RenderResourceHandle
-    {
-        union
-        {
-            uint64 hash = 0;
-            struct
-            {
-                uint32 id : 32;
-                uint32 type : 32;
-            };
-        };
+struct RenderResourceHandle {
+  union {
+    uint64 hash = 0;
+    struct {
+      uint32 id : 32;
+      uint32 type : 32;
     };
+  };
+};
 
-    class IUpdatable
-    {
-    public:
-        virtual void Update(float deltaTime = 0.0f) = 0;
+class IUpdatable {
+public:
+  virtual void Update(float deltaTime = 0.0f) = 0;
 
-    protected:
-        IUpdatable() {}
-        virtual ~IUpdatable() {}
-    };
+protected:
+  IUpdatable() {}
+  virtual ~IUpdatable() {}
+};
 
-    class INonCopyable
-    {
-    private:
-        INonCopyable(const INonCopyable &) = delete;
-        INonCopyable(INonCopyable &&) = delete;
-        INonCopyable &operator=(const INonCopyable &) = delete;
-        INonCopyable &operator=(INonCopyable &&) = delete;
+class INonCopyable {
+private:
+  INonCopyable(const INonCopyable &) = delete;
+  INonCopyable(INonCopyable &&) = delete;
+  INonCopyable &operator=(const INonCopyable &) = delete;
+  INonCopyable &operator=(INonCopyable &&) = delete;
 
-    protected:
-        INonCopyable() {}
-        virtual ~INonCopyable() {}
-    };
+protected:
+  INonCopyable() {}
+  virtual ~INonCopyable() {}
+};
 
-    class IDestroyable
-    {
-    public:
-        virtual void Destroy() = 0;
-    };
+class IDestroyable {
+public:
+  virtual void Destroy() = 0;
+};
 
-    enum Intersection
-    {
-        OUTSIDE,
-        INSIDE,
-        INTERSECTING,
-        INTERSECT = INSIDE | INTERSECTING
-    };
+enum Intersection {
+  OUTSIDE,
+  INSIDE,
+  INTERSECTING,
+  INTERSECT = INSIDE | INTERSECTING
+};
 
-
-    __TWCOMExport extern std::vector<std::string> GLExtensions;
-    __TWCOMExport extern bool CheckSupportExtension(std::string exention);
+__TWCOMExport extern std::vector<std::string> GLExtensions;
+__TWCOMExport extern bool CheckSupportExtension(std::string exention);
 
 } // namespace TwinkleGraphics
 

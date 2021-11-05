@@ -5,18 +5,16 @@
 
 #include "twWidget.h"
 
-namespace TwinkleGraphics
-{
-    class EditorMenu : public Widget
-    {
-    public:
-        explicit EditorMenu(Widget* parent = nullptr);
-        virtual ~EditorMenu();
+namespace TwinkleGraphics {
+class EditorMenu : public Widget {
+public:
+  explicit EditorMenu(Widget *parent = nullptr);
+  virtual ~EditorMenu();
 
-        virtual void OnGui() override;
+  virtual void OnGui() override;
 
-    private:
-    };
+private:
+};
 } // namespace TwinkleGraphics
 
 #endif

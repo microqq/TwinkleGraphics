@@ -28,6 +28,7 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Common/twTextManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twShader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twShaderManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Common/twLight.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twMesh.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twGeometry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twModel.cpp

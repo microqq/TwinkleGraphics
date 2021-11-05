@@ -6,62 +6,57 @@
 #include "twCommon.h"
 #include "twObject.h"
 
-#define DEFINE_EVENTID(T) EventId T::ID = \
-                               std::hash<std::string>{}(#T)
+#define DEFINE_EVENTID(T) EventId T::ID = std::hash<std::string>{}(#T)
 
-namespace TwinkleGraphics
-{
-    typedef unsigned int EventId;
+namespace TwinkleGraphics {
+typedef unsigned int EventId;
 
-    enum EventType
-    {
-        UNKNOWN = 0,
+enum EventType {
+  UNKNOWN = 0,
 
-        TIMER = 1,
+  TIMER = 1,
 
-        MOUSEPRESS = 2,
-        MOUSERELEASE = 3,
-        MOUSEMOVE = 4,
-        MOUSEDOUBLECLICK = 5,
+  MOUSEPRESS = 2,
+  MOUSERELEASE = 3,
+  MOUSEMOVE = 4,
+  MOUSEDOUBLECLICK = 5,
 
-        KEYPRESS = 6,
-        KEYRELEASE = 7,
-        
-        FOCUSIN = 8,
-        FOCUSOUT = 9,
+  KEYPRESS = 6,
+  KEYRELEASE = 7,
 
-        ENTER = 10,
-        LEAVE = 11,
+  FOCUSIN = 8,
+  FOCUSOUT = 9,
 
-        MOVE = 12,
-        RESIZE = 13,
-        CLOSE = 14,
+  ENTER = 10,
+  LEAVE = 11,
 
-        WHEEL = 15,
-        
-        QUIT = 16
-    };
+  MOVE = 12,
+  RESIZE = 13,
+  CLOSE = 14,
 
-    class __TWCOMExport BaseEventArgs : public Object
-    {
-    public:
-        typedef std::shared_ptr<BaseEventArgs> Ptr;
+  WHEEL = 15,
 
-        BaseEventArgs() : Object() {}
-        virtual ~BaseEventArgs() = 0;
+  QUIT = 16
+};
 
-        virtual EventId GetEventId() = 0;
+class __TWCOMExport BaseEventArgs : public Object {
+public:
+  typedef std::shared_ptr<BaseEventArgs> Ptr;
 
-        void SetCancelFlag(bool flag) { _cancelFlag = flag; }
-        bool GetCancelFlag() { return _cancelFlag; }
+  BaseEventArgs() : Object() {}
+  virtual ~BaseEventArgs() = 0;
 
-    protected:
-        bool _cancelFlag = false;
-        bool _shouldBeCompressed = false;
-    };
+  virtual EventId GetEventId() = 0;
 
-    typedef BaseEventArgs::Ptr BaseEventArgsPtr;
+  void SetCancelFlag(bool flag) { _cancelFlag = flag; }
+  bool GetCancelFlag() { return _cancelFlag; }
+
+protected:
+  bool _cancelFlag = false;
+  bool _shouldBeCompressed = false;
+};
+
+typedef BaseEventArgs::Ptr BaseEventArgsPtr;
 } // namespace TwinkleGraphics
-
 
 #endif

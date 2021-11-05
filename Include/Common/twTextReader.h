@@ -1,47 +1,43 @@
 #ifndef TW_TEXTREADER_H
 #define TW_TEXTREADER_H
 
-#include "twSingleton.h"
 #include "twResource.h"
+#include "twSingleton.h"
 
-namespace TwinkleGraphics
-{
-    struct TextSource : public Object
-    {
-        typedef std::shared_ptr<TextSource> Ptr;
-        typedef std::weak_ptr<TextSource> WeakPtr;
 
-        std::string filename;
-        std::string content;
-    };
+namespace TwinkleGraphics {
+struct TextSource : public Object {
+  typedef std::shared_ptr<TextSource> Ptr;
+  typedef std::weak_ptr<TextSource> WeakPtr;
 
-    class TextReader : public ResourceReader
-        , public Reference<TextReader>
-        , public INonCopyable
-    {
-    public:
-        typedef std::shared_ptr<TextReader> Ptr;
+  std::string filename;
+  std::string content;
+};
 
-        TextReader();
-        TextReader(ReaderOption *option);
-        virtual ~TextReader();
+class TextReader : public ResourceReader,
+                   public Reference<TextReader>,
+                   public INonCopyable {
+public:
+  typedef std::shared_ptr<TextReader> Ptr;
 
-        ReadResult<TextSource> Read(const char *filename);
-        ReadResult<TextSource> ReadAsync(std::string filename);
+  TextReader();
+  TextReader(ReaderOption *option);
+  virtual ~TextReader();
 
-        void SetOption(ReaderOption* option) 
-        {
-            if(option == nullptr)
-                return;
+  ReadResult<TextSource> Read(const char *filename);
+  ReadResult<TextSource> ReadAsync(std::string filename);
 
-            if (_option != nullptr)
-            {
-                SAFE_DEL(_option);
-            }       
-            _option = new ReaderOption(*option);
-        }
-        DECLARE_READERID;
-    };
+  void SetOption(ReaderOption *option) {
+    if (option == nullptr)
+      return;
+
+    if (_option != nullptr) {
+      SAFE_DEL(_option);
+    }
+    _option = new ReaderOption(*option);
+  }
+  DECLARE_READERID;
+};
 
 } // namespace TwinkleGraphics
 #endif

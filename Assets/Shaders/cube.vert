@@ -5,11 +5,10 @@
 
 out vec3 texcoord;
 
-uniform mat4 mvp; 
+uniform mat4 mvp;
 uniform float size;
 
-void main()
-{
-    texcoord = vertexPos / (size * 0.5f);
-    gl_Position = mvp * vec4(vertexPos, 1.0f);
+void main() {
+  texcoord = vertexPos / (size * 0.5f);
+  gl_Position = mvp * vec4(vertexPos, 1.0f);
 }

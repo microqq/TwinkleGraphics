@@ -3,32 +3,23 @@
 
 #include "twInputEventArgs.h"
 
-namespace TwinkleGraphics
-{
-    class InputManager;
+namespace TwinkleGraphics {
+class InputManager;
 
-    class CursorEventArgs : public InputEventArgs
-    {
-    public:
-        typedef std::shared_ptr<CursorEventArgs> Ptr;
+class CursorEventArgs : public InputEventArgs {
+public:
+  typedef std::shared_ptr<CursorEventArgs> Ptr;
 
-        static EventId ID;
+  static EventId ID;
 
-        explicit CursorEventArgs()
-            : InputEventArgs()
-        {
-        }
-        virtual ~CursorEventArgs() {}
+  explicit CursorEventArgs() : InputEventArgs() {}
+  virtual ~CursorEventArgs() {}
 
-        virtual EventId GetEventId() override
-        {
-            return CursorEventArgs::ID;
-        }
+  virtual EventId GetEventId() override { return CursorEventArgs::ID; }
 
-    private:
-
-        friend class InputManager;
-    };
+private:
+  friend class InputManager;
+};
 } // namespace TwinkleGraphics
 
 #endif

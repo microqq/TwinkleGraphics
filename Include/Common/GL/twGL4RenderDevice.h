@@ -3,13 +3,8 @@
 
 #include "twRenderDevice.h"
 
-namespace TwinkleGraphics
-{
-    class GL4RenderDevice : public RenderDevice
-    {
-
-    };
+namespace TwinkleGraphics {
+class GL4RenderDevice : public RenderDevice {};
 } // namespace TwinkleGraphics
-
 
 #endif

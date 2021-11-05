@@ -3,20 +3,18 @@
 
 #include "twWidget.h"
 
-namespace TwinkleGraphics
-{
-    class Window : public Widget
-    {
-    public:
-        explicit Window(const std::string& name, uint32 width, uint32 height, Widget* parent = nullptr);
-        virtual ~Window();
+namespace TwinkleGraphics {
+class Window : public Widget {
+public:
+  explicit Window(const std::string &name, uint32 width, uint32 height,
+                  Widget *parent = nullptr);
+  virtual ~Window();
 
-        void SetWindowName(const std::string& name) { _windowname = name; }
+  void SetWindowName(const std::string &name) { _windowname = name; }
 
-    protected:
-        std::string _windowname;
-
-    };
+protected:
+  std::string _windowname;
+};
 } // namespace TwinkleGraphics
 
 #endif

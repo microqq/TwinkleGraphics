@@ -3,28 +3,28 @@
 #ifndef TW_RESOURCE_H
 #define TW_RESOURCE_H
 
+#include <functional>
 #include <iostream>
-#include <string>
-#include <memory>
 #include <map>
+#include <memory>
+#include <string>
 #include <variant>
 #include <vector>
-#include <functional>
+
 
 #include "twCommon.h"
 #include "twRingBuffer.h"
 #include "twThreadPool.h"
 
-#define DECLARE_READERID public: static ReaderId ID
-#define DEFINE_READERID(T) ReaderId T::ID = std::hash<std::string>{}( \
-    #T   \
-    );
+#define DECLARE_READERID                                                       \
+public:                                                                        \
+  static ReaderId ID
+#define DEFINE_READERID(T) ReaderId T::ID = std::hash<std::string>{}(#T);
 #define CACHEID_FROMSTRING(STR) std::hash<std::string>{}(STR);
 
 // #define INITIALISE_READERID _id = ID;
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 class ReaderOption;
 class ResourceReader;
 class ResourceManager;
@@ -36,214 +36,158 @@ typedef std::function<void()> ReadFailedCallbackFunc;
 typedef std::shared_ptr<ReadSuccessCallbackFunc> ReadSuccessCallbackFuncPtr;
 typedef std::shared_ptr<ReadFailedCallbackFunc> ReadFailedCallbackFuncPtr;
 
-enum class CacheHint
-{
-    CACHE_NONE = 0,
-    CACHE_OBJECT = 1,
-    CACHE_SCENEOBJECT = 2
+enum class CacheHint {
+  CACHE_NONE = 0,
+  CACHE_OBJECT = 1,
+  CACHE_SCENEOBJECT = 2
 };
 
-enum class CacheStoreHint
-{
-    TEMPORARY = 1,
-    TIMELIMITED = 2,
-    PERMERNANTLY = 3
-};
+enum class CacheStoreHint { TEMPORARY = 1, TIMELIMITED = 2, PERMERNANTLY = 3 };
 
-class __TWCOMExport ReaderOption
-{
+class __TWCOMExport ReaderOption {
 public:
-    ReaderOption();
-    ReaderOption(const ReaderOption& src);
-    const ReaderOption& operator=(const ReaderOption& src) = delete;
-    virtual ~ReaderOption();
+  ReaderOption();
+  ReaderOption(const ReaderOption &src);
+  const ReaderOption &operator=(const ReaderOption &src) = delete;
+  virtual ~ReaderOption();
 
-    void SetCacheHint(CacheHint hint);
-    CacheHint GetCacheHint();
+  void SetCacheHint(CacheHint hint);
+  CacheHint GetCacheHint();
 
-    void SetStoreHint(CacheStoreHint hint, float storeTime = 100.0f);
-    CacheStoreHint GetStoreHint();
-    float GetStoreTime();
+  void SetStoreHint(CacheStoreHint hint, float storeTime = 100.0f);
+  CacheStoreHint GetStoreHint();
+  float GetStoreTime();
 
-    template <typename Caller, typename Func, typename... Args>
-    void AddSuccessFunc(int insertPos, Caller&& caller, Func&& func, Args&&...args)
-    {
-        auto concreteCallback = std::bind(
-            std::forward<Func>(func)
-            , std::forward<Caller>(caller)
-            , std::placeholders::_1
-            , std::forward<Args>(args)...
-        );
-        ReadSuccessCallbackFuncPtr callback = std::make_shared<ReadSuccessCallbackFunc>(
-            [concreteCallback](ObjectPtr obj)
-            {
-                concreteCallback(obj);
-            }
-        );
+  template <typename Caller, typename Func, typename... Args>
+  void AddSuccessFunc(int insertPos, Caller &&caller, Func &&func,
+                      Args &&...args) {
+    auto concreteCallback =
+        std::bind(std::forward<Func>(func), std::forward<Caller>(caller),
+                  std::placeholders::_1, std::forward<Args>(args)...);
+    ReadSuccessCallbackFuncPtr callback =
+        std::make_shared<ReadSuccessCallbackFunc>(
+            [concreteCallback](ObjectPtr obj) { concreteCallback(obj); });
 
-        AddSuccessFunc(insertPos, callback);
-    }
+    AddSuccessFunc(insertPos, callback);
+  }
 
-    template <typename Caller, typename Func, typename... Args>
-    void AddFailedFunc(int insertPos, Caller&& caller, Func&& func, Args&&...args)
-    {
-        auto concreteCallback = std::bind(
-            std::forward<Func>(func)
-            , std::forward<Caller>(caller)
-            , std::forward<Args>(args)...
-        );
-        ReadFailedCallbackFuncPtr callback = std::make_shared<ReadFailedCallbackFunc>(
-            [concreteCallback]()
-            {
-                concreteCallback();
-            }
-        );
+  template <typename Caller, typename Func, typename... Args>
+  void AddFailedFunc(int insertPos, Caller &&caller, Func &&func,
+                     Args &&...args) {
+    auto concreteCallback =
+        std::bind(std::forward<Func>(func), std::forward<Caller>(caller),
+                  std::forward<Args>(args)...);
+    ReadFailedCallbackFuncPtr callback =
+        std::make_shared<ReadFailedCallbackFunc>(
+            [concreteCallback]() { concreteCallback(); });
 
-        AddFailedFunc(insertPos, callback);
-    }
+    AddFailedFunc(insertPos, callback);
+  }
 
-    void AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func);
-    void AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func);
-    void OnReadSuccess(ObjectPtr obj) const;
-    void OnReadFailed() const;
+  void AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func);
+  void AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func);
+  void OnReadSuccess(ObjectPtr obj) const;
+  void OnReadFailed() const;
 
 protected:
-    std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
-    std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
-    CacheHint _cacheHint = CacheHint::CACHE_OBJECT;
-    CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
-    float _storeTime;
+  std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
+  std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
+  CacheHint _cacheHint = CacheHint::CACHE_OBJECT;
+  CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
+  float _storeTime;
 };
 
-class ResourceReader
-{
+class ResourceReader {
 public:
-    typedef std::shared_ptr<ResourceReader> Ptr;
+  typedef std::shared_ptr<ResourceReader> Ptr;
 
-    virtual ~ResourceReader();
-    ReaderOption* GetReaderOption();
-
-protected:
-    ResourceReader();
-    void Reset();
+  virtual ~ResourceReader();
+  ReaderOption *GetReaderOption();
 
 protected:
-    ReaderOption* _option = nullptr;
-    bool _asynchronize = false;
+  ResourceReader();
+  void Reset();
 
-    friend class ResourceManager;
+protected:
+  ReaderOption *_option = nullptr;
+  bool _asynchronize = false;
+
+  friend class ResourceManager;
 };
 
 typedef ResourceReader::Ptr ResourceReaderPtr;
 
 /**
- * @brief 
- * 
- * @tparam TPtr 
+ * @brief
+ *
+ * @tparam TPtr
  */
-template<class T>
-class __TWCOMExport ReadResult
-{
+template <class T> class __TWCOMExport ReadResult {
 public:
-    enum class Status
-    {
-        NONE,
-        WAITTOLOAD,
-        LOADING,
-        SUCCESS,
-        FAILED
-    };
+  enum class Status { NONE, WAITTOLOAD, LOADING, SUCCESS, FAILED };
 
-    ReadResult(Status status = Status::NONE)
-        : _sharedObject(nullptr)
-        , _reader(nullptr)
-        , _status(status)
-    {}
-    ReadResult(ResourceReaderPtr reader, typename T::Ptr obj, Status status = Status::NONE)
-        : _sharedObject(obj)
-        , _reader(reader)
-        , _status(status)
-    {}
-    ReadResult(const ReadResult& src)
-        : _sharedObject(src._sharedObject)
-        , _reader(src._reader)
-        , _status(src._status)
-    {
-    }
-    ~ReadResult()
-    {}
+  ReadResult(Status status = Status::NONE)
+      : _sharedObject(nullptr), _reader(nullptr), _status(status) {}
+  ReadResult(ResourceReaderPtr reader, typename T::Ptr obj,
+             Status status = Status::NONE)
+      : _sharedObject(obj), _reader(reader), _status(status) {}
+  ReadResult(const ReadResult &src)
+      : _sharedObject(src._sharedObject), _reader(src._reader),
+        _status(src._status) {}
+  ~ReadResult() {}
 
-    inline ReadResult& operator=(const ReadResult& result)
-    {
-        _sharedObject = result._sharedObject;
-        _status = result._status;
+  inline ReadResult &operator=(const ReadResult &result) {
+    _sharedObject = result._sharedObject;
+    _status = result._status;
 
-        return *this;
-    }
+    return *this;
+  }
 
-    inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
-    inline Status GetStatus() const { return _status; }
-    inline ResourceReaderPtr GetReader() { return _reader; }
+  inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
+  inline Status GetStatus() const { return _status; }
+  inline ResourceReaderPtr GetReader() { return _reader; }
 
 private:
-    typename T::Ptr _sharedObject;
-    ResourceReaderPtr _reader;
-    Status _status;
+  typename T::Ptr _sharedObject;
+  ResourceReaderPtr _reader;
+  Status _status;
 };
 
-class ResourceCache : public INonCopyable
-{
+class ResourceCache : public INonCopyable {
 public:
-    typedef std::shared_ptr<ResourceCache> Ptr;
+  typedef std::shared_ptr<ResourceCache> Ptr;
 
-    ResourceCache(CacheId id
-            , ObjectPtr obj
-            , CacheStoreHint hint = CacheStoreHint::TIMELIMITED
-            , float limit = 100.0f)
-        : _cachedObject(obj)
-        , _timeLimit(limit)
-        , _storeHint(hint)
-        , _cacheId(id)
-    {}
+  ResourceCache(CacheId id, ObjectPtr obj,
+                CacheStoreHint hint = CacheStoreHint::TIMELIMITED,
+                float limit = 100.0f)
+      : _cachedObject(obj), _timeLimit(limit), _storeHint(hint), _cacheId(id) {}
 
-    ~ResourceCache()
-    {}
+  ~ResourceCache() {}
 
-    ObjectPtr GetCachedObject()
-    {
-        return _cachedObject;
+  ObjectPtr GetCachedObject() { return _cachedObject; }
+
+  CacheId GetCacheId() { return _cacheId; }
+
+  bool Expired(float deltaTime = 0.0f) {
+    if (CacheStoreHint::PERMERNANTLY == _storeHint) {
+      return true;
+    } else if (CacheStoreHint::TIMELIMITED == _storeHint) {
+      _timeLimit -= deltaTime;
+      return _timeLimit <= 0.0f;
     }
 
-    CacheId GetCacheId() 
-    {
-        return _cacheId;
-    }
-
-    bool Expired(float deltaTime = 0.0f)
-    {
-        if(CacheStoreHint::PERMERNANTLY == _storeHint)
-        {
-            return true;
-        }
-        else if(CacheStoreHint::TIMELIMITED == _storeHint)
-        {
-            _timeLimit -= deltaTime;
-            return _timeLimit <= 0.0f;
-        }
-
-        return true;
-    }
+    return true;
+  }
 
 private:
-    ObjectPtr _cachedObject = nullptr;
+  ObjectPtr _cachedObject = nullptr;
 
-    // cache life time(seconds)
-    float _timeLimit;
-    CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
- 
-    CacheId _cacheId = 0;
+  // cache life time(seconds)
+  float _timeLimit;
+  CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
+
+  CacheId _cacheId = 0;
 };
-
 
 } // namespace TwinkleGraphics
 
