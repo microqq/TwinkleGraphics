@@ -7,9 +7,6 @@ MainFrame::MainFrame(uint32 width, uint32 height, Widget *parent)
     : Widget(parent) {
   SetSize(width, height);
   SetDepth(0);
-
-  Application &app = ApplicationInstance();
-  app._mainframe = this;
 }
 
 MainFrame::~MainFrame() {}

@@ -18,6 +18,7 @@ public:
   virtual void Quit();
 
   MainFrame *GetMainFrame() { return _mainframe; }
+  void SetMainFrame(MainFrame* mainframe) { _mainframe = mainframe; }
 
 protected:
   explicit Application();
