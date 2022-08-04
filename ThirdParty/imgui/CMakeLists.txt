@@ -14,13 +14,12 @@ set(IMGUI_SRCs
 add_library(imgui SHARED
     ${IMGUI_SRCs}
 )
-# set_property(TARGET imgui PROPERTY CXX_STANDARD 17)
+
 target_include_directories(imgui PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}
 )
-# target_compile_features(imgui PRIVATE cxx_std_17)
+
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
-# target_link_libraries(imgui -lstdc++fs)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(imgui PROPERTIES
@@ -30,8 +29,8 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
     set_target_properties(imgui PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
-
-    target_link_libraries(imgui -lGLEW -lglfw
+         
+    target_link_libraries(imgui -lGLEW -lglfw.3
         "-framework OpenGL"
         "-framework IOKit"
         "-framework CoreVideo"

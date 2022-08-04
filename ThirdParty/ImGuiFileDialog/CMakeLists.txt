@@ -13,10 +13,6 @@ target_include_directories(imguiFileDialog PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-# target_compile_features(imgui PRIVATE cxx_std_17)
-# target_compile_definitions(imguiFileDialog PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
-# target_link_libraries(imgui -lstdc++fs)
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set_target_properties(imguiFileDialog PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
@@ -26,7 +22,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
     set_target_properties(imguiFileDialog PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 
-    target_link_libraries(imguiFileDialog imgui)         
+    target_link_libraries(imguiFileDialog imgui)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")

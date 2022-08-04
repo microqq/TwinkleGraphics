@@ -106,8 +106,8 @@ TexturePtr TextureManager::ReadTexture(const char *filename,
 ReadResult<Texture> TextureManager::ReadTextureAsync(const char *filename,
                                                      TextureOption *option) {
   ResourceManager &resMgr = ResourceMgrInstance();
-  option->AddSuccessFunc(0, this, &OnReadTextureSuccess);
-  option->AddFailedFunc(0, this, &OnReadTextureFailed);
+  option->AddSuccessFunc(0, this, &TextureManager::OnReadTextureSuccess);
+  option->AddFailedFunc(0, this, &TextureManager::OnReadTextureFailed);
   std::string texFilename = "Texture:";
   texFilename += filename;
   auto result = resMgr.ReadAsync<TextureReader, Texture, TextureOption>(

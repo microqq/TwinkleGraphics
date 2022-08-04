@@ -25,9 +25,10 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 # set everything up for c++ 17 features
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 # Don't add this line if you will try_compile with boost.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # include(CheckCXXSymbolExists)
 # CHECK_CXX_SYMBOL_EXISTS(std::filesystem::path::preferred_separator filesystem cxx17fs)
 
@@ -49,6 +50,7 @@ endif()
 include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/ThirdParty
     ${PROJECT_SOURCE_DIR}/ThirdParty/vermilion
+    ${PROJECT_SOURCE_DIR}/ThirdParty/imgui
     ${PROJECT_SOURCE_DIR}/Iinclude/Common
     ${PROJECT_SOURCE_DIR}/Include/UI
     ${PROJECT_SOURCE_DIR}/Include/Util
@@ -65,7 +67,7 @@ add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
 
 if(BUILD_GTESTS)
-    add_subdirectory(Testbeds/GTests)
+    #add_subdirectory(Testbeds/GTests)
     
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(GTest REQUIRED)
@@ -73,8 +75,4 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     include_directories(${GTEST_INCLUDE_DIRS})
 endif()
 
-    # add_test(UniformSetting ${EXECUTABLE_OUTPUT_PATH}/MaterialTests)
-    # add_test(AddEventHandler ${EXECUTABLE_OUTPUT_PATH}/EventTests)
-    # add_test(FireEvent ${EXECUTABLE_OUTPUT_PATH}/EventTests)
-    # enable_testing()
 endif()
