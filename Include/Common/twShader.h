@@ -8,7 +8,7 @@
 
 
 #include "twCommon.h"
-#include <glew/glew.h>
+#include <glew.h>
 
 
 #include "twRenderContext.h"

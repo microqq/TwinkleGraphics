@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <glew/glew.h>
+#include <glew.h>
 
 #ifdef _DEBUG
     #include <iostream>

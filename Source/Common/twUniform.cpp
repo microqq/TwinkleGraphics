@@ -1,6 +1,6 @@
 
 #include "twUniform.h"
-#include <glew/glew.h>
+#include <glew.h>
 
 
 namespace TwinkleGraphics {

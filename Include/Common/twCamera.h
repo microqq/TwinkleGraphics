@@ -3,7 +3,7 @@
 #ifndef TW_CAMERA_H
 #define TW_CAMERA_H
 
-#include <glew/glew.h>
+#include <glew.h>
 // include gl after glew
 // #include <GL/gl.h>
 
