@@ -77,7 +77,7 @@ add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)
 
 if(BUILD_GTESTS)
-    #add_subdirectory(Testbeds/GTests)
+    add_subdirectory(Testbeds/GTests)
     
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(GTest REQUIRED)
