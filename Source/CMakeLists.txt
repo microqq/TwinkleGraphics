@@ -93,13 +93,27 @@ if(ENABLE_DEBUG)
     target_compile_options(twGraphics PRIVATE -Wall -Wno-extra)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(LINUX)
     set_target_properties(twGraphics PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
     target_link_libraries(twGraphics -lglfw -lGL -lGLEW -lassimp -lfreeimage imgui vermilion)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+if(APPLE)
+    set_target_properties(twGraphics PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+    target_link_libraries(twGraphics -lglfw -lGLEW -lassimp -lfreeimage imgui vermilion imguiFileDialog
+        "-framework OpenGL"
+        "-framework IOKit"
+        "-framework CoreVideo"
+        "-framework Cocoa"
+    )
+endif()
+
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(WIN32)
     target_link_libraries(twGraphics OpenGL32.lib)
     target_link_libraries(twGraphics ${GLEWLIBDIR}/glew32.lib)
     target_link_libraries(twGraphics ${GLFWLIBDIR}/libglfw3dll.a)

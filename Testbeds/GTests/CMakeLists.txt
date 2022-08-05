@@ -29,13 +29,24 @@ add_executable(TWTests ${Tests_SRCs})
 )
 
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(WIN32)
     target_link_libraries(TWTests twGraphics)
     target_link_libraries(TWTests ${GTESTLIBDIR}/libgtest.a)
     target_link_libraries(TWTests ${GTESTLIBDIR}/libgtest_main.a)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+if(APPLE)
+    set_target_properties(imgui PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+
+    target_link_libraries(TWTests -lgtest)
+    target_link_libraries(TWTests twGraphics)
+endif()
+
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(LINUX)
     target_link_libraries(TWTests twGraphics)
     target_link_libraries(TWTests ${GTEST_BOTH_LIBRARIES})
     target_link_libraries(TWTests ${CMAKE_THREAD_LIBS_INIT})

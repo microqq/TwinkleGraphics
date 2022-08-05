@@ -23,12 +23,20 @@ target_include_directories(twBasicGeometry PUBLIC
 
 target_link_libraries(twBasicGeometry twGraphics)
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(LINUX)
     set_target_properties(twBasicGeometry PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+if(APPLE)
+    set_target_properties(twBasicGeometry PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+endif()
+
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(WIN32)
     set_target_properties(twBasicGeometry PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()

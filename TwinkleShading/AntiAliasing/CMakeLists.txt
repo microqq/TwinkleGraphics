@@ -31,12 +31,20 @@ endif()
 
 target_link_libraries(twAntiAliasing twGraphics)
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(LINUX)
     set_target_properties(twAntiAliasing PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+if(APPLE)
+    set_target_properties(twAntiAliasing PROPERTIES
+         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
+endif()
+
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(WIN32)
     set_target_properties(twAntiAliasing PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
 endif()

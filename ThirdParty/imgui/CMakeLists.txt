@@ -21,24 +21,28 @@ target_include_directories(imgui PUBLIC
 
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(LINUX)
     set_target_properties(imgui PROPERTIES
          LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
+if(APPLE)
+    message(STATUS "Beging build imgui(Platform: MacOS)......")
+
     set_target_properties(imgui PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
-         
-    target_link_libraries(imgui -lGLEW -lglfw.3
+        LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
+
+    target_link_libraries(imgui libGLEW.dylib libGLFW.3.dylib
         "-framework OpenGL"
         "-framework IOKit"
         "-framework CoreVideo"
         "-framework Cocoa"
-    ) 
+    )        
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+if(WIN32)
     target_link_libraries(imgui OpenGL32.lib)
     target_link_libraries(imgui ${GLEWLIBDIR}/glew32.lib)
     target_link_libraries(imgui ${GLFWLIBDIR}/libglfw3dll.a)
