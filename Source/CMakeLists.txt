@@ -100,18 +100,6 @@ if(LINUX)
     target_link_libraries(twGraphics -lglfw -lGL -lGLEW -lassimp -lfreeimage imgui vermilion)
 endif()
 
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "MacOS")
-if(APPLE)
-    set_target_properties(twGraphics PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
-    target_link_libraries(twGraphics -lglfw -lGLEW -lassimp -lfreeimage imgui vermilion imguiFileDialog
-        "-framework OpenGL"
-        "-framework IOKit"
-        "-framework CoreVideo"
-        "-framework Cocoa"
-    )
-endif()
-
 # if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 if(WIN32)
     target_link_libraries(twGraphics OpenGL32.lib)
@@ -120,7 +108,7 @@ if(WIN32)
     target_link_libraries(twGraphics ${ASSIMPLIBDIR}/libassimp.dll.a)
     target_link_libraries(twGraphics ${FREEIMAGELIBDIR}/FreeImage.lib)
     target_link_libraries(twGraphics imgui)
-    target_link_libraries(twGraphics imguiFileDialog)    
+    target_link_libraries(twGraphics imguiFileDialog)
     target_link_libraries(twGraphics vermilion)
 endif()
 
