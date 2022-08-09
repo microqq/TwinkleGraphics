@@ -33,13 +33,13 @@ int main(int, char **) {
 
 #if defined(__linux__) || defined(__APPLE__)
   PluginPaths.insert(MapPlugins::value_type(
-      "1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.so"));
+      "1.FirstTriangle", "Output/libs/twShading/Debug/libtwFirstTriangle.dylib"));
   PluginPaths.insert(MapPlugins::value_type(
-      "2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.so"));
+      "2.BasicGeometry", "Output/libs/twShading/Debug/libtwBasicGeometry.dylib"));
   PluginPaths.insert(MapPlugins::value_type(
-      "3.TextureExplore", "Output/libs/twShading/libtwTextureExplore.so"));
+      "3.TextureExplore", "Output/libs/twShading/Debug/libtwTextureExplore.dylib"));
   PluginPaths.insert(MapPlugins::value_type(
-      "4.AntiAliasing", "Output/libs/twShading/libtwAntiAliasing.so"));
+      "4.AntiAliasing", "Output/libs/twShading/Debug/libtwAntiAliasing.dylib"));
 #elif defined _WIN32
   PluginPaths.insert(MapPlugins::value_type(
       "1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.dll"));

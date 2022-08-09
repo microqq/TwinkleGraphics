@@ -15,10 +15,10 @@ set(AntiAliasing_SRCs
 add_library(twAntiAliasing SHARED
     ${AntiAliasing_SRCs}
 )
+set_target_properties(twAntiAliasing PROPERTIES
+     LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}/twShading)
 
 target_include_directories(twAntiAliasing PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty
-    ${CMAKE_CURRENT_LIST_DIR}/../../ThirdParty/ImGuiFileDialog
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Common
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/UI
     ${CMAKE_CURRENT_LIST_DIR}/../../Include/Event
@@ -30,15 +30,3 @@ if(ENABLE_DEBUG)
 endif()
 
 target_link_libraries(twAntiAliasing twGraphics)
-
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-if(LINUX)
-    set_target_properties(twAntiAliasing PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
-endif()
-
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-if(WIN32)
-    set_target_properties(twAntiAliasing PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs/twShading)
-endif()

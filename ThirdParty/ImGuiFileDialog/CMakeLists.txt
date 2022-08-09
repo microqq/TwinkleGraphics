@@ -5,25 +5,13 @@ set(IMGUIFILEDIALOG_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/ImguiFileDialog.cpp
 )
 
-add_library(imguiFileDialog SHARED
-    ${IMGUIFILEDIALOG_SRCs}
-)
+add_library(imguiFileDialog SHARED ${IMGUIFILEDIALOG_SRCs})
 
-target_include_directories(imguiFileDialog PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}
-)
+set_target_properties(imguiFileDialog PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
+# set include directory
+target_include_directories(imguiFileDialog PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+# set link libraries
 target_link_libraries(imguiFileDialog imgui)
-
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-if(LINUX)
-    set_target_properties(imguiFileDialog PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
-endif()
-         
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-if(WIN32)
-    target_link_libraries(imguiFileDialog OpenGL32.lib)
-    target_link_libraries(imguiFileDialog ${GLEWLIBDIR}/glew32.lib)
-    target_link_libraries(imguiFileDialog ${GLFWLIBDIR}/libglfw3dll.a)
-endif()

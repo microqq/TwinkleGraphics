@@ -75,12 +75,10 @@ set(TWGraphics_SRCs
 )
 
 add_library(twGraphics SHARED ${TWGraphics_SRCs})
+
+set_target_properties(twGraphics PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+
 target_include_directories(twGraphics PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/ImGuiFileDialog
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/FreeImage
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/vermilion
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Entry
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Event
@@ -93,26 +91,38 @@ if(ENABLE_DEBUG)
     target_compile_options(twGraphics PRIVATE -Wall -Wno-extra)
 endif()
 
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 if(LINUX)
-    set_target_properties(twGraphics PROPERTIES
-         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Output/libs)
-    target_link_libraries(twGraphics -lglfw -lGL -lGLEW -lassimp -lfreeimage imgui vermilion)
-endif()
+    set(LINUX_LIBS ${GLEW_LIBRARY} ${GLFW3_LIBRARY} ${ASSIMP_LIBRARY} ${FREEIMAGE_LIBRARY}
+        imgui
+        imguiFileDialog
+        vermilion
+    )
+    set(LINUX_LIBS ${LINUX_LIBS} X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl pthread)
+    set(TWGRAPHICS_DEPEND_LIBS ${LINUX_LIBS})
+elseif(APPLE)
+    SET(APPLE_LIBS ${COCOA_LIBRARY} ${IOKit_LIBRARY} ${OpenGL_LIBRARY} ${CoreVideo_LIBRARY})
+    SET(APPLE_LIBS 
+        ${APPLE_LIBS}  
+        # ${GLEW_LIBRARY} 
+        # ${GLFW3_LIBRARY} 
+        ${ASSIMP_LIBRARY} 
+        ${FREEIMAGE_LIBRARY}
+        imgui
+        imguiFileDialog
+        vermilion
+    )
+    set(TWGRAPHICS_DEPEND_LIBS ${APPLE_LIBS})
+elseif(WIN32)
+    set(WIN32_LIBS opengl32 glew glfw3 assimp freeimage imgui imguiFileDialog vermilion)
+    set(TWGRAPHICS_DEPEND_LIBS ${WIN32_LIBS})
+else()
+    set(TWGRAPHICS_DEPEND_LIBS )
+endif(LINUX)
 
-# if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-if(WIN32)
-    target_link_libraries(twGraphics OpenGL32.lib)
-    target_link_libraries(twGraphics ${GLEWLIBDIR}/glew32.lib)
-    target_link_libraries(twGraphics ${GLFWLIBDIR}/libglfw3dll.a)
-    target_link_libraries(twGraphics ${ASSIMPLIBDIR}/libassimp.dll.a)
-    target_link_libraries(twGraphics ${FREEIMAGELIBDIR}/FreeImage.lib)
-    target_link_libraries(twGraphics imgui)
-    target_link_libraries(twGraphics imguiFileDialog)
-    target_link_libraries(twGraphics vermilion)
-endif()
+# set twGraphics link libraries
+target_link_libraries(twGraphics ${TWGRAPHICS_DEPEND_LIBS})
 
-
+# twEditor
 add_executable(twEditor ${CMAKE_CURRENT_LIST_DIR}/Entry/twEditor.cpp)
 target_include_directories(twEditor PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Include/Entry)
 target_link_libraries(twEditor twGraphics)

@@ -2,7 +2,7 @@
 #ifndef TW_RENDERCONTEXT_H
 #define TW_RENDERCONTEXT_H
 
-#include <glew.h>
+#include <GL/glew.h>
 
 #include "twCommon.h"
 #include "twReference.h"

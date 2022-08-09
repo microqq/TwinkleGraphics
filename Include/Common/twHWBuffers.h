@@ -6,7 +6,7 @@
 #include "twCommon.h"
 #include "twHWObject.h"
 #include "twTexture.h"
-#include <glew.h>
+#include <GL/glew.h>
 
 
 namespace TwinkleGraphics {
