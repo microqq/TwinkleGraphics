@@ -13,5 +13,9 @@ set_target_properties(imguiFileDialog PROPERTIES
 # set include directory
 target_include_directories(imguiFileDialog PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
+if(WIN32)
+    target_include_directories(imguiFileDialog PUBLIC ${DIRENTINCLUDEDIR})
+endif(WIN32)
+
 # set link libraries
 target_link_libraries(imguiFileDialog imgui)

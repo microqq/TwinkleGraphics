@@ -5,12 +5,14 @@ set( _glew_HEADER_SEARCH_DIRS
 "/usr/include"
 "/usr/local/include"
 "${CMAKE_SOURCE_DIR}/includes"
-"C:/Program Files (x86)/glew/include" )
+#win32
+"${GLEWINCLUDEDIR}")
 set( _glew_LIB_SEARCH_DIRS
 "/usr/lib"
 "/usr/local/lib"
 "${CMAKE_SOURCE_DIR}/lib"
-"C:/Program Files (x86)/glew/lib" )
+#win32
+"${GLEWLIBDIR}")
 
 # Check environment for root search directory
 set( _glew_ENV_ROOT $ENV{GLEW_ROOT} )
@@ -29,8 +31,14 @@ FIND_PATH(GLEW_INCLUDE_DIR "GL/glew.h"
 PATHS ${_glew_HEADER_SEARCH_DIRS} )
 
 # Search for the library
-FIND_LIBRARY(GLEW_LIBRARY NAMES glew
-PATHS ${_glew_LIB_SEARCH_DIRS} )
+if(WIN32)
+	FIND_LIBRARY(GLEW_LIBRARY NAMES glew32
+		PATHS ${_glew_LIB_SEARCH_DIRS} )
+else()
+	FIND_LIBRARY(GLEW_LIBRARY NAMES glew
+		PATHS ${_glew_LIB_SEARCH_DIRS} )
+endif(WIN32)
+
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLEW DEFAULT_MSG
-GLEW_LIBRARY GLEW_INCLUDE_DIR)
+	GLEW_LIBRARY GLEW_INCLUDE_DIR)

@@ -5,12 +5,14 @@ set( _freeimage_HEADER_SEARCH_DIRS
 "/usr/include"
 "/usr/local/include"
 "${CMAKE_SOURCE_DIR}/includes"
-"C:/Program Files (x86)/freeimage/include" )
+#win32
+"$ENV{CUSTOM_DEV_DEPENDENCIES_PATH}/FreeImage" )
 set( _freeimage_LIB_SEARCH_DIRS
 "/usr/lib"
 "/usr/local/lib"
 "${CMAKE_SOURCE_DIR}/lib"
-"C:/Program Files (x86)/freeimage/lib" )
+#win32
+"$ENV{CUSTOM_DEV_DEPENDENCIES_PATH}/FreeImage/win" )
 
 # Check environment for root search directory
 set( _freeimage_ENV_ROOT $ENV{FREEIMAGE_ROOT} )
@@ -29,8 +31,14 @@ FIND_PATH(FREEIMAGE_INCLUDE_DIR "freeimage.h"
 PATHS ${_freeimage_HEADER_SEARCH_DIRS} )
 
 # Search for the library
-FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage
-PATHS ${_freeimage_LIB_SEARCH_DIRS} )
+if(WIN32)
+	FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES FreeImage
+		PATHS ${_freeimage_LIB_SEARCH_DIRS} )
+else()
+	FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage
+		PATHS ${_freeimage_LIB_SEARCH_DIRS} )
+endif(WIN32)
+
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(FREEIMAGE DEFAULT_MSG
-FREEIMAGE_LIBRARY FREEIMAGE_INCLUDE_DIR)
+	FREEIMAGE_LIBRARY FREEIMAGE_INCLUDE_DIR)

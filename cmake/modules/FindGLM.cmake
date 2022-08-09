@@ -33,7 +33,8 @@ SET(_glm_HEADER_SEARCH_DIRS
 "/usr/include"
 "/usr/local/include"
 "${CMAKE_SOURCE_DIR}/includes"
-"C:/Program Files (x86)/glm" )
+#win32
+"$ENV{CUSTOM_DEV_DEPENDENCIES_PATH}/glm" )
 # check environment variable
 SET(_glm_ENV_ROOT_DIR "$ENV{GLM_ROOT_DIR}")
 IF(NOT GLM_ROOT_DIR AND _glm_ENV_ROOT_DIR)

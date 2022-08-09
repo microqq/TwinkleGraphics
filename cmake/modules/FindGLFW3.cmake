@@ -18,12 +18,14 @@ set( _glfw3_HEADER_SEARCH_DIRS
 "/usr/include"
 "/usr/local/include"
 "${CMAKE_SOURCE_DIR}/includes"
-"C:/Program Files (x86)/glfw/include" )
+#win32
+"$ENV{CUSTOM_DEV_DEPENDENCIES_PATH}/glfw-3.3.bin.WIN64/include" )
 set( _glfw3_LIB_SEARCH_DIRS
 "/usr/lib"
 "/usr/local/lib"
 "${CMAKE_SOURCE_DIR}/lib"
-"C:/Program Files (x86)/glfw/lib" )
+#win32
+"$ENV{CUSTOM_DEV_DEPENDENCIES_PATH}/glfw-3.3.bin.WIN64/lib-mingw-w64" )
 
 # Check environment for root search directory
 set( _glfw3_ENV_ROOT $ENV{GLFW3_ROOT} )
@@ -43,7 +45,8 @@ PATHS ${_glfw3_HEADER_SEARCH_DIRS} )
 
 # Search for the library
 FIND_LIBRARY(GLFW3_LIBRARY NAMES glfw3 glfw
-PATHS ${_glfw3_LIB_SEARCH_DIRS} )
+	PATHS ${_glfw3_LIB_SEARCH_DIRS} )
+
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLFW3 DEFAULT_MSG
-GLFW3_LIBRARY GLFW3_INCLUDE_DIR)
+	GLFW3_LIBRARY GLFW3_INCLUDE_DIR)
