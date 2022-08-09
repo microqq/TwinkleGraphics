@@ -74,7 +74,6 @@ GLFWMainWindow::GLFWMainWindow(int32 width, int32 height)
 
 GLFWMainWindow::~GLFWMainWindow() {
   _imguiFuncs.clear();
-  Terminate();
 }
 
 void GLFWMainWindow::AddGUIFunc(IMGUI_FUNC func) {
@@ -146,6 +145,7 @@ void GLFWMainWindow::Run() {
     }
     glfwSwapBuffers(_window);
   }
+    Terminate();
 }
 
 void GLFWMainWindow::Initialise() {

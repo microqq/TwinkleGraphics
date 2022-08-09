@@ -187,7 +187,7 @@ GLFWMainFrame::GLFWMainFrame(uint32 width, uint32 height, Widget *parent)
   SetInputEventCallbacks();
 }
 
-GLFWMainFrame::~GLFWMainFrame() { Destroy(); }
+GLFWMainFrame::~GLFWMainFrame() {}
 
 void GLFWMainFrame::Update(float deltaTime) { MainFrame::Update(deltaTime); }
 

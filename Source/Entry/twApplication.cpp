@@ -33,6 +33,8 @@ void Application::Run() {
     }
     _mainframe->EndFrame();
   }
+
+  _mainframe->Destroy();
 }
 
 void Application::Quit() {}
