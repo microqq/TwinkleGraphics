@@ -1,6 +1,9 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+
+#################### IMGUI ##########################
+
 set(IMGUI_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/imgui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui_impl_opengl3.cpp
@@ -45,3 +48,47 @@ else()
 endif(LINUX)
 
 target_link_libraries(imgui ${IMGUI_DEPEND_LIBS})
+
+
+#################### ImGuiFIleDialog ##########################
+
+set(IMGUIFILEDIALOG_SRCs 
+    ${CMAKE_CURRENT_LIST_DIR}/ImGuiFileDialog.cpp
+)
+
+add_library(imGuiFileDialog SHARED ${IMGUIFILEDIALOG_SRCs})
+
+set_target_properties(imGuiFileDialog PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+
+# set include directory
+target_include_directories(imGuiFileDialog PUBLIC 
+    ${CMAKE_CURRENT_LIST_DIR}
+)
+
+if(WIN32)
+    target_include_directories(imGuiFileDialog PUBLIC ${DIRENTINCLUDEDIR})
+endif(WIN32)
+
+# set link libraries
+target_link_libraries(imGuiFileDialog imgui)
+
+
+#################### vermilion ##########################
+
+set(VERMILION_SRCs 
+    ${CMAKE_CURRENT_LIST_DIR}/vdds.cpp
+)
+
+# add vermilion library
+add_library(vermilion SHARED ${VERMILION_SRCs})
+
+set_target_properties(vermilion PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+
+# set include directory
+target_include_directories(vermilion PUBLIC 
+    ${CMAKE_CURRENT_LIST_DIR}
+)
+target_compile_definitions(vermilion PUBLIC _DEBUG=1)
+target_compile_options(vermilion PUBLIC -fno-elide-constructors)
