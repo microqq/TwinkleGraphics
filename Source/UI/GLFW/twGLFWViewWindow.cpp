@@ -3,25 +3,23 @@
 namespace TwinkleGraphics {
 GLFWViewWindow::GLFWViewWindow(const std::string &name, uint32 width,
                                uint32 height, Widget *parent)
-    : Window(name, width, height, parent) {
-  _viewSize.x = width;
-  _viewSize.y = height;
-  CreateViewRT();
-}
+    : Window(name, width, height, parent) {}
 
 GLFWViewWindow::~GLFWViewWindow() {}
 
-void GLFWViewWindow::Update(float deltaTime) {
-  if (_viewSizeDirty) {
-    ResizeViewRT();
-    _viewSizeDirty = false;
-  }
-}
+void GLFWViewWindow::Update(float deltaTime) {}
 
 void GLFWViewWindow::OnGuiBegin() {
-  assert(_viewRT != nullptr);
-  ImGui::Begin(_windowname.c_str());
-  // ImGui::Text(_windowname.c_str());
+  // https://github.com/ocornut/imgui/issues/1490
+  // specify content window size with PushStyleVar --
+  // ImGuiStyleVar_WindowPadding
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+  // ImGui::SetNextWindowSize(ImVec2(_pData->width, _pData->height));
+  ImGui::Begin(_name.c_str(), NULL,
+               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
+                   ImGuiWindowFlags_NoBringToFrontOnFocus |
+                   ImGuiWindowFlags_NoNavFocus);
+  // ImGui::Text(_name.c_str());
   // ImGui::Separator();
 }
 
@@ -30,6 +28,7 @@ void GLFWViewWindow::OnGuiEnd() {
   SetHoveredInternal();
 
   ImGui::End();
+  ImGui::PopStyleVar();
 }
 
 void GLFWViewWindow::OnGui() {
@@ -37,28 +36,39 @@ void GLFWViewWindow::OnGui() {
 
   if (!ImGui::IsWindowCollapsed()) {
     ImVec2 windowSize = ImGui::GetWindowSize();
-    ImVec2 viewSize = ImVec2(_viewSize.x, _viewSize.y);
-    if (_viewSizeInitialized) {
-      ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-      ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
-      ImVec2 contentSize(contentMax.x - contentMin.x,
-                         contentMax.y - contentMin.y);
-      ImVec2 titleBarSize(windowSize.x - contentSize.x,
-                          windowSize.y - contentSize.y);
+    ImVec2 viewSize = ImVec2(0.0f, 0.0f);
 
-      if (viewSize.x != contentSize.x || viewSize.y != contentSize.y) {
-        viewSize = contentSize;
-        _viewSize.x = viewSize.x;
-        _viewSize.y = viewSize.y;
+    // TODO: use Resize Event
+    ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+    ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+    ImVec2 contentSize(contentMax.x - contentMin.x,
+                       contentMax.y - contentMin.y);
+    ImVec2 titleBarSize(windowSize.x - contentSize.x,
+                        windowSize.y - contentSize.y);
 
-        _viewSizeDirty = true;
-      }
-    } else {
-      _viewSizeInitialized = true;
+    // set widget width/height
+    SetContentWidth(contentSize.x);
+    SetContentHeight(contentSize.y);
+
+    if (viewSize.x != contentSize.x || viewSize.y != contentSize.y) {
+      viewSize = contentSize;
+      viewSize.x -= 2.f;
+      viewSize.y -= 2.f;
     }
-    _data->width = windowSize.x;
-    _data->height = windowSize.y;
 
+    // when imgui view window created, create view render texture.
+    CreateViewRT();
+
+    _pData->width = windowSize.x;
+    _pData->height = windowSize.y;
+
+    // render scene
+    if (_currentScene != nullptr) {
+      _currentScene->Update(.0f);
+      _currentScene->Render();
+    }
+
+    // paint view rt
     PaintViewGui(viewSize);
   }
 }
@@ -72,7 +82,7 @@ void GLFWViewWindow::SetFocusedInternal() {
     } else {
       // focusedout
     }
-    // Console::LogInfo("ViewWindow focused:", _focused, "\n");
+    // Console::LogInfo("View window focused:", _focused, "\n");
   }
 }
 
@@ -81,11 +91,10 @@ void GLFWViewWindow::SetHoveredInternal() {
   if (_hovered != hovered) {
     _hovered = hovered;
     if (_hovered) {
-
     } else {
       /* code */
     }
-    // Console::LogInfo("ViewWindow hovered:", _hovered, "\n");
+    // Console::LogInfo("View window hovered:", _hovered, "\n");
   }
 }
 
@@ -93,20 +102,13 @@ void GLFWViewWindow::CreateViewRT() {
   if (_viewRT != nullptr)
     return;
 
-  _viewRT =
-      std::make_shared<RenderTexture>(_data->width, _data->height, GL_RGBA8,
-                                      GL_RGBA, false, false, false, 1, false);
+  _viewRT = std::make_shared<RenderTexture>(1024.0f, 1024.0f, GL_RGBA8, GL_RGBA,
+                                            false, false, false, 1, false);
   assert(_viewRT != nullptr);
 
   _viewRT->Create(nullptr);
   _viewRT->GetTexture()->SetFilter<FilterParam::MIN_FILTER>(FilterMode::LINEAR);
   _viewRT->GetTexture()->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
-}
-
-void GLFWViewWindow::ResizeViewRT() {
-  if (_viewRT != nullptr) {
-    _viewRT->Resize(_viewSize.x, _viewSize.y);
-  }
 }
 
 void GLFWViewWindow::PaintViewGui(ImVec2 viewSize) {

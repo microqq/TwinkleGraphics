@@ -20,6 +20,8 @@ if(ENABLE_TEMPORARY)
     add_definitions(-DTEMPORARY_USE)
 endif()
 
+add_definitions(-DCUSTOM_IMGUIFILEDIALOG_CONFIG="${CMAKE_CURRENT_LIST_DIR}/Include/UI/twCustomImGuiFileDialogConfig.h")
+
 # set everything up for c++ 17 features
 set(CMAKE_CXX_STANDARD 17) # this does nothing for MSVC, use target_compile_options below
 # Don't add this line if you will try_compile with boost.
@@ -69,7 +71,7 @@ endif(APPLE)
 
 # set include directory in MacOS platform
 if(APPLE)
-    INCLUDE_DIRECTORIES(/System/Library/Frameworks ${CMAKE_CURRENT_LIST_DIR}/includes)
+    INCLUDE_DIRECTORIES(/System/Library/Frameworks ${CMAKE_CURRENT_LIST_DIR}/Include)
 endif(APPLE)
 
 # find library
@@ -96,6 +98,7 @@ include_directories([AFTER|BEFORE] [SYSTEM]
     ${PROJECT_SOURCE_DIR}/ThirdParty/ImGuiFileDialog
     ${PROJECT_SOURCE_DIR}/Iinclude/Common
     ${PROJECT_SOURCE_DIR}/Include/UI
+    ${PROJECT_SOURCE_DIR}/Include/UI/GLFW
     ${PROJECT_SOURCE_DIR}/Include/Util
     ${PROJECT_SOURCE_DIR}/Include/Event
     ${PROJECT_SOURCE_DIR}/TwinkleShading
@@ -110,9 +113,7 @@ link_directories(
 )
 
 # add subdirectory
-add_subdirectory(ThirdParty/imgui)
-add_subdirectory(ThirdParty/ImGuiFileDialog)
-add_subdirectory(ThirdParty/vermilion)
+add_subdirectory(ThirdParty)
 add_subdirectory(Source)
 add_subdirectory(TwinkleShading)
 add_subdirectory(TwinkleRayTracing)

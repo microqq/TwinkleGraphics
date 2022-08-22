@@ -1,16 +1,17 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-
 #################### IMGUI ##########################
 
 set(IMGUI_SRCs 
-    ${CMAKE_CURRENT_LIST_DIR}/imgui.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/imgui_impl_opengl3.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/imgui_impl_glfw.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/imgui_draw.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/imgui_widgets.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/imgui_demo.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_glfw.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_opengl3.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_draw.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_widgets.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_tables.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/misc/freetype/imgui_freetype.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_demo.cpp
     # ${CMAKE_CURRENT_LIST_DIR}/imgui_filebrowser.h
 )
 
@@ -22,10 +23,15 @@ set_target_properties(imgui PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
 # set include directory
-target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(imgui PUBLIC 
+    ${FREETYPE_INCLUDE_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/imgui
+    ${CMAKE_CURRENT_LIST_DIR}/imgui/misc/freetype
+)
 
 # set opengl loader
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
+# target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE=1)
 
 if(LINUX)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
@@ -47,13 +53,13 @@ else()
     set(IMGUI_DEPEND_LIBS )
 endif(LINUX)
 
-target_link_libraries(imgui ${IMGUI_DEPEND_LIBS})
+target_link_libraries(imgui ${IMGUI_DEPEND_LIBS} ${FREETYPE_LIBRARIES})
 
 
 #################### ImGuiFIleDialog ##########################
 
 set(IMGUIFILEDIALOG_SRCs 
-    ${CMAKE_CURRENT_LIST_DIR}/ImGuiFileDialog.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ImGuiFileDialog/ImGuiFileDialog.cpp
 )
 
 add_library(imGuiFileDialog SHARED ${IMGUIFILEDIALOG_SRCs})
@@ -63,7 +69,8 @@ set_target_properties(imGuiFileDialog PROPERTIES
 
 # set include directory
 target_include_directories(imGuiFileDialog PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/ImGuiFileDialog
+    ${CMAKE_CURRENT_LIST_DIR}/ImGuiFileDialog/stb
 )
 
 if(WIN32)
@@ -77,7 +84,7 @@ target_link_libraries(imGuiFileDialog imgui)
 #################### vermilion ##########################
 
 set(VERMILION_SRCs 
-    ${CMAKE_CURRENT_LIST_DIR}/vdds.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/vermilion/vdds.cpp
 )
 
 # add vermilion library
@@ -88,7 +95,7 @@ set_target_properties(vermilion PROPERTIES
 
 # set include directory
 target_include_directories(vermilion PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/vermilion
 )
 target_compile_definitions(vermilion PUBLIC _DEBUG=1)
 target_compile_options(vermilion PUBLIC -fno-elide-constructors)

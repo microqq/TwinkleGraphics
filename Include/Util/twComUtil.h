@@ -5,6 +5,9 @@
 #include "twCommon.h"
 
 namespace TwinkleGraphics {
+
+std::string RandomString();
+
 /**
  * @brief https://www.partow.net/programming/hashfunctions/#DJBHashFunction
  *

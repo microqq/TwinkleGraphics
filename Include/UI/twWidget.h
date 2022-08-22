@@ -1,8 +1,10 @@
 #ifndef TW_WIDGET_H
 #define TW_WIDGET_H
 
+#include <string>
 #include <vector>
 
+#include "twAbstractLayout.h"
 #include "twCloseEventArgs.h"
 #include "twCommon.h"
 #include "twCursorEventArgs.h"
@@ -14,11 +16,12 @@
 #include "twScrollEvetnArg.h"
 #include "twSizePolicy.h"
 
-
 namespace TwinkleGraphics {
 struct WidgetData {
   uint32 width;
   uint32 height;
+  uint32 contentWidth;
+  uint32 contentHeight;
   uint32 x;
   uint32 y;
 };
@@ -30,48 +33,51 @@ class Widget : public Object,
 public:
   typedef std::function<void()> OnGuiFunction;
 
-  explicit Widget(Widget *parent = nullptr);
+  explicit Widget(Widget *parent = nullptr, const std::string &name = "");
   virtual ~Widget();
   virtual void Update(float deltaTime = 0.0f) override;
   virtual void Destroy() override;
+  virtual void AttachToDockSpace(const unsigned int &dockSpaceID) {}
+  virtual unsigned int GetAttachedDockSpace() { return 0; }
 
   void SetSizePolicy(SizePolicy sizePolicy) { _sizepolicy = sizePolicy; }
   void SetPosition(uint32 x, uint32 y) {
-    _data->x = x;
-    _data->y = y;
+    _pData->x = x;
+    _pData->y = y;
   }
   void SetSize(uint32 width, uint32 height) {
-    _data->width = width, _data->height = height;
+    _pData->width = width, _pData->height = height;
   }
-  void SetWidth(uint32 width) { _data->width = width; }
-  void SetHeight(uint32 height) { _data->height = height; }
+  void SetWidth(uint32 width) { _pData->width = width; }
+  void SetHeight(uint32 height) { _pData->height = height; }
+  void SetContentWidth(uint32 contentWidth) {
+    _pData->contentWidth = contentWidth;
+  }
+  void SetContentHeight(uint32 contentHeight) {
+    _pData->contentHeight = contentHeight;
+  }
   void SetEventPropagation(bool propagation) {
     _eventPropagation = propagation;
   }
+  void SetLayout(AbstractLayout *layout) { _pLayout = layout; }
+  void SetName(const std::string &name) { _name = name; }
 
   const SizePolicy &GetSizePolicy() { return _sizepolicy; }
-  vec2 GetPosition() { return vec2(_data->x, _data->y); }
-  vec2 GetSize() { return vec2(_data->width, _data->height); }
-  uint32 GetWidth() { return _data->width; }
-  uint32 GetHeight() { return _data->height; }
+  vec2 GetPosition() { return vec2(_pData->x, _pData->y); }
+  vec2 GetSize() { return vec2(_pData->width, _pData->height); }
+  uint32 GetWidth() { return _pData->width; }
+  uint32 GetHeight() { return _pData->height; }
+  uint32 GetContentWidth() { return _pData->contentWidth; }
+  uint32 GetContentHeight() { return _pData->contentHeight; }
   bool GetEventPropagation() { return _eventPropagation; }
+  AbstractLayout *GetLayout() { return _pLayout; }
+  const std::string &GetName() { return _name; }
 
-  virtual void OnGuiBegin() {}
-  virtual void OnGuiEnd() {}
+  virtual void OnGuiBegin();
+  virtual void OnGui();
+  virtual void OnGuiEnd();
 
-  virtual void OnGui() {
-    for (auto child : _children) {
-      if (child != nullptr) {
-        child->PaintGui();
-      }
-    }
-  }
-
-  void PaintGui() {
-    OnGuiBegin();
-    OnGui();
-    OnGuiEnd();
-  }
+  void PaintGui();
 
   void Show() { _visible = true; }
   void Hide() { _visible = false; }
@@ -133,17 +139,19 @@ protected:
 
 protected:
   std::vector<Widget *> _children;
-  EventHandlerFunctionPtr _eventHandlerFunc = nullptr;
-  WidgetData *_data = nullptr;
-  Widget *_parent = nullptr;
+  EventHandlerFunctionPtr _eventHandlerFunc{nullptr};
+  WidgetData *_pData{nullptr};
+  Widget *_parent{nullptr};
+  AbstractLayout *_pLayout{nullptr};
   EventHandler _eventHandler;
   SizePolicy _sizepolicy;
-  int _depth = -1;
-  bool _visible = true;
-  bool _focused = false;
-  bool _hovered = false;
-  bool _needResize = false;
-  bool _eventPropagation = true;
+  std::string _name;
+  int _depth{-1};
+  bool _visible{true};
+  bool _focused{false};
+  bool _hovered{false};
+  bool _needResize{false};
+  bool _eventPropagation{true};
 };
 } // namespace TwinkleGraphics
 

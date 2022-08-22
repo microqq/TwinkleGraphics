@@ -60,7 +60,7 @@ void InputManager::SetScroll(double dx, double dy) {
   EventManager &eventMgrInst = EventMgrInstance();
 }
 
-void InputManager::SetWindowResize(vec2 size) {
+void InputManager::SetWindowSize(vec2 size) {
   EventManager &eventMgrInst = EventMgrInstance();
 
   // if(_pressedMouseButtons[MOUSE_BUTTON_LEFT] == MOUSE_RELEASE)

@@ -5,7 +5,6 @@
 #include <GL/glew.h>
 #include <glfw/glfw3.h>
 
-
 #include "twMainFrame.h"
 
 namespace TwinkleGraphics {
@@ -17,28 +16,28 @@ public:
   virtual void Update(float deltaTime = 0.0f) override;
   virtual void Destroy() override;
 
-  virtual bool CheckClose() override;
+  virtual bool CheckIfClose() override;
   virtual void PollInputEvents() override;
 
   virtual void BeginFrame() override;
   virtual void EndFrame() override;
 
-private:
+  virtual void OnGuiBegin() override;
+  virtual void OnGuiEnd() override;
+
+protected:
   virtual void MouseInputCallback(int32 button, int32 action,
                                   int32 mods) override;
   virtual void CursorPosCallback(float64 xpos, float64 ypos) override;
   virtual void CursorEnterPosCallback(int32 entered) override;
   virtual void ScrollCallback(float64 dx, float64 dy) override;
   virtual void WindowSizeCallback(int32 w, int32 h) override;
-  // virtual void FrameBufferSizeCallback(int32 w, int32 h) override;
   virtual void KeyInputCallBack(int32 key, int32 scannode, int32 action,
                                 int32 mods) override;
+  virtual void SetInputEventCallbacks();
 
-private:
-  void SetInputEventCallbacks();
-
-private:
-  GLFWwindow *_window = nullptr;
+protected:
+  GLFWwindow *_window{nullptr};
 };
 } // namespace TwinkleGraphics
 

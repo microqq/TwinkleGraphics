@@ -6,10 +6,12 @@
 namespace TwinkleGraphics {
 class Inspector : public Widget {
 public:
-  explicit Inspector(Widget *parent = nullptr);
+  explicit Inspector(const std::string &name, Widget *parent = nullptr);
   virtual ~Inspector();
 
+  virtual void OnGuiBegin() override;
   virtual void OnGui() override;
+  virtual void OnGuiEnd() override;
 
 private:
 };

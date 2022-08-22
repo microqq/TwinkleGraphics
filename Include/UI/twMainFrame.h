@@ -10,7 +10,7 @@ public:
   virtual ~MainFrame();
   virtual void Update(float deltaTime = 0.0f) override;
 
-  virtual bool CheckClose() { return false; }
+  virtual bool CheckIfClose() { return false; }
   virtual void PollInputEvents() {}
 
   virtual void BeginFrame() {}

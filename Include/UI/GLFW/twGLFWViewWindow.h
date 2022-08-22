@@ -5,6 +5,7 @@
 #include "twRenderTexture.h"
 #include "twWindow.h"
 
+#include "twSceneManager.h"
 
 namespace TwinkleGraphics {
 class GLFWViewWindow : public Window {
@@ -20,18 +21,34 @@ public:
 
   RenderTexturePtr GetViewRT() { return _viewRT; }
 
+  void LoadScene(Scene::Ptr scene) {
+    if (_currentScene == scene) {
+      return;
+    }
+
+    if (_currentScene != nullptr) {
+      UnloadScene();
+    }
+
+    // TODO: load scene
+    _currentScene = scene;
+  }
+
+  // TODO: unload current scene
+  void UnloadScene() {
+    if (_currentScene != nullptr) {
+    }
+  }
+
 private:
   virtual void SetFocusedInternal() override;
   virtual void SetHoveredInternal() override;
   void CreateViewRT();
-  void ResizeViewRT();
   void PaintViewGui(ImVec2 viewSize);
 
 private:
-  RenderTexturePtr _viewRT = nullptr;
-  vec2 _viewSize;
-  bool _viewSizeDirty = false;
-  bool _viewSizeInitialized = false;
+  RenderTexturePtr _viewRT{nullptr};
+  Scene::Ptr _currentScene{nullptr};
 };
 } // namespace TwinkleGraphics
 

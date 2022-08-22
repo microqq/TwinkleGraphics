@@ -28,7 +28,7 @@ void BasicGeometry::UnInstall() {
   Plugin::UnInstall();
 }
 
-void BasicGeometryView::Initialize() {
+void BasicGeometryView::Initialized() {
   if (_initialized)
     return;
 

@@ -41,13 +41,13 @@ public:
   float VerticalStretch() { return _verStretch; }
 
 private:
-  Policy _horPolicy = Preferred;
-  Policy _verPolicy = Preferred;
+  Policy _horPolicy{Preferred};
+  Policy _verPolicy{Preferred};
 
-  float _horStretch = 1.0f;
-  float _verStretch = 1.0f;
+  float _horStretch{1.0f};
+  float _verStretch{1.0f};
 
-  bool _heightDependWidth = true;
+  bool _heightDependWidth{true};
 };
 } // namespace TwinkleGraphics
 

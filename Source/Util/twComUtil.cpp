@@ -1,6 +1,20 @@
+#include <random>
+
 #include "twComUtil.h"
 
 namespace TwinkleGraphics {
+std::string RandomString() {
+  std::string str(
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+  std::random_device rd;
+  std::mt19937 generator(rd());
+
+  std::shuffle(str.begin(), str.end(), generator);
+
+  return str.substr(0, 32); // assumes 32 < number of characters in str
+}
+
 #pragma region HashFunction
 unsigned int DJBHash(const char *str, unsigned int length) {
   unsigned int hash = 5381;

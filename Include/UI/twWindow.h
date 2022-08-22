@@ -10,10 +10,7 @@ public:
                   Widget *parent = nullptr);
   virtual ~Window();
 
-  void SetWindowName(const std::string &name) { _windowname = name; }
-
 protected:
-  std::string _windowname;
 };
 } // namespace TwinkleGraphics
 

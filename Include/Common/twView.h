@@ -37,26 +37,16 @@ public:
     }
   }
 
-  void Init(glm::ivec4 rect) {
-    SetViewRect(rect);
-    Initialize();
+  void Initialise(glm::ivec4 rect) {
+    Initialized();
   }
 
   // [[deprecated]]
-  void Init(glm::ivec2 size) {
-    SetViewSize(size);
-    Initialize();
+  void Initialise(glm::ivec2 size) {
+    Initialized();
   }
-
-  void SetViewRect(Rect rect) { _rect = rect; }
 
   glm::ivec4 GetViewRect() { return _rect; }
-
-  // [[deprecated]]
-  void SetViewSize(glm::ivec2 size) {
-    _rect.z = size.x;
-    _rect.w = size.y;
-  }
 
   // [[deprecated]]
   glm::ivec2 GetViewSize() { return ivec2(_rect.z, _rect.w); }
@@ -65,14 +55,6 @@ public:
     _rect.x = _rect.x * scale_x;
     _rect.y = _rect.y * scale_y;
     _camera->ResizeViewport(scale_x, scale_y);
-  }
-
-  void ResetViewRect(const Rect &rect) {
-    _rect.x = rect.x;
-    _rect.y = rect.y;
-    _rect.z = rect.z;
-    _rect.w = rect.w;
-    _camera->SetViewportRect(rect);
   }
 
   View &operator=(const Viewport &viewport);
@@ -106,7 +88,7 @@ public:
   void OnViewGUI() { this->OnGUI(); }
 
 protected:
-  virtual void Initialize() { _initialized = true; }
+  virtual void Initialized() { _initialized = true; }
   virtual void Advance(float64 delta_time);
   virtual void HandleEvents();
   // [[deprecated]]
@@ -123,7 +105,7 @@ protected:
   // [[deprecated]]
   CameraControlPtr _cameraControl;
 
-  Scene::Ptr _scene;
+  Scene::Ptr _scene = nullptr;
 
   glm::ivec4 _rect;
 

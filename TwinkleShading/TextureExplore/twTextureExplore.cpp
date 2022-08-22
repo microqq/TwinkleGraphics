@@ -28,7 +28,7 @@ void TextureExplore::UnInstall() {
   Plugin::UnInstall();
 }
 
-void TextureExploreView::Initialize() {
+void TextureExploreView::Initialized() {
   if (_initialized)
     return;
 
@@ -61,7 +61,7 @@ void TextureExploreView::Initialize() {
   // * 0.5f));
   _projTexCamera->Translate(vec3(0.0f, 0.0f, 10.0f));
 
-  View::Initialize();
+  View::Initialized();
 }
 
 void TextureExploreView::Destroy() {

@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
@@ -14,10 +13,12 @@ struct HierarchyItem {
 
 class Hierarchy : public Widget {
 public:
-  explicit Hierarchy(Widget *parent = nullptr);
+  explicit Hierarchy(const std::string &name, Widget *parent = nullptr);
   virtual ~Hierarchy();
 
+  virtual void OnGuiBegin() override;
   virtual void OnGui() override;
+  virtual void OnGuiEnd() override;
 
 private:
   std::vector<HierarchyItem> _items;

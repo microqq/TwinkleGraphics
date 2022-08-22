@@ -41,7 +41,7 @@ public:
   virtual ~BasicGeometryView() {}
 
 protected:
-  virtual void Initialize() override;
+  virtual void Initialized() override;
   virtual void Destroy() override;
   virtual void Advance(float64 delta_time) override;
   virtual void RenderImpl() override;

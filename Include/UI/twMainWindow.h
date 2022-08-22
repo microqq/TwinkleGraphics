@@ -21,16 +21,6 @@ public:
   void AddView(View *view);
   void RemoveViews(View **view, int num);
   void RemoveView(View *view);
-  void ResetViewRect(View *view, glm::ivec2 pos, glm::ivec2 size) {
-    if (view == nullptr)
-      return;
-    view->ResetViewRect(Rect(pos.x, pos.y, size.x, size.y));
-  }
-  void ResetViewRect(int32 index, glm::ivec2 pos, glm::ivec2 size) {
-    if (index < 0 || index >= MAX_VIEWPORT_COUNT || _views[index] == nullptr)
-      return;
-    ResetViewRect(_views[index], pos, size);
-  }
 
   virtual void Reset() = 0;
   virtual void Run() = 0;

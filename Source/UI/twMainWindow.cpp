@@ -35,7 +35,7 @@ void MainWindow::AddView(View *view) {
   if (view == nullptr || _viewCount == MAX_VIEWPORT_COUNT)
     return;
 
-  view->Init(glm::ivec2(_width, _height));
+  view->Initialise(glm::ivec2(_width, _height));
   for (int i = 0; i < MAX_VIEWPORT_COUNT; i++) {
     if (_views[i] == nullptr) {
       _views[i] = view;

@@ -182,7 +182,7 @@ public:
   virtual ~AntiAliasingView() {}
 
 protected:
-  virtual void Initialize() override;
+  virtual void Initialized() override;
   virtual void Destroy() override;
   virtual void OnGUI() override;
 

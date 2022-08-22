@@ -22,7 +22,7 @@ void Application::Run() {
 
   EventManager &eventMgrInst = EventMgrInstance();
 
-  while (!_mainframe->CheckClose()) {
+  while (!_mainframe->CheckIfClose()) {
     _mainframe->PollInputEvents();
     eventMgrInst.Update();
 

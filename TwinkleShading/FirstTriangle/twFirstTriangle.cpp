@@ -26,7 +26,7 @@ void FirstTriangle::UnInstall() {
   Plugin::UnInstall();
 }
 
-void TriangleView::Initialize() {
+void TriangleView::Initialized() {
   if (_initialized)
     return;
 
@@ -92,7 +92,7 @@ void TriangleView::Initialize() {
   _projection_mat_loc =
       glGetUniformLocation(_program->GetRenderResource().id, "projection");
 
-  View::Initialize();
+  View::Initialized();
 }
 
 void TriangleView::Advance(float64 delta_time) {

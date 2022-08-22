@@ -2,7 +2,6 @@
 #include "ImGuiFileDialog.h"
 #include "imgui.h"
 
-
 namespace TwinkleGraphics {
 void FileDialogPanel(std::string externalFilter,
                      FileDialogSelectInfo &selectInfo) {
@@ -15,19 +14,17 @@ void FileDialogPanel(std::string externalFilter,
   ImGui::Text(display.c_str());
   ImGui::SameLine();
   if (ImGui::Button("Open File")) {
-    igfd::ImGuiFileDialog::Instance()->OpenDialog(
-        "ChooseFileDlgKey", "Choose File", externalFilter.c_str(), ".");
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File",
+                                            externalFilter.c_str(), ".");
   }
 
   // display
-  if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) {
+  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
     // action if OK
-    if (igfd::ImGuiFileDialog::Instance()->IsOk == true) {
-      selectInfo.filePathName =
-          igfd::ImGuiFileDialog::Instance()->GetFilepathName();
-      selectInfo.filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
-      selectInfo.fileName =
-          igfd::ImGuiFileDialog::Instance()->GetCurrentFileName();
+    if (ImGuiFileDialog::Instance()->IsOk()) {
+      selectInfo.filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+      selectInfo.filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+      selectInfo.fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
       // action
 
       if (selectInfo.filePathName != display) {
@@ -35,7 +32,7 @@ void FileDialogPanel(std::string externalFilter,
       }
     }
     // close
-    igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
+    ImGuiFileDialog::Instance()->Close();
   }
 }
 

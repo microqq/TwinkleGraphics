@@ -7,6 +7,9 @@
 #include "twInput.h"
 #include "twLambdaTraits.h"
 
+#include "twCustomFont_1.cpp"
+#include "twCustomFont_1.h"
+#include "twDockSpaceLayout.h"
 
 namespace TwinkleGraphics {
 GLFWMainFrame::GLFWMainFrame(uint32 width, uint32 height, Widget *parent)
@@ -20,13 +23,13 @@ GLFWMainFrame::GLFWMainFrame(uint32 width, uint32 height, Widget *parent)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif 
+#endif
 
   glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
   glfwWindowHint(GLFW_SAMPLES, 4);
 
   /* Create a windowed mode window and its OpenGL context */
-  _window = glfwCreateWindow(_data->width, _data->height, "Twinkle Shading",
+  _window = glfwCreateWindow(_pData->width, _pData->height, "Twinkle Shading",
                              NULL, NULL);
   if (!_window) {
     glfwTerminate();
@@ -40,39 +43,41 @@ GLFWMainFrame::GLFWMainFrame(uint32 width, uint32 height, Widget *parent)
   GLenum err = glewInit();
   if (GLEW_OK != err) {
     /* Problem: glewInit failed, something is seriously wrong. */
-    // fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-
     Console::LogError("Opengl Initialise ", glewGetErrorString(err), "\n");
   }
-  // fprintf(stdout, "Status:Using GLEW %s\n", glewGetString(GLEW_VERSION));
   Console::LogInfo("OpenGL using GLEW-", glewGetString(GLEW_VERSION), "\n");
+
+  // set user glfw callback
+  // we should set custom glfw callback befor imgui init.
+  // https://stackoverflow.com/questions/71680516/how-do-i-handle-mouse-events-in-general-in-imgui-with-glfw
+  SetInputEventCallbacks();
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
+  (void)io;
   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-  io.ConfigFlags |=
-      ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-  // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad
-  // Controls
-  (void)io;
 
   // Setup Platform/Renderer bindings
   ImGui_ImplGlfw_InitForOpenGL(_window, true);
   ImGui_ImplOpenGL3_Init("#version 410");
 
   io.Fonts->AddFontDefault();
-  // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Medium.ttf", 16.0f);
-  // io.Fonts->AddFontFromFileTTF("Assets/Fonts/Cousine-Regular.ttf", 15.0f);
-  // io.Fonts->AddFontFromFileTTF("Assets/Fonts/DroidSans.ttf", 16.0f);
-  // io.Fonts->AddFontFromFileTTF("Assets/Fonts/ProggyTiny.ttf", 10.0f);
   ImFont *font = io.Fonts->AddFontFromFileTTF(
       "Assets/Fonts/Nowar-Neo-Sans-CN-Regular.ttf", 16.0f, NULL,
       io.Fonts->GetGlyphRangesChineseFull());
   IM_ASSERT(font != NULL);
   ImGui::GetIO().FontDefault = font;
+
+  // use icon font
+  static const ImWchar icons_ranges[] = {ICON_MIN_IGFD, ICON_MAX_IGFD, 0};
+  ImFontConfig icons_config;
+  icons_config.MergeMode = true;
+  icons_config.PixelSnapH = true;
+  ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(
+      FONT_ICON_BUFFER_NAME_IGFD, 15.0f, &icons_config, icons_ranges);
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
@@ -89,60 +94,7 @@ GLFWMainFrame::GLFWMainFrame(uint32 width, uint32 height, Widget *parent)
     style.GrabRounding = 4;
 
     // color scheme adapted from
-    // https://github.com/ocornut/imgui/pull/511#issuecomment-175719267
-    style.Colors[ImGuiCol_Text] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
-    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.90f, 0.90f, 0.90f, 0.70f);
-    style.Colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    style.Colors[ImGuiCol_PopupBg] = ImVec4(0.90f, 0.90f, 0.90f, 0.90f);
-    style.Colors[ImGuiCol_Border] = ImVec4(0.00f, 0.00f, 0.00f, 0.39f);
-    style.Colors[ImGuiCol_BorderShadow] = ImVec4(1.00f, 1.00f, 1.00f, 0.10f);
-    style.Colors[ImGuiCol_FrameBg] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.16f, 0.62f, 0.87f, 0.40f);
-    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.16f, 0.62f, 0.87f, 0.67f);
-    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.16f, 0.62f, 0.87f, 0.80f);
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.16f, 0.62f, 0.87f, 0.80f);
-    style.Colors[ImGuiCol_TitleBgCollapsed] =
-        ImVec4(0.16f, 0.62f, 0.87f, 0.40f);
-    style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.86f, 0.86f, 0.86f, 1.00f);
-    style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.98f, 0.98f, 0.98f, 0.53f);
-    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.69f, 0.69f, 0.69f, 0.80f);
-    style.Colors[ImGuiCol_ScrollbarGrabHovered] =
-        ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
-    style.Colors[ImGuiCol_ScrollbarGrabActive] =
-        ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.16f, 0.62f, 0.87f, 1.00f);
-    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.16f, 0.62f, 0.87f, 0.78f);
-    style.Colors[ImGuiCol_SliderGrabActive] =
-        ImVec4(0.16f, 0.62f, 0.87f, 1.00f);
-    style.Colors[ImGuiCol_Button] = ImVec4(0.16f, 0.62f, 0.87f, 0.40f);
-    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.16f, 0.62f, 0.87f, 1.00f);
-    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.16f, 0.62f, 0.87f, 1.00f);
-    style.Colors[ImGuiCol_Header] = ImVec4(0.16f, 0.62f, 0.87f, 0.31f);
-    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.16f, 0.62f, 0.87f, 0.80f);
-    style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.16f, 0.62f, 0.87f, 1.00f);
-    // style.Colors[ImGuiCol_Column]               = ImVec4(0.39f, 0.39f,
-    // 0.39f, 1.00f); style.Colors[ImGuiCol_ColumnHovered]        = ImVec4(0.16f,
-    // 0.62f, 0.87f, 0.78f); style.Colors[ImGuiCol_ColumnActive]         =
-    // ImVec4(0.16f, 0.62f, 0.87f, 1.00f);
-    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
-    style.Colors[ImGuiCol_ResizeGripHovered] =
-        ImVec4(0.16f, 0.62f, 0.87f, 0.67f);
-    style.Colors[ImGuiCol_ResizeGripActive] =
-        ImVec4(0.16f, 0.62f, 0.87f, 0.95f);
-    // style.Colors[ImGuiCol_CloseButton]          = ImVec4(0.59f, 0.59f, 0.59f,
-    // 0.50f); style.Colors[ImGuiCol_CloseButtonHovered]   = ImVec4(0.98f, 0.39f,
-    // 0.36f, 1.00f); style.Colors[ImGuiCol_CloseButtonActive]    = ImVec4(0.98f,
-    // 0.39f, 0.36f, 1.00f);
-    style.Colors[ImGuiCol_PlotLines] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
-    style.Colors[ImGuiCol_PlotLinesHovered] =
-        ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
-    style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_PlotHistogramHovered] =
-        ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
-    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.16f, 0.62f, 0.87f, 0.35f);
-    style.Colors[ImGuiCol_ModalWindowDimBg] =
-        ImVec4(0.20f, 0.20f, 0.20f, 0.70f);
+    // https://github.com/GraphicsProgramming/dear-imgui-styles
   }
 
 #ifdef _DEBUG
@@ -184,7 +136,8 @@ GLFWMainFrame::GLFWMainFrame(uint32 width, uint32 height, Widget *parent)
   Console::LogInfo("GL_MAX_DRAW_BUFFERS:=", max_drawbuffers_count, "\n");
 #endif
 
-  SetInputEventCallbacks();
+  // set dockspace layout
+  _pLayout = new DockSpaceLayout(this);
 }
 
 GLFWMainFrame::~GLFWMainFrame() {}
@@ -201,19 +154,47 @@ void GLFWMainFrame::Destroy() {
   glfwTerminate();
   _window = nullptr;
 
+  SAFE_DEL(_pLayout);
+  _pLayout = nullptr;
+
   MainFrame::Destroy();
 }
 
-bool GLFWMainFrame::CheckClose() { return glfwWindowShouldClose(_window); }
+bool GLFWMainFrame::CheckIfClose() { return glfwWindowShouldClose(_window); }
 
 void GLFWMainFrame::PollInputEvents() { glfwPollEvents(); }
 
 void GLFWMainFrame::BeginFrame() {
+  // maintain active, prevent user change via imgui dialog
+  ImGuiIO &io = ImGui::GetIO();
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
+
+  int width, height = 0;
+  glfwGetFramebufferSize(_window, &width, &height);
+
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  glViewport(_data->x, _data->y, _data->width, _data->height);
+  ImVec2 pos, size;
+  ImGuiViewport *viewport = ImGui::GetMainViewport();
+  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if (viewport) {
+      pos = viewport->WorkPos;
+      size = viewport->WorkSize;
+    }
+  } else {
+    pos = ImVec2(0, 0);
+    size = ImVec2((float)width, (float)height);
+  }
+
+  _pData->width = size.x;
+  _pData->height = size.y;
+
+  const auto dockSpaceLayout = dynamic_cast<DockSpaceLayout *>(_pLayout);
+  dockSpaceLayout->SetImGuiViewport(viewport);
+
+  glViewport(_pData->x, _pData->y, _pData->width, _pData->height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glClearColor(0.10f, 0.10f, 0.10f, 1.0f);
 }
@@ -231,6 +212,16 @@ void GLFWMainFrame::EndFrame() {
   }
 
   glfwSwapBuffers(_window);
+}
+
+void GLFWMainFrame::OnGuiBegin() {
+  // layout begin
+  _pLayout->Begin();
+}
+
+void GLFWMainFrame::OnGuiEnd() {
+  // layout end
+  _pLayout->End();
 }
 
 void GLFWMainFrame::MouseInputCallback(int32 button, int32 action, int32 mods) {
@@ -271,10 +262,10 @@ void GLFWMainFrame::ScrollCallback(float64 dx, float64 dy) {
 
 void GLFWMainFrame::WindowSizeCallback(int32 w, int32 h) {
   InputManager &inputMgrInst = InputMgrInstance();
-  inputMgrInst.SetWindowResize(vec2(w, h));
+  inputMgrInst.SetWindowSize(vec2(w, h));
 
-  _data->width = w;
-  _data->height = h;
+  _pData->width = w;
+  _pData->height = h;
 }
 
 void GLFWMainFrame::KeyInputCallBack(int32 key, int32 scannode, int32 action,
@@ -338,5 +329,4 @@ void GLFWMainFrame::SetInputEventCallbacks() {
   }));
   glfwSetKeyCallback(_window, keyCallback);
 }
-
 } // namespace TwinkleGraphics

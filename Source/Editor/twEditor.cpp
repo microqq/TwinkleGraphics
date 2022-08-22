@@ -4,7 +4,7 @@
 using namespace TwinkleGraphics;
 
 int main(int, char **) {
-  EditorWindow editor(1024, 768);
+  EditorWindow editor(2560, 1440);
   auto &app = ApplicationInstance();
   app.SetMainFrame(&editor);
 

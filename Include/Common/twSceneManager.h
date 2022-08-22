@@ -6,7 +6,6 @@
 #include "twCamera.h"
 #include "twCommon.h"
 
-
 #define MAX_SCENE_CAMERA_COUNT 128
 
 namespace TwinkleGraphics {
@@ -92,8 +91,8 @@ private:
 
 protected:
   std::vector<CameraPtr> _cameralists;
-  CameraPtr _maincamera = nullptr;
-  SceneNodePtr _rootNode = nullptr;
+  CameraPtr _maincamera{nullptr};
+  SceneNodePtr _rootNode{nullptr};
 
   bool _cameraSorted = false;
 };
@@ -116,7 +115,7 @@ private:
 
 private:
   std::vector<Scene::Ptr> _sceneLists;
-  Scene::Ptr _currentScene = nullptr;
+  Scene::Ptr _currentScene{nullptr};
 };
 
 } // namespace TwinkleGraphics
