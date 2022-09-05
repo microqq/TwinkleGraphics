@@ -4,7 +4,7 @@
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
-class Inspector : public Widget {
+class __TWCOMExport Inspector : public Widget {
 public:
   explicit Inspector(const std::string &name, Widget *parent = nullptr);
   virtual ~Inspector();

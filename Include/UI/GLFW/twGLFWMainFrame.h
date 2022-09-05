@@ -8,7 +8,7 @@
 #include "twMainFrame.h"
 
 namespace TwinkleGraphics {
-class GLFWMainFrame : public MainFrame {
+class __TWCOMExport GLFWMainFrame : public MainFrame {
 public:
   explicit GLFWMainFrame(uint32 width, uint32 height, Widget *parent = nullptr);
   virtual ~GLFWMainFrame();

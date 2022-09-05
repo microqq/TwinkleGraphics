@@ -84,12 +84,12 @@ set(TWUILib_Srcs
 )
 
 add_library(twGraphics SHARED ${TWGraphics_SRCs})
-add_library(twEditorLib SHARED ${TWEditorLib_Srcs})
 add_library(twUILib SHARED ${TWUILib_Srcs})
+add_library(twEditorLib SHARED ${TWEditorLib_Srcs})
 
 set_target_properties(twGraphics PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
-set_target_properties(twEditorLib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 set_target_properties(twUILib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+set_target_properties(twEditorLib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
 target_include_directories(twGraphics PUBLIC 
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
@@ -97,23 +97,23 @@ target_include_directories(twGraphics PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Util
 )
 
+target_include_directories(twUILib PUBLIC
+${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui
+${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui/backends
+${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui/misc/freetype
+${CMAKE_CURRENT_LIST_DIR}/../Include/UI
+${CMAKE_CURRENT_LIST_DIR}/../Include/UI/GLFW
+${CMAKE_CURRENT_LIST_DIR}/../Include/Entry
+)
+
 target_include_directories(twEditorLib PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Editor
 )
 
-target_include_directories(twUILib PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui/backends
-    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui/misc/freetype
-    ${CMAKE_CURRENT_LIST_DIR}/../Include/UI
-    ${CMAKE_CURRENT_LIST_DIR}/../Include/UI/GLFW
-    ${CMAKE_CURRENT_LIST_DIR}/../Include/Entry
-)
-
 if(ENABLE_DEBUG)
     target_compile_options(twGraphics PRIVATE -Wall -Wno-extra)
-    target_compile_options(twEditorLib PRIVATE -Wall -Wno-extra)
     target_compile_options(twUILib PRIVATE -Wall -Wno-extra)
+    target_compile_options(twEditorLib PRIVATE -Wall -Wno-extra)
 endif()
 
 if(LINUX)

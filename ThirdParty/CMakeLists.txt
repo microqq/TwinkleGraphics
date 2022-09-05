@@ -10,10 +10,15 @@ set(IMGUI_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_draw.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_widgets.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_tables.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/imgui/misc/freetype/imgui_freetype.cpp
     ${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_demo.cpp
-    # ${CMAKE_CURRENT_LIST_DIR}/imgui_filebrowser.h
 )
+
+if(APPLE)
+    set(IMGUI_SRCs 
+        ${IMGUI_SRCs}
+        ${CMAKE_CURRENT_LIST_DIR}/imgui/misc/freetype/imgui_freetype.cpp
+    )
+endif(APPLE)
 
 # add library
 add_library(imgui SHARED ${IMGUI_SRCs})
@@ -28,6 +33,12 @@ target_include_directories(imgui PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/imgui
     ${CMAKE_CURRENT_LIST_DIR}/imgui/misc/freetype
 )
+
+if(APPLE)
+    target_include_directories(imgui PUBLIC 
+        ${CMAKE_CURRENT_LIST_DIR}/imgui/misc/freetype
+    )
+endif(APPLE)
 
 # set opengl loader
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW=1)
@@ -62,7 +73,11 @@ set(IMGUIFILEDIALOG_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/ImGuiFileDialog/ImGuiFileDialog.cpp
 )
 
-add_library(imGuiFileDialog SHARED ${IMGUIFILEDIALOG_SRCs})
+if(APPLE)
+    add_library(imGuiFileDialog SHARED ${IMGUIFILEDIALOG_SRCs})
+else()
+    add_library(imGuiFileDialog STATIC ${IMGUIFILEDIALOG_SRCs})
+endif(APPLE)
 
 set_target_properties(imGuiFileDialog PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
@@ -76,6 +91,8 @@ target_include_directories(imGuiFileDialog PUBLIC
 if(WIN32)
     target_include_directories(imGuiFileDialog PUBLIC ${DIRENTINCLUDEDIR})
 endif(WIN32)
+
+target_compile_definitions(imGuiFileDialog PUBLIC USE_STD_FILESYSTEM=1)
 
 # set link libraries
 target_link_libraries(imGuiFileDialog imgui)

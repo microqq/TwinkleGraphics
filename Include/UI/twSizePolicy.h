@@ -2,9 +2,11 @@
 #ifndef TW_SIZEPOLICY_H
 #define TW_SIZEPOLICY_H
 
+#include "twCommon.h"
+
 namespace TwinkleGraphics {
 // Qt QSizePolicy
-class SizePolicy {
+class __TWCOMExport SizePolicy {
 public:
   enum PolicyFlag {
     GrowFlag = 1,

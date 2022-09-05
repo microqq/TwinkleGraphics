@@ -5,10 +5,11 @@
 #include <string>
 
 #include "imgui.h"
+#include "twCommon.h"
 #include "twAbstractLayout.h"
 
 namespace TwinkleGraphics {
-class DockSpaceLayout : public AbstractLayout {
+class __TWCOMExport DockSpaceLayout : public AbstractLayout {
 public:
   explicit DockSpaceLayout(Widget *host, float leftStretch = 0.2f,
                            float rightStretch = 0.25f,

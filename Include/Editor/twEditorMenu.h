@@ -9,7 +9,7 @@
 
 namespace TwinkleGraphics {
 
-class EditorMenu : public Widget {
+class __TWCOMExport EditorMenu : public Widget {
 public:
   explicit EditorMenu(Widget *parent = nullptr);
   virtual ~EditorMenu();

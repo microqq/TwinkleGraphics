@@ -167,7 +167,7 @@ enum MouseState : uint32 {
 
 enum KeyState : uint32 { KEY_RELEASE = 0, KEY_PRESS = 1, KEY_REPEAT = 2 };
 
-class InputManager : public IUpdatable, public INonCopyable {
+class __TWCOMExport InputManager : public IUpdatable, public INonCopyable {
 public:
   virtual ~InputManager();
   virtual void Update(float deltaTime = 0.0f) override;

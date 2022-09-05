@@ -4,7 +4,7 @@
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
-class MainFrame : public Widget {
+class __TWCOMExport MainFrame : public Widget {
 public:
   MainFrame(uint32 width, uint32 height, Widget *parent = nullptr);
   virtual ~MainFrame();

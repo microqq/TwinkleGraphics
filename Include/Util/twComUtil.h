@@ -5,8 +5,15 @@
 #include "twCommon.h"
 
 namespace TwinkleGraphics {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-std::string RandomString();
+__TWCOMExport std::string RandomString();
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @brief https://www.partow.net/programming/hashfunctions/#DJBHashFunction
@@ -16,21 +23,6 @@ std::string RandomString();
  * @return unsigned int
  */
 unsigned int DJBHash(const char *str, unsigned int length);
-
-/**
- * @brief
- *
- * @tparam T
- * @param a
- * @param b
- */
-template <class T> void Swap(T &a, T &b) {
-  a = a - b;
-  b = a + b;
-  a = b - a;
-}
-
-template <class T> void SwapNumber(T &a, T &b);
 
 /**
  * @brief
@@ -109,6 +101,20 @@ float SquareDistancePoint2Line(const vec3 &point, const vec3 &origin,
  */
 void NormalizePlane(vec4 &plane);
 
+/**
+ * @brief
+ *
+ * @tparam T
+ * @param a
+ * @param b
+ */
+template <class T> void Swap(T &a, T &b) {
+  a = a - b;
+  b = a + b;
+  a = b - a;
+}
+
+template <class T> void SwapNumber(T &a, T &b);
 } // namespace TwinkleGraphics
 
 #endif

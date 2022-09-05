@@ -109,7 +109,7 @@ private:
   std::vector<AssetInfo *> _previewAssets{};
   std::string _assetsDir;
   std::string _treeSelectedAsset;
-  char _searchFilter[128];
+  char _searchFilter[128]{};
   float _thumbnailSize{1.0f};
   bool _thumbnailsList{true};
 };

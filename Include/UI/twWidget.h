@@ -26,7 +26,7 @@ struct WidgetData {
   uint32 y;
 };
 
-class Widget : public Object,
+class __TWCOMExport Widget : public Object,
                public IUpdatable,
                public IDestroyable,
                public INonCopyable {

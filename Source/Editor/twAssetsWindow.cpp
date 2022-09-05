@@ -1,5 +1,6 @@
 
 #include <algorithm>
+#include <iomanip>
 #include <sstream>
 #include <sys/stat.h>
 
@@ -152,8 +153,9 @@ void AssetsWindow::OnGui() {
   ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
   ImGui::PushItemWidth(200);
-  if (ImGui::InputTextWithHint("##search", ICON_IGFD_SEARCH " Search",
-                               _searchFilter, sizeof(_searchFilter),
+  std::string label = ICON_IGFD_SEARCH + " "s + " Search";
+  if (ImGui::InputTextWithHint("##search", label.c_str(), _searchFilter,
+                               sizeof(_searchFilter),
                                ImGuiInputTextFlags_EnterReturnsTrue)) {
   }
   ImGui::PopItemWidth();

@@ -11,7 +11,6 @@
 #include <variant>
 #include <vector>
 
-
 #include "twCommon.h"
 #include "twRingBuffer.h"
 #include "twThreadPool.h"
@@ -97,7 +96,7 @@ protected:
   float _storeTime;
 };
 
-class ResourceReader {
+class __TWCOMExport ResourceReader {
 public:
   typedef std::shared_ptr<ResourceReader> Ptr;
 

@@ -4,13 +4,13 @@
 set( _glew_HEADER_SEARCH_DIRS
 "/usr/include"
 "/usr/local/include"
-"${CMAKE_SOURCE_DIR}/includes"
+"${CMAKE_SOURCE_DIR}/ThirdParty/includes"
 #win32
 "${GLEWINCLUDEDIR}")
 set( _glew_LIB_SEARCH_DIRS
 "/usr/lib"
 "/usr/local/lib"
-"${CMAKE_SOURCE_DIR}/lib"
+"${CMAKE_SOURCE_DIR}/ThirdParty/lib"
 #win32
 "${GLEWLIBDIR}")
 
@@ -40,5 +40,4 @@ else()
 endif(WIN32)
 
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLEW DEFAULT_MSG
-	GLEW_LIBRARY GLEW_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLEW DEFAULT_MSG GLEW_LIBRARY GLEW_INCLUDE_DIR)

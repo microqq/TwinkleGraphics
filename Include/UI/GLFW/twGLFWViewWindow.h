@@ -8,7 +8,7 @@
 #include "twSceneManager.h"
 
 namespace TwinkleGraphics {
-class GLFWViewWindow : public Window {
+class __TWCOMExport GLFWViewWindow : public Window {
 public:
   explicit GLFWViewWindow(const std::string &name, uint32 width, uint32 height,
                           Widget *parent = nullptr);

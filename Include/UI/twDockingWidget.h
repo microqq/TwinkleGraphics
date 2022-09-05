@@ -5,7 +5,7 @@
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
-class DockingWidget : public Widget {
+class __TWCOMExport DockingWidget : public Widget {
 public:
   explicit DockingWidget(const std::string &name, Widget *parent);
   virtual ~DockingWidget();

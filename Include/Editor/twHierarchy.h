@@ -11,7 +11,7 @@ struct HierarchyItem {
   std::string name;
 };
 
-class Hierarchy : public Widget {
+class __TWCOMExport Hierarchy : public Widget {
 public:
   explicit Hierarchy(const std::string &name, Widget *parent = nullptr);
   virtual ~Hierarchy();

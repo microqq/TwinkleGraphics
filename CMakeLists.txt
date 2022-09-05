@@ -115,8 +115,8 @@ link_directories(
 # add subdirectory
 add_subdirectory(ThirdParty)
 add_subdirectory(Source)
-add_subdirectory(TwinkleShading)
-add_subdirectory(TwinkleRayTracing)
+# add_subdirectory(TwinkleShading)
+# add_subdirectory(TwinkleRayTracing)
 
 if(BUILD_GTESTS)
     include_directories(${GTESTINCLUDEDIR})

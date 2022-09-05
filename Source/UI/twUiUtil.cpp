@@ -5,35 +5,35 @@
 namespace TwinkleGraphics {
 void FileDialogPanel(std::string externalFilter,
                      FileDialogSelectInfo &selectInfo) {
-  // https://github.com/aiekick/ImGuiFileDialog
-  // open Dialog Simple
-  std::string display = selectInfo.filePathName;
-  if (display.empty()) {
-    display = "\"Please select file.\"";
-  }
-  ImGui::Text(display.c_str());
-  ImGui::SameLine();
-  if (ImGui::Button("Open File")) {
-    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File",
-                                            externalFilter.c_str(), ".");
-  }
+  // // https://github.com/aiekick/ImGuiFileDialog
+  // // open Dialog Simple
+  // std::string display = selectInfo.filePathName;
+  // if (display.empty()) {
+  //   display = "\"Please select file.\"";
+  // }
+  // ImGui::Text(display.c_str());
+  // ImGui::SameLine();
+  // if (ImGui::Button("Open File")) {
+  //   ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File",
+  //                                           externalFilter.c_str(), ".");
+  // }
 
-  // display
-  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
-    // action if OK
-    if (ImGuiFileDialog::Instance()->IsOk()) {
-      selectInfo.filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-      selectInfo.filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-      selectInfo.fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
-      // action
+  // // display
+  // if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+  //   // action if OK
+  //   if (ImGuiFileDialog::Instance()->IsOk()) {
+  //     selectInfo.filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+  //     selectInfo.filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+  //     selectInfo.fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+  //     // action
 
-      if (selectInfo.filePathName != display) {
-        selectInfo.selectChanged = true;
-      }
-    }
-    // close
-    ImGuiFileDialog::Instance()->Close();
-  }
+  //     if (selectInfo.filePathName != display) {
+  //       selectInfo.selectChanged = true;
+  //     }
+  //   }
+  //   // close
+  //   ImGuiFileDialog::Instance()->Close();
+  // }
 }
 
 void MainMenuBar() {
