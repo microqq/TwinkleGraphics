@@ -21,8 +21,9 @@ EditorWindow::EditorWindow(uint32 width, uint32 height)
     : GLFWMainFrame(width, height) {
   this->SetName("twinkle editor");
 
+  const std::string &assetsDir = std::filesystem::current_path().string() + "/Assets";
   _assetsBrowser = new AssetsWindow("Assets Browser", _pData->width * 0.5f,
-                                    _pData->height * 0.25f, this);
+                                    _pData->height * 0.25f, assetsDir, this);
 
   _menu = new EditorMenu(this);
   _hierarchy = new Hierarchy("Hierarchy", this);

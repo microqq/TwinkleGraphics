@@ -9,6 +9,8 @@
 
 namespace TwinkleGraphics {
 
+bool showDemoWindow = false;
+
 EditorMenu::EditorMenu(Widget *parent) : Widget(parent), _modelFileDialog() {
   _modelFileDialogKey = RandomString();
 
@@ -128,6 +130,16 @@ void EditorMenu::DrawGeometryMenu() {
     }
     if (ImGui::MenuItem("Plane")) {
     }
+    if (ImGui::BeginMenu("Sphere")) {
+      if (ImGui::MenuItem("Ico Sphere")) {
+      }
+      if (ImGui::MenuItem("Cubic Sphere")) {
+      }
+      if (ImGui::MenuItem("Standard Sphere")) {
+      }
+      ImGui::EndMenu();
+    }
+
     if (ImGui::MenuItem("Bezier Curve")) {
     }
     if (ImGui::MenuItem("Bezier Surface")) {
@@ -145,8 +157,12 @@ void EditorMenu::DrawLayoutMenu() {}
 
 void EditorMenu::DrawHelpMenu() {
   if (ImGui::BeginMenu("Help")) {
-    ImGui::Separator();
+    ImGui::MenuItem("Show ImGui Demo", "", &showDemoWindow);
     ImGui::EndMenu();
+  }
+
+  if (showDemoWindow) {
+    ImGui::ShowDemoWindow(&showDemoWindow);
   }
 }
 
