@@ -12,7 +12,6 @@
 #include "twRenderTexture.h"
 #include "twSceneNode.h"
 
-
 namespace TwinkleGraphics {
 struct __TWCOMExport Viewport {
   Rect rect;
@@ -61,9 +60,9 @@ struct __TWCOMExport Viewport {
 
 class __TWCOMExport Camera : public SceneNode {
 public:
-  typedef std::shared_ptr<Camera> Ptr;
+  using Ptr = std::shared_ptr<Camera>;
 
-  typedef enum Type { PERSPECTIVE, ORTHOGRAPHIC } CaemraType;
+  using CaemraType = enum Type { PERSPECTIVE, ORTHOGRAPHIC } ;
 
   Camera(Viewport viewport, float32 fov, float32 near, float32 far,
          Camera::Type type = PERSPECTIVE);
@@ -178,7 +177,7 @@ private:
   bool _viewportDirty = true;
 };
 
-typedef Camera::Ptr CameraPtr;
+using CameraPtr = Camera::Ptr;
 
 } // namespace TwinkleGraphics
 

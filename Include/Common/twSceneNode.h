@@ -32,11 +32,11 @@ enum class SceneLayerType {
   POSTPROCESSING = 8,
   EVERYTHING = DEFAULT | TRANSPARENTS | UI | POSTPROCESSING // 15
 };
-typedef SceneLayerType CullingMask;
+using CullingMask = SceneLayerType;
 
 class __TWCOMExport SceneNode : public Object, public IUpdatable {
 public:
-  typedef std::shared_ptr<SceneNode> Ptr;
+  using Ptr = std::shared_ptr<SceneNode>;
 
   SceneNode(bool renderable = false)
       : Object(), IUpdatable(), _children(), _parent(nullptr),
@@ -66,7 +66,7 @@ public:
   bool Enabled() { return _enabled; }
 
 protected:
-  typedef std::vector<SceneNode::Ptr>::iterator Iterator;
+  using Iterator = std::vector<SceneNode::Ptr>::iterator;
 
   virtual void Traverse();
   bool HasChild(SceneNode::Ptr node);
@@ -83,7 +83,7 @@ protected:
   friend class SceneManager;
 };
 
-typedef SceneNode::Ptr SceneNodePtr;
+using SceneNodePtr = SceneNode::Ptr;
 
 } // namespace TwinkleGraphics
 #endif

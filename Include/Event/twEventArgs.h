@@ -9,7 +9,7 @@
 #define DEFINE_EVENTID(T) EventId T::ID = std::hash<std::string>{}(#T)
 
 namespace TwinkleGraphics {
-typedef unsigned int EventId;
+using EventId = unsigned int;
 
 enum EventType {
   UNKNOWN = 0,
@@ -41,7 +41,7 @@ enum EventType {
 
 class __TWCOMExport BaseEventArgs : public Object {
 public:
-  typedef std::shared_ptr<BaseEventArgs> Ptr;
+  using Ptr = std::shared_ptr<BaseEventArgs>;
 
   BaseEventArgs() : Object() {}
   virtual ~BaseEventArgs() = 0;
@@ -56,7 +56,7 @@ protected:
   bool _shouldBeCompressed = false;
 };
 
-typedef BaseEventArgs::Ptr BaseEventArgsPtr;
+using BaseEventArgsPtr = BaseEventArgs::Ptr ;
 } // namespace TwinkleGraphics
 
 #endif

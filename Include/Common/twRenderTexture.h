@@ -9,7 +9,7 @@ namespace TwinkleGraphics {
 
 class __TWCOMExport RenderTexture : public Object {
 public:
-  typedef std::shared_ptr<RenderTexture> Ptr;
+  using Ptr = std::shared_ptr<RenderTexture> ;
   using AttachmentType = FrameBufferObject::AttachmentType;
 
   RenderTexture(int32 width, int32 height, GLenum internalformat = GL_RGBA8,
@@ -59,7 +59,7 @@ private:
   bool _fixedsampledlocation;
 };
 
-typedef RenderTexture::Ptr RenderTexturePtr;
+using RenderTexturePtr = RenderTexture::Ptr;
 
 } // namespace TwinkleGraphics
 

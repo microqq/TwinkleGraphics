@@ -15,7 +15,7 @@ class SceneNode;
 
 class __TWCOMExport Transform final : public Object {
 public:
-  typedef std::shared_ptr<Transform> Ptr;
+  using Ptr = std::shared_ptr<Transform>;
 
   Transform()
       : Object(), _owner(nullptr), _localMatrix(glm::identity<glm::mat4>()),
@@ -92,7 +92,7 @@ private:
   bool _localDirty;
 };
 
-typedef Transform::Ptr TransformPtr;
+using TransformPtr = Transform::Ptr;
 } // namespace TwinkleGraphics
 
 #endif

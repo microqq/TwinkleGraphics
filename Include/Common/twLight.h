@@ -16,7 +16,7 @@ enum class LightType
 class Light : public SceneNode
 {
 public:
-    typedef std::shared_ptr<Light> Ptr;
+    using Ptr = std::shared_ptr<Light>;
     
     Light();
     virtual ~Light();
@@ -26,7 +26,7 @@ private:
     Light::Ptr _light{nullptr};
 };
 
-typedef Light::Ptr LightPtr;
+using LightPtr = Light::Ptr;
 
 } // namespace TwinkleGraphics
 

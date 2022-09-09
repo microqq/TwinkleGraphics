@@ -9,7 +9,7 @@ class InputManager;
 
 class MouseEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<MouseEventArgs> Ptr;
+  using Ptr = std::shared_ptr<MouseEventArgs> ;
 
   static EventId ID;
 

@@ -7,7 +7,7 @@ namespace TwinkleGraphics {
 
 class IHWObject : public Reference<IHWObject> {
 public:
-  typedef std::shared_ptr<IHWObject> Ptr;
+  using Ptr = std::shared_ptr<IHWObject>;
 
   IHWObject(int32 type) : Reference<IHWObject>() { _resinstance.type = type; }
   virtual ~IHWObject() {}

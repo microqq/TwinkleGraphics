@@ -5,7 +5,6 @@
 #include "twReaderManager.h"
 #include "twTexture.h"
 
-
 namespace TwinkleGraphics {
 class TextureReader;
 class TextureManager;
@@ -37,7 +36,7 @@ class TextureReader : public ResourceReader,
                       public Reference<TextureReader>,
                       public INonCopyable {
 public:
-  typedef std::shared_ptr<TextureReader> Ptr;
+  using Ptr = std::shared_ptr<TextureReader>;
 
   TextureReader();
   TextureReader(TextureOption *option);

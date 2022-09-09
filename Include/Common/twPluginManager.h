@@ -8,10 +8,11 @@
 #include "twPlugin.h"
 
 namespace TwinkleGraphics {
-typedef std::string PluginName;
+using PluginName = std::string;
 
 class PluginManager;
-typedef Singleton<PluginManager> PluginManagerInst;
+using PluginManagerInst = Singleton<PluginManager>;
+using MapPlugins = std::map<PluginName, Plugin *>;
 
 class __TWCOMExport PluginManager {
 public:
@@ -26,9 +27,7 @@ public:
   void UnInstallPlugin(Plugin *plugin);
 
 private:
-  typedef std::map<PluginName, Plugin *> MapPlugins;
-
-  std::map<PluginName, Plugin *> _plugins;
+  MapPlugins _plugins;
 };
 
 } // namespace TwinkleGraphics

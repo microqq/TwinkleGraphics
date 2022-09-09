@@ -6,18 +6,16 @@
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
-
 #include "twMaterialInstance.h"
 #include "twModel.h"
 #include "twResource.h"
-
 
 namespace TwinkleGraphics {
 class __TWCOMExport ModelReader final : public ResourceReader,
                                         public Reference<ModelReader>,
                                         public INonCopyable {
 public:
-  typedef std::shared_ptr<ModelReader> Ptr;
+  using Ptr = std::shared_ptr<ModelReader>;
 
   ModelReader();
   ModelReader(ReaderOption *option);
@@ -50,7 +48,7 @@ private:
   std::vector<TexturePtr> LoadTextures(aiMaterial *mat, aiTextureType type,
                                        std::string dir);
   void SetMaterialTextures(std::vector<TexturePtr> &textures,
-                           StandardMaterial::Ptr material,
+                           StandardMaterialPtr material,
                            std::string texNamePrefix, std::string macroPrefix);
 };
 

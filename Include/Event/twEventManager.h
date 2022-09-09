@@ -10,10 +10,9 @@
 #include "twRingBuffer.h"
 #include "twSingleton.h"
 
-
 namespace TwinkleGraphics {
-typedef RingBuffer<Event, 4096U> EventQueue;
-typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
+using EventQueue = RingBuffer<Event, 4096U>;
+using MultiEventHandlerCollection = std::multimap<EventId, EventHandler>;
 
 class __TWCOMExport EventManager : public IUpdatable,
                                    public INonCopyable,

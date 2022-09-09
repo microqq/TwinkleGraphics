@@ -6,13 +6,12 @@
 #include <iostream>
 #include <vector>
 
-
 #include "twCommon.h"
 #include "twRenderContext.h"
 
 namespace TwinkleGraphics {
 
-typedef VertexLayoutFlag MeshDataFlag;
+using MeshDataFlag = VertexLayoutFlag;
 // enum MeshDataFlag
 // {
 //     DEFAULT = 0,
@@ -55,8 +54,8 @@ class NURBSSurface;
 
 class __TWCOMExport SubMesh : public Object {
 public:
-  typedef std::shared_ptr<SubMesh> Ptr;
-  typedef std::weak_ptr<SubMesh> WeakPtr;
+  using Ptr = std::shared_ptr<SubMesh>;
+  using WeakPtr = std::weak_ptr<SubMesh>;
 
   SubMesh() : _indice(nullptr), _indiceNum(0) {}
   SubMesh(const SubMesh &copy) {}
@@ -89,12 +88,12 @@ private:
   friend class NURBSSurface;
 };
 
-typedef SubMesh::Ptr SubMeshPtr;
+using SubMeshPtr = SubMesh::Ptr;
 
 class __TWCOMExport Mesh : public Object {
 public:
-  typedef std::shared_ptr<Mesh> Ptr;
-  typedef std::weak_ptr<Mesh> WeakPtr;
+  using Ptr = std::shared_ptr<Mesh>;
+  using WeakPtr = std::weak_ptr<Mesh>;
 
   /*=============deprecated, use "Geometry" instead=============*/
   static Ptr CreateLineMesh(glm::vec3 *points, int32 num);
@@ -289,7 +288,7 @@ private:
   friend class NURBSSurface;
 };
 
-typedef Mesh::Ptr MeshPtr;
+using MeshPtr = Mesh::Ptr;
 } // namespace TwinkleGraphics
 
 #endif

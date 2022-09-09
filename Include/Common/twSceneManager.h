@@ -12,7 +12,7 @@ namespace TwinkleGraphics {
 
 class __TWCOMExport Scene : public Object {
 public:
-  typedef std::shared_ptr<Scene> Ptr;
+  using Ptr = std::shared_ptr<Scene>;
 
   Scene();
   virtual ~Scene();

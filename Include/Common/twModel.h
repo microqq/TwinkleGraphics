@@ -9,7 +9,7 @@
 namespace TwinkleGraphics {
 class __TWCOMExport Model : public Object {
 public:
-  typedef std::shared_ptr<Model> Ptr;
+  using Ptr = std::shared_ptr<Model>;
 
   Model();
   virtual ~Model();
@@ -34,7 +34,7 @@ protected:
 
 class SkeletonModel : public Model {
 public:
-  typedef std::shared_ptr<SkeletonModel> Ptr;
+  using Ptr = std::shared_ptr<SkeletonModel>;
 
   SkeletonModel();
   virtual ~SkeletonModel();
@@ -42,7 +42,7 @@ public:
 private:
 };
 
-typedef Model::Ptr ModelPtr;
+using ModelPtr = Model::Ptr;
 
 } // namespace TwinkleGraphics
 #endif

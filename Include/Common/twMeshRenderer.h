@@ -8,11 +8,10 @@
 #include "twMaterial.h"
 #include "twMesh.h"
 
-
 namespace TwinkleGraphics {
 class __TWCOMExport MeshRenderer : public Object {
 public:
-  typedef std::shared_ptr<MeshRenderer> Ptr;
+  using Ptr = std::shared_ptr<MeshRenderer>;
 
   MeshRenderer();
   virtual ~MeshRenderer();
@@ -121,7 +120,7 @@ protected:
   int32 _fistInstantiateIndex = -1;
 };
 
-typedef MeshRenderer::Ptr MeshRendererPtr;
+using MeshRendererPtr = MeshRenderer::Ptr;
 
 } // namespace TwinkleGraphics
 

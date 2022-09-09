@@ -8,11 +8,10 @@
 #include "twTexture.h"
 #include <GL/glew.h>
 
-
 namespace TwinkleGraphics {
 class IHWBuffer : public IHWObject {
 public:
-  typedef std::shared_ptr<IHWBuffer> Ptr;
+  using Ptr = std::shared_ptr<IHWBuffer>;
 
   enum MapAccessType {
     MAP_READ = GL_MAP_READ_BIT,
@@ -91,7 +90,7 @@ protected:
 
 class VertexArrayObject : public IHWObject {
 public:
-  typedef std::shared_ptr<VertexArrayObject> Ptr;
+  using Ptr = std::shared_ptr<VertexArrayObject>;
 
   VertexArrayObject() : IHWObject(GL_VERTEX_ARRAY) { Create(); }
 
@@ -116,39 +115,39 @@ public:
   virtual void UnBind() override { glBindVertexArray(0); }
 };
 
-typedef VertexArrayObject::Ptr VertexArrayObjectPtr;
+using VertexArrayObjectPtr = VertexArrayObject::Ptr;
 
 /*------------------------------Vertex Buffer--------------------------*/
 
 class VertexBufferObject : public IHWBuffer {
 public:
-  typedef std::shared_ptr<VertexBufferObject> Ptr;
+  using Ptr = std::shared_ptr<VertexBufferObject>;
 
   VertexBufferObject() : IHWBuffer(GL_ARRAY_BUFFER) { Create(); }
 
   virtual ~VertexBufferObject() { Destroy(); }
 };
 
-typedef VertexBufferObject::Ptr VertexBufferObjectPtr;
+using VertexBufferObjectPtr = VertexBufferObject::Ptr;
 
 /*------------------------------Index Buffer--------------------------*/
 
 class IndexBufferObject : public IHWBuffer {
 public:
-  typedef std::shared_ptr<IndexBufferObject> Ptr;
+  using Ptr = std::shared_ptr<IndexBufferObject>;
 
   IndexBufferObject() : IHWBuffer(GL_ELEMENT_ARRAY_BUFFER) { Create(); }
 
   virtual ~IndexBufferObject() { Destroy(); }
 };
 
-typedef IndexBufferObject::Ptr IndexBufferObjectPtr;
+using IndexBufferObjectPtr = IndexBufferObject::Ptr;
 
 /*------------------------------RenderBuffer--------------------------*/
 
 class RenderBufferObject : public IHWBuffer {
 public:
-  typedef std::shared_ptr<RenderBufferObject> Ptr;
+  using Ptr = std::shared_ptr<RenderBufferObject>;
 
   RenderBufferObject(int32 width, int32 height, GLenum internalformat,
                      int32 samples = 1, bool multisample = false)
@@ -206,13 +205,13 @@ private:
   GLenum _internalformat;
   bool _multisample;
 };
-typedef RenderBufferObject::Ptr RenderBufferObjectPtr;
+using RenderBufferObjectPtr = RenderBufferObject::Ptr;
 
 /*------------------------------FrameBuffer--------------------------*/
 
 class FrameBufferObject : public IHWBuffer {
 public:
-  typedef std::shared_ptr<FrameBufferObject> Ptr;
+  using Ptr = std::shared_ptr<FrameBufferObject>;
 
   enum AttachmentType {
     COLOR_ATTACHMENT = GL_COLOR_ATTACHMENT0,
@@ -353,7 +352,7 @@ private:
   int32 _colorAttachments;
 };
 
-typedef FrameBufferObject::Ptr FrameBufferObjectPtr;
+using FrameBufferObjectPtr = FrameBufferObject::Ptr;
 
 } // namespace TwinkleGraphics
 

@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-
 #if defined(__linux__) || defined(__APPLE__)
 #include <dlfcn.h>
 #elif _WIN32
@@ -40,7 +39,7 @@ namespace TwinkleGraphics {
 
 class DynLib;
 class DynLibManager;
-typedef Singleton<DynLibManager> DynLibManagerInst;
+using DynLibManagerInst = Singleton<DynLibManager>;
 
 class DynLibManager {
 public:

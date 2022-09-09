@@ -65,14 +65,14 @@ using namespace glm;
 
 class Plugin;
 class PluginManager;
-typedef Plugin *(*INSTALL_PLUGIN_FUNC)(PluginManager *);
-typedef void (*UNINSTALL_PLUGIN_FUNC)(PluginManager *);
-typedef void (*IMGUI_FUNC)(void);
+using INSTALL_PLUGIN_FUNC = Plugin *(*)(PluginManager *);
+using UNINSTALL_PLUGIN_FUNC =void (*)(PluginManager *);
+using IMGUI_FUNC = void (*)(void);
 
-typedef void (*RENDER_ROUTINE)(void);
+using RENDER_ROUTINE = void (*)(void);
 
-typedef ivec4 Rect;
-typedef vec4 RGBA;
+using Rect = ivec4;
+using RGBA = vec4;
 
 struct RenderResourceHandle {
   union {

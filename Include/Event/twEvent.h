@@ -5,11 +5,10 @@
 #include "twEventHandler.h"
 #include "twObject.h"
 
-
 namespace TwinkleGraphics {
 class __TWCOMExport Event : public Object {
 public:
-  typedef std::shared_ptr<Event> Ptr;
+  using Ptr = std::shared_ptr<Event>;
 
   Event() : Object() {}
 
@@ -55,7 +54,7 @@ private:
   BaseEventArgsPtr _eventArgs;
 };
 
-typedef Event::Ptr EventPtr;
+using EventPtr = Event::Ptr;
 
 } // namespace TwinkleGraphics
 

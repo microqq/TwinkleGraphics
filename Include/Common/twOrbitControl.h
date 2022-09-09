@@ -9,7 +9,7 @@
 namespace TwinkleGraphics {
 class __TWCOMExport OrbitControl : public CameraControl {
 public:
-  typedef std::shared_ptr<OrbitControl> Ptr;
+  using Ptr = std::shared_ptr<OrbitControl>;
 
   OrbitControl(CameraPtr camera);
   virtual ~OrbitControl();
@@ -78,7 +78,7 @@ protected:
   bool _dirty;
 };
 
-typedef OrbitControl::Ptr OrbitControlPtr;
+using OrbitControlPtr = OrbitControl::Ptr;
 
 } // namespace TwinkleGraphics
 

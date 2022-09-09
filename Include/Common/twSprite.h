@@ -8,7 +8,7 @@
 namespace TwinkleGraphics {
 class __TWCOMExport SpriteRenderer : public MeshRenderer {
 public:
-  typedef std::shared_ptr<SpriteRenderer> Ptr;
+  using Ptr = std::shared_ptr<SpriteRenderer>;
 
   SpriteRenderer(TexturePtr texture);
   virtual ~SpriteRenderer();
@@ -22,11 +22,11 @@ private:
 private:
 };
 
-typedef SpriteRenderer::Ptr SpriteRendererPtr;
+using SpriteRendererPtr = SpriteRenderer::Ptr;
 
 class __TWCOMExport Sprite : public Quad {
 public:
-  typedef std::shared_ptr<Sprite> Ptr;
+  using Ptr = std::shared_ptr<Sprite>;
 
   Sprite(TexturePtr texture, MeshDataFlag flag = MeshDataFlag(8));
   Sprite(TexturePtr texture, glm::vec2 size,
@@ -58,7 +58,7 @@ private:
   int32 _perpixelunit = 100;
 };
 
-typedef Sprite::Ptr SpritePtr;
+using SpritePtr = Sprite::Ptr;
 
 } // namespace TwinkleGraphics
 

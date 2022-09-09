@@ -10,14 +10,13 @@
 #include <thread>
 #include <vector>
 
-
 #include "twConsoleLog.h"
 
 namespace TwinkleGraphics {
-typedef uint32_t uint;
-typedef std::function<void()> Task;
-typedef std::shared_ptr<Task> TaskPtr;
-typedef std::thread Worker;
+using uint = uint32_t;
+using Task = std::function<void()>;
+using TaskPtr = std::shared_ptr<Task>;
+using Worker = std::thread;
 
 template <typename T> bool TaskFinished(std::future<T> const &future) {
   using namespace std::chrono_literals;

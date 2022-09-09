@@ -8,9 +8,8 @@
 #include "twConsoleLog.h"
 #include "twImage.h"
 
-
 namespace TwinkleGraphics {
-typedef GLenum InternalFormat;
+using InternalFormat = GLenum;
 
 enum class TextureType {
   TEXTURE_1D = GL_TEXTURE_1D,
@@ -106,8 +105,8 @@ template <> struct Swizzle<1> { SwizzleMask mask; };
 
 template <> struct Swizzle<4> { SwizzleMask mask[4]; };
 
-typedef Swizzle<1> Swizzle1;
-typedef Swizzle<4> Swizzle4;
+using Swizzle1 = Swizzle<1>;
+using Swizzle4 = Swizzle<4>;
 
 enum class DepthStencilTextureMode {
   NONE = GL_NONE,
@@ -176,7 +175,7 @@ enum TexParameterMask {
       TEXPARAMETER_FILTER_MIN_MASK | TEXPARAMETER_FILTER_MAG_MASK
 };
 
-typedef TexParameterMask TexParameterDirtyFlag;
+using TexParameterDirtyFlag = TexParameterMask;
 
 struct TexParams {
   WrapMode wrapModes[3];
@@ -222,7 +221,7 @@ struct TexParams {
   }
 };
 
-typedef TexParams SamplerParams;
+using SamplerParams = TexParams;
 
 /**
  * @brief
@@ -230,7 +229,7 @@ typedef TexParams SamplerParams;
  */
 class __TWCOMExport Sampler : Object {
 public:
-  typedef std::shared_ptr<Sampler> Ptr;
+  using Ptr = std::shared_ptr<Sampler>;
 
   Sampler() : Object() {
     uint32 samplers[1];
@@ -252,7 +251,7 @@ private:
   RenderResourceHandle _res;
 };
 
-typedef Sampler::Ptr SamplerPtr;
+using SamplerPtr = Sampler::Ptr;
 
 /**
  * @brief
@@ -262,7 +261,7 @@ typedef Sampler::Ptr SamplerPtr;
  */
 class __TWCOMExport Texture : public Object {
 public:
-  typedef std::shared_ptr<Texture> Ptr;
+  using Ptr = std::shared_ptr<Texture>;
 
   Texture(bool immutable = true, bool genMipMap = false);
   virtual ~Texture();
@@ -424,7 +423,7 @@ protected:
   bool _generateMipMap;
 };
 
-typedef Texture::Ptr TexturePtr;
+using TexturePtr = Texture::Ptr;
 
 struct TextureSlot {
   // std::string texname;
@@ -456,7 +455,7 @@ struct TextureSlot {
 
 class __TWCOMExport Texture1D : public Texture {
 public:
-  typedef std::shared_ptr<Texture1D> Ptr;
+  using Ptr = std::shared_ptr<Texture1D>;
 
   Texture1D(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -477,7 +476,7 @@ protected:
 
 class __TWCOMExport Texture2D : public Texture {
 public:
-  typedef std::shared_ptr<Texture2D> Ptr;
+  using Ptr = std::shared_ptr<Texture2D>;
 
   Texture2D(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -512,7 +511,7 @@ protected:
 
 class __TWCOMExport Texture2DMultiSample : public Texture {
 public:
-  typedef std::shared_ptr<Texture2DMultiSample> Ptr;
+  using Ptr = std::shared_ptr<Texture2DMultiSample>;
 
   Texture2DMultiSample(uint32 samples, bool immutable = true)
       : Texture(immutable), _samples(samples), _fixedsampledlocation(true) {
@@ -540,7 +539,7 @@ private:
 
 class __TWCOMExport Texture3D : public Texture {
 public:
-  typedef std::shared_ptr<Texture3D> Ptr;
+  using Ptr = std::shared_ptr<Texture3D>;
 
   Texture3D(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -560,7 +559,7 @@ protected:
  */
 class __TWCOMExport TextureRectangle : public Texture {
 public:
-  typedef std::shared_ptr<TextureRectangle> Ptr;
+  using Ptr = std::shared_ptr<TextureRectangle>;
 
   TextureRectangle(bool immutable = true) : Texture(immutable) {
     _res.type = GL_TEXTURE_RECTANGLE;
@@ -584,7 +583,7 @@ protected:
  */
 class __TWCOMExport TextureBuffer : public Texture {
 public:
-  typedef std::shared_ptr<TextureBuffer> Ptr;
+  using Ptr = std::shared_ptr<TextureBuffer>;
 
   TextureBuffer(bool immutable = true) : Texture(immutable) {
     _res.type = GL_TEXTURE_BUFFER;
@@ -615,7 +614,7 @@ private:
 
 class __TWCOMExport TextureCube : public Texture {
 public:
-  typedef std::shared_ptr<TextureCube> Ptr;
+  using Ptr = std::shared_ptr<TextureCube>;
 
   TextureCube(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -651,7 +650,7 @@ private:
 
 class __TWCOMExport Texture1DArray : public Texture {
 public:
-  typedef std::shared_ptr<Texture1DArray> Ptr;
+  using Ptr = std::shared_ptr<Texture1DArray>;
 
   Texture1DArray(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -666,7 +665,7 @@ protected:
 
 class __TWCOMExport Texture2DArray : public Texture {
 public:
-  typedef std::shared_ptr<Texture2DArray> Ptr;
+  using Ptr = std::shared_ptr<Texture2DArray>;
 
   Texture2DArray(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -681,7 +680,7 @@ protected:
 
 class __TWCOMExport TextureCubeArray : public Texture {
 public:
-  typedef std::shared_ptr<TextureCubeArray> Ptr;
+  using Ptr = std::shared_ptr<TextureCubeArray>;
 
   TextureCubeArray(bool immutable = true, bool genMipMap = false)
       : Texture(immutable, genMipMap) {
@@ -696,7 +695,7 @@ protected:
 
 class __TWCOMExport Texture2DMultiSampleArray : public Texture {
 public:
-  typedef std::shared_ptr<Texture2DMultiSampleArray> Ptr;
+  using Ptr = std::shared_ptr<Texture2DMultiSampleArray>;
 
   Texture2DMultiSampleArray(int32 samples, bool immutable = true)
       : Texture(immutable), _samples(samples), _fixedsampledlocation(true) {
@@ -721,17 +720,17 @@ private:
   bool _fixedsampledlocation;
 };
 
-typedef Texture1D::Ptr Texture1DPtr;
-typedef Texture2D::Ptr Texture2DPtr;
-typedef Texture3D::Ptr Texture3DPtr;
-typedef Texture1DArray::Ptr Texture1DArrayPtr;
-typedef Texture2DArray::Ptr Texture2DArrayPtr;
-typedef TextureCube::Ptr TextureCubePtr;
-typedef TextureCubeArray::Ptr TextureCubeArrayPtr;
-typedef TextureRectangle::Ptr TextureRectanglePtr;
-typedef TextureBuffer::Ptr TextureBufferPtr;
-typedef Texture2DMultiSample::Ptr Texture2DMultiSamplePtr;
-typedef Texture2DMultiSampleArray::Ptr Texture2DMultiSampleArrayPtr;
+using Texture1DPtr = Texture1D::Ptr;
+using Texture2DPtr = Texture2D::Ptr;
+using Texture3DPtr = Texture3D::Ptr;
+using Texture1DArrayPtr = Texture1DArray::Ptr;
+using Texture2DArrayPtr = Texture2DArray::Ptr;
+using TextureCubePtr = TextureCube::Ptr;
+using TextureCubeArrayPtr = TextureCubeArray::Ptr;
+using TextureRectanglePtr = TextureRectangle::Ptr;
+using TextureBufferPtr = TextureBuffer::Ptr;
+using Texture2DMultiSamplePtr = Texture2DMultiSample::Ptr;
+using Texture2DMultiSampleArrayPtr = Texture2DMultiSampleArray::Ptr;
 
 } // namespace TwinkleGraphics
 

@@ -5,7 +5,6 @@
 #include "twObject.h"
 #include <memory>
 
-
 namespace TwinkleGraphics {
 class AABoundingBox;
 class OrientedBoundingBox;
@@ -13,7 +12,7 @@ class BoundingSphere;
 
 class __TWCOMExport Frustum : public Object {
 public:
-  typedef std::shared_ptr<Frustum> Ptr;
+  using Ptr = std::shared_ptr<Frustum>;
 
   Frustum(glm::mat4 &matrix);
   Frustum(const Frustum &other);
@@ -54,7 +53,7 @@ private:
   friend class AABoundingBox;
 };
 
-typedef Frustum::Ptr FrustumPtr;
+using FrustumPtr = Frustum::Ptr;
 } // namespace TwinkleGraphics
 
 #endif

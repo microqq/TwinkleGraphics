@@ -12,7 +12,7 @@ class BoundingSphere;
 
 class __TWCOMExport AABoundingBox : public Object {
 public:
-  typedef std::shared_ptr<AABoundingBox> Ptr;
+  using Ptr = std::shared_ptr<AABoundingBox>;
 
   AABoundingBox(const vec3 &min, const vec3 &max);
   AABoundingBox(const AABoundingBox &other);
@@ -61,11 +61,11 @@ private:
   friend class Frustum;
 };
 
-typedef AABoundingBox::Ptr AABoundingBoxPtr;
+using AABoundingBoxPtr = AABoundingBox::Ptr;
 
 class __TWCOMExport OrientedBoundingBox : public Object {
 public:
-  typedef std::shared_ptr<OrientedBoundingBox> Ptr;
+  using Ptr = std::shared_ptr<OrientedBoundingBox>;
 
   OrientedBoundingBox(const vec3 &center, const std::array<vec3, 3> &axis,
                       const vec3 &extents);
@@ -100,11 +100,11 @@ private:
   friend class Frustum;
 };
 
-typedef OrientedBoundingBox::Ptr OrientedBoundingBoxPtr;
+using OrientedBoundingBoxPtr = OrientedBoundingBox::Ptr;
 
 class __TWCOMExport BoundingSphere : public Object {
 public:
-  typedef std::shared_ptr<BoundingSphere> Ptr;
+  using Ptr = std::shared_ptr<BoundingSphere>;
 
   BoundingSphere(const vec3 center, float radius);
   BoundingSphere(const BoundingSphere &other);
@@ -138,7 +138,7 @@ private:
   friend class Frustum;
 };
 
-typedef BoundingSphere::Ptr BoundingSpherePtr;
+using BoundingSpherePtr = BoundingSphere::Ptr;
 
 } // namespace TwinkleGraphics
 

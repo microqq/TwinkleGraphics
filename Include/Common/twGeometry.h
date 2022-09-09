@@ -9,7 +9,6 @@
 #include "twSceneNode.h"
 #include "twTransform.h"
 
-
 namespace TwinkleGraphics {
 /**
  * @brief
@@ -17,7 +16,7 @@ namespace TwinkleGraphics {
  */
 class __TWCOMExport Geometry : public SceneNode, public RenderableObject {
 public:
-  typedef std::shared_ptr<Geometry> Ptr;
+  using Ptr = std::shared_ptr<Geometry>;
 
   Geometry();
   virtual ~Geometry();
@@ -38,11 +37,11 @@ protected:
   MeshPtr _mesh;
 };
 
-typedef Geometry::Ptr GeometryPtr;
+using GeometryPtr = Geometry::Ptr;
 
 class Triangle : public Geometry {
 public:
-  typedef std::shared_ptr<Triangle> Ptr;
+  using Ptr = std::shared_ptr<Triangle>;
 
   Triangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2,
            MeshDataFlag flag = MeshDataFlag::DEFAULT)
@@ -77,7 +76,7 @@ private:
   glm::vec3 _p2;
 };
 
-typedef Triangle::Ptr TrianglePtr;
+using TrianglePtr = Triangle::Ptr;
 
 /**
  * @brief
@@ -85,7 +84,7 @@ typedef Triangle::Ptr TrianglePtr;
  */
 class UVSphere : public Geometry {
 public:
-  typedef std::shared_ptr<UVSphere> Ptr;
+  using Ptr = std::shared_ptr<UVSphere>;
 
   UVSphere(float32 radius = 1.0f, int32 subdivision = 20,
            MeshDataFlag flag = MeshDataFlag::DEFAULT)
@@ -210,11 +209,11 @@ private:
   int32 _subdivision;
 };
 
-typedef UVSphere::Ptr UVSpherePtr;
+using UVSpherePtr = UVSphere::Ptr;
 
 class NormalizedCubeSphere : public Geometry {
 public:
-  typedef std::shared_ptr<NormalizedCubeSphere> Ptr;
+  using Ptr = std::shared_ptr<NormalizedCubeSphere>;
 
   NormalizedCubeSphere(float32 radius = 1.0f, int32 subdivision = 20,
                        MeshDataFlag flag = MeshDataFlag::DEFAULT)
@@ -333,11 +332,11 @@ private:
   int32 _subdivision;
 };
 
-typedef NormalizedCubeSphere::Ptr NormalizedCubeSpherePtr;
+using NormalizedCubeSpherePtr = NormalizedCubeSphere::Ptr;
 
 class IcosahedronSphere : public Geometry {
 public:
-  typedef std::shared_ptr<IcosahedronSphere> Ptr;
+  using Ptr = std::shared_ptr<IcosahedronSphere>;
 
   IcosahedronSphere(float32 radius = 1.0f, int32 subdivision = 20,
                     MeshDataFlag flag = MeshDataFlag::DEFAULT)
@@ -541,11 +540,11 @@ private:
   int32 _subdivision;
 };
 
-typedef IcosahedronSphere::Ptr IcosahedronSpherePtr;
+using IcosahedronSpherePtr = IcosahedronSphere::Ptr;
 
 class Cube : public Geometry {
 public:
-  typedef std::shared_ptr<Cube> Ptr;
+  using Ptr = std::shared_ptr<Cube>;
 
   Cube(float32 size = 1.0f, MeshDataFlag flag = MeshDataFlag::DEFAULT)
       : Geometry(), _size(size) {
@@ -646,11 +645,11 @@ private:
   float32 _size;
 };
 
-typedef Cube::Ptr CubePtr;
+using CubePtr = Cube::Ptr;
 
 class Quad : public Geometry {
 public:
-  typedef std::shared_ptr<Quad> Ptr;
+  using Ptr = std::shared_ptr<Quad>;
 
   Quad(MeshDataFlag flag = MeshDataFlag::DEFAULT)
       : Geometry(), _size(glm::vec2(1.0f, 1.0f)) {
@@ -730,11 +729,11 @@ protected:
   glm::vec2 _size;
 };
 
-typedef Quad::Ptr QuadPtr;
+using QuadPtr = Quad::Ptr;
 
 class Plane : public Geometry {
 public:
-  typedef std::shared_ptr<Plane> Ptr;
+  using Ptr = std::shared_ptr<Plane>;
 
   Plane(glm::vec3 normal, float32 width, int32 subdivision = 32,
         MeshDataFlag flag = MeshDataFlag::DEFAULT)
@@ -821,11 +820,11 @@ protected:
   float32 _width;
   int32 _subdivision;
 };
-typedef Plane::Ptr PlanePtr;
+using PlanePtr = Plane::Ptr;
 
 class Line : public Geometry {
 public:
-  typedef std::shared_ptr<Line> Ptr;
+  using Ptr = std::shared_ptr<Line>;
 
   Line(glm::vec3 *points, int32 num) : Geometry() { Generate(points, num); }
   virtual ~Line() {}
@@ -887,14 +886,14 @@ private:
 private:
 };
 
-typedef Line::Ptr LinePtr;
+using LinePtr = Line::Ptr;
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
 class BezierCurve : public Geometry {
 public:
-  typedef std::shared_ptr<BezierCurve> Ptr;
+  using Ptr = std::shared_ptr<BezierCurve>;
 
   BezierCurve(glm::vec4 *points, int32 numPoints, int32 degree,
               int32 segments = 128)
@@ -914,7 +913,7 @@ private:
   int32 _pointsCount; // points count: n + 1;
 };
 
-typedef BezierCurve::Ptr BezierCurvePtr;
+using BezierCurvePtr = BezierCurve::Ptr;
 
 // template<>
 // class BezierCurve<2> : public Object
@@ -941,7 +940,7 @@ struct Knot {
  */
 class BSplineCurve : public Geometry {
 public:
-  typedef std::shared_ptr<BSplineCurve> Ptr;
+  using Ptr = std::shared_ptr<BSplineCurve>;
 
   BSplineCurve(int32 n, int32 p, int32 numKnots, Knot *knots,
                glm::vec4 *controlPoints, int32 segments = 64)
@@ -1076,14 +1075,14 @@ protected:
   int32 _segments = 64;
 };
 
-typedef BSplineCurve::Ptr BSplineCurvePtr;
+using BSplineCurvePtr = BSplineCurve::Ptr;
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
 class NURBSCurve : public BSplineCurve {
 public:
-  typedef std::shared_ptr<BSplineCurve> Ptr;
+  using Ptr = std::shared_ptr<BSplineCurve>;
 
   NURBSCurve(int32 n, int32 p, int32 numKnots, Knot *knots,
              glm::vec4 *controlPoints, int32 segments = 64)
@@ -1101,7 +1100,7 @@ private:
  */
 class BezierSurface : public Geometry {
 public:
-  typedef std::shared_ptr<BezierSurface> Ptr;
+  using Ptr = std::shared_ptr<BezierSurface>;
 
   BezierSurface(int32 n1, int32 n2)
       : Geometry(), _control_points(nullptr), _v_knots(nullptr),
@@ -1129,14 +1128,14 @@ private:
   int32 _v_degree;
 };
 
-typedef NURBSCurve::Ptr NURBSCurvePtr;
+using NURBSCurvePtr = NURBSCurve::Ptr;
 
 /**
  * http://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/
  */
 class NURBSSurface : public Geometry {
 public:
-  typedef std::shared_ptr<NURBSSurface> Ptr;
+  using Ptr = std::shared_ptr<NURBSSurface>;
 
   NURBSSurface(int32 n1, int32 p1, int32 n2, int32 p2,
                glm::vec4 *points = nullptr, Knot *uKnots = nullptr,
@@ -1570,7 +1569,7 @@ private:
   bool _rational;
 };
 
-typedef NURBSSurface::Ptr NURBSSurfacePtr;
+using NURBSSurfacePtr = NURBSSurface::Ptr;
 
 } // namespace TwinkleGraphics
 

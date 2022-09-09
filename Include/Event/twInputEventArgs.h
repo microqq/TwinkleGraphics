@@ -8,7 +8,7 @@ class InputManager;
 
 class __TWCOMExport InputEventArgs : public BaseEventArgs {
 public:
-  typedef std::shared_ptr<InputEventArgs> Ptr;
+  using Ptr = std::shared_ptr<InputEventArgs>;
 
   static EventId ID;
 

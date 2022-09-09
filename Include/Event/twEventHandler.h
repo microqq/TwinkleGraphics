@@ -6,11 +6,9 @@
 #include <functional>
 #include <vector>
 
-
 #include "twConsoleLog.h"
 #include "twEventArgs.h"
 #include "twObject.h"
-
 
 #define MemEventHandlerPart1 typedef void
 #define MemEventHandlerPart2(T) (T::*T##MemFuncType)
@@ -28,14 +26,14 @@
   std::make_shared<EventHandlerFunction>(FUNC)
 
 namespace TwinkleGraphics {
-typedef unsigned int HandlerId;
-typedef void (*EventHandlerFuncPointer)(ObjectPtr, BaseEventArgsPtr);
-typedef std::function<void(ObjectPtr, BaseEventArgsPtr)> EventHandlerFunction;
-typedef std::shared_ptr<EventHandlerFunction> EventHandlerFunctionPtr;
+using HandlerId = unsigned int;
+using EventHandlerFuncPointer = void (*)(ObjectPtr, BaseEventArgsPtr);
+using EventHandlerFunction = std::function<void(ObjectPtr, BaseEventArgsPtr)>;
+using EventHandlerFunctionPtr = std::shared_ptr<EventHandlerFunction>;
 
 class __TWCOMExport EventHandler : public Object {
 public:
-  typedef std::shared_ptr<EventHandler> Ptr;
+  using Ptr = std::shared_ptr<EventHandler>;
 
   using HFuncIterator = std::vector<EventHandlerFunctionPtr>::iterator;
 

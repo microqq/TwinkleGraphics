@@ -10,7 +10,7 @@
 namespace TwinkleGraphics {
 class __TWCOMExport FirstPersonControl : public OrbitControl {
 public:
-  typedef std::shared_ptr<FirstPersonControl> Ptr;
+  using Ptr = std::shared_ptr<FirstPersonControl>;
 
   FirstPersonControl(CameraPtr camera);
   virtual ~FirstPersonControl();
@@ -31,7 +31,7 @@ private:
   float _stepZ;
 };
 
-typedef FirstPersonControl::Ptr FirstPersonControlPtr;
+using FirstPersonControlPtr = FirstPersonControl::Ptr;
 
 } // namespace TwinkleGraphics
 

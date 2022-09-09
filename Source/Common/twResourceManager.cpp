@@ -55,7 +55,7 @@ bool ResourceManager::AddResourceCache(CacheHint hint,
         UnorderedCacheMap::value_type(cache->GetCacheId(), cache));
   } else if (CacheHint::CACHE_SCENEOBJECT == hint) {
     _sceneObjectsCacheMap.insert(
-        MultCacheMap::value_type(cache->GetCacheId(), cache));
+        MultiCacheMap::value_type(cache->GetCacheId(), cache));
   }
 
   return true;
@@ -93,8 +93,8 @@ ResourceCache::Ptr ResourceManager::GetResourceCache(CacheHint hint,
       return iter->second;
     }
   } else if (CacheHint::CACHE_SCENEOBJECT == hint) {
-    MultCacheMap::iterator iter = _sceneObjectsCacheMap.find(id);
-    MultCacheMap::iterator end = _sceneObjectsCacheMap.end();
+    MultiCacheMap::iterator iter = _sceneObjectsCacheMap.find(id);
+    MultiCacheMap::iterator end = _sceneObjectsCacheMap.end();
 
     if (iter != end) {
       return iter->second;

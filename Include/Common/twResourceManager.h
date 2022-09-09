@@ -9,7 +9,7 @@ namespace TwinkleGraphics {
 class ResourceManager;
 __TWCOMExport ResourceManager &ResourceMgrInstance();
 
-typedef uint64_t ReadTaskId;
+using ReadTaskId = uint64_t;
 
 class __TWCOMExport ResourceManager : public IUpdatable,
                                       public INonCopyable,
@@ -237,7 +237,7 @@ private:
 private:
   class IPackedReadTask {
   public:
-    typedef std::shared_ptr<IPackedReadTask> Ptr;
+    using Ptr = std::shared_ptr<IPackedReadTask>;
     IPackedReadTask(ReadTaskId task, bool async = false)
         : _task(task), _asyncRead(async) {}
 
@@ -260,7 +260,7 @@ private:
   template <typename Ret, typename R>
   class __TWCOMExport PackedReadTask : public IPackedReadTask {
   public:
-    typedef std::shared_ptr<PackedReadTask> Ptr;
+    using Ptr = std::shared_ptr<PackedReadTask>;
     PackedReadTask(ReadTaskId task, bool async = false)
         : IPackedReadTask(task, async) {}
     virtual ~PackedReadTask() { _reader = nullptr; }
@@ -300,23 +300,23 @@ private:
     friend class ResourceManager;
   };
 
-  typedef std::multimap<ReaderId, ResourceReaderPtr> MultMapReaders;
+  using MultMapReaders = std::multimap<ReaderId, ResourceReaderPtr>;
 #if defined(_WIN32)
-  typedef std::unordered_map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
+  using UnorderedCacheMap = std::unordered_map<CacheId, ResourceCache::Ptr>;
 #elif defined(__linux__) or defined(__APPLE__)
-  typedef std::map<CacheId, ResourceCache::Ptr> UnorderedCacheMap;
+  using UnorderedCacheMap = std::map<CacheId, ResourceCache::Ptr>;
 #endif
-  typedef std::multimap<CacheId, ResourceCache::Ptr> MultCacheMap;
-  typedef ThreadPool WorkerPool;
-  typedef std::set<ReadTaskId> LoadingTaskSet;
-  typedef std::multimap<ReadTaskId, IPackedReadTask::Ptr> WaitToLoadTaskMap;
+  using MultiCacheMap = std::multimap<CacheId, ResourceCache::Ptr>;
+  using WorkerPool = ThreadPool;
+  using LoadingTaskSet = std::set<ReadTaskId>;
+  using WaitToLoadTaskMap = std::multimap<ReadTaskId, IPackedReadTask::Ptr>;
 
   TSQueue<IPackedReadTask::Ptr> _taskQueue;
   TSQueue<IPackedReadTask::Ptr> _cachedTaskQueue;
   LoadingTaskSet _loadingTasks;
   WaitToLoadTaskMap _waitToLoadTasks;
 
-  MultCacheMap _sceneObjectsCacheMap;
+  MultiCacheMap _sceneObjectsCacheMap;
   UnorderedCacheMap _objectCacheMap;
 
   MultMapReaders _loadingReaders;

@@ -8,7 +8,7 @@ class InputManager;
 
 class CursorEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<CursorEventArgs> Ptr;
+  using Ptr = std::shared_ptr<CursorEventArgs>;
 
   static EventId ID;
 

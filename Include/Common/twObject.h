@@ -9,8 +9,8 @@
 namespace TwinkleGraphics {
 class Object : public Reference<Object> {
 public:
-  typedef std::shared_ptr<Object> Ptr;
-  typedef std::weak_ptr<Object> WeakPtr;
+  using Ptr = std::shared_ptr<Object>;
+  using WeakPtr = std::weak_ptr<Object>;
 
   Object() : Reference<Object>(), _valid(false) {}
   Object(const Object &src) {}
@@ -22,7 +22,7 @@ protected:
   bool _valid = false;
 };
 
-typedef Object::Ptr ObjectPtr;
+using ObjectPtr = Object::Ptr;
 
 } // namespace TwinkleGraphics
 

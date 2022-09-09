@@ -32,9 +32,9 @@ public:
   void AddTaskProgramFuture(std::future<ReadResult<ShaderProgram>> future);
 
 private:
-  typedef std::vector<std::future<ReadResult<Shader>>> ShaderFutures;
-  typedef std::vector<std::future<ReadResult<ShaderProgram>>>
-      ShaderProgramFutures;
+  using ShaderFutures = std::vector<std::future<ReadResult<Shader>>>;
+  using ShaderProgramFutures =
+      std::vector<std::future<ReadResult<ShaderProgram>>>;
 
   explicit ShaderManager();
   void OnReadShaderSuccess(ObjectPtr obj);

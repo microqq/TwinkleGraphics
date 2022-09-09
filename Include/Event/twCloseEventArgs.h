@@ -8,7 +8,7 @@ class InputManager;
 
 class CloseEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<CloseEventArgs> Ptr;
+  using Ptr = std::shared_ptr<CloseEventArgs>;
 
   static EventId ID;
 

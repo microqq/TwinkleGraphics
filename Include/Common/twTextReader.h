@@ -4,11 +4,10 @@
 #include "twResource.h"
 #include "twSingleton.h"
 
-
 namespace TwinkleGraphics {
 struct TextSource : public Object {
-  typedef std::shared_ptr<TextSource> Ptr;
-  typedef std::weak_ptr<TextSource> WeakPtr;
+  using Ptr = std::shared_ptr<TextSource>;
+  using WeakPtr = std::weak_ptr<TextSource>;
 
   std::string filename;
   std::string content;
@@ -18,7 +17,7 @@ class TextReader : public ResourceReader,
                    public Reference<TextReader>,
                    public INonCopyable {
 public:
-  typedef std::shared_ptr<TextReader> Ptr;
+  using Ptr = std::shared_ptr<TextReader>;
 
   TextReader();
   TextReader(ReaderOption *option);

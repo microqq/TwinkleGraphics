@@ -7,8 +7,6 @@ namespace TwinkleGraphics {
 
 class __TWCOMExport StandardMaterial : public Material {
 public:
-  typedef std::shared_ptr<StandardMaterial> Ptr;
-
   StandardMaterial(std::string vertLayoutMacros)
       : Material(), _vertLayoutMacros(vertLayoutMacros) {}
   StandardMaterial(const StandardMaterial &src)
@@ -61,10 +59,10 @@ protected:
   std::string _vertLayoutMacros;
 };
 
+using StandardMaterialPtr = std::shared_ptr<StandardMaterial>;
+
 class __TWCOMExport BasicGeomMaterial : public Material {
 public:
-  typedef std::shared_ptr<BasicGeomMaterial> Ptr;
-
   BasicGeomMaterial() : Material() {}
   BasicGeomMaterial(const BasicGeomMaterial &src) : Material(src) {}
   virtual ~BasicGeomMaterial() {}
@@ -110,10 +108,10 @@ protected:
   }
 };
 
+using BasicGeomMaterialPtr = std::shared_ptr<BasicGeomMaterial>;
+
 class __TWCOMExport SpriteMaterial : public Material {
 public:
-  typedef std::shared_ptr<SpriteMaterial> Ptr;
-
   SpriteMaterial() : Material() {}
   SpriteMaterial(const SpriteMaterial &src) : Material(src) {}
   virtual ~SpriteMaterial() {}
@@ -162,10 +160,10 @@ protected:
   }
 };
 
+using SpriteMaterialPtr = std::shared_ptr<SpriteMaterial>;
+
 class __TWCOMExport Sprite1DMaterial : public Material {
 public:
-  typedef std::shared_ptr<Sprite1DMaterial> Ptr;
-
   Sprite1DMaterial() : Material() {}
   Sprite1DMaterial(const Sprite1DMaterial &src) : Material(src) {}
   virtual ~Sprite1DMaterial() {}
@@ -215,10 +213,10 @@ protected:
   }
 };
 
+using Sprite1DMaterialPtr = std::shared_ptr<Sprite1DMaterial>;
+
 class __TWCOMExport LineMaterial : public Material {
 public:
-  typedef std::shared_ptr<LineMaterial> Ptr;
-
   LineMaterial() : Material() {}
   LineMaterial(const LineMaterial &src) : Material(src) {}
   virtual ~LineMaterial() {}
@@ -260,10 +258,10 @@ protected:
   }
 };
 
+using LineMaterialPtr = std::shared_ptr<LineMaterial>;
+
 class __TWCOMExport InfinitePlaneMaterial : public Material {
 public:
-  typedef std::shared_ptr<InfinitePlaneMaterial> Ptr;
-
   InfinitePlaneMaterial() : Material() {}
   InfinitePlaneMaterial(const InfinitePlaneMaterial &src) : Material(src) {}
   virtual ~InfinitePlaneMaterial() {}
@@ -306,10 +304,10 @@ protected:
   }
 };
 
+using InfinitePlaneMaterialPtr = std::shared_ptr<InfinitePlaneMaterial>;
+
 class __TWCOMExport VolumnQuadMaterial : public Material {
 public:
-  typedef std::shared_ptr<VolumnQuadMaterial> Ptr;
-
   VolumnQuadMaterial() : Material() {}
   VolumnQuadMaterial(const VolumnQuadMaterial &src) : Material(src) {}
   virtual ~VolumnQuadMaterial() {}
@@ -359,10 +357,10 @@ protected:
   }
 };
 
+using VolumnQuadMaterialPtr = std::shared_ptr<VolumnQuadMaterial>;
+
 class __TWCOMExport CubeMaterial : public Material {
 public:
-  typedef std::shared_ptr<CubeMaterial> Ptr;
-
   CubeMaterial() : Material() {}
   CubeMaterial(const CubeMaterial &src) : Material(src) {}
   virtual ~CubeMaterial() {}
@@ -405,10 +403,10 @@ protected:
   }
 };
 
+using CubeMaterialPtr = std::shared_ptr<CubeMaterial>;
+
 class __TWCOMExport SphereMaterial : public Material {
 public:
-  typedef std::shared_ptr<SphereMaterial> Ptr;
-
   SphereMaterial() : Material() {}
   SphereMaterial(const SphereMaterial &src) : Material(src) {}
   virtual ~SphereMaterial() {}
@@ -451,10 +449,10 @@ protected:
   }
 };
 
+using SphereMaterialPtr = std::shared_ptr<SphereMaterial>;
+
 class __TWCOMExport SkyboxMaterial : public Material {
 public:
-  typedef std::shared_ptr<SkyboxMaterial> Ptr;
-
   SkyboxMaterial() : Material() {}
   SkyboxMaterial(const SkyboxMaterial &src) : Material(src) {}
   virtual ~SkyboxMaterial() {}
@@ -502,10 +500,10 @@ protected:
   }
 };
 
+using SkyboxMaterialPtr = std::shared_ptr<SkyboxMaterial>;
+
 class __TWCOMExport ProjectionMappingMaterial : public Material {
 public:
-  typedef std::shared_ptr<ProjectionMappingMaterial> Ptr;
-
   ProjectionMappingMaterial() : Material() {}
   ProjectionMappingMaterial(const ProjectionMappingMaterial &src)
       : Material(src) {}
@@ -552,10 +550,10 @@ protected:
   }
 };
 
+using ProjectionMappingMaterialPtr = std::shared_ptr<ProjectionMappingMaterial>;
+
 class __TWCOMExport ScreenQuadMaterial : public Material {
 public:
-  typedef std::shared_ptr<ScreenQuadMaterial> Ptr;
-
   ScreenQuadMaterial() : Material() {}
   ScreenQuadMaterial(const ScreenQuadMaterial &src) : Material(src) {}
   virtual ~ScreenQuadMaterial() {}
@@ -597,10 +595,10 @@ protected:
   }
 };
 
+using ScreenQuadMaterialPtr = std::shared_ptr<ScreenQuadMaterial>;
+
 class __TWCOMExport MSAAResolveMaterial : public Material {
 public:
-  typedef std::shared_ptr<MSAAResolveMaterial> Ptr;
-
   MSAAResolveMaterial() : Material() {}
   MSAAResolveMaterial(const MSAAResolveMaterial &src) : Material(src) {}
   virtual ~MSAAResolveMaterial() {}
@@ -641,6 +639,8 @@ protected:
     }
   }
 };
+
+using MSAAResolveMaterialPtr = std::shared_ptr<MSAAResolveMaterial>;
 
 } // namespace TwinkleGraphics
 

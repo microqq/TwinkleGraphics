@@ -9,7 +9,7 @@ class InputManager;
 
 class KeyEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<KeyEventArgs> Ptr;
+  using Ptr = std::shared_ptr<KeyEventArgs> ;
 
   static EventId ID;
 

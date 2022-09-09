@@ -27,11 +27,11 @@ struct WidgetData {
 };
 
 class __TWCOMExport Widget : public Object,
-               public IUpdatable,
-               public IDestroyable,
-               public INonCopyable {
+                             public IUpdatable,
+                             public IDestroyable,
+                             public INonCopyable {
 public:
-  typedef std::function<void()> OnGuiFunction;
+  using OnGuiFunction = std::function<void()>;
 
   explicit Widget(Widget *parent = nullptr, const std::string &name = "");
   virtual ~Widget();

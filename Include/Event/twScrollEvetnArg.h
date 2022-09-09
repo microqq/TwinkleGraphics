@@ -8,7 +8,7 @@ class InputManager;
 
 class ScrollEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<ScrollEventArgs> Ptr;
+  using Ptr = std::shared_ptr<ScrollEventArgs>;
 
   static EventId ID;
 

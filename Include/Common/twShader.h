@@ -6,16 +6,13 @@
 #include <string>
 #include <vector>
 
-
 #include "twCommon.h"
 #include <GL/glew.h>
-
 
 #include "twRenderContext.h"
 #include "twResource.h"
 #include "twTextManager.h"
 #include "twTextReader.h"
-
 
 namespace TwinkleGraphics {
 class Shader;
@@ -34,15 +31,15 @@ enum class ShaderType {
   COMPUTE_SHADER = GL_COMPUTE_SHADER
 };
 
-typedef TextSource ShaderSource;
-typedef TextSource ShaderIncludeSource;
-typedef ShaderSource::Ptr ShaderSourcePtr;
-typedef ShaderIncludeSource::Ptr ShaderIncludeSourcePtr;
+using ShaderSource = TextSource;
+using ShaderIncludeSource = TextSource;
+using ShaderSourcePtr = ShaderSource::Ptr;
+using ShaderIncludeSourcePtr = ShaderIncludeSource::Ptr;
 
 class Shader final : public Object {
 public:
-  typedef std::shared_ptr<Shader> Ptr;
-  typedef std::weak_ptr<Shader> WeakPtr;
+  using Ptr = std::shared_ptr<Shader>;
+  using WeakPtr = std::weak_ptr<Shader>;
 
   // Shader(ShaderResourceInfo::Ptr source);
   Shader(ShaderType type, ShaderSourcePtr source = nullptr);
@@ -76,12 +73,12 @@ private:
   friend class ShaderManager;
 };
 
-typedef Shader::Ptr ShaderPtr;
+using ShaderPtr = Shader::Ptr;
 
 class ShaderProgram final : public Object {
 public:
-  typedef std::shared_ptr<ShaderProgram> Ptr;
-  typedef std::weak_ptr<ShaderProgram> WeakPtr;
+  using Ptr = std::shared_ptr<ShaderProgram>;
+  using WeakPtr = std::weak_ptr<ShaderProgram>;
 
   ShaderProgram(int32 shaderCount);
   virtual ~ShaderProgram();
@@ -114,7 +111,7 @@ private:
   friend class ShaderManager;
 };
 
-typedef ShaderProgram::Ptr ShaderProgramPtr;
+using ShaderProgramPtr = ShaderProgram::Ptr;
 
 class __TWCOMExport ShaderOption final : public ReaderOption {
 public:
@@ -190,7 +187,7 @@ class __TWCOMExport ShaderReader : public ResourceReader,
                                    public Reference<ShaderReader>,
                                    public INonCopyable {
 public:
-  typedef std::shared_ptr<ShaderReader> Ptr;
+  using Ptr = std::shared_ptr<ShaderReader>;
 
   ShaderReader();
   ShaderReader(ShaderOption *option);

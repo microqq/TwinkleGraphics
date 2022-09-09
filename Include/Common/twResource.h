@@ -27,13 +27,13 @@ namespace TwinkleGraphics {
 class ReaderOption;
 class ResourceReader;
 class ResourceManager;
-typedef uint16_t ReaderId;
-typedef uint64_t CacheId;
+using ReaderId = uint16_t;
+using CacheId = uint64_t;
 
-typedef std::function<void(ObjectPtr)> ReadSuccessCallbackFunc;
-typedef std::function<void()> ReadFailedCallbackFunc;
-typedef std::shared_ptr<ReadSuccessCallbackFunc> ReadSuccessCallbackFuncPtr;
-typedef std::shared_ptr<ReadFailedCallbackFunc> ReadFailedCallbackFuncPtr;
+using ReadSuccessCallbackFunc = std::function<void(ObjectPtr)>;
+using ReadFailedCallbackFunc = std::function<void()>;
+using ReadSuccessCallbackFuncPtr = std::shared_ptr<ReadSuccessCallbackFunc>;
+using ReadFailedCallbackFuncPtr = std::shared_ptr<ReadFailedCallbackFunc>;
 
 enum class CacheHint {
   CACHE_NONE = 0,
@@ -98,7 +98,7 @@ protected:
 
 class __TWCOMExport ResourceReader {
 public:
-  typedef std::shared_ptr<ResourceReader> Ptr;
+  using Ptr = std::shared_ptr<ResourceReader>;
 
   virtual ~ResourceReader();
   ReaderOption *GetReaderOption();
@@ -114,7 +114,7 @@ protected:
   friend class ResourceManager;
 };
 
-typedef ResourceReader::Ptr ResourceReaderPtr;
+using ResourceReaderPtr = ResourceReader::Ptr;
 
 /**
  * @brief
@@ -154,7 +154,7 @@ private:
 
 class ResourceCache : public INonCopyable {
 public:
-  typedef std::shared_ptr<ResourceCache> Ptr;
+  using Ptr = std::shared_ptr<ResourceCache>;
 
   ResourceCache(CacheId id, ObjectPtr obj,
                 CacheStoreHint hint = CacheStoreHint::TIMELIMITED,

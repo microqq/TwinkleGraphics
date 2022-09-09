@@ -8,7 +8,7 @@
 namespace TwinkleGraphics {
 class __TWCOMExport CameraControl : public Object {
 public:
-  typedef std::shared_ptr<CameraControl> Ptr;
+  using Ptr = std::shared_ptr<CameraControl>;
 
   CameraControl(CameraPtr camera) : _camera(camera) {}
   virtual ~CameraControl() {}
@@ -30,7 +30,7 @@ protected:
   CameraPtr _camera;
 };
 
-typedef CameraControl::Ptr CameraControlPtr;
+using CameraControlPtr = CameraControl::Ptr;
 
 } // namespace TwinkleGraphics
 

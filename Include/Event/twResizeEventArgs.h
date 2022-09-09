@@ -8,7 +8,7 @@ class InputManager;
 
 class ResizeEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<ResizeEventArgs> Ptr;
+  using Ptr = std::shared_ptr<ResizeEventArgs> ;
 
   static EventId ID;
 

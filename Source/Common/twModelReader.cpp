@@ -5,7 +5,6 @@
 #include "twModelReader.h"
 #include "twResourceManager.h"
 
-
 namespace TwinkleGraphics {
 ModelReader::ModelReader() : ResourceReader() {
   // INITIALISE_READERID
@@ -315,7 +314,7 @@ MaterialPtr ModelReader::ProcessMaterial(aiMesh *mesh, const aiScene *scene,
     index++;
   }
 
-  StandardMaterial::Ptr material =
+  StandardMaterialPtr material =
       std::make_shared<StandardMaterial>(vertLayoutMacros);
 
   // process materials
@@ -388,7 +387,7 @@ MaterialPtr ModelReader::ProcessMaterial(aiMesh *mesh, const aiScene *scene,
 }
 
 void ModelReader::SetMaterialTextures(std::vector<TexturePtr> &textures,
-                                      StandardMaterial::Ptr material,
+                                      StandardMaterialPtr material,
                                       std::string texNamePrefix,
                                       std::string macroPrefix) {
   int32 number = 0;

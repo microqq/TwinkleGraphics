@@ -5,14 +5,12 @@
 #include <map>
 #include <vector>
 
-
 #include "twCommon.h"
 #include "twRenderContext.h"
 #include "twShader.h"
 #include "twShaderManager.h"
 #include "twTexture.h"
 #include "twUniform.h"
-
 
 namespace TwinkleGraphics {
 
@@ -38,7 +36,7 @@ class MeshRenderer;
  */
 class __TWCOMExport RenderPass : public Object {
 public:
-  typedef std::shared_ptr<RenderPass> Ptr;
+  using Ptr = std::shared_ptr<RenderPass>;
 
   static RenderPass::Ptr CreateRenderPassInstance(ShaderOption options[],
                                                   int32 num);
@@ -83,7 +81,7 @@ private:
   friend class Material;
 };
 
-typedef RenderPass::Ptr RenderPassPtr;
+using RenderPassPtr = RenderPass::Ptr;
 
 /**
  * @brief
@@ -91,7 +89,7 @@ typedef RenderPass::Ptr RenderPassPtr;
  */
 class __TWCOMExport Material : public Object {
 public:
-  typedef std::shared_ptr<Material> Ptr;
+  using Ptr = std::shared_ptr<Material>;
 
   Material();
   Material(const Material &src);
@@ -292,7 +290,7 @@ private:
   friend class MeshRenderer;
 };
 
-typedef Material::Ptr MaterialPtr;
+using MaterialPtr = Material::Ptr;
 
 } // namespace TwinkleGraphics
 

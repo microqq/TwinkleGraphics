@@ -16,7 +16,7 @@ public:
   ~ForwardPipeline();
 };
 
-typedef Singleton<ForwardPipeline> Forward;
+using Forward = Singleton<ForwardPipeline>;
 
 } // namespace TwinkleGraphics
 

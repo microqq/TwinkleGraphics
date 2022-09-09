@@ -8,7 +8,7 @@ class InputManager;
 
 class FocusEventArgs : public InputEventArgs {
 public:
-  typedef std::shared_ptr<FocusEventArgs> Ptr;
+  using Ptr = std::shared_ptr<FocusEventArgs>;
 
   static EventId ID;
 
