@@ -101,15 +101,12 @@ glm::vec3 Transform::GetWorldScale() {
 glm::mat4 Transform::GetWorldToLocalMatrix() {
   ComputeLocalMatrix();
 
-  glm::mat4 result;
   TransformPtr ownerParentTrans = _owner->GetParentTransform();
   if (ownerParentTrans != nullptr) {
-    result = _localMatrix * ownerParentTrans->GetWorldToLocalMatrix();
+    return _localMatrix * ownerParentTrans->GetWorldToLocalMatrix();
   } else {
-    result = _localMatrix;
+    return _localMatrix;
   }
-
-  return result;
 }
 
 const glm::mat4 &Transform::GetLocalToWorldMatrix() {

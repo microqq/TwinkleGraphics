@@ -87,7 +87,6 @@ private:
       _cameraSorted = true;
     }
   }
-  void TraverseScene();
 
 protected:
   std::vector<CameraPtr> _cameralists;

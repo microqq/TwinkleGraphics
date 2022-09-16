@@ -53,15 +53,6 @@ void SceneNode::DetachFromParent() {
   _parent->RemoveChild(thisNode);
 }
 
-void SceneNode::Traverse() {
-  // Frustum culling
-
-  for (auto node : _children) {
-
-    node->Traverse();
-  }
-}
-
 bool SceneNode::HasChild(SceneNodePtr node) {
   return FindChild(node) != _children.end();
 }

@@ -10,12 +10,7 @@ Scene::~Scene() { _cameralists.clear(); }
 
 void Scene::Init() {}
 
-void Scene::Update(float32 delta_time) {
-  SortCamera();
-  TraverseScene();
-}
-
-void Scene::TraverseScene() { _rootNode->Traverse(); }
+void Scene::Update(float32 delta_time) { SortCamera(); }
 
 SceneManager::~SceneManager() { _sceneLists.clear(); }
 

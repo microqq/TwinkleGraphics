@@ -68,7 +68,6 @@ public:
 protected:
   using Iterator = std::vector<SceneNode::Ptr>::iterator;
 
-  virtual void Traverse();
   bool HasChild(SceneNode::Ptr node);
   Iterator FindChild(SceneNode::Ptr node);
 
