@@ -57,8 +57,8 @@ void MeshRenderer::SetupVAOs() {
 
     VertexArrayObjectPtr vao = std::make_shared<VertexArrayObject>();
     IndexBufferObjectPtr ibo = std::make_shared<IndexBufferObject>();
-    _vaos.push_back(vao);
-    _ibos.push_back(ibo);
+    _vaos.emplace_back(vao);
+    _ibos.emplace_back(ibo);
 
     vao->Bind();
     {
@@ -128,8 +128,8 @@ void MeshRenderer::AddMaterial(MaterialPtr material) {
       std::find(_sharedMaterials.begin(), _sharedMaterials.end(), material);
 
   if (it == _sharedMaterials.end()) {
-    _sharedMaterials.push_back(material);
-    _materials.push_back(nullptr);
+    _sharedMaterials.emplace_back(material);
+    _materials.emplace_back(nullptr);
   }
 }
 

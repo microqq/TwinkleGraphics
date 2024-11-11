@@ -58,7 +58,7 @@ public:
   DECLARE_READERID;
 };
 
-class __TWCOMExport TextureManager : public IUpdatable,
+class __TWAPI TextureManager : public IUpdatable,
                                      public IReaderManager,
                                      public INonCopyable,
                                      public IDestroyable {
@@ -95,7 +95,7 @@ private:
   friend class Singleton<TextureManager>;
 };
 
-__TWCOMExport TextureManager &TextureMgrInstance();
+__TWAPI TextureManager &TextureMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

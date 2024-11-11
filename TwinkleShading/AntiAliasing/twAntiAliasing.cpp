@@ -8,13 +8,12 @@
 #include "twMaterialInstance.h"
 #include "twModelManager.h"
 #include "twRenderTexture.h"
-
-
 #include "twConsoleLog.h"
+#include "twImGuiContextManager.h"
 
 namespace TwinkleGraphics {
 AntiAliasing::AntiAliasing(std::string &name)
-    : GLPlugin(name), _view(nullptr)
+    : GLViewPlugin(name), _view(nullptr)
 // , _view2(nullptr)
 {}
 
@@ -65,14 +64,14 @@ void AntiAliasing::UpdateViews() {
   // _view2->ResetViewport(Rect(size.x - w, 0, w, 200.0f));
 }
 
-void AntiAliasingView::Initialize() {
+void AntiAliasingView::Initialized() {
   if (_initialized)
     return;
   if (_scene != nullptr) {
     _scene->Init();
   }
 
-  View::Initialize();
+  View::Initialized();
 }
 
 void AntiAliasingView::Destroy() {
@@ -83,40 +82,43 @@ void AntiAliasingView::Destroy() {
 }
 
 void AntiAliasingView::OnGUI() {
-  TwinkleGraphics::MainMenuBar();
+  // TwinkleGraphics::MainMenuBar();
 
   AntiAliasingScene *scene = dynamic_cast<AntiAliasingScene *>(_scene.get());
-  int32 &current_aa_option = scene->GetCurrentAAOption();
-  int32 &current_msaa_sw_option = scene->_currentMSAASWOption;
-  int32 &current_rsf_option = scene->_resolveFitlerOption;
+  int32 &currentAAOption = scene->GetCurrentAAOption();
+  int32 &currentMSAASWOption = scene->_currentMSAASWOption;
+  int32 &currentRSFOption = scene->_resolveFitlerOption;
+
+  ImGuiContextManager &imguiCtxMgr = ImGuiContextMgrInstance();
+  imguiCtxMgr.SetCurrentContext();
   ImGui::Begin(u8"反走样");
   {
 
-    ImGui::RadioButton(u8"NO AA", &(current_aa_option), AAOption::NONE);
-    ImGui::RadioButton(u8"MSAA_HW", &(current_aa_option), AAOption::MSAA_HW);
-    ImGui::RadioButton(u8"MSAA_SW", &current_aa_option, AAOption::MSAA_SW);
-    if (current_aa_option == AAOption::MSAA_SW) {
+    ImGui::RadioButton(u8"NO AA", &(currentAAOption), AAOption::NONE);
+    ImGui::RadioButton(u8"MSAA_HW", &(currentAAOption), AAOption::MSAA_HW);
+    ImGui::RadioButton(u8"MSAA_SW", &currentAAOption, AAOption::MSAA_SW);
+    if (currentAAOption == AAOption::MSAA_SW) {
       ImGui::BeginGroup();
       ImGui::Indent();
       ImGui::Checkbox(u8"多重采样", &(scene->_enableMultisample));
-      ImGui::RadioButton(u8"Back Buffer", &(current_msaa_sw_option),
+      ImGui::RadioButton(u8"Back Buffer", &(currentMSAASWOption),
                          MSAASWOption::MSAA_SW_BACKBUFFER);
-      ImGui::RadioButton(u8"Screen FBO", &(current_msaa_sw_option),
+      ImGui::RadioButton(u8"Screen FBO", &(currentMSAASWOption),
                          MSAASWOption::MSAA_SW_SCREENFBO);
-      ImGui::RadioButton(u8"Resolve Filter", &(current_msaa_sw_option),
+      ImGui::RadioButton(u8"Resolve Filter", &(currentMSAASWOption),
                          MSAASWOption::MSAA_SW_RESOLVE);
-      if (current_msaa_sw_option == MSAASWOption::MSAA_SW_RESOLVE) {
+      if (currentMSAASWOption == MSAASWOption::MSAA_SW_RESOLVE) {
         ImGui::Indent();
-        ImGui::Combo("", &current_rsf_option,
+        ImGui::Combo("", &currentRSFOption,
                      "Box\0Tiangle\0Cubic\0Hann and Hamming Window\0Blackman "
                      "Window\0Kaiser Window\0"
                      "Lanczos3 Window\0Lanczos4 Window\0Lanczos6 Window\0\0");
         ImGui::Unindent();
 
-        if (current_rsf_option >= ResolveFilterOption::BOX) {
+        if (currentRSFOption >= ResolveFilterOption::BOX) {
           MaterialPtr resolve_mat = scene->_msaaResolveMat;
           resolve_mat->SetSimpleUniformValue<int, 1>("filterOption",
-                                                     current_rsf_option);
+                                                     currentRSFOption);
           // set resolve filter option
         }
 
@@ -131,13 +133,14 @@ void AntiAliasingView::OnGUI() {
       ImGui::EndGroup();
     }
 
-    ImGui::RadioButton(u8"SSAA", &current_aa_option, AAOption::SSAA);
-    ImGui::RadioButton(u8"CSAA", &current_aa_option, AAOption::CSAA);
-    ImGui::RadioButton(u8"CFAA", &current_aa_option, AAOption::CFAA);
-    ImGui::RadioButton(u8"FXAA", &current_aa_option, AAOption::FXAA);
+    ImGui::RadioButton(u8"SSAA", &currentAAOption, AAOption::SSAA);
+    ImGui::RadioButton(u8"CSAA", &currentAAOption, AAOption::CSAA);
+    ImGui::RadioButton(u8"CFAA", &currentAAOption, AAOption::CFAA);
+    ImGui::RadioButton(u8"FXAA", &currentAAOption, AAOption::FXAA);
   }
   ImGui::End();
 
+  imguiCtxMgr.SetCurrentContext();
   ImGui::Begin(u8"Window");
   {
     ImGui::BeginChild(u8"SubWindow", ImVec2(512.0f, 512.0f), false,
@@ -153,6 +156,7 @@ void AntiAliasingView::OnGUI() {
   }
   ImGui::End();
 
+  imguiCtxMgr.SetCurrentContext();
   Select3DModel();
 }
 
@@ -255,13 +259,13 @@ void AntiAliasingScene::CreateScene() {
   p0 = glm::vec3(-2.0f, 3.0f, 0.0f);
   p1 = glm::vec3(-3.0f, 0.0f, 0.0f);
   p2 = glm::vec3(3.0f, 2.3f, 0.0f);
-  _triangle_front.reset(CreateTriangle(p0, p1, p2));
+  _triangleFront.reset(CreateTriangle(p0, p1, p2));
   {
     tintcolor = glm::vec4(1.0f, 0.3f, 0.8f, 1.0f);
-    MaterialPtr material = _triangle_front->GetMeshRenderer()->GetMaterial();
+    MaterialPtr material = _triangleFront->GetMeshRenderer()->GetMaterial();
     material->SetVecUniformValue<float32, 4>("tintColor", tintcolor);
 
-    CreateGeometry(_triangle_front, 8);
+    CreateGeometry(_triangleFront, 8);
   }
 
   // rt for msaa resolve fitler
@@ -348,72 +352,72 @@ void AntiAliasingScene::UpdateScene() {
   _mvpMat = _projectionMat * _viewMat;
 
   MaterialPtr skyboxmat = _skybox->GetMeshRenderer()->GetMaterial();
-  mat4 rotate_mat = glm::mat4_cast(camera->GetOrientation());
+  mat4 rotateMat = glm::mat4_cast(camera->GetOrientation());
   // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
-  mat4 mvp = _projectionMat * rotate_mat;
+  mat4 mvp = _projectionMat * rotateMat;
   skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
   // MaterialPtr infplaneMaterial =
   // _infinitePlane->GetMeshRenderer()->GetSharedMaterial();
   // infplaneMaterial->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat);
 
-  MaterialPtr material_plane_left =
+  MaterialPtr materialPlaneLeft =
       _planeLeft->GetMeshRenderer()->GetMaterial();
   glm::mat4 model = _planeLeft->GetTransform()->GetLocalToWorldMatrix();
   mvp = _mvpMat * model;
-  material_plane_left->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+  materialPlaneLeft->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
   glm::vec4 tintColor(0.7f, 0.0f, 0.0f, 1.0f);
-  material_plane_left->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+  materialPlaneLeft->SetVecUniformValue<float32, 4>("tintColor", tintColor);
 
-  MaterialPtr material_plane_top = _planeTop->GetMeshRenderer()->GetMaterial();
+  MaterialPtr materialPlaneTop = _planeTop->GetMeshRenderer()->GetMaterial();
   {
     model = _planeTop->GetTransform()->GetLocalToWorldMatrix();
     mvp = _mvpMat * model;
-    material_plane_top->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+    materialPlaneTop->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     tintColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-    material_plane_top->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+    materialPlaneTop->SetVecUniformValue<float32, 4>("tintColor", tintColor);
   }
 
-  MaterialPtr material_plane_right =
+  MaterialPtr materialPlaneRight =
       _planeRight->GetMeshRenderer()->GetMaterial();
   {
     model = _planeRight->GetTransform()->GetLocalToWorldMatrix();
     mvp = _mvpMat * model;
-    material_plane_right->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+    materialPlaneRight->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     tintColor = glm::vec4(0.0f, 0.7f, 0.0f, 1.0f);
-    material_plane_right->SetVecUniformValue<float32, 4>("tintColor",
+    materialPlaneRight->SetVecUniformValue<float32, 4>("tintColor",
                                                          tintColor);
   }
 
-  MaterialPtr material_plane_bottom =
+  MaterialPtr materialPlaneBottom =
       _planeBottom->GetMeshRenderer()->GetMaterial();
   {
     model = _planeBottom->GetTransform()->GetLocalToWorldMatrix();
     mvp = _mvpMat * model;
-    material_plane_bottom->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+    materialPlaneBottom->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     tintColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-    material_plane_bottom->SetVecUniformValue<float32, 4>("tintColor",
+    materialPlaneBottom->SetVecUniformValue<float32, 4>("tintColor",
                                                           tintColor);
   }
 
-  MaterialPtr material_plane_back =
+  MaterialPtr materialPlaneBack =
       _planeBack->GetMeshRenderer()->GetMaterial();
   {
     model = _planeBack->GetTransform()->GetLocalToWorldMatrix();
     tintColor = glm::vec4(0.7f, 0.7f, 0.0f, 1.0f);
     mvp = _mvpMat * model;
-    material_plane_back->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
-    material_plane_back->SetVecUniformValue<float32, 4>("tintColor", tintColor);
+    materialPlaneBack->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+    materialPlaneBack->SetVecUniformValue<float32, 4>("tintColor", tintColor);
   }
 
-  MaterialPtr material_sphere = _sphere->GetMeshRenderer()->GetMaterial();
+  MaterialPtr materialSphere = _sphere->GetMeshRenderer()->GetMaterial();
   {
     TransformPtr trans = _sphere->GetTransform();
     trans->Rotate(0.002f, glm::vec3(0.0f, 1.0f, 0.0f));
     mvp = _mvpMat * trans->GetLocalToWorldMatrix();
-    material_sphere->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+    materialSphere->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
-    TexturePtr spheretex = material_sphere->GetMainTexture();
+    TexturePtr spheretex = materialSphere->GetMainTexture();
     spheretex->SetWrap<WrapParam::WRAP_S>(WrapMode::CLAMP_TO_EDGE);
     spheretex->SetWrap<WrapParam::WRAP_T>(WrapMode::CLAMP_TO_EDGE);
     spheretex->SetWrap<WrapParam::WRAP_R>(WrapMode::CLAMP_TO_EDGE);
@@ -423,20 +427,20 @@ void AntiAliasingScene::UpdateScene() {
     spheretex->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
   }
 
-  MaterialPtr material_cube = _cube->GetMeshRenderer()->GetMaterial();
+  MaterialPtr materialCube = _cube->GetMeshRenderer()->GetMaterial();
   {
     TransformPtr trans = _cube->GetTransform();
     trans->Rotate(0.002f, glm::vec3(0.0f, 1.0f, 0.0f));
 
     mvp = _mvpMat * trans->GetLocalToWorldMatrix();
-    material_cube->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+    materialCube->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
   }
 
-  MaterialPtr material_triangle =
+  MaterialPtr materialTriangle =
       _triangleBack->GetMeshRenderer()->GetMaterial();
-  { material_triangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat); }
-  material_triangle = _triangle_front->GetMeshRenderer()->GetMaterial();
-  { material_triangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat); }
+  { materialTriangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat); }
+  materialTriangle = _triangleFront->GetMeshRenderer()->GetMaterial();
+  { materialTriangle->SetMatrixUniformValue<float32, 4, 4>("mvp", _mvpMat); }
 
   _rootTrans->Rotate(0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -526,7 +530,7 @@ void AntiAliasingScene::RenderGeometrys() {
 
   // glEnable(GL_POLYGON_OFFSET_FILL);
   // glPolygonOffset(-1.0f, 0.0f);
-  // RenderGeometry(_triangle_front, 8);
+  // RenderGeometry(_triangleFront, 8);
   // glDisable(GL_POLYGON_OFFSET_FILL);
 
   // just for test
@@ -626,25 +630,25 @@ void AntiAliasingScene::CreateSkybox() {
     cubemap->SetFilter<FilterParam::MAG_FILTER>(FilterMode::LINEAR);
 
     ImageManager &imageMgr = ImageMgrInstance();
-    std::string front_info = {"Assets/Textures/skybox/front.png"};
-    ImagePtr front_image = imageMgr.ReadImage(front_info.c_str());
-    std::string back_info = {"Assets/Textures/skybox/back.png"};
-    ImagePtr back_image = imageMgr.ReadImage(back_info.c_str());
-    std::string left_info = {"Assets/Textures/skybox/left.png"};
-    ImagePtr left_image = imageMgr.ReadImage(left_info.c_str());
-    std::string right_info = {"Assets/Textures/skybox/right.png"};
-    ImagePtr right_image = imageMgr.ReadImage(right_info.c_str());
-    std::string top_info = {"Assets/Textures/skybox/top.png"};
-    ImagePtr top_image = imageMgr.ReadImage(top_info.c_str());
-    std::string down_info = {"Assets/Textures/skybox/bottom.png"};
-    ImagePtr down_image = imageMgr.ReadImage(down_info.c_str());
+    std::string frontInfo = {"Assets/Textures/skybox/front.png"};
+    ImagePtr frontImage = imageMgr.ReadImage(frontInfo.c_str());
+    std::string backInfo = {"Assets/Textures/skybox/back.png"};
+    ImagePtr backImage = imageMgr.ReadImage(backInfo.c_str());
+    std::string leftInfo = {"Assets/Textures/skybox/left.png"};
+    ImagePtr leftImage = imageMgr.ReadImage(leftInfo.c_str());
+    std::string rightInfo = {"Assets/Textures/skybox/right.png"};
+    ImagePtr rightImage = imageMgr.ReadImage(rightInfo.c_str());
+    std::string topInfo = {"Assets/Textures/skybox/top.png"};
+    ImagePtr topImage = imageMgr.ReadImage(topInfo.c_str());
+    std::string downInfo = {"Assets/Textures/skybox/bottom.png"};
+    ImagePtr downImage = imageMgr.ReadImage(downInfo.c_str());
 
-    cubemap->SetPositiveX(right_image);
-    cubemap->SetPositiveY(top_image);
-    cubemap->SetPositiveZ(front_image);
-    cubemap->SetNegativeX(left_image);
-    cubemap->SetNegativeY(down_image);
-    cubemap->SetNegativeZ(back_image);
+    cubemap->SetPositiveX(rightImage);
+    cubemap->SetPositiveY(topImage);
+    cubemap->SetPositiveZ(frontImage);
+    cubemap->SetNegativeX(leftImage);
+    cubemap->SetNegativeY(downImage);
+    cubemap->SetNegativeZ(backImage);
     cubemap->InitStorageByOthers();
 
     // std::string imageFilename = {"Assets/Textures/skybox/output.dds"};
@@ -693,8 +697,8 @@ void AntiAliasingScene::RenderGeometry(GeometryPtr geom, int32 index) {
     return;
   }
 
-  for (auto tex_slot : pass->GetTextureSlots()) {
-    tex_slot.second.Apply();
+  for (auto texSlot : pass->GetTextureSlots()) {
+    texSlot.second.Apply();
   }
 
   ShaderProgramPtr shader = pass->GetShaderProgram();
@@ -717,8 +721,8 @@ void AntiAliasingScene::RenderGeometry(GeometryPtr geom, int32 index) {
   glBindVertexArray(_vaos[index]);
   glDrawElements(GL_TRIANGLES, submesh->GetIndiceNum(), GL_UNSIGNED_INT, NULL);
 
-  for (auto tex_slot : pass->GetTextureSlots()) {
-    tex_slot.second.UnBind();
+  for (auto texSlot : pass->GetTextureSlots()) {
+    texSlot.second.UnBind();
   }
 }
 

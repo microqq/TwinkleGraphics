@@ -39,7 +39,7 @@ enum EventType {
   QUIT = 16
 };
 
-class __TWCOMExport BaseEventArgs : public Object {
+class __TWAPI BaseEventArgs : public Object {
 public:
   using Ptr = std::shared_ptr<BaseEventArgs>;
 

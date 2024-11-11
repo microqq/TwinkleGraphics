@@ -34,7 +34,7 @@ enum class SceneLayerType {
 };
 using CullingMask = SceneLayerType;
 
-class __TWCOMExport SceneNode : public Object, public IUpdatable {
+class __TWAPI SceneNode : public Object, public IUpdatable {
 public:
   using Ptr = std::shared_ptr<SceneNode>;
 

@@ -38,8 +38,8 @@ namespace Internal {
 #ifdef __cplusplus
 extern "C" {
 #endif
-__TWCOMExport void SetConsoleColor(Color &c);
-__TWCOMExport void ResetConsoleColor();
+__TWAPI void SetConsoleColor(Color &c);
+__TWAPI void ResetConsoleColor();
 #ifdef __cplusplus
 }
 #endif

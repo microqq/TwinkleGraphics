@@ -7,7 +7,7 @@
 #include "twCameraControl.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport OrbitControl : public CameraControl {
+class __TWAPI OrbitControl : public CameraControl {
 public:
   using Ptr = std::shared_ptr<OrbitControl>;
 

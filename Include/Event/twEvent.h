@@ -6,7 +6,7 @@
 #include "twObject.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport Event : public Object {
+class __TWAPI Event : public Object {
 public:
   using Ptr = std::shared_ptr<Event>;
 

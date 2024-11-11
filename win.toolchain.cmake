@@ -5,7 +5,7 @@
 # mkdir build & cd build
 # cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../win.toolchain.cmake ..
 
-cmake_minimum_required( VERSION 2.6.3 )
+cmake_minimum_required( VERSION 3.30.0 )
 SET(CMAKE_SYSTEM_NAME Windows)
 
 SET (CMAKE_C_FLAGS                "-Wall -std=c11")

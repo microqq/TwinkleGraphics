@@ -1,6 +1,9 @@
+#include <assert.h>
+
 #include "twEditorWindow.h"
 #include "twDockSpaceLayout.h"
 #include "twDockingWidget.h"
+#include "twImGuiContextManager.h"
 
 namespace TwinkleGraphics {
 ////////////////////////////EditorWindowLayout///////////////////////////////
@@ -20,14 +23,18 @@ void EditorWindowLayout::UpdateSubDockSpaceNode() {
 EditorWindow::EditorWindow(uint32 width, uint32 height)
     : GLFWMainFrame(width, height) {
   this->SetName("twinkle editor");
+}
 
-  const std::string &assetsDir = std::filesystem::current_path().string() + "/Assets";
+void EditorWindow::Initialize() {
+  GLFWMainFrame::Initialize();
+
+  const std::string &assetsDir =
+      std::filesystem::current_path().string() + "/Assets";
   _assetsBrowser = new AssetsWindow("Assets Browser", _pData->width * 0.5f,
                                     _pData->height * 0.25f, assetsDir, this);
-
-  _menu = new EditorMenu(this);
   _hierarchy = new Hierarchy("Hierarchy", this);
   _inspector = new Inspector("Inspector", this);
+  _menu = new EditorMenu(this);
 
   const auto &mainframeLayout = dynamic_cast<DockSpaceLayout *>(_pLayout);
   mainframeLayout->AddWidget(_hierarchy, ALIGN_LEFT);
@@ -44,14 +51,23 @@ EditorWindow::EditorWindow(uint32 width, uint32 height)
   const auto centralWidgetLayout =
       dynamic_cast<DockSpaceLayout *>(centralWidget->GetLayout());
   centralWidgetLayout->AddWidget(_sceneView, ALIGN_LEFT);
-  centralWidgetLayout->AddWidget(_gameView, ALIGN_CENTER);
+  centralWidgetLayout->AddWidget(_gameView, ALIGN_CENTER);  
 }
 
-void EditorWindow::OnGuiBegin() { GLFWMainFrame::OnGuiBegin(); }
+void EditorWindow::OnGuiBegin() {
+  //
+  GLFWMainFrame::OnGuiBegin();
+}
 
-void EditorWindow::OnGui() { GLFWMainFrame::OnGui(); }
+void EditorWindow::OnGui() {
+  //
+  GLFWMainFrame::OnGui();
+}
 
-void EditorWindow::OnGuiEnd() { GLFWMainFrame::OnGuiEnd(); }
+void EditorWindow::OnGuiEnd() {
+  //
+  GLFWMainFrame::OnGuiEnd();
+}
 
 EditorWindow::~EditorWindow() {
   _sceneView = nullptr;

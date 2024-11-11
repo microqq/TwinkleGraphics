@@ -13,7 +13,7 @@
 #include "twSceneNode.h"
 
 namespace TwinkleGraphics {
-struct __TWCOMExport Viewport {
+struct __TWAPI Viewport {
   Rect rect;
   RGBA clearColor;
   float32 clearDepth;
@@ -58,7 +58,7 @@ struct __TWCOMExport Viewport {
   }
 };
 
-class __TWCOMExport Camera : public SceneNode {
+class __TWAPI Camera : public SceneNode {
 public:
   using Ptr = std::shared_ptr<Camera>;
 

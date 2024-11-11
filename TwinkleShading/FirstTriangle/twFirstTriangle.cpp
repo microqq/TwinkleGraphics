@@ -7,7 +7,7 @@
 
 namespace TwinkleGraphics {
 FirstTriangle::FirstTriangle(std::string &name)
-    : GLPlugin(name), _view(nullptr) {}
+    : GLViewPlugin(name), _view(nullptr) {}
 
 FirstTriangle::~FirstTriangle() { SAFE_DEL(_view); }
 
@@ -89,7 +89,7 @@ void TriangleView::Initialized() {
   _modelMatLoc =
       glGetUniformLocation(_program->GetRenderResource().id, "model");
   _viewMatLoc = glGetUniformLocation(_program->GetRenderResource().id, "view");
-  _projection_mat_loc =
+  _projectionMatLoc =
       glGetUniformLocation(_program->GetRenderResource().id, "projection");
 
   View::Initialized();
@@ -115,7 +115,7 @@ void TriangleView::RenderImpl() {
   // shader uniform setting
   glUniformMatrix4fv(_modelMatLoc, 1, GL_FALSE, glm::value_ptr(_modelMat));
   glUniformMatrix4fv(_viewMatLoc, 1, GL_FALSE, glm::value_ptr(_viewMat));
-  glUniformMatrix4fv(_projection_mat_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(_projectionMatLoc, 1, GL_FALSE,
                      glm::value_ptr(_projectionMat));
 
   // draw command use vertex array object
@@ -123,50 +123,8 @@ void TriangleView::RenderImpl() {
   glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
 }
 
-// test imgui
-bool show_demo_window = true;
-bool show_another_window = false;
-ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
 void TriangleView::OnGUI() {
-  // 1. Show the big demo window (Most of the sample code is in
-  // ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear
-  // ImGui!).
-  if (show_demo_window)
-    ImGui::ShowDemoWindow(&show_demo_window);
 
-  // 2. Show a simple window that we create ourselves. We use a Begin/End pair
-  // to created a named window.
-  {
-    static float f = 0.0f;
-    static int counter = 0;
-
-    ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and
-                                   // append into it.
-
-    ImGui::Text("This is some useful text."); // Display some text (you can use
-                                              // a format strings too)
-    ImGui::Checkbox(
-        "Demo Window",
-        &show_demo_window); // Edit bools storing our window open/close state
-    ImGui::Checkbox("Another Window", &show_another_window);
-
-    ImGui::SliderFloat("float", &f, 0.0f,
-                       1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
-    ImGui::ColorEdit3(
-        "clear color",
-        (float *)&clear_color); // Edit 3 floats representing a color
-
-    if (ImGui::Button("Button")) // Buttons return true when clicked (most
-                                 // widgets return true when edited/activated)
-      counter++;
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", counter);
-
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
-  }
 }
 
 void TriangleView::Destroy() {

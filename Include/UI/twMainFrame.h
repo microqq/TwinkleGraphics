@@ -4,10 +4,12 @@
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport MainFrame : public Widget {
+class __TWAPI MainFrame : public Widget {
 public:
   MainFrame(uint32 width, uint32 height, Widget *parent = nullptr);
   virtual ~MainFrame();
+
+  virtual void Initialize() {}
   virtual void Update(float deltaTime = 0.0f) override;
 
   virtual bool CheckIfClose() { return false; }
@@ -17,6 +19,8 @@ public:
   virtual void EndFrame() {}
 
 protected:
+  virtual void OnGui() override { Widget::OnGui(); }
+
   virtual void MouseInputCallback(int32 button, int32 action, int32 mods) {}
   virtual void CursorPosCallback(float64 xpos, float64 ypos) {}
   virtual void CursorEnterPosCallback(int32 entered) {}

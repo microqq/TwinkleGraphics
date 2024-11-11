@@ -147,7 +147,7 @@ TEST(ThreadTests, FutureGet) {
 
   for (int i = 0; i < 10; i++) {
     auto future = pool.PushTask(ReturnResult, i);
-    Futures_.push_back(std::move(future));
+    Futures_.emplace_back(std::move(future));
   }
 
   // while(true)
@@ -168,7 +168,7 @@ TEST(ThreadTests, FutureGet2) {
 
   for (int i = 0; i < 10; i++) {
     auto future = pool.PushTask(ReturnShader, i);
-    FuturesOfShader_.push_back(std::move(future));
+    FuturesOfShader_.emplace_back(std::move(future));
   }
 
   {

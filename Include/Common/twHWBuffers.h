@@ -338,7 +338,7 @@ public:
 
   void DrawColorBuffers() {
     if (_colorAttachments > 1) {
-      uint32 attachments[_colorAttachments];
+      uint32 *attachments = new uint32[_colorAttachments];
       for (int32 i = 0; i < _colorAttachments; i++) {
         attachments[i] = AttachmentType::COLOR_ATTACHMENT + i;
       }
@@ -349,7 +349,7 @@ public:
   int32 GetColorAttachmentsCount() { return _colorAttachments; }
 
 private:
-  int32 _colorAttachments;
+  int32 _colorAttachments = 0;
 };
 
 using FrameBufferObjectPtr = FrameBufferObject::Ptr;

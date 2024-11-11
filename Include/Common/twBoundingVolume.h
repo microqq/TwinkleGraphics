@@ -10,7 +10,7 @@ class AABoundingBox;
 class OrientedBoundingBox;
 class BoundingSphere;
 
-class __TWCOMExport AABoundingBox : public Object {
+class __TWAPI AABoundingBox : public Object {
 public:
   using Ptr = std::shared_ptr<AABoundingBox>;
 
@@ -63,7 +63,7 @@ private:
 
 using AABoundingBoxPtr = AABoundingBox::Ptr;
 
-class __TWCOMExport OrientedBoundingBox : public Object {
+class __TWAPI OrientedBoundingBox : public Object {
 public:
   using Ptr = std::shared_ptr<OrientedBoundingBox>;
 
@@ -102,7 +102,7 @@ private:
 
 using OrientedBoundingBoxPtr = OrientedBoundingBox::Ptr;
 
-class __TWCOMExport BoundingSphere : public Object {
+class __TWAPI BoundingSphere : public Object {
 public:
   using Ptr = std::shared_ptr<BoundingSphere>;
 

@@ -7,14 +7,15 @@
 #include "twCamera.h"
 #include "twFirstPersonControl.h"
 #include "twGeometry.h"
-#include "twPlugin.h"
+#include "twView.h"
+#include "twGLViewPlugin.h"
 #include "twShader.h"
 
 
 namespace TwinkleGraphics {
 class BasicGeometryView;
 
-class BasicGeometry : public GLPlugin {
+class BasicGeometry : public GLViewPlugin {
 public:
   BasicGeometry(std::string &name);
   ~BasicGeometry();

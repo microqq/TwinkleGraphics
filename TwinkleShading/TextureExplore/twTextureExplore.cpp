@@ -6,10 +6,11 @@
 #include "twImageManager.h"
 #include "twMaterialInstance.h"
 #include "twTextureExplore.h"
+#include "twImGuiContextManager.h"
 
 namespace TwinkleGraphics {
 TextureExplore::TextureExplore(std::string &name)
-    : GLPlugin(name), _view(nullptr) {}
+    : GLViewPlugin(name), _view(nullptr) {}
 
 TextureExplore::~TextureExplore() { SAFE_DEL(_view); }
 
@@ -54,9 +55,9 @@ void TextureExploreView::Initialized() {
   _ebos = new uint32[16];
   glGenBuffers(16, _ebos);
 
-  Viewport pro_viewport(Rect(0, 0, _rect.z, _rect.w), 17664U,
+  Viewport projViewport(Rect(0, 0, _rect.z, _rect.w), 17664U,
                         RGBA(0.0f, 0.f, 0.f, 1.f));
-  _projTexCamera = std::make_shared<Camera>(pro_viewport, 30.0f, 0.1f, 1000.0f);
+  _projTexCamera = std::make_shared<Camera>(projViewport, 30.0f, 0.1f, 1000.0f);
   // _proj_tex_camera->SetOrientation(quat(1.0f, 0.0f, 0.0f, glm::pi<float32>()
   // * 0.5f));
   _projTexCamera->Translate(vec3(0.0f, 0.0f, 10.0f));
@@ -128,9 +129,9 @@ void TextureExploreView::Advance(float64 delta_time) {
     if (_currentTexOption == 3 || _enableSkybox) {
       geom = _skybox;
       MaterialPtr skyboxmat = geom->GetMeshRenderer()->GetMaterial();
-      mat4 rotate_mat = glm::mat4_cast(_camera->GetOrientation());
+      mat4 rotateMat = glm::mat4_cast(_camera->GetOrientation());
       // mat4 mvp = _projection_mat * glm::mat4(glm::mat3(_view_mat));
-      mat4 mvp = _projectionMat * rotate_mat;
+      mat4 mvp = _projectionMat * rotateMat;
 
       skyboxmat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
@@ -218,25 +219,25 @@ void TextureExploreView::Advance(float64 delta_time) {
       geom = _nurbsSurface;
 
     if (geom != nullptr) {
-      mat4 mat_tex_view = _projTexCamera->GetViewMatrix();
-      mat4 mat_tex_proj = _projTexCamera->GetProjectionMatrix();
-      mat4 mat_tex_vp = mat_tex_proj * mat_tex_view;
+      mat4 matTexView = _projTexCamera->GetViewMatrix();
+      mat4 matTexProj = _projTexCamera->GetProjectionMatrix();
+      mat4 matTexVP = matTexProj * matTexView;
 
-      TransformPtr nurbs_trans = _nurbsSurface->GetTransform();
-      // nurbs_trans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
+      TransformPtr nurbsTrans = _nurbsSurface->GetTransform();
+      // nurbsTrans->Rotate(0.004f, glm::vec3(0.0f, 1.0f, 1.0f));
 
-      mat4 world = nurbs_trans->GetLocalToWorldMatrix();
+      mat4 world = nurbsTrans->GetLocalToWorldMatrix();
       mat4 mvp = _mvpMat * world;
 
-      MaterialPtr nurbs_mat = _nurbsSurface->GetMeshRenderer()->GetMaterial();
-      nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
-      nurbs_mat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
+      MaterialPtr nurbsMat = _nurbsSurface->GetMeshRenderer()->GetMaterial();
+      nurbsMat->SetMatrixUniformValue<float32, 4, 4>("texvp", matTexVP);
+      nurbsMat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
 
       MaterialPtr quadMat = _projTexQuad->GetMeshRenderer()->GetMaterial();
       TransformPtr quadTrans = _projTexQuad->GetTransform();
       world = quadTrans->GetLocalToWorldMatrix();
       mvp = _mvpMat * world;
-      quadMat->SetMatrixUniformValue<float32, 4, 4>("texvp", mat_tex_vp);
+      quadMat->SetMatrixUniformValue<float32, 4, 4>("texvp", matTexVP);
       quadMat->SetMatrixUniformValue<float32, 4, 4>("mvp", mvp);
     }
   }
@@ -256,6 +257,9 @@ void TextureExploreView::RenderImpl() {
   }
 }
 void TextureExploreView::OnGUI() {
+
+  ImGuiContextManager &imguiCtxMgr = ImGuiContextMgrInstance();
+  imguiCtxMgr.SetCurrentContext();
   ImGui::Begin(u8"纹理小观");
   {
     if (ImGui::RadioButton(u8"一维纹理", &_currentTexOption, 0)) {
@@ -310,13 +314,13 @@ void TextureExploreView::OnGUI() {
     ImGui::BeginTabBar(u8"纹理参数", ImGuiTabBarFlags_None);
 
     if (ImGui::BeginTabItem(u8"纹理环绕", &(_texparamsTabitem[0]))) {
-      bool wrap_option_clicked = false;
+      bool wrapOptionClicked = false;
       ImGui::BeginGroup();
       ImGui::Text(u8"参数:");
       ImGui::Indent();
-      wrap_option_clicked = ImGui::RadioButton(u8"Wrap_S", &_wrapOption, 0);
-      wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_T", &_wrapOption, 1);
-      wrap_option_clicked |= ImGui::RadioButton(u8"Wrap_R", &_wrapOption, 2);
+      wrapOptionClicked = ImGui::RadioButton(u8"Wrap_S", &_wrapOption, 0);
+      wrapOptionClicked |= ImGui::RadioButton(u8"Wrap_T", &_wrapOption, 1);
+      wrapOptionClicked |= ImGui::RadioButton(u8"Wrap_R", &_wrapOption, 2);
       ImGui::EndGroup();
 
       ImGui::SameLine();
@@ -326,13 +330,13 @@ void TextureExploreView::OnGUI() {
     }
 
     if (ImGui::BeginTabItem(u8"纹理过滤", &(_texparamsTabitem[1]))) {
-      bool filter_option_clicked = false;
+      bool filterOptionClicked = false;
       ImGui::BeginGroup();
       ImGui::Text(u8"参数:");
       ImGui::Indent();
-      filter_option_clicked =
+      filterOptionClicked =
           ImGui::RadioButton(u8"Minification", &_filterOption, 0);
-      filter_option_clicked |=
+      filterOptionClicked |=
           ImGui::RadioButton(u8"Magnification", &_filterOption, 1);
       ImGui::EndGroup();
 
@@ -417,35 +421,35 @@ void TextureExploreView::OnGUI() {
   this->SetTexparams();
 }
 
-void TextureExploreView::OnWrapModeGUI(int32 &wrap_mode_option) {
-  bool wrap_mode_clicked = false;
+void TextureExploreView::OnWrapModeGUI(int32 &wrapModeOption) {
+  bool wrapModeClicked = false;
   ImGui::BeginGroup();
   ImGui::Text(u8"模式:");
   ImGui::Indent();
-  wrap_mode_clicked = ImGui::RadioButton(u8"REPEAT", &wrap_mode_option, 0);
-  wrap_mode_clicked |= ImGui::RadioButton(u8"CLAMP", &wrap_mode_option, 1);
-  wrap_mode_clicked |=
-      ImGui::RadioButton(u8"CLAMP_TO_EDGE", &wrap_mode_option, 2);
-  wrap_mode_clicked |=
-      ImGui::RadioButton(u8"CLAMP_TO_BORDER", &wrap_mode_option, 3);
+  wrapModeClicked = ImGui::RadioButton(u8"REPEAT", &wrapModeOption, 0);
+  wrapModeClicked |= ImGui::RadioButton(u8"CLAMP", &wrapModeOption, 1);
+  wrapModeClicked |=
+      ImGui::RadioButton(u8"CLAMP_TO_EDGE", &wrapModeOption, 2);
+  wrapModeClicked |=
+      ImGui::RadioButton(u8"CLAMP_TO_BORDER", &wrapModeOption, 3);
   ImGui::EndGroup();
 }
 
-void TextureExploreView::OnFilterModeGUI(int32 &filter_mode_option) {
-  bool filter_mode_clicked = false;
+void TextureExploreView::OnFilterModeGUI(int32 &filterModeOption) {
+  bool filterModeClicked = false;
   ImGui::BeginGroup();
   ImGui::Text(u8"模式:");
   ImGui::Indent();
-  filter_mode_clicked = ImGui::RadioButton(u8"NEAREST", &filter_mode_option, 0);
-  filter_mode_clicked |= ImGui::RadioButton(u8"LINEAR", &filter_mode_option, 1);
-  filter_mode_clicked |=
-      ImGui::RadioButton(u8"NEAREST_MIPMAP_NEAREST", &filter_mode_option, 2);
-  filter_mode_clicked |=
-      ImGui::RadioButton(u8"NEAREST_MIPMAP_LINEAR", &filter_mode_option, 3);
-  filter_mode_clicked |=
-      ImGui::RadioButton(u8"LINEAR_MIPMAP_NEAREST", &filter_mode_option, 4);
-  filter_mode_clicked |=
-      ImGui::RadioButton(u8"LINEAR_MIPMAP_LINEAR", &filter_mode_option, 5);
+  filterModeClicked = ImGui::RadioButton(u8"NEAREST", &filterModeOption, 0);
+  filterModeClicked |= ImGui::RadioButton(u8"LINEAR", &filterModeOption, 1);
+  filterModeClicked |=
+      ImGui::RadioButton(u8"NEAREST_MIPMAP_NEAREST", &filterModeOption, 2);
+  filterModeClicked |=
+      ImGui::RadioButton(u8"NEAREST_MIPMAP_LINEAR", &filterModeOption, 3);
+  filterModeClicked |=
+      ImGui::RadioButton(u8"LINEAR_MIPMAP_NEAREST", &filterModeOption, 4);
+  filterModeClicked |=
+      ImGui::RadioButton(u8"LINEAR_MIPMAP_LINEAR", &filterModeOption, 5);
   ImGui::EndGroup();
 }
 
@@ -521,19 +525,19 @@ void TextureExploreView::SetTexparams() {
   _texparams.borderColor = _bordercolor;
 }
 
-WrapMode TextureExploreView::GetWrapMode(int32 wrap_mode_option) {
-  if (wrap_mode_option == -1)
+WrapMode TextureExploreView::GetWrapMode(int32 wrapModeOption) {
+  if (wrapModeOption == -1)
     return WrapMode::NONE;
 
   WrapMode modes[5] = {WrapMode::REPEAT, WrapMode::CLAMP,
                        WrapMode::CLAMP_TO_EDGE, WrapMode::CLAMP_TO_BORDER,
                        WrapMode::NONE};
 
-  return modes[wrap_mode_option];
+  return modes[wrapModeOption];
 }
 
-FilterMode TextureExploreView::GetFilterMode(int32 filter_mode_option) {
-  if (filter_mode_option == -1) {
+FilterMode TextureExploreView::GetFilterMode(int32 filterModeOption) {
+  if (filterModeOption == -1) {
     return FilterMode::NONE;
   }
 
@@ -543,11 +547,11 @@ FilterMode TextureExploreView::GetFilterMode(int32 filter_mode_option) {
   //     FilterMode::LINEAR_MIPMAP_LINEAR, FilterMode::NONE };
 
   return FilterMode((int)FilterMode::NEAREST +
-                    filter_mode_option); // modes[filter_mode_option];
+                    filterModeOption); // modes[filterModeOption];
 }
 
-SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option) {
-  if (swizzle_option == -1) {
+SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzleOption) {
+  if (swizzleOption == -1) {
     return SwizzleParam::NONE;
   }
 
@@ -556,15 +560,15 @@ SwizzleParam TextureExploreView::GetSwizzleParam(int32 swizzle_option) {
   //     SwizzleParam::SWIZZLE_A, SwizzleParam::SWIZZLE_RGBA };
 
   return SwizzleParam((int)SwizzleParam::SWIZZLE_R +
-                      swizzle_option); // params[swizzle_option];
+                      swizzleOption); // params[swizzleOption];
 }
 
-SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzle_mask_option) {
+SwizzleMask TextureExploreView::GetSwizzleMask(int32 swizzleMaskOption) {
   SwizzleMask masks[6] = {SwizzleMask::RED,  SwizzleMask::GREEN,
                           SwizzleMask::BLUE, SwizzleMask::ALPHA,
                           SwizzleMask::ZERO, SwizzleMask::ONE};
 
-  return masks[swizzle_mask_option];
+  return masks[swizzleMaskOption];
 }
 
 void TextureExploreView::CreateSprite() {
@@ -663,54 +667,54 @@ void TextureExploreView::CreateSkybox() {
     // ImageReadInfo imageFilename = {"Assets/Textures/TantolundenCube.dds"};
     // ImagePtr image = imageMgr.ReadImage(imageFilename);
 
-    // ImageReadInfo front_info =
+    // ImageReadInfo frontInfo =
     // {"Assets/Textures/plains-of-abraham/plains-of-abraham_ft.tga"}; ImagePtr
-    // front_image = imageMgr.ReadImage(front_info); ImageReadInfo back_info =
+    // frontImage = imageMgr.ReadImage(frontInfo); ImageReadInfo backInfo =
     // {"Assets/Textures/plains-of-abraham/plains-of-abraham_bk.tga"}; ImagePtr
-    // back_image = imageMgr.ReadImage(back_info); ImageReadInfo left_info =
+    // backImage = imageMgr.ReadImage(backInfo); ImageReadInfo leftInfo =
     // {"Assets/Textures/plains-of-abraham/plains-of-abraham_lf.tga"}; ImagePtr
-    // left_image = imageMgr.ReadImage(left_info); ImageReadInfo right_info =
+    // leftImage = imageMgr.ReadImage(leftInfo); ImageReadInfo rightInfo =
     // {"Assets/Textures/plains-of-abraham/plains-of-abraham_rt.tga"}; ImagePtr
-    // right_image = imageMgr.ReadImage(right_info); ImageReadInfo top_info =
+    // rightImage = imageMgr.ReadImage(rightInfo); ImageReadInfo topInfo =
     // {"Assets/Textures/plains-of-abraham/plains-of-abraham_up.tga"}; ImagePtr
-    // top_image = imageMgr.ReadImage(top_info); ImageReadInfo down_info =
+    // topImage = imageMgr.ReadImage(topInfo); ImageReadInfo downInfo =
     // {"Assets/Textures/plains-of-abraham/plains-of-abraham_dn.tga"}; ImagePtr
-    // down_image = imageMgr.ReadImage(down_info);
+    // downImage = imageMgr.ReadImage(downInfo);
 
-    std::string front_info = {"Assets/Textures/skybox/front.png"};
-    ImagePtr front_image = imageMgr.ReadImage(front_info.c_str());
-    std::string back_info = {"Assets/Textures/skybox/back.png"};
-    ImagePtr back_image = imageMgr.ReadImage(back_info.c_str());
-    std::string left_info = {"Assets/Textures/skybox/left.png"};
-    ImagePtr left_image = imageMgr.ReadImage(left_info.c_str());
-    std::string right_info = {"Assets/Textures/skybox/right.png"};
-    ImagePtr right_image = imageMgr.ReadImage(right_info.c_str());
-    std::string top_info = {"Assets/Textures/skybox/top.png"};
-    ImagePtr top_image = imageMgr.ReadImage(top_info.c_str());
-    std::string down_info = {"Assets/Textures/skybox/bottom.png"};
-    ImagePtr down_image = imageMgr.ReadImage(down_info.c_str());
+    std::string frontInfo = {"Assets/Textures/skybox/front.png"};
+    ImagePtr frontImage = imageMgr.ReadImage(frontInfo.c_str());
+    std::string backInfo = {"Assets/Textures/skybox/back.png"};
+    ImagePtr backImage = imageMgr.ReadImage(backInfo.c_str());
+    std::string leftInfo = {"Assets/Textures/skybox/left.png"};
+    ImagePtr leftImage = imageMgr.ReadImage(leftInfo.c_str());
+    std::string rightInfo = {"Assets/Textures/skybox/right.png"};
+    ImagePtr rightImage = imageMgr.ReadImage(rightInfo.c_str());
+    std::string topInfo = {"Assets/Textures/skybox/top.png"};
+    ImagePtr topImage = imageMgr.ReadImage(topInfo.c_str());
+    std::string downInfo = {"Assets/Textures/skybox/bottom.png"};
+    ImagePtr downImage = imageMgr.ReadImage(downInfo.c_str());
 
-    // ImageReadInfo front_info = {"Assets/Textures/sor_sea/sea_ft.png"};
-    // ImagePtr front_image = imageMgr.ReadImage(front_info);
-    // ImageReadInfo back_info = {"Assets/Textures/sor_sea/sea_bk.png"};
-    // ImagePtr back_image = imageMgr.ReadImage(back_info);
-    // ImageReadInfo left_info = {"Assets/Textures/sor_sea/sea_lf.png"};
-    // ImagePtr left_image = imageMgr.ReadImage(left_info);
-    // ImageReadInfo right_info = {"Assets/Textures/sor_sea/sea_rt.png"};
-    // ImagePtr right_image = imageMgr.ReadImage(right_info);
-    // ImageReadInfo top_info = {"Assets/Textures/sor_sea/sea_up.png"};
-    // ImagePtr top_image = imageMgr.ReadImage(top_info);
-    // ImageReadInfo down_info = {"Assets/Textures/sor_sea/sea_dn.png"};
-    // ImagePtr down_image = imageMgr.ReadImage(down_info);
+    // ImageReadInfo frontInfo = {"Assets/Textures/sor_sea/sea_ft.png"};
+    // ImagePtr frontImage = imageMgr.ReadImage(frontInfo);
+    // ImageReadInfo backInfo = {"Assets/Textures/sor_sea/sea_bk.png"};
+    // ImagePtr backImage = imageMgr.ReadImage(backInfo);
+    // ImageReadInfo leftInfo = {"Assets/Textures/sor_sea/sea_lf.png"};
+    // ImagePtr leftImage = imageMgr.ReadImage(leftInfo);
+    // ImageReadInfo rightInfo = {"Assets/Textures/sor_sea/sea_rt.png"};
+    // ImagePtr rightImage = imageMgr.ReadImage(rightInfo);
+    // ImageReadInfo topInfo = {"Assets/Textures/sor_sea/sea_up.png"};
+    // ImagePtr topImage = imageMgr.ReadImage(topInfo);
+    // ImageReadInfo downInfo = {"Assets/Textures/sor_sea/sea_dn.png"};
+    // ImagePtr downImage = imageMgr.ReadImage(downInfo);
 
     // cubemap->CreateFromImage(image);
 
-    cubemap->SetPositiveX(right_image);
-    cubemap->SetPositiveY(top_image);
-    cubemap->SetPositiveZ(front_image);
-    cubemap->SetNegativeX(left_image);
-    cubemap->SetNegativeY(down_image);
-    cubemap->SetNegativeZ(back_image);
+    cubemap->SetPositiveX(rightImage);
+    cubemap->SetPositiveY(topImage);
+    cubemap->SetPositiveZ(frontImage);
+    cubemap->SetNegativeX(leftImage);
+    cubemap->SetNegativeY(downImage);
+    cubemap->SetNegativeZ(backImage);
     cubemap->InitStorageByOthers();
 
     renderer->SetMaterial(mat);
@@ -781,79 +785,79 @@ void TextureExploreView::CreateIconSphere(ImagePtr image) {
 
 void TextureExploreView::CreateNURBSSurface() {
   if (_nurbsSurface == nullptr) {
-    glm::vec4 *control_points = new glm::vec4[25];
+    glm::vec4 *controlPoints = new glm::vec4[25];
 
     int32 n = 0;
-    control_points[0] = glm::vec4(-10.f, 0.5f, 0.0f, 1.0f);
-    control_points[1] = glm::vec4(-8.5f, 3.5f, -3.0f, 1.0f);
-    control_points[2] = glm::vec4(-8.f, 4.5f, -6.0f, 1.0f);
-    control_points[3] = glm::vec4(-10.5f, 0.5f, -9.0f, 1.0f);
-    control_points[4] = glm::vec4(-8.5f, -1.5f, -12.0f, 1.0f);
+    controlPoints[0] = glm::vec4(-10.f, 0.5f, 0.0f, 1.0f);
+    controlPoints[1] = glm::vec4(-8.5f, 3.5f, -3.0f, 1.0f);
+    controlPoints[2] = glm::vec4(-8.f, 4.5f, -6.0f, 1.0f);
+    controlPoints[3] = glm::vec4(-10.5f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4] = glm::vec4(-8.5f, -1.5f, -12.0f, 1.0f);
 
-    // _nurbs_control_line = Mesh::CreateLineMeshEx(control_points, 5);
+    // _nurbs_control_line = Mesh::CreateLineMeshEx(controlPoints, 5);
     // CreateGeometry(_nurbs_control_line->GetSubMesh(0), 19);
 
     n = 5;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
     n = 10;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
     n = 15;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
     n = 20;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
-    Knot *u_knots = new Knot[9];
-    u_knots[0].u = 0.0f;
-    u_knots[8].u = 1.0f;
-    u_knots[1].u = 0.0f;
-    u_knots[2].u = 0.0f;
-    u_knots[3].u = 0.0f;
-    u_knots[4].u = 0.5f;
-    u_knots[5].u = 1.f;
-    u_knots[6].u = 1.f;
-    u_knots[7].u = 1.f;
+    Knot *uKnots = new Knot[9];
+    uKnots[0].u = 0.0f;
+    uKnots[8].u = 1.0f;
+    uKnots[1].u = 0.0f;
+    uKnots[2].u = 0.0f;
+    uKnots[3].u = 0.0f;
+    uKnots[4].u = 0.5f;
+    uKnots[5].u = 1.f;
+    uKnots[6].u = 1.f;
+    uKnots[7].u = 1.f;
 
-    u_knots[3].multiplity = 3;
-    u_knots[8].multiplity = 3;
+    uKnots[3].multiplity = 3;
+    uKnots[8].multiplity = 3;
 
-    Knot *v_knots = new Knot[9];
-    v_knots[0].u = 0.0f;
-    v_knots[8].u = 1.0f;
-    v_knots[1].u = 0.0f;
-    v_knots[2].u = 0.0f;
-    v_knots[3].u = 0.0f;
-    v_knots[4].u = 0.5f;
-    v_knots[5].u = 1.f;
-    v_knots[6].u = 1.f;
-    v_knots[7].u = 1.f;
+    Knot *vKnots = new Knot[9];
+    vKnots[0].u = 0.0f;
+    vKnots[8].u = 1.0f;
+    vKnots[1].u = 0.0f;
+    vKnots[2].u = 0.0f;
+    vKnots[3].u = 0.0f;
+    vKnots[4].u = 0.5f;
+    vKnots[5].u = 1.f;
+    vKnots[6].u = 1.f;
+    vKnots[7].u = 1.f;
 
-    v_knots[3].multiplity = 3;
-    v_knots[8].multiplity = 3;
+    vKnots[3].multiplity = 3;
+    vKnots[8].multiplity = 3;
 
-    _nurbsSurface = std::make_shared<NURBSSurface>(5, 3, 5, 3, control_points,
-                                                   u_knots, v_knots);
-    // _nurbsSurface->SetControlPoints(control_points, 25);
-    // _nurbsSurface->SetUKnots(u_knots, 9);
-    // _nurbsSurface->SetVKnots(v_knots, 9);
+    _nurbsSurface = std::make_shared<NURBSSurface>(5, 3, 5, 3, controlPoints,
+                                                   uKnots, vKnots);
+    // _nurbsSurface->SetControlPoints(controlPoints, 25);
+    // _nurbsSurface->SetUKnots(uKnots, 9);
+    // _nurbsSurface->SetVKnots(vKnots, 9);
     // _nurbsSurface->GenerateMeshInternal();
 
     TransformPtr trans = _nurbsSurface->GetTransform();
@@ -907,9 +911,9 @@ void TextureExploreView::CreateNURBSSurface() {
     CreateGeometry(_nurbsSurface, 6);
     CreateGeometry(_projTexQuad, 13);
 
-    SAFE_DEL_ARR(control_points);
-    SAFE_DEL_ARR(u_knots);
-    SAFE_DEL_ARR(v_knots);
+    SAFE_DEL_ARR(controlPoints);
+    SAFE_DEL_ARR(uKnots);
+    SAFE_DEL_ARR(vKnots);
   }
 }
 
@@ -1005,8 +1009,8 @@ void TextureExploreView::RenderGeometry(GeometryPtr geom, int32 index,
 
   ShaderProgramPtr shader = pass->GetShaderProgram();
 
-  for (auto tex_slot : pass->GetTextureSlots()) {
-    tex_slot.second.Apply();
+  for (auto texSlot : pass->GetTextureSlots()) {
+    texSlot.second.Apply();
   }
 
   ShaderProgramUse use(shader);
@@ -1039,8 +1043,8 @@ void TextureExploreView::RenderGeometry(GeometryPtr geom, int32 index,
 
   glDisable(GL_BLEND);
 
-  for (auto tex_slot : pass->GetTextureSlots()) {
-    tex_slot.second.UnBind();
+  for (auto texSlot : pass->GetTextureSlots()) {
+    texSlot.second.UnBind();
   }
 }
 

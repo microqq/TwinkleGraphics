@@ -10,7 +10,7 @@
 
 namespace TwinkleGraphics {
 
-class __TWCOMExport Scene : public Object {
+class __TWAPI Scene : public Object {
 public:
   using Ptr = std::shared_ptr<Scene>;
 
@@ -115,6 +115,8 @@ private:
 private:
   std::vector<Scene::Ptr> _sceneLists;
   Scene::Ptr _currentScene{nullptr};
+
+  friend class Singleton<SceneManager>;
 };
 
 } // namespace TwinkleGraphics

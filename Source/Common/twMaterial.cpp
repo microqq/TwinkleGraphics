@@ -124,7 +124,7 @@ Material::Material(const Material &src)
     : Object(src), _passes(), _uniforms(), _textures(), _state(src._state) {
   for (auto srcPass : src._passes) {
     RenderPassPtr pass = std::make_shared<RenderPass>(*(srcPass.get()));
-    _passes.push_back(pass);
+    _passes.emplace_back(pass);
   }
 
   for (auto srcUniform : src._uniforms) {

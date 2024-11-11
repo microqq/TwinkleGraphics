@@ -5,11 +5,11 @@
 #include "twBasicGeometry.h"
 #include "twGeoUtil.h"
 #include "twImageManager.h"
-
+#include "twImGuiContextManager.h"
 
 namespace TwinkleGraphics {
 BasicGeometry::BasicGeometry(std::string &name)
-    : GLPlugin(name), _view(nullptr) {}
+    : GLViewPlugin(name), _view(nullptr) {}
 
 BasicGeometry::~BasicGeometry() { SAFE_DEL(_view); }
 
@@ -128,7 +128,7 @@ void BasicGeometryView::Initialized() {
         glGetUniformLocation(_lineProgram->GetRenderResource().id, "lineColor");
   }
 
-  View::Initialize();
+  View::Initialized();
 }
 
 void BasicGeometryView::Advance(float64 delta_time) {
@@ -209,6 +209,8 @@ void BasicGeometryView::OnGUI() {
   // }
   // ImGui::End();
 
+  ImGuiContextManager &imguiCtxMgr = ImGuiContextMgrInstance();
+  imguiCtxMgr.SetCurrentContext();
   ImGui::Begin(u8"创建几何形体");
   {
     if (ImGui::RadioButton(u8"球体(UV Sphere)", &_currentMeshIndex, 0)) {
@@ -291,6 +293,7 @@ void BasicGeometryView::OnGUI() {
   }
   ImGui::End();
 
+  imguiCtxMgr.SetCurrentContext();
   OnParametersGUI();
 }
 
@@ -449,8 +452,8 @@ void BasicGeometryView::RenderInfinitePlane() {
 
   ShaderProgramPtr shader = pass->GetShaderProgram();
 
-  for (auto tex_slot : pass->GetTextureSlots()) {
-    tex_slot.second.Apply();
+  for (auto texSlot : pass->GetTextureSlots()) {
+    texSlot.second.Apply();
   }
   float aniso = 1.0f;
   glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
@@ -479,8 +482,8 @@ void BasicGeometryView::RenderInfinitePlane() {
 
   glDisable(GL_BLEND);
 
-  for (auto tex_slot : pass->GetTextureSlots()) {
-    tex_slot.second.UnBind();
+  for (auto texSlot : pass->GetTextureSlots()) {
+    texSlot.second.UnBind();
   }
 }
 
@@ -607,37 +610,37 @@ void BasicGeometryView::CreateInfinitePlane() {
 }
 
 void BasicGeometryView::CreateQuadBezierLine() {
-  glm::vec3 *control_points = new glm::vec3[3];
-  control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
-  control_points[1] = glm::vec3(0.f, 4.0f, 0.0f);
-  control_points[2] = glm::vec3(5.f, 0.5f, 0.0f);
+  glm::vec3 *controlPoints = new glm::vec3[3];
+  controlPoints[0] = glm::vec3(-5.f, 0.5f, 0.0f);
+  controlPoints[1] = glm::vec3(0.f, 4.0f, 0.0f);
+  controlPoints[2] = glm::vec3(5.f, 0.5f, 0.0f);
 
-  _quadbezierline = Mesh::CreateQuadraticBezierLine(control_points);
+  _quadbezierline = Mesh::CreateQuadraticBezierLine(controlPoints);
   CreateGeometry(_quadbezierline, 7);
 
-  SAFE_DEL_ARR(control_points);
+  SAFE_DEL_ARR(controlPoints);
 }
 void BasicGeometryView::CreateCubicBezierLine() {
-  glm::vec3 *control_points = new glm::vec3[4];
-  control_points[0] = glm::vec3(-5.f, 0.5f, 0.0f);
-  control_points[1] = glm::vec3(-2.5f, 4.0f, 0.0f);
-  control_points[2] = glm::vec3(2.5f, 0.5f, 0.0f);
-  control_points[3] = glm::vec3(5.f, 4.0f, 0.0f);
+  glm::vec3 *controlPoints = new glm::vec3[4];
+  controlPoints[0] = glm::vec3(-5.f, 0.5f, 0.0f);
+  controlPoints[1] = glm::vec3(-2.5f, 4.0f, 0.0f);
+  controlPoints[2] = glm::vec3(2.5f, 0.5f, 0.0f);
+  controlPoints[3] = glm::vec3(5.f, 4.0f, 0.0f);
 
-  _cubicbezierline = Mesh::CreateCubicBezierLine(control_points);
+  _cubicbezierline = Mesh::CreateCubicBezierLine(controlPoints);
   CreateGeometry(_cubicbezierline, 8);
 
-  SAFE_DEL_ARR(control_points);
+  SAFE_DEL_ARR(controlPoints);
 }
 
 void BasicGeometryView::CreateBSpline() {
   if (_bspline == nullptr) {
-    glm::vec4 *control_points = new glm::vec4[5];
-    control_points[0] = glm::vec4(-5.f, 0.5f, 0.0f, 1.0f);
-    control_points[1] = glm::vec4(-2.5f, 4.0f, 0.0f, 1.0f);
-    control_points[2] = glm::vec4(2.5f, 0.5f, 0.0f, 1.0f);
-    control_points[3] = glm::vec4(5.f, 4.0f, 0.0f, 1.0f);
-    control_points[4] = glm::vec4(3.f, 8.0f, 0.0f, 1.0f);
+    glm::vec4 *controlPoints = new glm::vec4[5];
+    controlPoints[0] = glm::vec4(-5.f, 0.5f, 0.0f, 1.0f);
+    controlPoints[1] = glm::vec4(-2.5f, 4.0f, 0.0f, 1.0f);
+    controlPoints[2] = glm::vec4(2.5f, 0.5f, 0.0f, 1.0f);
+    controlPoints[3] = glm::vec4(5.f, 4.0f, 0.0f, 1.0f);
+    controlPoints[4] = glm::vec4(3.f, 8.0f, 0.0f, 1.0f);
 
     Knot *knots = new Knot[9];
     // knots[0].u = 0.0f;
@@ -663,12 +666,12 @@ void BasicGeometryView::CreateBSpline() {
     knots[3].multiplity = 3;
     knots[8].multiplity = 3;
 
-    _bspline = std::make_shared<BSplineCurve>(5, 3, 9, knots, control_points);
+    _bspline = std::make_shared<BSplineCurve>(5, 3, 9, knots, controlPoints);
 
     MeshPtr mesh = _bspline->GetMesh();
     CreateGeometry(mesh, 9);
 
-    SAFE_DEL_ARR(control_points);
+    SAFE_DEL_ARR(controlPoints);
     SAFE_DEL_ARR(knots);
   }
 }
@@ -678,88 +681,88 @@ void BasicGeometryView::CreateBezierSuface() {}
 
 void BasicGeometryView::CreateNURBSSurface() {
   if (_nurbsSurface == nullptr) {
-    glm::vec4 *control_points = new glm::vec4[25];
+    glm::vec4 *controlPoints = new glm::vec4[25];
 
     int32 n = 0;
-    control_points[0] = glm::vec4(-10.f, 0.5f, 0.0f, 1.0f);
-    control_points[1] = glm::vec4(-8.5f, 3.5f, -3.0f, 1.0f);
-    control_points[2] = glm::vec4(-8.f, 4.5f, -6.0f, 1.0f);
-    control_points[3] = glm::vec4(-10.5f, 0.5f, -9.0f, 1.0f);
-    control_points[4] = glm::vec4(-8.5f, -1.5f, -12.0f, 1.0f);
+    controlPoints[0] = glm::vec4(-10.f, 0.5f, 0.0f, 1.0f);
+    controlPoints[1] = glm::vec4(-8.5f, 3.5f, -3.0f, 1.0f);
+    controlPoints[2] = glm::vec4(-8.f, 4.5f, -6.0f, 1.0f);
+    controlPoints[3] = glm::vec4(-10.5f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4] = glm::vec4(-8.5f, -1.5f, -12.0f, 1.0f);
 
-    // _nurbs_control_line = Mesh::CreateLineMeshEx(control_points, 5);
+    // _nurbs_control_line = Mesh::CreateLineMeshEx(controlPoints, 5);
     // CreateGeometry(_nurbs_control_line->GetSubMesh(0), 19);
 
     n = 5;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
     n = 10;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
     n = 15;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
     n = 20;
-    control_points[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
-    control_points[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
-    control_points[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
-    control_points[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
-    control_points[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
+    controlPoints[0 + n] = glm::vec4(-10.f + n * 1.0f, 0.0f, 0.0f, 1.0f);
+    controlPoints[1 + n] = glm::vec4(-8.5f + n * 1.0f, 5.5f, -3.0f, 1.0f);
+    controlPoints[2 + n] = glm::vec4(-8.f + n * 1.0f, 6.5f, -6.0f, 1.0f);
+    controlPoints[3 + n] = glm::vec4(-10.5f + n * 1.0f, 0.5f, -9.0f, 1.0f);
+    controlPoints[4 + n] = glm::vec4(-8.5f + n * 1.0f, 3.5f, -12.0f, 1.0f);
 
-    Knot *u_knots = new Knot[9];
-    u_knots[0].u = 0.0f;
-    u_knots[8].u = 1.0f;
-    u_knots[1].u = 0.0f;
-    u_knots[2].u = 0.0f;
-    u_knots[3].u = 0.0f;
-    u_knots[4].u = 0.5f;
-    u_knots[5].u = 1.f;
-    u_knots[6].u = 1.f;
-    u_knots[7].u = 1.f;
+    Knot *uKnots = new Knot[9];
+    uKnots[0].u = 0.0f;
+    uKnots[8].u = 1.0f;
+    uKnots[1].u = 0.0f;
+    uKnots[2].u = 0.0f;
+    uKnots[3].u = 0.0f;
+    uKnots[4].u = 0.5f;
+    uKnots[5].u = 1.f;
+    uKnots[6].u = 1.f;
+    uKnots[7].u = 1.f;
 
-    u_knots[3].multiplity = 3;
-    u_knots[8].multiplity = 3;
+    uKnots[3].multiplity = 3;
+    uKnots[8].multiplity = 3;
 
-    Knot *v_knots = new Knot[9];
-    v_knots[0].u = 0.0f;
-    v_knots[8].u = 1.0f;
-    v_knots[1].u = 0.0f;
-    v_knots[2].u = 0.0f;
-    v_knots[3].u = 0.0f;
-    v_knots[4].u = 0.5f;
-    v_knots[5].u = 1.f;
-    v_knots[6].u = 1.f;
-    v_knots[7].u = 1.f;
+    Knot *vKnots = new Knot[9];
+    vKnots[0].u = 0.0f;
+    vKnots[8].u = 1.0f;
+    vKnots[1].u = 0.0f;
+    vKnots[2].u = 0.0f;
+    vKnots[3].u = 0.0f;
+    vKnots[4].u = 0.5f;
+    vKnots[5].u = 1.f;
+    vKnots[6].u = 1.f;
+    vKnots[7].u = 1.f;
 
-    v_knots[3].multiplity = 3;
-    v_knots[8].multiplity = 3;
+    vKnots[3].multiplity = 3;
+    vKnots[8].multiplity = 3;
 
-    _nurbsSurface = std::make_shared<NURBSSurface>(5, 3, 5, 3, control_points,
-                                                   u_knots, v_knots);
+    _nurbsSurface = std::make_shared<NURBSSurface>(5, 3, 5, 3, controlPoints,
+                                                   uKnots, vKnots);
 
-    // _nurbsSurface->SetControlPoints(control_points, 25);
-    // _nurbsSurface->SetUKnots(u_knots, 9);
-    // _nurbsSurface->SetVKnots(v_knots, 9);
+    // _nurbsSurface->SetControlPoints(controlPoints, 25);
+    // _nurbsSurface->SetUKnots(uKnots, 9);
+    // _nurbsSurface->SetVKnots(vKnots, 9);
     // _nurbsSurface->GenerateMeshInternal();
 
     MeshPtr mesh = _nurbsSurface->GetMesh();
     CreateGeometry(mesh, 10);
 
-    SAFE_DEL_ARR(control_points);
-    SAFE_DEL_ARR(u_knots);
-    SAFE_DEL_ARR(v_knots);
+    SAFE_DEL_ARR(controlPoints);
+    SAFE_DEL_ARR(uKnots);
+    SAFE_DEL_ARR(vKnots);
   }
 }
 

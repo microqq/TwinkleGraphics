@@ -7,7 +7,7 @@
 #include "twTransform.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport Model : public Object {
+class __TWAPI Model : public Object {
 public:
   using Ptr = std::shared_ptr<Model>;
 

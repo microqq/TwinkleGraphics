@@ -65,15 +65,15 @@ void OrbitControl::Zoom(glm::vec2 factor) {
  * @param p2
  */
 void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2) {
-  glm::vec2 screen_size = glm::vec2(_camera->GetViewport().Width(),
+  glm::vec2 screenSize = glm::vec2(_camera->GetViewport().Width(),
                                     _camera->GetViewport().Height());
 
-  glm::vec2 spherical_p1 = p1 / screen_size;
-  glm::vec2 spherical_p2 = p2 / screen_size;
+  glm::vec2 sphericalP1 = p1 / screenSize;
+  glm::vec2 sphericalP2 = p2 / screenSize;
 
-  spherical_p1 = (spherical_p1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
-  spherical_p2 = (spherical_p2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
-  glm::vec2 p = spherical_p2 - spherical_p1;
+  sphericalP1 = (sphericalP1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
+  sphericalP2 = (sphericalP2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
+  glm::vec2 p = sphericalP2 - sphericalP1;
   glm::vec3 d = glm::vec3(-p.x, p.y, 0.0f);
 
   // glm::mat3 rotateMat =
@@ -92,15 +92,15 @@ void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2) {
  * @param p2
  */
 void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2) {
-  glm::vec2 screen_size = glm::vec2(_camera->GetViewport().Width(),
+  glm::vec2 screenSize = glm::vec2(_camera->GetViewport().Width(),
                                     _camera->GetViewport().Height());
 
-  glm::vec2 spherical_p1 = p1 / screen_size;
-  glm::vec2 spherical_p2 = p2 / screen_size;
+  glm::vec2 sphericalP1 = p1 / screenSize;
+  glm::vec2 sphericalP2 = p2 / screenSize;
 
-  spherical_p1 = (spherical_p1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
-  spherical_p2 = (spherical_p2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
-  glm::vec2 p = spherical_p2 - spherical_p1;
+  sphericalP1 = (sphericalP1 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
+  sphericalP2 = (sphericalP2 - glm::vec2(0.5f, 0.5f)) * 2.0f * _radius;
+  glm::vec2 p = sphericalP2 - sphericalP1;
 
   glm::vec3 v0(0.0f, 0.0f, 1.0f);
   glm::vec3 v1 = glm::normalize(glm::vec3(p.x, 0.0f, _radius));
@@ -108,16 +108,16 @@ void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2) {
 
   float32 factor = 1.0f;
 
-  float32 theta_x = glm::acos(glm::dot(v0, v1));
-  if (::fabs(theta_x) > glm::epsilon<float32>()) {
+  float32 thetaX = glm::acos(glm::dot(v0, v1));
+  if (::fabs(thetaX) > glm::epsilon<float32>()) {
     factor = p.x > 0.0f ? 1.0f : -1.0f;
-    _rotateX += theta_x * factor;
+    _rotateX += thetaX * factor;
   }
 
-  float32 theta_y = glm::acos(glm::dot(v0, v2));
-  if (::fabs(theta_y) > glm::epsilon<float32>()) {
+  float32 thetaY = glm::acos(glm::dot(v0, v2));
+  if (::fabs(thetaY) > glm::epsilon<float32>()) {
     factor = p.y > 0.0f ? -1.0f : 1.0f;
-    _rotateY += theta_y * factor;
+    _rotateY += thetaY * factor;
   }
 
   TransformPtr targetTrans = _target->GetTransform();

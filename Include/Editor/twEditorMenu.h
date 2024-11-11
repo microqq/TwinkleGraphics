@@ -9,11 +9,12 @@
 
 namespace TwinkleGraphics {
 
-class __TWCOMExport EditorMenu : public Widget {
+class __TWAPI EditorMenu : public Widget {
 public:
   explicit EditorMenu(Widget *parent = nullptr);
   virtual ~EditorMenu();
 
+protected:
   virtual void OnGui() override;
 
 private:

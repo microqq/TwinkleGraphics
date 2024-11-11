@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include "imgui.h"
+
 #include "twConsoleLog.h"
 #include "twEventManager.h"
 #include "twWidget.h"

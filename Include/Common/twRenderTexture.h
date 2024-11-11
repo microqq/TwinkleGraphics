@@ -7,7 +7,7 @@
 
 namespace TwinkleGraphics {
 
-class __TWCOMExport RenderTexture : public Object {
+class __TWAPI RenderTexture : public Object {
 public:
   using Ptr = std::shared_ptr<RenderTexture> ;
   using AttachmentType = FrameBufferObject::AttachmentType;

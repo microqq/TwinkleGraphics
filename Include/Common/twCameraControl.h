@@ -6,7 +6,7 @@
 #include "twCamera.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport CameraControl : public Object {
+class __TWAPI CameraControl : public Object {
 public:
   using Ptr = std::shared_ptr<CameraControl>;
 

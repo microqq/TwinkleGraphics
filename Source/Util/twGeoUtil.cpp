@@ -166,16 +166,16 @@ Plane *CreateInifinitePlane(glm::vec3 normal, float distance, float32 width,
   glm::vec4 planeParams(normal, distance);
   planeMat->SetVecUniformValue<float32, 4>("planeParam", planeParams);
 
-  glm::mat3 rotate_mat = glm::identity<glm::mat3>();
+  glm::mat3 rotateMat = glm::identity<glm::mat3>();
   float32 costheta = glm::dot(normal, glm::vec3(0.0f, 1.0f, 0.0f));
   if (costheta != 1.0f) {
     float32 theta = ::acosf(costheta);
     glm::vec3 axis =
         glm::normalize(glm::cross(normal, glm::vec3(0.0f, 1.0f, 0.0f)));
-    rotate_mat = glm::mat3_cast(
+    rotateMat = glm::mat3_cast(
         glm::quat(::sinf(theta * 0.5f), ::cosf(theta * 0.5f) * axis));
   }
-  planeMat->SetMatrixUniformValue<float32, 3, 3>("rotateMat", rotate_mat);
+  planeMat->SetMatrixUniformValue<float32, 3, 3>("rotateMat", rotateMat);
 
   planeRenderer->SetMesh(plane->GetMesh());
   plane->SetMeshRenderer(planeRenderer);

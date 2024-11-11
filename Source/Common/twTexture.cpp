@@ -28,7 +28,7 @@ Texture::~Texture() {
 }
 
 template <>
-void __TWCOMExport Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap) {
+void __TWAPI Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap) {
   if (wrap == _parameters.wrapModes[0])
     return;
   _parameters.wrapModes[0] =
@@ -39,7 +39,7 @@ void __TWCOMExport Texture::SetWrap<WrapParam::WRAP_S>(WrapMode wrap) {
 }
 
 template <>
-void __TWCOMExport Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap) {
+void __TWAPI Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap) {
   if (wrap == _parameters.wrapModes[1])
     return;
   _parameters.wrapModes[1] =
@@ -50,7 +50,7 @@ void __TWCOMExport Texture::SetWrap<WrapParam::WRAP_T>(WrapMode wrap) {
 }
 
 template <>
-void __TWCOMExport Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap) {
+void __TWAPI Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap) {
   if (wrap == _parameters.wrapModes[2])
     return;
 
@@ -62,7 +62,7 @@ void __TWCOMExport Texture::SetWrap<WrapParam::WRAP_R>(WrapMode wrap) {
 }
 
 template <>
-void __TWCOMExport
+void __TWAPI
 Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter) {
   if (filter == _parameters.filterModes[0])
     return;
@@ -74,7 +74,7 @@ Texture::SetFilter<FilterParam::MIN_FILTER>(FilterMode filter) {
 }
 
 template <>
-void __TWCOMExport
+void __TWAPI
 Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter) {
   if (filter == _parameters.filterModes[1])
     return;
@@ -86,14 +86,14 @@ Texture::SetFilter<FilterParam::MAG_FILTER>(FilterMode filter) {
 }
 
 template <>
-void __TWCOMExport Texture::SetSwizzle<1>(SwizzleParam parameter,
+void __TWAPI Texture::SetSwizzle<1>(SwizzleParam parameter,
                                           Swizzle1 swizzle) {
   _parameters.swizzleParameter = parameter;
   _parameters.swizzle[0] = swizzle.mask;
 }
 
 template <>
-void __TWCOMExport Texture::SetSwizzle<4>(SwizzleParam parameter,
+void __TWAPI Texture::SetSwizzle<4>(SwizzleParam parameter,
                                           Swizzle4 swizzle) {
   _parameters.swizzleParameter = parameter;
   _parameters.swizzle[0] = swizzle.mask[0];

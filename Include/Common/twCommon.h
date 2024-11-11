@@ -37,25 +37,25 @@
  */
 #if defined(__linux__) || defined(__APPLE__)
 // #ifdef EXPORT_COMDLL
-#define __TWCOMExport __attribute__((__visibility__("default")))
+#define __TWAPI __attribute__((__visibility__("default")))
 // #endif
 
 // #ifdef EXPORT_PLUGIN
-#define __TWPLUGINExport __attribute__((__visibility__("default")))
+#define __TWPLUGINAPI __attribute__((__visibility__("default")))
 // #endif
 
 #elif defined(_WIN32)
 
 #ifdef EXPORT_COMDLL
-#define __TWCOMExport __declspec(dllexport)
+#define __TWAPI __declspec(dllexport)
 #else
-#define __TWCOMExport __declspec(dllimport)
+#define __TWAPI __declspec(dllimport)
 #endif
 
 #ifdef EXPORT_PLUGIN
-#define __TWPLUGINExport __declspec(dllexport)
+#define __TWPLUGINAPI __declspec(dllexport)
 #else
-#define __TWPLUGINExport __declspec(dllimport)
+#define __TWPLUGINAPI __declspec(dllimport)
 #endif
 
 #endif
@@ -117,8 +117,8 @@ enum Intersection {
   INTERSECT = INSIDE | INTERSECTING
 };
 
-__TWCOMExport extern std::vector<std::string> GLExtensions;
-__TWCOMExport extern bool CheckSupportExtension(std::string exention);
+__TWAPI extern std::vector<std::string> GLExtensions;
+__TWAPI extern bool CheckSupportExtension(std::string exention);
 
 } // namespace TwinkleGraphics
 

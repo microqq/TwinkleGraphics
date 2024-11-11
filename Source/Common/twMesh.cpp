@@ -4,10 +4,10 @@
 
 namespace TwinkleGraphics {
 
-void SubMesh::Initialize(int32 indice_num) {
-  if (indice_num != 0 && _indice == nullptr) {
-    _indiceNum = indice_num;
-    _indice = new glm::uint32[indice_num];
+void SubMesh::Initialize(int32 indiceNum) {
+  if (indiceNum != 0 && _indice == nullptr) {
+    _indiceNum = indiceNum;
+    _indice = new glm::uint32[indiceNum];
   }
 }
 
@@ -37,28 +37,28 @@ Mesh::~Mesh() {
  * angle）构成，若已知这三个变量，
  * 可通过球坐标系转直角坐标系求得其直角坐标（x,y,z）
  * @param radius
- * @param longitude_count
- * @param latitude_count
+ * @param longitudeCount
+ * @param latitudeCount
  * @return MeshPtr
  */
-MeshPtr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count,
-                                       int32 latitude_count) {
-  int32 row_count = latitude_count - 1;
-  int32 col_count = longitude_count;
-  int32 num = col_count * row_count + 2;
+MeshPtr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitudeCount,
+                                       int32 latitudeCount) {
+  int32 rowCount = latitudeCount - 1;
+  int32 colCount = longitudeCount;
+  int32 num = colCount * rowCount + 2;
 
   MeshPtr mesh = std::make_shared<Mesh>();
   mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
-  int indice_num = 6 * col_count + (row_count - 1) * col_count * 6;
+  int indiceNum = 6 * colCount + (rowCount - 1) * colCount * 6;
   SubMeshPtr submesh = std::make_shared<SubMesh>();
-  submesh->Initialize(indice_num);
+  submesh->Initialize(indiceNum);
   mesh->AddSubMesh(submesh);
 
   // submesh->Initialize(num, 0, 0, MeshDataFlag::DEFAULT);
 
-  float32 u_step = glm::two_pi<float32>() / (float32)(longitude_count - 1);
-  float32 v_step = glm::pi<float32>() / (float32)latitude_count;
+  float32 uStep = glm::two_pi<float32>() / (float32)(longitudeCount - 1);
+  float32 vStep = glm::pi<float32>() / (float32)latitudeCount;
 
   // pole points
   mesh->_verticePos[0].x = 0.0f;
@@ -71,62 +71,62 @@ MeshPtr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count,
 
   // compute vertice position
   float32 x, y, z;
-  for (int32 i = 0, k = 1; i < row_count; i++) {
-    y = radius * cos(v_step * (i + 1));
-    for (int32 j = 0; j < col_count; j++) {
-      x = radius * sin(v_step * (i + 1)) * cos(u_step * j);
-      z = radius * sin(v_step * (i + 1)) * sin(u_step * j);
+  for (int32 i = 0, k = 1; i < rowCount; i++) {
+    y = radius * cos(vStep * (i + 1));
+    for (int32 j = 0; j < colCount; j++) {
+      x = radius * sin(vStep * (i + 1)) * cos(uStep * j);
+      z = radius * sin(vStep * (i + 1)) * sin(uStep * j);
 
       mesh->_verticePos[k++] = glm::vec3(x, y, z);
     }
   }
 
   for (int32 i = 0, j = 0; i < num - 2; i++) {
-    int32 row = i / col_count;
-    int32 col = i % col_count;
+    int32 row = i / colCount;
+    int32 col = i % colCount;
     if (0 == row) {
-      if (col == col_count - 1) {
-        submesh->_indice[j] = row * col_count + col + 1;
-        submesh->_indice[j + 1] = row * col_count + 1;
+      if (col == colCount - 1) {
+        submesh->_indice[j] = row * colCount + col + 1;
+        submesh->_indice[j + 1] = row * colCount + 1;
         submesh->_indice[j + 2] = 0;
       } else {
-        submesh->_indice[j] = row * col_count + col + 1;
-        submesh->_indice[j + 1] = row * col_count + col + 2;
+        submesh->_indice[j] = row * colCount + col + 1;
+        submesh->_indice[j + 1] = row * colCount + col + 2;
         submesh->_indice[j + 2] = 0;
       }
 
       j += 3;
     } else {
       int32 top_row = row - 1;
-      if (col == col_count - 1) {
-        submesh->_indice[j] = row * col_count + col + 1;
-        submesh->_indice[j + 1] = top_row * col_count + 1;
-        submesh->_indice[j + 2] = top_row * col_count + 1;
+      if (col == colCount - 1) {
+        submesh->_indice[j] = row * colCount + col + 1;
+        submesh->_indice[j + 1] = top_row * colCount + 1;
+        submesh->_indice[j + 2] = top_row * colCount + 1;
 
-        submesh->_indice[j + 3] = row * col_count + col + 1;
-        submesh->_indice[j + 4] = row * col_count + 1;
-        submesh->_indice[j + 5] = top_row * col_count + 1;
+        submesh->_indice[j + 3] = row * colCount + col + 1;
+        submesh->_indice[j + 4] = row * colCount + 1;
+        submesh->_indice[j + 5] = top_row * colCount + 1;
       } else {
-        submesh->_indice[j] = row * col_count + col + 1;
-        submesh->_indice[j + 1] = top_row * col_count + col + 2;
-        submesh->_indice[j + 2] = top_row * col_count + col + 1;
+        submesh->_indice[j] = row * colCount + col + 1;
+        submesh->_indice[j + 1] = top_row * colCount + col + 2;
+        submesh->_indice[j + 2] = top_row * colCount + col + 1;
 
-        submesh->_indice[j + 3] = row * col_count + col + 1;
-        submesh->_indice[j + 4] = row * col_count + col + 2;
-        submesh->_indice[j + 5] = top_row * col_count + col + 2;
+        submesh->_indice[j + 3] = row * colCount + col + 1;
+        submesh->_indice[j + 4] = row * colCount + col + 2;
+        submesh->_indice[j + 5] = top_row * colCount + col + 2;
       }
 
       j += 6;
 
-      if (row == row_count - 1) {
-        if (col == col_count - 1) {
-          submesh->_indice[j] = row * col_count + col + 1;
+      if (row == rowCount - 1) {
+        if (col == colCount - 1) {
+          submesh->_indice[j] = row * colCount + col + 1;
           submesh->_indice[j + 1] = num - 1;
-          submesh->_indice[j + 2] = row * col_count + 1;
+          submesh->_indice[j + 2] = row * colCount + 1;
         } else {
-          submesh->_indice[j] = row * col_count + col + 1;
+          submesh->_indice[j] = row * colCount + col + 1;
           submesh->_indice[j + 1] = num - 1;
-          submesh->_indice[j + 2] = row * col_count + col + 2;
+          submesh->_indice[j + 2] = row * colCount + col + 2;
         }
 
         j += 3;
@@ -147,9 +147,9 @@ MeshPtr Mesh::CreateSphereMeshStandard(float32 radius, int32 longitude_count,
  * @return MeshPtr
  */
 MeshPtr Mesh::CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide) {
-  int32 row_count, col_count;
-  row_count = col_count = subdivide + 1;
-  int32 num = row_count * col_count * 6;
+  int32 rowCount, colCount;
+  rowCount = colCount = subdivide + 1;
+  int32 num = rowCount * colCount * 6;
 
   MeshPtr mesh = std::make_shared<Mesh>();
   mesh->Initialize(num, MeshDataFlag::DEFAULT);
@@ -196,40 +196,40 @@ MeshPtr Mesh::CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide) {
       glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, 0.5f)};
 
   // compute vertice & indice
-  int32 vertice_index = 0;
-  int32 element_index = 0;
-  int32 face_index = -1;
+  int32 verticeIndex = 0;
+  int32 elementIndex = 0;
+  int32 faceIndex = -1;
   float32 step = 1.0f / subdivide;
   for (int32 i = 0; i < 24; i += 4) {
-    face_index = i / 4;
-    vertice_index = face_index * row_count * col_count;
-    for (int32 j = 0; j < row_count; j++) {
-      for (int32 k = 0; k < col_count; k++) {
+    faceIndex = i / 4;
+    verticeIndex = faceIndex * rowCount * colCount;
+    for (int32 j = 0; j < rowCount; j++) {
+      for (int32 k = 0; k < colCount; k++) {
         // double linear interpolation
-        glm::vec3 col_temp_1 =
+        glm::vec3 colTemp1 =
             (faces[i + 3] - faces[i]) * (float32)k * step + faces[i];
-        glm::vec3 col_temp_2 =
+        glm::vec3 colTemp2 =
             (faces[i + 2] - faces[i + 1]) * (float32)k * step + faces[i + 1];
         glm::vec3 coord =
-            (col_temp_2 - col_temp_1) * (float32)j * step + col_temp_1;
+            (colTemp2 - colTemp1) * (float32)j * step + colTemp1;
         coord = glm::normalize(coord);
         coord *= radius;
 
-        // submesh->_indice[element_index++] = vertice_index;
+        // submesh->_indice[elementIndex++] = verticeIndex;
 
-        if (j != row_count - 1 && k != col_count - 1) {
-          submesh->_indice[element_index] = vertice_index;
-          submesh->_indice[element_index + 1] = vertice_index + col_count;
-          submesh->_indice[element_index + 2] = vertice_index + col_count + 1;
+        if (j != rowCount - 1 && k != colCount - 1) {
+          submesh->_indice[elementIndex] = verticeIndex;
+          submesh->_indice[elementIndex + 1] = verticeIndex + colCount;
+          submesh->_indice[elementIndex + 2] = verticeIndex + colCount + 1;
 
-          submesh->_indice[element_index + 3] = vertice_index;
-          submesh->_indice[element_index + 4] = vertice_index + col_count + 1;
-          submesh->_indice[element_index + 5] = vertice_index + 1;
+          submesh->_indice[elementIndex + 3] = verticeIndex;
+          submesh->_indice[elementIndex + 4] = verticeIndex + colCount + 1;
+          submesh->_indice[elementIndex + 5] = verticeIndex + 1;
 
-          element_index += 6;
+          elementIndex += 6;
         }
 
-        mesh->_verticePos[vertice_index++] = coord;
+        mesh->_verticePos[verticeIndex++] = coord;
       }
     }
   }
@@ -259,68 +259,68 @@ MeshPtr Mesh::CreateSphereMeshIcosahedron(float32 radius, int32 subdivide) {
   MeshPtr mesh = std::make_shared<Mesh>();
   mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
-  int32 indice_num = 60 * subdivide * subdivide;
+  int32 indiceNum = 60 * subdivide * subdivide;
   SubMeshPtr submesh = std::make_shared<SubMesh>();
-  submesh->Initialize(indice_num);
+  submesh->Initialize(indiceNum);
   mesh->AddSubMesh(submesh);
 
-  glm::vec3 ico_vertice[12] = {};
-  uint32 icotriangle_indice[60] = {};
-  CreateIconsahedron(ico_vertice, icotriangle_indice, 1.0f);
+  glm::vec3 icoVertice[12] = {};
+  uint32 icotriangleIndice[60] = {};
+  CreateIconsahedron(icoVertice, icotriangleIndice, 1.0f);
   // CreateIconsahedron(submesh->GetVerticePos(), submesh->GetIndice(), radius);
 
-  int32 vertice_index = 0;
-  int32 indice_index = 0;
-  glm::vec3 p0, p1, p2, p, p_helper1, p_helper2;
-  glm::vec3 edge_0, edge_1;
+  int32 verticeIndex = 0;
+  int32 indiceIndex = 0;
+  glm::vec3 p0, p1, p2, p, pHelper1, pHelper2;
+  glm::vec3 edge0, edge1;
   for (int32 i = 0; i < 60; i += 3) {
-    p0 = ico_vertice[icotriangle_indice[i]];
-    p1 = ico_vertice[icotriangle_indice[i + 1]];
-    p2 = ico_vertice[icotriangle_indice[i + 2]];
+    p0 = icoVertice[icotriangleIndice[i]];
+    p1 = icoVertice[icotriangleIndice[i + 1]];
+    p2 = icoVertice[icotriangleIndice[i + 2]];
 
-    edge_0 = p1 - p0;
-    edge_1 = p2 - p0;
+    edge0 = p1 - p0;
+    edge1 = p2 - p0;
 
-    for (int32 row = 0, row_count = subdivide + 1; row < row_count; row++) {
-      p_helper1 = p0 + edge_0 * (float32)row / (float32)subdivide;
-      p_helper2 = p0 + edge_1 * (float32)row / (float32)subdivide;
+    for (int32 row = 0, rowCount = subdivide + 1; row < rowCount; row++) {
+      pHelper1 = p0 + edge0 * (float32)row / (float32)subdivide;
+      pHelper2 = p0 + edge1 * (float32)row / (float32)subdivide;
 
       int32 col = 0;
       int32 col_count = row + 1;
       for (; col < col_count; col++) {
         if (row == 0) {
-          p = p_helper1;
+          p = pHelper1;
         } else {
-          p = p_helper1 + (p_helper2 - p_helper1) * (float32)col / (float32)row;
+          p = pHelper1 + (pHelper2 - pHelper1) * (float32)col / (float32)row;
         }
         p = glm::normalize(p);
         p *= radius;
 
         if (row != 0) {
           if (col != 0) {
-            submesh->_indice[indice_index] = vertice_index + col;
-            submesh->_indice[indice_index + 1] = vertice_index + col - row - 1;
-            submesh->_indice[indice_index + 2] = vertice_index + col - 1;
+            submesh->_indice[indiceIndex] = verticeIndex + col;
+            submesh->_indice[indiceIndex + 1] = verticeIndex + col - row - 1;
+            submesh->_indice[indiceIndex + 2] = verticeIndex + col - 1;
 
-            indice_index += 3;
+            indiceIndex += 3;
 
             if (col != col_count - 1) {
-              submesh->_indice[indice_index] = vertice_index + col;
-              submesh->_indice[indice_index + 1] = vertice_index + col - row;
-              submesh->_indice[indice_index + 2] =
-                  vertice_index + col - row - 1;
+              submesh->_indice[indiceIndex] = verticeIndex + col;
+              submesh->_indice[indiceIndex + 1] = verticeIndex + col - row;
+              submesh->_indice[indiceIndex + 2] =
+                  verticeIndex + col - row - 1;
 
-              indice_index += 3;
+              indiceIndex += 3;
             }
           }
         }
 
-        // submesh->_indice[indice_index] = indice_index++;
+        // submesh->_indice[indiceIndex] = indiceIndex++;
 
-        mesh->_verticePos[vertice_index + col] = p;
+        mesh->_verticePos[verticeIndex + col] = p;
       }
 
-      vertice_index += col_count;
+      verticeIndex += col_count;
     }
   }
 
@@ -335,38 +335,38 @@ void Mesh::CreateIconsahedron(glm::vec3 *vertice, uint32 *indice,
   indice[0] = 0;
   indice[11] = 11;
 
-  float32 pole_angle = acot(0.5f);
-  float32 azimuth_step = glm::radians<float32>(72.0f);
-  float32 cos_pole_angle = cos(pole_angle);
-  float32 sin_pole_angle = sin(pole_angle);
+  float32 poleAngle = acot(0.5f);
+  float32 azimuthStep = glm::radians<float32>(72.0f);
+  float32 cosPoleAngle = cos(poleAngle);
+  float32 sinPoleAngle = sin(poleAngle);
 
-  float32 cos_half_azimuth = cos(-azimuth_step * 0.5f);
-  float32 sin_half_azimuth = sin(-azimuth_step * 0.5f);
+  float32 cosHalfAzimuth = cos(-azimuthStep * 0.5f);
+  float32 sinHalfAzimuth = sin(-azimuthStep * 0.5f);
 
-  float32 x = radius * sin_pole_angle;
-  float32 y = radius * cos_pole_angle;
+  float32 x = radius * sinPoleAngle;
+  float32 y = radius * cosPoleAngle;
   float32 z = x;
   for (int32 i = 0, j = 5; j < 10; i++, j++) {
-    float32 cos_azimuth = cos(azimuth_step * i);
-    float32 sin_azimuth = sin(azimuth_step * i);
+    float32 cosAzimuth = cos(azimuthStep * i);
+    float32 sinAzimuth = sin(azimuthStep * i);
 
-    float32 new_x = x * cos_azimuth;
-    float32 new_z = z * sin_azimuth;
+    float32 newX = x * cosAzimuth;
+    float32 newZ = z * sinAzimuth;
 
-    // float32 new_x = x * cos_azimuth + z * sin_azimuth;
-    // float32 new_z = -x * sin_azimuth + z * cos_azimuth;
+    // float32 newX = x * cosAzimuth + z * sinAzimuth;
+    // float32 newZ = -x * sinAzimuth + z * cosAzimuth;
 
-    vertice[i + 1] = glm::vec3(new_x, y, new_z);
+    vertice[i + 1] = glm::vec3(newX, y, newZ);
 
-    float32 new_x1 = new_x * cos_half_azimuth - new_z * sin_half_azimuth;
-    float32 new_z1 = new_x * sin_half_azimuth + new_z * cos_half_azimuth;
+    float32 newX1 = newX * cosHalfAzimuth - newZ * sinHalfAzimuth;
+    float32 newZ1 = newX * sinHalfAzimuth + newZ * cosHalfAzimuth;
 
-    vertice[j + 1] = glm::vec3(new_x1, -y, new_z1);
+    vertice[j + 1] = glm::vec3(newX1, -y, newZ1);
 
     // if(j == 5)
-    //     vertice[j + 1] = glm::vec3(new_x1, -y, new_z1);
+    //     vertice[j + 1] = glm::vec3(newX1, -y, newZ1);
     // else
-    //     vertice[16 - j] = glm::vec3(new_x1, -y, new_z1);
+    //     vertice[16 - j] = glm::vec3(newX1, -y, newZ1);
   }
 
   for (int32 i = 0, j = 0; i < 10; i++) {
@@ -425,12 +425,12 @@ MeshPtr Mesh::CreateQuadMesh(float32 x_size, float32 y_size) {
   submesh->Initialize(6);
   mesh->AddSubMesh(submesh);
 
-  float32 half_x_size = x_size * 0.5f;
-  float32 half_y_size = y_size * 0.5f;
+  float32 halfXSize = x_size * 0.5f;
+  float32 halfYSize = y_size * 0.5f;
 
-  int32 indice_num = 6;
-  submesh->_indiceNum = indice_num;
-  submesh->_indice = new uint32[indice_num]{};
+  int32 indiceNum = 6;
+  submesh->_indiceNum = indiceNum;
+  submesh->_indice = new uint32[indiceNum]{};
   submesh->_indice[0] = 0;
   submesh->_indice[1] = 1;
   submesh->_indice[2] = 2;
@@ -439,10 +439,10 @@ MeshPtr Mesh::CreateQuadMesh(float32 x_size, float32 y_size) {
   submesh->_indice[4] = 2;
   submesh->_indice[5] = 3;
 
-  mesh->_verticePos[0] = glm::vec3(-half_x_size, half_y_size, 0.0f);
-  mesh->_verticePos[1] = glm::vec3(-half_x_size, -half_y_size, 0.0f);
-  mesh->_verticePos[2] = glm::vec3(half_x_size, -half_y_size, 0.0f);
-  mesh->_verticePos[3] = glm::vec3(half_x_size, half_y_size, 0.0f);
+  mesh->_verticePos[0] = glm::vec3(-halfXSize, halfYSize, 0.0f);
+  mesh->_verticePos[1] = glm::vec3(-halfXSize, -halfYSize, 0.0f);
+  mesh->_verticePos[2] = glm::vec3(halfXSize, -halfYSize, 0.0f);
+  mesh->_verticePos[3] = glm::vec3(halfXSize, halfYSize, 0.0f);
 
   return mesh;
 }
@@ -510,19 +510,19 @@ MeshPtr Mesh::CreateCubeMesh(float32 size) {
   submesh->_indice[index++] = 6;
   submesh->_indice[index++] = 2;
 
-  float32 half_x_size = size * 0.5f;
-  float32 half_y_size = size * 0.5f;
+  float32 halfXSize = size * 0.5f;
+  float32 halfYSize = size * 0.5f;
   float32 half_z_size = size * 0.5f;
 
-  mesh->_verticePos[0] = glm::vec3(-half_x_size, half_y_size, half_z_size);
-  mesh->_verticePos[1] = glm::vec3(-half_x_size, -half_y_size, half_z_size);
-  mesh->_verticePos[2] = glm::vec3(half_x_size, -half_y_size, half_z_size);
-  mesh->_verticePos[3] = glm::vec3(half_x_size, half_y_size, half_z_size);
+  mesh->_verticePos[0] = glm::vec3(-halfXSize, halfYSize, half_z_size);
+  mesh->_verticePos[1] = glm::vec3(-halfXSize, -halfYSize, half_z_size);
+  mesh->_verticePos[2] = glm::vec3(halfXSize, -halfYSize, half_z_size);
+  mesh->_verticePos[3] = glm::vec3(halfXSize, halfYSize, half_z_size);
 
-  mesh->_verticePos[4] = glm::vec3(-half_x_size, half_y_size, -half_z_size);
-  mesh->_verticePos[5] = glm::vec3(-half_x_size, -half_y_size, -half_z_size);
-  mesh->_verticePos[6] = glm::vec3(half_x_size, -half_y_size, -half_z_size);
-  mesh->_verticePos[7] = glm::vec3(half_x_size, half_y_size, -half_z_size);
+  mesh->_verticePos[4] = glm::vec3(-halfXSize, halfYSize, -half_z_size);
+  mesh->_verticePos[5] = glm::vec3(-halfXSize, -halfYSize, -half_z_size);
+  mesh->_verticePos[6] = glm::vec3(halfXSize, -halfYSize, -half_z_size);
+  mesh->_verticePos[7] = glm::vec3(halfXSize, halfYSize, -half_z_size);
 
   return mesh;
 }
@@ -539,26 +539,26 @@ MeshPtr Mesh::CreateLineMesh(glm::vec3 *points, int32 num) {
   mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
   // use line_adjency
-  int32 indice_num = (num - 1) * 4;
+  int32 indiceNum = (num - 1) * 4;
   SubMeshPtr submesh = std::make_shared<SubMesh>();
-  submesh->Initialize(indice_num);
+  submesh->Initialize(indiceNum);
   mesh->AddSubMesh(submesh);
 
-  int32 indice_index = 0;
+  int32 indiceIndex = 0;
   for (int32 i = 0; i < num - 1; i++) {
     if (i == 0) {
-      submesh->_indice[indice_index++] = 0;
+      submesh->_indice[indiceIndex++] = 0;
     } else {
-      submesh->_indice[indice_index++] = i - 1;
+      submesh->_indice[indiceIndex++] = i - 1;
     }
 
-    submesh->_indice[indice_index++] = i;
-    submesh->_indice[indice_index++] = i + 1;
+    submesh->_indice[indiceIndex++] = i;
+    submesh->_indice[indiceIndex++] = i + 1;
 
     if (i == num - 2) {
-      submesh->_indice[indice_index++] = num - 1;
+      submesh->_indice[indiceIndex++] = num - 1;
     } else {
-      submesh->_indice[indice_index++] = i + 2;
+      submesh->_indice[indiceIndex++] = i + 2;
     }
   }
 
@@ -576,26 +576,26 @@ MeshPtr Mesh::CreateLineMeshEx(glm::vec4 *points, int32 num) {
   mesh->Initialize(num, MeshDataFlag::DEFAULT);
 
   // use line_adjency
-  int32 indice_num = (num - 1) * 4;
+  int32 indiceNum = (num - 1) * 4;
   SubMeshPtr submesh = std::make_shared<SubMesh>();
-  submesh->Initialize(indice_num);
+  submesh->Initialize(indiceNum);
   mesh->AddSubMesh(submesh);
 
-  int32 indice_index = 0;
+  int32 indiceIndex = 0;
   for (int32 i = 0; i < num - 1; i++) {
     if (i == 0) {
-      submesh->_indice[indice_index++] = 0;
+      submesh->_indice[indiceIndex++] = 0;
     } else {
-      submesh->_indice[indice_index++] = i - 1;
+      submesh->_indice[indiceIndex++] = i - 1;
     }
 
-    submesh->_indice[indice_index++] = i;
-    submesh->_indice[indice_index++] = i + 1;
+    submesh->_indice[indiceIndex++] = i;
+    submesh->_indice[indiceIndex++] = i + 1;
 
     if (i == num - 2) {
-      submesh->_indice[indice_index++] = num - 1;
+      submesh->_indice[indiceIndex++] = num - 1;
     } else {
-      submesh->_indice[indice_index++] = i + 2;
+      submesh->_indice[indiceIndex++] = i + 2;
     }
   }
 
@@ -616,12 +616,12 @@ MeshPtr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments) {
   vertices[0] = points[0];
   vertices[segments] = points[num - 1];
 
-  float32 u_step = 1.0f / (float32)segments;
+  float32 uStep = 1.0f / (float32)segments;
 
-  glm::vec3 *points_helper = new glm::vec3[num];
+  glm::vec3 *pointsHelper = new glm::vec3[num];
   for (int32 i = 1; i < segments; i++) {
-    // memcpy((void *)points_helper, (void *)points, sizeof(glm::vec3) * num);
-    vertices[i] = DeCasteljau(points, points_helper, num, u_step * i);
+    // memcpy((void *)pointsHelper, (void *)points, sizeof(glm::vec3) * num);
+    vertices[i] = DeCasteljau(points, pointsHelper, num, uStep * i);
 
     // std::cout << "------------------------" << std::endl;
     // std::cout << "x:" << results[i].x << std::endl;
@@ -629,7 +629,7 @@ MeshPtr Mesh::CreateBezierLine(glm::vec3 *points, int32 num, int32 segments) {
     // std::cout << "z:" << results[i].z << std::endl;
   }
 
-  SAFE_DEL_ARR(points_helper);
+  SAFE_DEL_ARR(pointsHelper);
 
   return mesh;
 }
@@ -668,16 +668,16 @@ MeshPtr Mesh::CreateCubicBezierLine(glm::vec3 *points, int32 segments) {
  */
 glm::vec3 Mesh::DeCasteljau(glm::vec3 *points, glm::vec3 *helper, int32 num,
                             float32 u) {
-  int32 point_count = num - 1;
+  int32 pointCount = num - 1;
   for (int32 i = 0, iteration = num - 1; i < iteration; i++) {
-    for (int32 j = 0; j < point_count; j++) {
+    for (int32 j = 0; j < pointCount; j++) {
       if (i == 0)
         helper[j] = (1.0f - u) * points[j] + u * points[j + 1];
       else {
         helper[j] = (1.0f - u) * helper[j] + u * helper[j + 1];
       }
     }
-    --point_count;
+    --pointCount;
   }
 
   return helper[0];

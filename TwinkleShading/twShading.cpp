@@ -8,14 +8,16 @@
 #include "twCommon.h"
 #include "twMainWindow.h"
 #include "twPluginManager.h"
+#include "twConsoleLog.h"
+#include "twGLViewPlugin.h"
 
 using namespace TwinkleGraphics;
-using MapPlugins = std::map<std::string, std::string>;
+using MapPluginsString = std::map<std::string, std::string>;
 
-PluginManager &pluginMgr = PluginManagerInst::Instance();
+PluginManager &PluginMgr_ = PluginManagerInst::Instance();
 
-static MapPlugins PluginPaths;
-static std::string CurrentPlugin = std::string();
+static MapPluginsString PluginPaths_;
+static std::string CurrentPlugin_ = std::string();
 // create opengl window
 static GLFWMainWindow MainWindow_(1024, 768);
 
@@ -32,27 +34,32 @@ void KeyCallback(GLFWwindow *window, int, int, int, int);
 int main(int, char **) {
 
 #if defined(__linux__) || defined(__APPLE__)
-  PluginPaths.insert(MapPlugins::value_type(
-      "1.FirstTriangle", "Output/libs/twShading/Debug/libtwFirstTriangle.dylib"));
-  PluginPaths.insert(MapPlugins::value_type(
-      "2.BasicGeometry", "Output/libs/twShading/Debug/libtwBasicGeometry.dylib"));
-  PluginPaths.insert(MapPlugins::value_type(
-      "3.TextureExplore", "Output/libs/twShading/Debug/libtwTextureExplore.dylib"));
-  PluginPaths.insert(MapPlugins::value_type(
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "1.FirstTriangle",
+      "Output/libs/twShading/Debug/libtwFirstTriangle.dylib"));
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "2.BasicGeometry",
+      "Output/libs/twShading/Debug/libtwBasicGeometry.dylib"));
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "3.TextureExplore",
+      "Output/libs/twShading/Debug/libtwTextureExplore.dylib"));
+  PluginPaths_.insert(MapPluginsString::value_type(
       "4.AntiAliasing", "Output/libs/twShading/Debug/libtwAntiAliasing.dylib"));
 #elif defined _WIN32
-  PluginPaths.insert(MapPlugins::value_type(
-      "1.FirstTriangle", "Output/libs/twShading/libtwFirstTriangle.dll"));
-  PluginPaths.insert(MapPlugins::value_type(
-      "2.BasicGeometry", "Output/libs/twShading/libtwBasicGeometry.dll"));
-  PluginPaths.insert(MapPlugins::value_type(
-      "3.TextureExplore", "Output/libs/twShading/libtwTextureExplore.dll"));
-  PluginPaths.insert(MapPlugins::value_type(
-      "4.AntiAliasing", "Output/libs/twShading/libtwAntiAliasing.dll"));
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "1.FirstTriangle", "Output/libtwFirstTriangle.dll"));
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "2.BasicGeometry", "Output/libtwBasicGeometry.dll"));
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "3.TextureExplore", "Output/libtwTextureExplore.dll"));
+  PluginPaths_.insert(MapPluginsString::value_type(
+      "4.AntiAliasing", "Output/libtwAntiAliasing.dll"));
 #endif
 
-  IMGUI_FUNC load_plugin_gui_fun = (IMGUI_FUNC)LoadPluginsGUI;
-  MainWindow_.AddGUIFunc(load_plugin_gui_fun);
+  MainWindow_.InitWindow();
+
+  IMGUI_FUNC loadPluginGuiFunc = (IMGUI_FUNC)LoadPluginsGUI;
+  MainWindow_.AddGUIFunc(loadPluginGuiFunc);
   MainWindow_.SetMouseButtonInputCallback(MouseButtonInput);
   MainWindow_.SetCursorPosCallback(CursorPosCallback);
   MainWindow_.SetCursorPosEnterCallback(CursorEnterPosCallback);
@@ -60,6 +67,7 @@ int main(int, char **) {
   MainWindow_.SetWindowSizeCallback(WindowSizeCallback);
   MainWindow_.SetKeyCallback(KeyCallback);
 
+  MainWindow_.InitOther();
   /**
    *
    * Debug Mode With GDB:
@@ -84,27 +92,27 @@ int main(int, char **) {
 }
 
 void LoadPluginsGUI(void) {
-  int32 plugin_num = PluginPaths.size();
-  MapPlugins::iterator it = PluginPaths.begin();
+  int32 pluginNum = PluginPaths_.size();
+  MapPluginsString::iterator it = PluginPaths_.begin();
 
-  ImGui::Begin(u8"Shading(OpenGL)");
-  for (int32 i = 0; i < plugin_num; i++) {
+  ImGui::Begin(u8"Shading(OpenGL)", NULL);
+  for (int32 i = 0; i < pluginNum; i++) {
     if (ImGui::Button((it->first).c_str())) {
-      if (CurrentPlugin.compare(it->first.c_str()) != 0) {
-        if (!(CurrentPlugin.empty())) {
+      if (CurrentPlugin_.compare(it->first.c_str()) != 0) {
+        if (!(CurrentPlugin_.empty())) {
           // unload last plugin
           UnLoadCurrentPlugin();
         }
 
         // load plugin
-        GLPlugin *plugin =
-            dynamic_cast<GLPlugin *>(pluginMgr.LoadPlugin(it->second));
+        GLViewPlugin *plugin =
+            dynamic_cast<GLViewPlugin *>(PluginMgr_.LoadPlugin(it->second));
         if (plugin != nullptr && plugin->GetViewsCount() > 0) {
           MainWindow_.AddViews(plugin->GetViews(), plugin->GetViewsCount());
           plugin->UpdateViews();
         }
       }
-      CurrentPlugin = it->first;
+      CurrentPlugin_ = it->first;
     }
 
     it++;
@@ -113,15 +121,16 @@ void LoadPluginsGUI(void) {
 }
 
 void UnLoadCurrentPlugin() {
-  std::string last_plugin_name = CurrentPlugin;
-  GLPlugin *last_plugin =
-      dynamic_cast<GLPlugin *>(pluginMgr.GetPlugin(last_plugin_name));
+  std::string lastPluginName = CurrentPlugin_;
+  GLViewPlugin *last_plugin =
+      dynamic_cast<GLViewPlugin *>(PluginMgr_.GetPlugin(lastPluginName));
   if (last_plugin != nullptr) {
     TwinkleGraphics::View **views = last_plugin->GetViews();
     MainWindow_.RemoveViews(views, last_plugin->GetViewsCount());
 
-    MapPlugins::iterator last_plugin_path = PluginPaths.find(last_plugin_name);
-    pluginMgr.UnloadPlugin(last_plugin_path->second);
+    MapPluginsString::iterator lastPluginPath =
+        PluginPaths_.find(lastPluginName);
+    PluginMgr_.UnloadPlugin(lastPluginPath->second);
   }
 }
 

@@ -9,7 +9,7 @@
 #include "twMesh.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport MeshRenderer : public Object {
+class __TWAPI MeshRenderer : public Object {
 public:
   using Ptr = std::shared_ptr<MeshRenderer>;
 

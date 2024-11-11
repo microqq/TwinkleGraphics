@@ -10,7 +10,7 @@ class AABoundingBox;
 class OrientedBoundingBox;
 class BoundingSphere;
 
-class __TWCOMExport Frustum : public Object {
+class __TWAPI Frustum : public Object {
 public:
   using Ptr = std::shared_ptr<Frustum>;
 

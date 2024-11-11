@@ -1,22 +1,10 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(DEFINE_FREEIMAGE_LIB "use static freeimage lib" OFF)
-option(ENABLE_EXPORT_COMDLL "build common dynamic library" ON)
-
-if(DEFINE_FREEIMAGE_LIB)
-    add_definitions(-DFREEIMAGE_LIB)
-endif()
-
-if(ENABLE_EXPORT_COMDLL)
-    add_definitions(-DEXPORT_COMDLL)
-endif()
-
 set(TWGraphics_SRCs 
     ${CMAKE_CURRENT_LIST_DIR}/Common/twCommon.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twDynLib.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twPluginManager.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Common/twView.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twResource.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twResourceManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Common/twMeshRenderer.cpp
@@ -61,59 +49,57 @@ set(TWGraphics_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/Util/twComUtil.cpp
 )
 
-set(TWEditorLib_Srcs
+set(TWUILib_Srcs
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twMainFrame.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twSizePolicy.cpp
+)
+
+set(TWEditor_Srcs
     ${CMAKE_CURRENT_LIST_DIR}/Entry/twApplication.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twHierarchy.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twInspector.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorMenu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditorWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Editor/twAssetsWindow.cpp
-)
-
-set(TWUILib_Srcs
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twUiUtil.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twMainFrame.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twMainWindow.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twWindow.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twSizePolicy.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twDockSpaceLayout.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twDockingWidget.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWMainFrame.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/GLFW/twGLFWViewWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/twUiUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/GLFW/twGLFWMainFrame.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/GLFW/twGLFWViewWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/ImGui/twImGuiContextManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/ImGuiDocking/twDockingWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Editor/ImGuiDocking/twDockSpaceLayout.cpp
 )
 
 add_library(twGraphics SHARED ${TWGraphics_SRCs})
 add_library(twUILib SHARED ${TWUILib_Srcs})
-add_library(twEditorLib SHARED ${TWEditorLib_Srcs})
+add_executable(twEditor ${TWEditor_Srcs})
 
 set_target_properties(twGraphics PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 set_target_properties(twUILib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
-set_target_properties(twEditorLib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
 target_include_directories(twGraphics PUBLIC 
+    ${PROJECT_SOURCE_DIR}/build/vcpkg_installed/x64-mingw-dynamic-openexr/include
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Common
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Event
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Util
+    ${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/vermilion
 )
 
 target_include_directories(twUILib PUBLIC
-${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui
-${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui/backends
-${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/imgui/misc/freetype
-${CMAKE_CURRENT_LIST_DIR}/../Include/UI
-${CMAKE_CURRENT_LIST_DIR}/../Include/UI/GLFW
-${CMAKE_CURRENT_LIST_DIR}/../Include/Entry
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/UI
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/Entry
 )
 
-target_include_directories(twEditorLib PUBLIC
+target_include_directories(twEditor PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../Include/Editor
+    ${CMAKE_CURRENT_LIST_DIR}/../Include/Editor/GLFW
 )
 
 if(ENABLE_DEBUG)
-    target_compile_options(twGraphics PRIVATE -Wall -Wno-extra)
-    target_compile_options(twUILib PRIVATE -Wall -Wno-extra)
-    target_compile_options(twEditorLib PRIVATE -Wall -Wno-extra)
+    target_compile_options(twGraphics PRIVATE -Wall)
+    target_compile_options(twUILib PRIVATE -Wall)
 endif()
 
 if(LINUX)
@@ -138,17 +124,15 @@ elseif(APPLE)
     )
     set(TWGRAPHICS_DEPEND_LIBS ${APPLE_LIBS})
 elseif(WIN32)
-    set(WIN32_LIBS opengl32 assimp freeimage imgui imGuiFileDialog vermilion)
+    set(WIN32_LIBS opengl32 GLEW::GLEW freeimage::FreeImage vermilion assimp::assimp)
     set(TWGRAPHICS_DEPEND_LIBS ${WIN32_LIBS})
 else()
     set(TWGRAPHICS_DEPEND_LIBS )
 endif(LINUX)
 
 # set twGraphics link libraries
-target_link_libraries(twGraphics ${TWGRAPHICS_DEPEND_LIBS})
-target_link_libraries(twUILib twGraphics)
-target_link_libraries(twEditorLib twUILib)
+target_link_libraries(twGraphics PUBLIC ${TWGRAPHICS_DEPEND_LIBS})
+target_link_libraries(twUILib PUBLIC glfw imgui::imgui imGuiFileDialog twGraphics)
 
 # twEditor
-add_executable(twEditor ${CMAKE_CURRENT_LIST_DIR}/Editor/twEditor.cpp)
-target_link_libraries(twEditor twEditorLib)
+target_link_libraries(twEditor PUBLIC twUILib)

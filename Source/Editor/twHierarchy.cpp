@@ -16,7 +16,11 @@ void Hierarchy::OnGuiBegin() {
                    ImGuiWindowFlags_NoNavFocus);
 }
 
-void Hierarchy::OnGui() {}
+void Hierarchy::OnGui() {
+  if (ImGui::Button("Click Me")) {
+    Console::LogInfo("Hierarchy button clicked!\n");
+  }
+}
 
 void Hierarchy::OnGuiEnd() {
   ImGui::End();

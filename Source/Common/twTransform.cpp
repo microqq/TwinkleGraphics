@@ -15,9 +15,9 @@ void Transform::Translate(float trans, glm::vec3 axis) {
 }
 
 void Transform::Rotate(float32 angle, glm::vec3 axis) {
-  glm::quat new_quat(::cosf(angle * 0.5f),
+  glm::quat newQuat(::cosf(angle * 0.5f),
                      ::sinf(angle * 0.5f) * glm::normalize(axis));
-  _orientation = glm::normalize(new_quat * _orientation);
+  _orientation = glm::normalize(newQuat * _orientation);
   _localDirty = true;
 }
 
@@ -32,8 +32,8 @@ void Transform::Rotate(glm::quat quaternion) {
  * @param euler
  */
 void Transform::Rotate(glm::vec3 euler) {
-  glm::quat euler_quat = glm::quat(euler);
-  _orientation = glm::normalize(glm::inverse(euler_quat) * _orientation);
+  glm::quat eulerQuat = glm::quat(euler);
+  _orientation = glm::normalize(glm::inverse(eulerQuat) * _orientation);
   _localDirty = true;
 }
 
@@ -45,8 +45,8 @@ void Transform::Scale(glm::vec3 scale) {
 void Transform::Scale(float scale, glm::vec3 axis) { _localDirty = true; }
 
 void Transform::LookAt(glm::vec3 center, glm::vec3 up) {
-  glm::mat4 mat_lookat = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), center, up);
-  _orientation = glm::quat_cast(mat_lookat);
+  glm::mat4 matLookat = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), center, up);
+  _orientation = glm::quat_cast(matLookat);
 
   _localDirty = true;
 }
@@ -64,9 +64,9 @@ glm::vec3 Transform::GetWorldPosition() {
   if (ownerParentTrans == nullptr) {
     return GetPosition();
   } else {
-    glm::vec4 world_position =
+    glm::vec4 worldPosition =
         ownerParentTrans->GetLocalToWorldMatrix() * glm::vec4(_position, 1.0f);
-    return glm::vec3(world_position);
+    return glm::vec3(worldPosition);
   }
 }
 
@@ -130,14 +130,14 @@ bool Transform::WorldDirty() {
 
 void Transform::ComputeLocalMatrix() {
   if (_localDirty) {
-    glm::mat4 translate_matrix = glm::identity<glm::mat4>();
-    translate_matrix = glm::translate(translate_matrix, -_position);
+    glm::mat4 translateMatrix = glm::identity<glm::mat4>();
+    translateMatrix = glm::translate(translateMatrix, -_position);
 
-    glm::mat4 scale_matrix = glm::identity<glm::mat4>();
-    scale_matrix = glm::scale(scale_matrix, 1.0f / _scale);
+    glm::mat4 scaleMatrix = glm::identity<glm::mat4>();
+    scaleMatrix = glm::scale(scaleMatrix, 1.0f / _scale);
 
-    glm::mat4 rotate_matrix = glm::mat4_cast(_orientation);
-    _localMatrix = scale_matrix * rotate_matrix * translate_matrix;
+    glm::mat4 rotateMatrix = glm::mat4_cast(_orientation);
+    _localMatrix = scaleMatrix * rotateMatrix * translateMatrix;
 
     _localDirty = false;
   }

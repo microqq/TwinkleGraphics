@@ -5,7 +5,7 @@
 
 namespace TwinkleGraphics {
 
-class __TWCOMExport StandardMaterial : public Material {
+class __TWAPI StandardMaterial : public Material {
 public:
   StandardMaterial(std::string vertLayoutMacros)
       : Material(), _vertLayoutMacros(vertLayoutMacros) {}
@@ -61,7 +61,7 @@ protected:
 
 using StandardMaterialPtr = std::shared_ptr<StandardMaterial>;
 
-class __TWCOMExport BasicGeomMaterial : public Material {
+class __TWAPI BasicGeomMaterial : public Material {
 public:
   BasicGeomMaterial() : Material() {}
   BasicGeomMaterial(const BasicGeomMaterial &src) : Material(src) {}
@@ -110,7 +110,7 @@ protected:
 
 using BasicGeomMaterialPtr = std::shared_ptr<BasicGeomMaterial>;
 
-class __TWCOMExport SpriteMaterial : public Material {
+class __TWAPI SpriteMaterial : public Material {
 public:
   SpriteMaterial() : Material() {}
   SpriteMaterial(const SpriteMaterial &src) : Material(src) {}
@@ -162,7 +162,7 @@ protected:
 
 using SpriteMaterialPtr = std::shared_ptr<SpriteMaterial>;
 
-class __TWCOMExport Sprite1DMaterial : public Material {
+class __TWAPI Sprite1DMaterial : public Material {
 public:
   Sprite1DMaterial() : Material() {}
   Sprite1DMaterial(const Sprite1DMaterial &src) : Material(src) {}
@@ -215,7 +215,7 @@ protected:
 
 using Sprite1DMaterialPtr = std::shared_ptr<Sprite1DMaterial>;
 
-class __TWCOMExport LineMaterial : public Material {
+class __TWAPI LineMaterial : public Material {
 public:
   LineMaterial() : Material() {}
   LineMaterial(const LineMaterial &src) : Material(src) {}
@@ -260,7 +260,7 @@ protected:
 
 using LineMaterialPtr = std::shared_ptr<LineMaterial>;
 
-class __TWCOMExport InfinitePlaneMaterial : public Material {
+class __TWAPI InfinitePlaneMaterial : public Material {
 public:
   InfinitePlaneMaterial() : Material() {}
   InfinitePlaneMaterial(const InfinitePlaneMaterial &src) : Material(src) {}
@@ -306,7 +306,7 @@ protected:
 
 using InfinitePlaneMaterialPtr = std::shared_ptr<InfinitePlaneMaterial>;
 
-class __TWCOMExport VolumnQuadMaterial : public Material {
+class __TWAPI VolumnQuadMaterial : public Material {
 public:
   VolumnQuadMaterial() : Material() {}
   VolumnQuadMaterial(const VolumnQuadMaterial &src) : Material(src) {}
@@ -359,7 +359,7 @@ protected:
 
 using VolumnQuadMaterialPtr = std::shared_ptr<VolumnQuadMaterial>;
 
-class __TWCOMExport CubeMaterial : public Material {
+class __TWAPI CubeMaterial : public Material {
 public:
   CubeMaterial() : Material() {}
   CubeMaterial(const CubeMaterial &src) : Material(src) {}
@@ -405,7 +405,7 @@ protected:
 
 using CubeMaterialPtr = std::shared_ptr<CubeMaterial>;
 
-class __TWCOMExport SphereMaterial : public Material {
+class __TWAPI SphereMaterial : public Material {
 public:
   SphereMaterial() : Material() {}
   SphereMaterial(const SphereMaterial &src) : Material(src) {}
@@ -451,7 +451,7 @@ protected:
 
 using SphereMaterialPtr = std::shared_ptr<SphereMaterial>;
 
-class __TWCOMExport SkyboxMaterial : public Material {
+class __TWAPI SkyboxMaterial : public Material {
 public:
   SkyboxMaterial() : Material() {}
   SkyboxMaterial(const SkyboxMaterial &src) : Material(src) {}
@@ -502,7 +502,7 @@ protected:
 
 using SkyboxMaterialPtr = std::shared_ptr<SkyboxMaterial>;
 
-class __TWCOMExport ProjectionMappingMaterial : public Material {
+class __TWAPI ProjectionMappingMaterial : public Material {
 public:
   ProjectionMappingMaterial() : Material() {}
   ProjectionMappingMaterial(const ProjectionMappingMaterial &src)
@@ -552,7 +552,7 @@ protected:
 
 using ProjectionMappingMaterialPtr = std::shared_ptr<ProjectionMappingMaterial>;
 
-class __TWCOMExport ScreenQuadMaterial : public Material {
+class __TWAPI ScreenQuadMaterial : public Material {
 public:
   ScreenQuadMaterial() : Material() {}
   ScreenQuadMaterial(const ScreenQuadMaterial &src) : Material(src) {}
@@ -597,7 +597,7 @@ protected:
 
 using ScreenQuadMaterialPtr = std::shared_ptr<ScreenQuadMaterial>;
 
-class __TWCOMExport MSAAResolveMaterial : public Material {
+class __TWAPI MSAAResolveMaterial : public Material {
 public:
   MSAAResolveMaterial() : Material() {}
   MSAAResolveMaterial(const MSAAResolveMaterial &src) : Material(src) {}

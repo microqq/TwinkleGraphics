@@ -6,7 +6,7 @@
 namespace TwinkleGraphics {
 class InputManager;
 
-class __TWCOMExport InputEventArgs : public BaseEventArgs {
+class __TWAPI InputEventArgs : public BaseEventArgs {
 public:
   using Ptr = std::shared_ptr<InputEventArgs>;
 

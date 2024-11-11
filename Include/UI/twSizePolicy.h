@@ -6,7 +6,7 @@
 
 namespace TwinkleGraphics {
 // Qt QSizePolicy
-class __TWCOMExport SizePolicy {
+class __TWAPI SizePolicy {
 public:
   enum PolicyFlag {
     GrowFlag = 1,

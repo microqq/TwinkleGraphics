@@ -4,7 +4,7 @@
 # mkdir build & cd build
 # cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_DEBUG=ON -DCMAKE_TOOLCHAIN_FILE=../linux.toolchain.cmake ..
 
-cmake_minimum_required( VERSION 2.6.3 )
+cmake_minimum_required( VERSION 3.30.0 )
 SET(CMAKE_SYSTEM_NAME Linux )
 
 SET (CMAKE_C_COMPILER             "/usr/bin/clang-8")

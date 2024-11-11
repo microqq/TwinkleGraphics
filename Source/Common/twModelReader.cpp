@@ -1,5 +1,6 @@
 #include <map>
 
+#include "assimp/Importer.hpp"
 #include "twConsoleLog.h"
 #include "twImageManager.h"
 #include "twModelReader.h"
@@ -458,7 +459,7 @@ std::vector<TexturePtr> ModelReader::LoadTextures(aiMaterial *mat,
     imageMgr.ReadImageAsync(imgFilename.c_str(), &option);
     // ImagePtr image = imageMgr.ReadImage(imgFilename.c_str(), new
     // ImageOption);
-    textures.push_back(texture);
+    textures.emplace_back(texture);
   }
   return textures;
 }

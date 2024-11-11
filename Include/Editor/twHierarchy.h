@@ -11,11 +11,12 @@ struct HierarchyItem {
   std::string name;
 };
 
-class __TWCOMExport Hierarchy : public Widget {
+class __TWAPI Hierarchy : public Widget {
 public:
   explicit Hierarchy(const std::string &name, Widget *parent = nullptr);
   virtual ~Hierarchy();
 
+protected:
   virtual void OnGuiBegin() override;
   virtual void OnGui() override;
   virtual void OnGuiEnd() override;

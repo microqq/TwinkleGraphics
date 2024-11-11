@@ -1,0 +1,33 @@
+{
+  "name": "twdependencies",
+  "version-semver": "1.0.0",
+  "dependencies": [
+    {
+      "name": "glew"
+    },
+    {
+      "name": "glfw3"
+    },
+    {
+      "name": "glm"
+    },
+    {
+      "name": "freeimage"
+    },
+    {
+      "name": "freetype"
+    },
+    {
+      "name": "assimp"
+    },
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental",
+        "glfw-binding",
+        "opengl3-binding"
+      ]
+    }
+  ],
+  "builtin-baseline": "67f5654fe4898cb122e78720c6d5493320873899"
+}

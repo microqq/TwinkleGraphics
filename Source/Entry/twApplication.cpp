@@ -20,17 +20,15 @@ void Application::Run() {
     return;
   }
 
+  _mainframe->Initialize();
   EventManager &eventMgrInst = EventMgrInstance();
-
   while (!_mainframe->CheckIfClose()) {
     _mainframe->PollInputEvents();
     eventMgrInst.Update();
 
     _mainframe->BeginFrame();
-    {
-      _mainframe->Update();
-      _mainframe->PaintGui();
-    }
+    _mainframe->Update();
+    _mainframe->PaintGui();
     _mainframe->EndFrame();
   }
 

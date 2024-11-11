@@ -142,7 +142,6 @@ AssetsWindow::GetAssetStyle(const AssetStyleFlags &flags,
 }
 
 void AssetsWindow::OnGuiBegin() {
-  // ImGui::SetNextWindowSize(ImVec2(_pData->width, _pData->height));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
   ImGui::Begin(_name.c_str(), NULL,
                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
@@ -225,29 +224,22 @@ void AssetsWindow::Destroy() {
 }
 
 void AssetsWindow::SetFocusedInternal() {
-  bool focused = ImGui::IsWindowFocused(ImGuiHoveredFlags_RootAndChildWindows);
-  if (_focused != focused) {
-    _focused = focused;
-    if (_focused) {
-      // focusedin
-    } else {
-      // focusedout
-    }
+  _focused = ImGui::IsWindowFocused(ImGuiHoveredFlags_RootAndChildWindows);
+  if (_focused) {
+    // focusedin
     // Console::LogInfo("Assets window focused:", _focused, "\n");
+  } else {
+    // focusedout
   }
 }
 
 void AssetsWindow::SetHoveredInternal() {
-  bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
-  if (_hovered != hovered) {
-    _hovered = hovered;
+  _hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     if (_hovered) {
-
+      // Console::LogInfo("Assets window hovered:", _hovered, "\n");
     } else {
       /* code */
     }
-    // Console::LogInfo("Assets window hovered:", _hovered, "\n");
-  }
 }
 
 bool AssetsWindow::UpdateTreeView() {

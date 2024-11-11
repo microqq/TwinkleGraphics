@@ -27,7 +27,7 @@ void Model::AddGeometry(GeometryPtr geom) {
     if (_rootGeometry == nullptr) {
       _rootGeometry = geom;
     }
-    _geometries.push_back(geom);
+    _geometries.emplace_back(geom);
   }
 }
 

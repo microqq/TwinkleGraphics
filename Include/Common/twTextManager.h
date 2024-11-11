@@ -4,7 +4,7 @@
 #include "twTextReader.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport TextManager : public IUpdatable,
+class __TWAPI TextManager : public IUpdatable,
                                   public INonCopyable,
                                   public IDestroyable {
 public:
@@ -35,7 +35,7 @@ private:
   friend class Singleton<TextManager>;
 };
 
-__TWCOMExport TextManager &TextMgrInstance();
+__TWAPI TextManager &TextMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

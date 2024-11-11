@@ -7,11 +7,11 @@
 
 namespace TwinkleGraphics {
 class ResourceManager;
-__TWCOMExport ResourceManager &ResourceMgrInstance();
+__TWAPI ResourceManager &ResourceMgrInstance();
 
 using ReadTaskId = uint64_t;
 
-class __TWCOMExport ResourceManager : public IUpdatable,
+class __TWAPI ResourceManager : public IUpdatable,
                                       public INonCopyable,
                                       public IDestroyable {
 public:
@@ -258,7 +258,7 @@ private:
   };
 
   template <typename Ret, typename R>
-  class __TWCOMExport PackedReadTask : public IPackedReadTask {
+  class __TWAPI PackedReadTask : public IPackedReadTask {
   public:
     using Ptr = std::shared_ptr<PackedReadTask>;
     PackedReadTask(ReadTaskId task, bool async = false)

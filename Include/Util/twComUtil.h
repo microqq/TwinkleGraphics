@@ -9,7 +9,7 @@ namespace TwinkleGraphics {
 extern "C" {
 #endif
 
-__TWCOMExport std::string RandomString();
+__TWAPI std::string RandomString();
 
 #ifdef __cplusplus
 }

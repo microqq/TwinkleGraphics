@@ -6,7 +6,7 @@
 #include "twTexture.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport SpriteRenderer : public MeshRenderer {
+class __TWAPI SpriteRenderer : public MeshRenderer {
 public:
   using Ptr = std::shared_ptr<SpriteRenderer>;
 
@@ -24,7 +24,7 @@ private:
 
 using SpriteRendererPtr = SpriteRenderer::Ptr;
 
-class __TWCOMExport Sprite : public Quad {
+class __TWAPI Sprite : public Quad {
 public:
   using Ptr = std::shared_ptr<Sprite>;
 

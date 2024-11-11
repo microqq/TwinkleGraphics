@@ -10,7 +10,8 @@
 #include "twGeoUtil.h"
 #include "twMesh.h"
 #include "twModelReader.h"
-#include "twPlugin.h"
+#include "twGLViewPlugin.h"
+#include "twView.h"
 #include "twRenderTexture.h"
 #include "twSceneManager.h"
 #include "twShader.h"
@@ -19,7 +20,7 @@
 
 namespace TwinkleGraphics {
 class AntiAliasingView;
-class AntiAliasing : public GLPlugin {
+class AntiAliasing : public GLViewPlugin {
 public:
   AntiAliasing(std::string &name);
   ~AntiAliasing();
@@ -139,7 +140,7 @@ private:
   IcosahedronSpherePtr _sphere;
   CubePtr _cube;
   TrianglePtr _triangleBack;
-  TrianglePtr _triangle_front;
+  TrianglePtr _triangleFront;
 
   CubePtr _skybox;
   PlanePtr _infinitePlane;
@@ -171,7 +172,7 @@ private:
   friend class AntiAliasingView;
 };
 
-class AntiAliasingView : public View {
+class __TWAPI AntiAliasingView : public View {
 public:
   using AAOption = AntiAliasingScene::AAOption;
   using MSAASWOption = AntiAliasingScene::MSAASWOption;

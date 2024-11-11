@@ -8,7 +8,7 @@
 #include "twOrbitControl.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport FirstPersonControl : public OrbitControl {
+class __TWAPI FirstPersonControl : public OrbitControl {
 public:
   using Ptr = std::shared_ptr<FirstPersonControl>;
 

@@ -52,7 +52,7 @@ class NURBSCurve;
 class BezierSurface;
 class NURBSSurface;
 
-class __TWCOMExport SubMesh : public Object {
+class __TWAPI SubMesh : public Object {
 public:
   using Ptr = std::shared_ptr<SubMesh>;
   using WeakPtr = std::weak_ptr<SubMesh>;
@@ -90,7 +90,7 @@ private:
 
 using SubMeshPtr = SubMesh::Ptr;
 
-class __TWCOMExport Mesh : public Object {
+class __TWAPI Mesh : public Object {
 public:
   using Ptr = std::shared_ptr<Mesh>;
   using WeakPtr = std::weak_ptr<Mesh>;
@@ -199,7 +199,7 @@ public:
     }
   }
 
-  void AddSubMesh(SubMeshPtr submesh) { _submeshes.push_back(submesh); }
+  void AddSubMesh(SubMeshPtr submesh) { _submeshes.emplace_back(submesh); }
   void RemoveSubMesh(int32 index) {
     int32 size = _submeshes.size();
     if (index < size)

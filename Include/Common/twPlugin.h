@@ -6,8 +6,6 @@
 #include <string>
 
 #include "twConsoleLog.h"
-#include "twView.h"
-
 
 namespace TwinkleGraphics {
 class Plugin {
@@ -30,21 +28,6 @@ protected:
   std::string _name;
 };
 
-class GLPlugin : public Plugin {
-public:
-  GLPlugin(std::string &name) : Plugin(name), _views(), _viewsCount(0) {}
-  virtual ~GLPlugin() {}
-
-  virtual void UpdateViews() {}
-  int GetViewsCount() { return _viewsCount; }
-  View **GetViews() { return _views; }
-
-protected:
-  glm::ivec2 _windowSize;
-
-  View *_views[MAX_VIEWPORT_COUNT];
-  int _viewsCount;
-};
 } // namespace TwinkleGraphics
 
 #endif

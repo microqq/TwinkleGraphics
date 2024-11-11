@@ -66,16 +66,13 @@ struct AssetInfo {
   bool collapse{true};
 };
 
-class __TWCOMExport AssetsWindow : public Window {
+class __TWAPI AssetsWindow : public Window {
 public:
   explicit AssetsWindow(const std::string &name, uint32 width, uint32 height,
                         const std::string &assetsDir, Widget *parent = nullptr);
   virtual ~AssetsWindow();
 
   virtual void Update(float deltaTime = 0.0f) override;
-  virtual void OnGuiBegin() override;
-  virtual void OnGui() override;
-  virtual void OnGuiEnd() override;
   virtual void Destroy() override;
 
   void SetAssetStyle(const AssetStyleFlags &flags, const char *criteria,
@@ -86,6 +83,11 @@ public:
 
   std::shared_ptr<AssetStyle> GetAssetStyle(const AssetStyleFlags &flags,
                                             const char *criteria);
+
+protected:
+  virtual void OnGuiBegin() override;
+  virtual void OnGui() override;
+  virtual void OnGuiEnd() override;
 
 private:
   enum SortTag { NONE = 0, FILENAME = 1, EXTENSION = 2, SIZE = 3, DATE = 4 };

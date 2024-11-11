@@ -227,7 +227,7 @@ using SamplerParams = TexParams;
  * @brief
  * https://www.khronos.org/registry/OpenGL-Refpages/gl4/
  */
-class __TWCOMExport Sampler : Object {
+class __TWAPI Sampler : Object {
 public:
   using Ptr = std::shared_ptr<Sampler>;
 
@@ -259,7 +259,7 @@ using SamplerPtr = Sampler::Ptr;
  * dimensionality and other image parameters, and the second category represents
  * sampling state." ---- OpenGL 4.5(Core Profile)
  */
-class __TWCOMExport Texture : public Object {
+class __TWAPI Texture : public Object {
 public:
   using Ptr = std::shared_ptr<Texture>;
 
@@ -453,7 +453,7 @@ struct TextureSlot {
   }
 };
 
-class __TWCOMExport Texture1D : public Texture {
+class __TWAPI Texture1D : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture1D>;
 
@@ -474,7 +474,7 @@ protected:
   }
 };
 
-class __TWCOMExport Texture2D : public Texture {
+class __TWAPI Texture2D : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture2D>;
 
@@ -509,7 +509,7 @@ protected:
   }
 };
 
-class __TWCOMExport Texture2DMultiSample : public Texture {
+class __TWAPI Texture2DMultiSample : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture2DMultiSample>;
 
@@ -537,7 +537,7 @@ private:
   bool _fixedsampledlocation;
 };
 
-class __TWCOMExport Texture3D : public Texture {
+class __TWAPI Texture3D : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture3D>;
 
@@ -557,7 +557,7 @@ protected:
  * https://stackoverflow.com/questions/25157306/gl-texture-2d-vs-gl-texture-rectangle
  * https://www.khronos.org/opengl/wiki/Rectangle_Texture
  */
-class __TWCOMExport TextureRectangle : public Texture {
+class __TWAPI TextureRectangle : public Texture {
 public:
   using Ptr = std::shared_ptr<TextureRectangle>;
 
@@ -581,7 +581,7 @@ protected:
  * https://stackoverflow.com/questions/21424968/what-is-the-purpose-of-opengl-texture-buffer-objects
  * https://stackoverflow.com/questions/6281109/texture-buffer-objects-or-regular-textures?rq=1
  */
-class __TWCOMExport TextureBuffer : public Texture {
+class __TWAPI TextureBuffer : public Texture {
 public:
   using Ptr = std::shared_ptr<TextureBuffer>;
 
@@ -612,7 +612,7 @@ private:
   int32 _internalformat;
 };
 
-class __TWCOMExport TextureCube : public Texture {
+class __TWAPI TextureCube : public Texture {
 public:
   using Ptr = std::shared_ptr<TextureCube>;
 
@@ -648,7 +648,7 @@ private:
   ImagePtr _imageNegativeZ;
 };
 
-class __TWCOMExport Texture1DArray : public Texture {
+class __TWAPI Texture1DArray : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture1DArray>;
 
@@ -663,7 +663,7 @@ protected:
   virtual void InitStorage() override;
 };
 
-class __TWCOMExport Texture2DArray : public Texture {
+class __TWAPI Texture2DArray : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture2DArray>;
 
@@ -678,7 +678,7 @@ protected:
   virtual void InitStorage() override;
 };
 
-class __TWCOMExport TextureCubeArray : public Texture {
+class __TWAPI TextureCubeArray : public Texture {
 public:
   using Ptr = std::shared_ptr<TextureCubeArray>;
 
@@ -693,7 +693,7 @@ protected:
   virtual void InitStorage() override;
 };
 
-class __TWCOMExport Texture2DMultiSampleArray : public Texture {
+class __TWAPI Texture2DMultiSampleArray : public Texture {
 public:
   using Ptr = std::shared_ptr<Texture2DMultiSampleArray>;
 

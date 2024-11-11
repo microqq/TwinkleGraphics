@@ -283,7 +283,7 @@ void Shader::ParseShaderIncludes(const char *source) {
       assert(includeSource != nullptr);
       includeSource->filename = sm.str();
       ParseShaderIncludes(includeSource->content.c_str());
-      _includeSouces.push_back(includeSource);
+      _includeSouces.emplace_back(includeSource);
 
       // Console::LogInfo("Shader ", _res.id, " include ", sm.str(), "\n");
     }

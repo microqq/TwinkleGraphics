@@ -34,7 +34,7 @@ class MeshRenderer;
  * @brief
  *
  */
-class __TWCOMExport RenderPass : public Object {
+class __TWAPI RenderPass : public Object {
 public:
   using Ptr = std::shared_ptr<RenderPass>;
 
@@ -87,7 +87,7 @@ using RenderPassPtr = RenderPass::Ptr;
  * @brief
  *
  */
-class __TWCOMExport Material : public Object {
+class __TWAPI Material : public Object {
 public:
   using Ptr = std::shared_ptr<Material>;
 
@@ -121,7 +121,7 @@ public:
    *
    * @param pass
    */
-  void AddRenderPass(RenderPassPtr pass) { _passes.push_back(pass); }
+  void AddRenderPass(RenderPassPtr pass) { _passes.emplace_back(pass); }
 
   RenderPassPtr GetRenderPass(int32 index) {
     int32 size = _passes.size();

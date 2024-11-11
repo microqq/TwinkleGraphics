@@ -14,7 +14,7 @@ class PluginManager;
 using PluginManagerInst = Singleton<PluginManager>;
 using MapPlugins = std::map<PluginName, Plugin *>;
 
-class __TWCOMExport PluginManager {
+class __TWAPI PluginManager {
 public:
   PluginManager(/* args */);
   ~PluginManager();

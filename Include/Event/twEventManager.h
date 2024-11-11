@@ -14,7 +14,7 @@ namespace TwinkleGraphics {
 using EventQueue = RingBuffer<Event, 4096U>;
 using MultiEventHandlerCollection = std::multimap<EventId, EventHandler>;
 
-class __TWCOMExport EventManager : public IUpdatable,
+class __TWAPI EventManager : public IUpdatable,
                                    public INonCopyable,
                                    public IDestroyable {
 public:
@@ -52,7 +52,7 @@ private:
   friend class Singleton<EventManager>;
 };
 
-__TWCOMExport EventManager &EventMgrInstance();
+__TWAPI EventManager &EventMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

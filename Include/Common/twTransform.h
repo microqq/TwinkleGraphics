@@ -13,7 +13,7 @@ enum class Space { SELF, PARENT, WORLD };
 
 class SceneNode;
 
-class __TWCOMExport Transform final : public Object {
+class __TWAPI Transform final : public Object {
 public:
   using Ptr = std::shared_ptr<Transform>;
 

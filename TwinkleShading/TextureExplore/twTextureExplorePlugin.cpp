@@ -11,8 +11,8 @@ static TextureExplore *plugin = nullptr;
 #ifdef __cplusplus
 extern "C" {
 #endif
-__TWPLUGINExport Plugin *InstallPlugin(PluginManager *);
-__TWPLUGINExport void UnInstallPlugin(PluginManager *);
+__TWPLUGINAPI Plugin *InstallPlugin(PluginManager *);
+__TWPLUGINAPI void UnInstallPlugin(PluginManager *);
 
 Plugin *InstallPlugin(PluginManager *pluginMgr) {
   std::string name = "3.TextureExplore";

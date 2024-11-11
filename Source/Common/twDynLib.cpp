@@ -69,16 +69,16 @@ void DynLib::Load() {
     return;
   }
 
-  bool name_correct = false;
+  bool nameCorrect = false;
 #if defined(__linux__)
-  name_correct = _name.find(".so") != std::string::npos;
+  nameCorrect = _name.find(".so") != std::string::npos;
 #elif __APPLE__
-    name_correct = _name.find(".dylib") != std::string::npos;
+    nameCorrect = _name.find(".dylib") != std::string::npos;
 #elif _WIN32
-  name_correct = _name.substr(_name.find_last_of(".") + 1) == "dll";
+  nameCorrect = _name.substr(_name.find_last_of(".") + 1) == "dll";
 #endif
 
-  if (!name_correct) {
+  if (!nameCorrect) {
 #ifdef _DEBUG
     // assert
 #endif

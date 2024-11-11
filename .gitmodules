@@ -2,14 +2,15 @@
 ## https://git-scm.com/book/zh/v2/Git-工具-子模块
 ## https://www.cnblogs.com/codingbit/p/git-clone-with-submodule.html
 
-[submodule "ThirdParty/imgui"]
-	path = ThirdParty/imgui
-	url = https://github.com/ocornut/imgui.git
-	branch = docking
+# [submodule "ThirdParty/imgui"]
+# 	path = ThirdParty/imgui
+# 	url = https://github.com/ocornut/imgui.git
+# 	branch = docking
 [submodule "ThirdParty/ImGuiFileDialog"]
 	path = ThirdParty/ImGuiFileDialog
 	url = https://github.com/aiekick/ImGuiFileDialog.git
-	branch = Lib_Only
-[submodule "ThirdParty/freetype"]
-	path = ThirdParty/freetype
-	url = https://github.com/freetype/freetype.git
+	tag = v0.6.7
+	# branch = Lib_Only
+# [submodule "ThirdParty/freetype"]
+# 	path = ThirdParty/freetype
+# 	url = https://github.com/freetype/freetype.git

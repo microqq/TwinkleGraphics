@@ -30,7 +30,7 @@ protected:
   friend class MainFrame;
 };
 
-__TWCOMExport Application &ApplicationInstance();
+__TWAPI Application &ApplicationInstance();
 } // namespace TwinkleGraphics
 
 #endif

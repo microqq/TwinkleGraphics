@@ -31,7 +31,7 @@ using EventHandlerFuncPointer = void (*)(ObjectPtr, BaseEventArgsPtr);
 using EventHandlerFunction = std::function<void(ObjectPtr, BaseEventArgsPtr)>;
 using EventHandlerFunctionPtr = std::shared_ptr<EventHandlerFunction>;
 
-class __TWCOMExport EventHandler : public Object {
+class __TWAPI EventHandler : public Object {
 public:
   using Ptr = std::shared_ptr<EventHandler>;
 
@@ -40,7 +40,7 @@ public:
   EventHandler() : Object() { _handlerId = ++HandlerIdCounter; }
 
   EventHandler(const EventHandlerFunctionPtr &func) : Object() {
-    _handlerFuncList.push_back(func);
+    _handlerFuncList.emplace_back(func);
     _handlerId = ++HandlerIdCounter;
   }
 

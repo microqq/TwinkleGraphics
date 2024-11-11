@@ -11,7 +11,7 @@
 #include "twResource.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport ModelReader final : public ResourceReader,
+class __TWAPI ModelReader final : public ResourceReader,
                                         public Reference<ModelReader>,
                                         public INonCopyable {
 public:

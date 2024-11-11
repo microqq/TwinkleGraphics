@@ -54,7 +54,7 @@ enum UniformType {
   UNI_DMAT43
 };
 
-struct __TWCOMExport Uniform {
+struct __TWAPI Uniform {
   std::string name;
   // UniformType uni_type;
   bool ismatrix;
@@ -78,7 +78,7 @@ struct __TWCOMExport Uniform {
   virtual void BindLocation(uint32 location) {}
 };
 
-struct __TWCOMExport UniformLocation {
+struct __TWAPI UniformLocation {
   Uniform *uniform;
   int32 location = -1;
 
@@ -91,7 +91,7 @@ struct __TWCOMExport UniformLocation {
 
 template <class T, uint32 N> struct SimpleUniform;
 
-template <class T> struct __TWCOMExport SimpleUniform<T, 1> : public Uniform {
+template <class T> struct __TWAPI SimpleUniform<T, 1> : public Uniform {
   T u0;
 
   SimpleUniform(/*UniformType unitype,*/ const char *namestr)
@@ -110,7 +110,7 @@ template <class T> struct __TWCOMExport SimpleUniform<T, 1> : public Uniform {
   virtual int32 GetElementsCount() override { return 1; }
   virtual void BindLocation(uint32 location) override;
 };
-template <class T> struct __TWCOMExport SimpleUniform<T, 2> : public Uniform {
+template <class T> struct __TWAPI SimpleUniform<T, 2> : public Uniform {
   T u0, u1;
 
   SimpleUniform(/*UniformType unitype,*/ const char *namestr)
@@ -135,7 +135,7 @@ template <class T> struct __TWCOMExport SimpleUniform<T, 2> : public Uniform {
   virtual int32 GetElementsCount() override { return 2; }
   virtual void BindLocation(uint32 location) override;
 };
-template <class T> struct __TWCOMExport SimpleUniform<T, 3> : public Uniform {
+template <class T> struct __TWAPI SimpleUniform<T, 3> : public Uniform {
   T u0, u1, u2;
 
   SimpleUniform(/*UniformType unitype,*/ const char *namestr)
@@ -162,7 +162,7 @@ template <class T> struct __TWCOMExport SimpleUniform<T, 3> : public Uniform {
   virtual int32 GetElementsCount() override { return 3; }
   virtual void BindLocation(uint32 location) override;
 };
-template <class T> struct __TWCOMExport SimpleUniform<T, 4> : public Uniform {
+template <class T> struct __TWAPI SimpleUniform<T, 4> : public Uniform {
   T u0, u1, u2, u3;
 
   SimpleUniform(/*UniformType unitype,*/ const char *namestr)
@@ -191,7 +191,7 @@ template <class T> struct __TWCOMExport SimpleUniform<T, 4> : public Uniform {
   virtual void BindLocation(uint32 location) override;
 };
 
-template <class T, uint32 N> struct __TWCOMExport VecUniform : public Uniform {
+template <class T, uint32 N> struct __TWAPI VecUniform : public Uniform {
   vec<N, T, defaultp> vector;
 
   VecUniform(/*UniformType unitype,*/ const char *namestr)
@@ -212,7 +212,7 @@ template <class T, uint32 N> struct __TWCOMExport VecUniform : public Uniform {
 };
 
 template <class T, uint32 Row, uint32 Column>
-struct __TWCOMExport MatUniform : public Uniform {
+struct __TWAPI MatUniform : public Uniform {
   mat<Row, Column, T, defaultp> matrix;
   bool transpose;
 

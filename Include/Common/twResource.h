@@ -43,7 +43,7 @@ enum class CacheHint {
 
 enum class CacheStoreHint { TEMPORARY = 1, TIMELIMITED = 2, PERMERNANTLY = 3 };
 
-class __TWCOMExport ReaderOption {
+class __TWAPI ReaderOption {
 public:
   ReaderOption();
   ReaderOption(const ReaderOption &src);
@@ -96,7 +96,7 @@ protected:
   float _storeTime;
 };
 
-class __TWCOMExport ResourceReader {
+class __TWAPI ResourceReader {
 public:
   using Ptr = std::shared_ptr<ResourceReader>;
 
@@ -121,7 +121,7 @@ using ResourceReaderPtr = ResourceReader::Ptr;
  *
  * @tparam TPtr
  */
-template <class T> class __TWCOMExport ReadResult {
+template <class T> class __TWAPI ReadResult {
 public:
   enum class Status { NONE, WAITTOLOAD, LOADING, SUCCESS, FAILED };
 

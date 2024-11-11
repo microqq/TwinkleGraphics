@@ -7,6 +7,7 @@
 #include "twAbstractLayout.h"
 #include "twCloseEventArgs.h"
 #include "twCommon.h"
+#include "twInputEventArgs.h"
 #include "twCursorEventArgs.h"
 #include "twEventHandler.h"
 #include "twFocusEventArgs.h"
@@ -26,7 +27,7 @@ struct WidgetData {
   uint32 y;
 };
 
-class __TWCOMExport Widget : public Object,
+class __TWAPI Widget : public Object,
                              public IUpdatable,
                              public IDestroyable,
                              public INonCopyable {
@@ -73,10 +74,6 @@ public:
   AbstractLayout *GetLayout() { return _pLayout; }
   const std::string &GetName() { return _name; }
 
-  virtual void OnGuiBegin();
-  virtual void OnGui();
-  virtual void OnGuiEnd();
-
   void PaintGui();
 
   void Show() { _visible = true; }
@@ -104,6 +101,10 @@ public:
   void SetParent(Widget *parent = nullptr);
 
 protected:
+  virtual void OnGuiBegin();
+  virtual void OnGui();
+  virtual void OnGuiEnd();
+
   virtual void OnEvent(ObjectPtr sender, BaseEventArgsPtr event);
 
   virtual void OnMousePressEvent(MouseEventArgs *e);

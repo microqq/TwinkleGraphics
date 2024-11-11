@@ -10,7 +10,7 @@
 #include "twInspector.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport EditorWindowLayout : public DockSpaceLayout {
+class __TWAPI EditorWindowLayout : public DockSpaceLayout {
 public:
   explicit EditorWindowLayout(Widget *host);
   virtual ~EditorWindowLayout();
@@ -22,11 +22,14 @@ protected:
 private:
 };
 
-class __TWCOMExport EditorWindow : public GLFWMainFrame {
+class __TWAPI EditorWindow : public GLFWMainFrame {
 public:
   explicit EditorWindow(uint32 width, uint32 height);
   virtual ~EditorWindow();
 
+  virtual void Initialize() override;
+
+protected:
   virtual void OnGuiBegin() override;
   virtual void OnGui() override;
   virtual void OnGuiEnd() override;

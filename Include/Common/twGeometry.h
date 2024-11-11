@@ -14,7 +14,7 @@ namespace TwinkleGraphics {
  * @brief
  *
  */
-class __TWCOMExport Geometry : public SceneNode, public RenderableObject {
+class __TWAPI Geometry : public SceneNode, public RenderableObject {
 public:
   using Ptr = std::shared_ptr<Geometry>;
 
@@ -113,19 +113,19 @@ private:
                                    int32 latitude_count,
                                    MeshDataFlag flag = MeshDataFlag::DEFAULT) {
     int32 row_count = latitude_count - 1;
-    int32 col_count = longitude_count;
-    int32 num = col_count * row_count + 2;
+    int32 colCount = longitude_count;
+    int32 num = colCount * row_count + 2;
 
     MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, flag);
 
-    int indice_num = 6 * col_count + (row_count - 1) * col_count * 6;
+    int indice_num = 6 * colCount + (row_count - 1) * colCount * 6;
     SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(indice_num);
     mesh->AddSubMesh(submesh);
 
-    float32 u_step = glm::two_pi<float32>() / (float32)(longitude_count - 1);
-    float32 v_step = glm::pi<float32>() / (float32)latitude_count;
+    float32 uStep = glm::two_pi<float32>() / (float32)(longitude_count - 1);
+    float32 vStep = glm::pi<float32>() / (float32)latitude_count;
 
     // pole points
     mesh->_verticePos[0].x = 0.0f;
@@ -139,61 +139,61 @@ private:
     // compute vertice position
     float32 x, y, z;
     for (int32 i = 0, k = 1; i < row_count; i++) {
-      y = radius * cos(v_step * (i + 1));
-      for (int32 j = 0; j < col_count; j++) {
-        x = radius * sin(v_step * (i + 1)) * cos(u_step * j);
-        z = radius * sin(v_step * (i + 1)) * sin(u_step * j);
+      y = radius * cos(vStep * (i + 1));
+      for (int32 j = 0; j < colCount; j++) {
+        x = radius * sin(vStep * (i + 1)) * cos(uStep * j);
+        z = radius * sin(vStep * (i + 1)) * sin(uStep * j);
 
         mesh->_verticePos[k++] = glm::vec3(x, y, z);
       }
     }
 
     for (int32 i = 0, j = 0; i < num - 2; i++) {
-      int32 row = i / col_count;
-      int32 col = i % col_count;
+      int32 row = i / colCount;
+      int32 col = i % colCount;
       if (0 == row) {
-        if (col == col_count - 1) {
-          submesh->_indice[j] = row * col_count + col + 1;
-          submesh->_indice[j + 1] = row * col_count + 1;
+        if (col == colCount - 1) {
+          submesh->_indice[j] = row * colCount + col + 1;
+          submesh->_indice[j + 1] = row * colCount + 1;
           submesh->_indice[j + 2] = 0;
         } else {
-          submesh->_indice[j] = row * col_count + col + 1;
-          submesh->_indice[j + 1] = row * col_count + col + 2;
+          submesh->_indice[j] = row * colCount + col + 1;
+          submesh->_indice[j + 1] = row * colCount + col + 2;
           submesh->_indice[j + 2] = 0;
         }
 
         j += 3;
       } else {
         int32 top_row = row - 1;
-        if (col == col_count - 1) {
-          submesh->_indice[j] = row * col_count + col + 1;
-          submesh->_indice[j + 1] = top_row * col_count + 1;
-          submesh->_indice[j + 2] = top_row * col_count + 1;
+        if (col == colCount - 1) {
+          submesh->_indice[j] = row * colCount + col + 1;
+          submesh->_indice[j + 1] = top_row * colCount + 1;
+          submesh->_indice[j + 2] = top_row * colCount + 1;
 
-          submesh->_indice[j + 3] = row * col_count + col + 1;
-          submesh->_indice[j + 4] = row * col_count + 1;
-          submesh->_indice[j + 5] = top_row * col_count + 1;
+          submesh->_indice[j + 3] = row * colCount + col + 1;
+          submesh->_indice[j + 4] = row * colCount + 1;
+          submesh->_indice[j + 5] = top_row * colCount + 1;
         } else {
-          submesh->_indice[j] = row * col_count + col + 1;
-          submesh->_indice[j + 1] = top_row * col_count + col + 2;
-          submesh->_indice[j + 2] = top_row * col_count + col + 1;
+          submesh->_indice[j] = row * colCount + col + 1;
+          submesh->_indice[j + 1] = top_row * colCount + col + 2;
+          submesh->_indice[j + 2] = top_row * colCount + col + 1;
 
-          submesh->_indice[j + 3] = row * col_count + col + 1;
-          submesh->_indice[j + 4] = row * col_count + col + 2;
-          submesh->_indice[j + 5] = top_row * col_count + col + 2;
+          submesh->_indice[j + 3] = row * colCount + col + 1;
+          submesh->_indice[j + 4] = row * colCount + col + 2;
+          submesh->_indice[j + 5] = top_row * colCount + col + 2;
         }
 
         j += 6;
 
         if (row == row_count - 1) {
-          if (col == col_count - 1) {
-            submesh->_indice[j] = row * col_count + col + 1;
+          if (col == colCount - 1) {
+            submesh->_indice[j] = row * colCount + col + 1;
             submesh->_indice[j + 1] = num - 1;
-            submesh->_indice[j + 2] = row * col_count + 1;
+            submesh->_indice[j + 2] = row * colCount + 1;
           } else {
-            submesh->_indice[j] = row * col_count + col + 1;
+            submesh->_indice[j] = row * colCount + col + 1;
             submesh->_indice[j + 1] = num - 1;
-            submesh->_indice[j + 2] = row * col_count + col + 2;
+            submesh->_indice[j + 2] = row * colCount + col + 2;
           }
 
           j += 3;
@@ -239,9 +239,9 @@ private:
   MeshPtr
   CreateSphereMeshNormalizedCube(float32 radius, int32 subdivide,
                                  MeshDataFlag flag = MeshDataFlag::DEFAULT) {
-    int32 row_count, col_count;
-    row_count = col_count = subdivide + 1;
-    int32 num = row_count * col_count * 6;
+    int32 row_count, colCount;
+    row_count = colCount = subdivide + 1;
+    int32 num = row_count * colCount * 6;
 
     MeshPtr mesh = std::make_shared<Mesh>();
     mesh->Initialize(num, flag);
@@ -292,9 +292,9 @@ private:
     float32 step = 1.0f / subdivide;
     for (int32 i = 0; i < 24; i += 4) {
       face_index = i / 4;
-      vertice_index = face_index * row_count * col_count;
+      vertice_index = face_index * row_count * colCount;
       for (int32 j = 0; j < row_count; j++) {
-        for (int32 k = 0; k < col_count; k++) {
+        for (int32 k = 0; k < colCount; k++) {
           // double linear interpolation
           glm::vec3 col_temp_1 =
               (faces[i + 3] - faces[i]) * (float32)k * step + faces[i];
@@ -307,13 +307,13 @@ private:
 
           // submesh->_indice[element_index++] = vertice_index;
 
-          if (j != row_count - 1 && k != col_count - 1) {
+          if (j != row_count - 1 && k != colCount - 1) {
             submesh->_indice[element_index] = vertice_index;
-            submesh->_indice[element_index + 1] = vertice_index + col_count;
-            submesh->_indice[element_index + 2] = vertice_index + col_count + 1;
+            submesh->_indice[element_index + 1] = vertice_index + colCount;
+            submesh->_indice[element_index + 2] = vertice_index + colCount + 1;
 
             submesh->_indice[element_index + 3] = vertice_index;
-            submesh->_indice[element_index + 4] = vertice_index + col_count + 1;
+            submesh->_indice[element_index + 4] = vertice_index + colCount + 1;
             submesh->_indice[element_index + 5] = vertice_index + 1;
 
             element_index += 6;
@@ -403,8 +403,8 @@ private:
         p_helper2 = p0 + edge_1 * (float32)row / (float32)subdivide;
 
         int32 col = 0;
-        int32 col_count = row + 1;
-        for (; col < col_count; col++) {
+        int32 colCount = row + 1;
+        for (; col < colCount; col++) {
           if (row == 0) {
             p = p_helper1;
           } else {
@@ -423,7 +423,7 @@ private:
 
               indice_index += 3;
 
-              if (col != col_count - 1) {
+              if (col != colCount - 1) {
                 submesh->_indice[indice_index] = vertice_index + col;
                 submesh->_indice[indice_index + 1] = vertice_index + col - row;
                 submesh->_indice[indice_index + 2] =
@@ -439,7 +439,7 @@ private:
           mesh->_verticePos[vertice_index + col] = p;
         }
 
-        vertice_index += col_count;
+        vertice_index += colCount;
       }
     }
 
@@ -752,10 +752,10 @@ public:
 protected:
   MeshPtr CreatePlaneMesh(MeshDataFlag flag = MeshDataFlag::DEFAULT) {
     int32 row_count = _subdivision + 1;
-    int32 col_count = _subdivision + 1;
+    int32 colCount = _subdivision + 1;
 
     MeshPtr mesh = std::make_shared<Mesh>();
-    mesh->Initialize(row_count * col_count, flag);
+    mesh->Initialize(row_count * colCount, flag);
 
     SubMeshPtr submesh = std::make_shared<SubMesh>();
     submesh->Initialize(_subdivision * _subdivision * 6);
@@ -764,13 +764,13 @@ protected:
     int32 indice_index = 0;
     for (int32 i = 0; i < _subdivision; i++) {
       for (int32 j = 0; j < _subdivision; j++) {
-        submesh->_indice[indice_index] = i * col_count + j;
-        submesh->_indice[indice_index + 1] = i * col_count + col_count + j;
-        submesh->_indice[indice_index + 2] = i * col_count + col_count + j + 1;
+        submesh->_indice[indice_index] = i * colCount + j;
+        submesh->_indice[indice_index + 1] = i * colCount + colCount + j;
+        submesh->_indice[indice_index + 2] = i * colCount + colCount + j + 1;
 
-        submesh->_indice[indice_index + 3] = i * col_count + j;
-        submesh->_indice[indice_index + 4] = i * col_count + col_count + j + 1;
-        submesh->_indice[indice_index + 5] = i * col_count + j + 1;
+        submesh->_indice[indice_index + 3] = i * colCount + j;
+        submesh->_indice[indice_index + 4] = i * colCount + colCount + j + 1;
+        submesh->_indice[indice_index + 5] = i * colCount + j + 1;
 
         indice_index += 6;
       }
@@ -799,12 +799,12 @@ protected:
       float32 y = _width * 0.5f - (_width / _subdivision) * i;
       float32 v = 1.0f - (1.0f / _subdivision) * i;
 
-      for (int32 j = 0; j < col_count; j++) {
+      for (int32 j = 0; j < colCount; j++) {
         float32 x = (_width / _subdivision) * j - _width * 0.5f;
         float32 u = (1.0f / _subdivision) * j - 1.0f;
 
         glm::vec3 point(x, y, 0.0f);
-        mesh->_verticePos[i * col_count + j] = mat_rot * point;
+        mesh->_verticePos[i * colCount + j] = mat_rot * point;
 
         if ((flag & MeshDataFlag::HAS_UV) != 0) {
           uvs[0] = glm::vec4(u, v, 0.0, 0.0f);
@@ -1005,7 +1005,7 @@ public:
 
     for (int32 i = _degree, span_count = _knotsCount - 1 - _degree;
          i < span_count; i++) {
-      float32 u_step = (_knots[i + 1].u - _knots[i].u) / _segments;
+      float32 uStep = (_knots[i + 1].u - _knots[i].u) / _segments;
 
       int32 gen_points_count = _segments;
       if (i == span_count - 1) {
@@ -1013,7 +1013,7 @@ public:
         ;
       }
       for (int32 j = 0; j < gen_points_count; j++) {
-        float32 u = _knots[i].u + u_step * j;
+        float32 u = _knots[i].u + uStep * j;
 
         vertices[n++] = DeBoor(u, i);
 
@@ -1220,48 +1220,48 @@ public:
     // glm::vec4* colors = _mesh->GetVerticeColor();
     // glm::vec4* uvs = _mesh->GetVerticeUV();
     glm::uint32 *indices = subMesh->GetIndice();
-    int32 gen_point_index = 0;
-    int32 gen_indice_index = 0;
+    int32 genPointIndex = 0;
+    int32 genIndiceIndex = 0;
 
-    int32 v_span = _vKnotsCount - 1 - _vDegree;
-    int32 u_span = _uKnotsCount - 1 - _uDegree;
+    int32 vSpan = _vKnotsCount - 1 - _vDegree;
+    int32 uSpan = _uKnotsCount - 1 - _uDegree;
 
-    float32 u_step = 0.0f;
-    float32 v_step = 0.0f;
+    float32 uStep = 0.0f;
+    float32 vStep = 0.0f;
 
-    for (int32 i = _vDegree; i < v_span; i++) {
-      v_step = (_vKnots[i + 1].u - _vKnots[i].u) / _subdivide;
+    for (int32 i = _vDegree; i < vSpan; i++) {
+      vStep = (_vKnots[i + 1].u - _vKnots[i].u) / _subdivide;
 
-      int32 v_points_count = _subdivide;
-      if (i == v_span - 1) {
-        v_points_count = _subdivide + 1;
+      int32 vPointsCount = _subdivide;
+      if (i == vSpan - 1) {
+        vPointsCount = _subdivide + 1;
       }
 
-      for (int32 j = 0; j < v_points_count; j++) {
-        float32 v = _vKnots[i].u + v_step * j;
+      for (int32 j = 0; j < vPointsCount; j++) {
+        float32 v = _vKnots[i].u + vStep * j;
 
-        for (int32 k = _uDegree; k < u_span; k++) {
-          u_step = (_uKnots[k + 1].u - _uKnots[k].u) / _subdivide;
+        for (int32 k = _uDegree; k < uSpan; k++) {
+          uStep = (_uKnots[k + 1].u - _uKnots[k].u) / _subdivide;
 
           int32 u_points_count = _subdivide;
-          if (k == u_span - 1) {
+          if (k == uSpan - 1) {
             u_points_count = _subdivide + 1;
           }
 
           for (int32 l = 0; l < u_points_count; l++) {
-            float32 u = _uKnots[k].u + u_step * l;
+            float32 u = _uKnots[k].u + uStep * l;
             glm::vec4 suv = GetPoint(u, v, k, i);
-            vertices[gen_point_index] = glm::vec3(suv.x, suv.y, suv.z) / suv.w;
-            normals[gen_point_index++] = ComputeNormal(
+            vertices[genPointIndex] = glm::vec3(suv.x, suv.y, suv.z) / suv.w;
+            normals[genPointIndex++] = ComputeNormal(
                 u, v, k, i, glm::vec3(suv.x, suv.y, suv.z) / suv.w);
 
-            // vertices[gen_point_index - 1] += normals[gen_point_index - 1]
+            // vertices[genPointIndex - 1] += normals[genPointIndex - 1]
             // * 1.0f;
 
             // std::cout << "-----------normal-------------" << std::endl;
-            // std::cout << "x:" << normals[gen_point_index - 1].x << std::endl;
-            // std::cout << "y:" << normals[gen_point_index - 1].y << std::endl;
-            // std::cout << "z:" << normals[gen_point_index - 1].z << std::endl;
+            // std::cout << "x:" << normals[genPointIndex - 1].x << std::endl;
+            // std::cout << "y:" << normals[genPointIndex - 1].y << std::endl;
+            // std::cout << "z:" << normals[genPointIndex - 1].z << std::endl;
           }
         }
       }
@@ -1270,35 +1270,35 @@ public:
     for (int32 row = 0; row < v_count; row++) {
       if (row != v_count - 1) {
         for (int32 k = 0, g = u_count - 1; k < g; k++) {
-          indices[gen_indice_index++] = row * u_count + k;
-          indices[gen_indice_index++] = row * u_count + k + 1;
-          indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
+          indices[genIndiceIndex++] = row * u_count + k;
+          indices[genIndiceIndex++] = row * u_count + k + 1;
+          indices[genIndiceIndex++] = (row + 1) * u_count + k + 1;
 
-          indices[gen_indice_index++] = row * u_count + k;
-          indices[gen_indice_index++] = (row + 1) * u_count + k + 1;
-          indices[gen_indice_index++] = (row + 1) * u_count + k;
+          indices[genIndiceIndex++] = row * u_count + k;
+          indices[genIndiceIndex++] = (row + 1) * u_count + k + 1;
+          indices[genIndiceIndex++] = (row + 1) * u_count + k;
         }
       }
     }
   }
 
   glm::vec4 GetPoint(float32 u, float32 v) {
-    int32 v_span = FindKnotSpanOfV(v);
-    int32 u_span = FindKnotSpanOfU(u);
+    int32 vSpan = FindKnotSpanOfV(v);
+    int32 uSpan = FindKnotSpanOfU(u);
 
-    return GetPoint(u, v, u_span, v_span);
+    return GetPoint(u, v, uSpan, vSpan);
   }
 
   glm::vec4 GetPoint(float32 u, float32 v, int32 uspan, int32 vspan) {
-    glm::vec4 *u_points = new glm::vec4[_uPointsCount];
+    glm::vec4 *uPoints = new glm::vec4[_uPointsCount];
     for (int32 col = 0; col < _uPointsCount; col++) {
-      u_points[col] = DeBoor(v, vspan, _vDegree, _vKnots,
+      uPoints[col] = DeBoor(v, vspan, _vDegree, _vKnots,
                              &(_controlPoints[_vPointsCount * col]));
     }
 
-    glm::vec4 ret = DeBoor(u, uspan, _uDegree, _uKnots, u_points);
+    glm::vec4 ret = DeBoor(u, uspan, _uDegree, _uKnots, uPoints);
 
-    SAFE_DEL_ARR(u_points);
+    SAFE_DEL_ARR(uPoints);
     return ret;
   }
 
@@ -1340,15 +1340,15 @@ private:
           nullptr, nullptr, false);
       glm::vec4 *points = _apduSurface->GetControlPoints();
 
-      for (int32 col = 0, col_count = _uPointsCount - 1; col < col_count;
+      for (int32 col = 0, colCount = _uPointsCount - 1; col < colCount;
            col++) {
         for (int32 row = 0; row < _vPointsCount; row++) {
           int32 index = col * _vPointsCount + row;
-          int32 index_p1 = index + _vPointsCount;
-          int32 index_p0 = index;
+          int32 indexP1 = index + _vPointsCount;
+          int32 indexP0 = index;
 
           points[index] =
-              ((_controlPoints[index_p1] - _controlPoints[index_p0]) *
+              ((_controlPoints[indexP1] - _controlPoints[indexP0]) *
                (float32)_uDegree) /
               (_uKnots[col + 1 + _uDegree].u - _uKnots[col + 1].u);
 
@@ -1358,7 +1358,7 @@ private:
             float32 w = points[index].w;
             if (w == 0.0f) {
               points[index].w = 1.0f;
-              w = _controlPoints[index_p1].w;
+              w = _controlPoints[indexP1].w;
             }
 
             points[index] *= w;
@@ -1398,11 +1398,11 @@ private:
         for (int32 row = 0, row_count = _vPointsCount - 1; row < row_count;
              row++) {
           int32 index = col * row_count + row;
-          int32 index_p0 = col * _vPointsCount + row;
-          int32 index_p1 = index_p0 + 1;
+          int32 indexP0 = col * _vPointsCount + row;
+          int32 indexP1 = indexP0 + 1;
 
           points[index] =
-              ((_controlPoints[index_p1] - _controlPoints[index_p0]) *
+              ((_controlPoints[indexP1] - _controlPoints[indexP0]) *
                (float32)_vDegree) /
               (_vKnots[row + 1 + _vDegree].u - _vKnots[row + 1].u);
 
@@ -1412,7 +1412,7 @@ private:
             float32 w = points[index].w;
             if (w == 0.0f) {
               points[index].w = 1.0f;
-              w = _controlPoints[index_p1].w;
+              w = _controlPoints[indexP1].w;
             }
 
             points[index] *= w;
@@ -1494,15 +1494,15 @@ private:
     float32 w =
         _rational ? _controlPoints[uspan * _vPointsCount + vspan].w : 1.0f;
 
-    glm::vec4 apdu_point = _apduSurface->GetPoint(u, v, uspan - 1, vspan);
+    glm::vec4 apduPoint = _apduSurface->GetPoint(u, v, uspan - 1, vspan);
     glm::vec3 apdu =
-        glm::vec3(apdu_point.x, apdu_point.y, apdu_point.z) / apdu_point.w;
-    float32 wpdu = _rational ? apdu_point.w : 0.0f;
+        glm::vec3(apduPoint.x, apduPoint.y, apduPoint.z) / apduPoint.w;
+    float32 wpdu = _rational ? apduPoint.w : 0.0f;
 
-    glm::vec4 apdv_point = _apdvSurface->GetPoint(u, v, uspan, vspan - 1);
+    glm::vec4 apdvPoint = _apdvSurface->GetPoint(u, v, uspan, vspan - 1);
     glm::vec3 apdv =
-        glm::vec3(apdv_point.x, apdv_point.y, apdv_point.z) / apdv_point.w;
-    float32 wpdv = _rational ? apdv_point.w : 0.0f;
+        glm::vec3(apdvPoint.x, apdvPoint.y, apdvPoint.z) / apdvPoint.w;
+    float32 wpdv = _rational ? apdvPoint.w : 0.0f;
 
     glm::vec3 pdu = glm::normalize((apdu - wpdu * suv) / w);
     glm::vec3 pdv = glm::normalize((apdv - wpdv * suv) / w);

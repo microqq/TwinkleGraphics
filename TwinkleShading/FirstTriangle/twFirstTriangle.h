@@ -4,13 +4,14 @@
 
 #include "twCommon.h"
 
-#include "twPlugin.h"
+#include "twView.h"
+#include "twGLViewPlugin.h"
 #include "twShader.h"
 
 namespace TwinkleGraphics {
 class TriangleView;
 
-class FirstTriangle : public GLPlugin {
+class FirstTriangle : public GLViewPlugin {
 public:
   FirstTriangle(std::string &name);
   ~FirstTriangle();
@@ -18,7 +19,7 @@ public:
   virtual void Install() override;
   virtual void UnInstall() override;
   virtual void UpdateViews() override {
-    Plugin::UpdateViews();
+    GLViewPlugin::UpdateViews();
   };
 
 private:
@@ -48,7 +49,7 @@ private:
 
   uint32 _modelMatLoc;
   uint32 _viewMatLoc;
-  uint32 _projection_mat_loc;
+  uint32 _projectionMatLoc;
 
   glm::mat4 _modelMat;
   glm::mat4 _viewMat;

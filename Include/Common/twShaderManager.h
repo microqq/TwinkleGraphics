@@ -7,7 +7,7 @@
 #include "twSingleton.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport ShaderManager : public IUpdatable,
+class __TWAPI ShaderManager : public IUpdatable,
                                     public IReaderManager,
                                     public INonCopyable,
                                     public IDestroyable {
@@ -52,7 +52,7 @@ private:
   friend class Singleton<ShaderManager>;
 };
 
-__TWCOMExport ShaderManager &ShaderMgrInstance();
+__TWAPI ShaderManager &ShaderMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

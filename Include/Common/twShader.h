@@ -113,7 +113,7 @@ private:
 
 using ShaderProgramPtr = ShaderProgram::Ptr;
 
-class __TWCOMExport ShaderOption final : public ReaderOption {
+class __TWAPI ShaderOption final : public ReaderOption {
 public:
   struct OptionData {
     std::string filename;
@@ -135,7 +135,7 @@ private:
   friend class ShaderManager;
 };
 
-class __TWCOMExport ShaderProgramOption final : public ReaderOption {
+class __TWAPI ShaderProgramOption final : public ReaderOption {
 public:
   ShaderProgramOption(ShaderOption *options, int num)
       : ReaderOption(), _macros() {
@@ -177,13 +177,13 @@ private:
   friend class ShaderManager;
 };
 
-class __TWCOMExport ShaderProgramUse {
+class __TWAPI ShaderProgramUse {
 public:
   ShaderProgramUse(ShaderProgramPtr program);
   ~ShaderProgramUse();
 };
 
-class __TWCOMExport ShaderReader : public ResourceReader,
+class __TWAPI ShaderReader : public ResourceReader,
                                    public Reference<ShaderReader>,
                                    public INonCopyable {
 public:

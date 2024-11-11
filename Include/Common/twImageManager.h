@@ -5,7 +5,7 @@
 #include "twReaderManager.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport ImageManager : public IUpdatable,
+class __TWAPI ImageManager : public IUpdatable,
                                    public IReaderManager,
                                    public INonCopyable,
                                    public IDestroyable {
@@ -30,7 +30,7 @@ private:
   friend class Singleton<ImageManager>;
 };
 
-__TWCOMExport ImageManager &ImageMgrInstance();
+__TWAPI ImageManager &ImageMgrInstance();
 
 } // namespace TwinkleGraphics
 

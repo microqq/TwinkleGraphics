@@ -167,7 +167,7 @@ enum MouseState : uint32 {
 
 enum KeyState : uint32 { KEY_RELEASE = 0, KEY_PRESS = 1, KEY_REPEAT = 2 };
 
-class __TWCOMExport InputManager : public IUpdatable, public INonCopyable {
+class __TWAPI InputManager : public IUpdatable, public INonCopyable {
 public:
   virtual ~InputManager();
   virtual void Update(float deltaTime = 0.0f) override;
@@ -209,7 +209,7 @@ private:
   // friend class CursorEventArgs;
 };
 
-__TWCOMExport InputManager &InputMgrInstance();
+__TWAPI InputManager &InputMgrInstance();
 
 } // namespace TwinkleGraphics
 

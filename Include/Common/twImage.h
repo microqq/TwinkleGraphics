@@ -25,7 +25,7 @@ struct ImageSource : public Object {
 
 using ImageSourcePtr = ImageSource::Ptr;
 
-class __TWCOMExport Image : public Object {
+class __TWAPI Image : public Object {
 public:
   using Ptr = std::shared_ptr<Image>;
 
@@ -60,7 +60,7 @@ private:
   friend class ImageManager;
 };
 
-class __TWCOMExport ImageReader final : public ResourceReader,
+class __TWAPI ImageReader final : public ResourceReader,
                                         public Reference<ImageReader>,
                                         public INonCopyable {
 public:

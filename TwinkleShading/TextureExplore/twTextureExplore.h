@@ -8,7 +8,8 @@
 #include "twCamera.h"
 #include "twFirstPersonControl.h"
 #include "twMesh.h"
-#include "twPlugin.h"
+#include "twGLViewPlugin.h"
+#include "twView.h"
 #include "twShader.h"
 #include "twSprite.h"
 #include "twTexture.h"
@@ -16,7 +17,7 @@
 namespace TwinkleGraphics {
 class TextureExploreView;
 
-class TextureExplore : public GLPlugin {
+class TextureExplore : public GLViewPlugin {
 public:
   TextureExplore(std::string &name);
   ~TextureExplore();

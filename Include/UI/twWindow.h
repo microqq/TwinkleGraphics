@@ -4,7 +4,7 @@
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
-class __TWCOMExport Window : public Widget {
+class __TWAPI Window : public Widget {
 public:
   explicit Window(const std::string &name, uint32 width, uint32 height,
                   Widget *parent = nullptr);

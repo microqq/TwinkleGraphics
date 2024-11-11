@@ -3,6 +3,7 @@
 
 #include <future>
 #include <vector>
+#include <algorithm>
 
 #include "twResource.h"
 
