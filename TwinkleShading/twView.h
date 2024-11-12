@@ -43,6 +43,8 @@ public:
 
   // [[deprecated]]
   void Initialise(glm::ivec2 size) {
+    _rect.z = size.x;
+    _rect.w = size.y;
     Initialized();
   }
 

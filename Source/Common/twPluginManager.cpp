@@ -25,12 +25,12 @@ Plugin *PluginManager::LoadPlugin(std::string &path) {
   DynLibManager &dynlibMgr = DynLibManagerInst::Instance();
   DynLib *lib = dynlibMgr.Load(path);
   if (lib != nullptr) {
-    std::string install_symbol = "InstallPlugin";
-    INSTALL_PLUGIN_FUNC install_func =
-        (INSTALL_PLUGIN_FUNC)lib->GetSymbol(install_symbol);
+    std::string installSymbol = "InstallPlugin";
+    INSTALL_PLUGIN_FUNC installFunc =
+        (INSTALL_PLUGIN_FUNC)lib->GetSymbol(installSymbol);
 
-    if (install_func != nullptr) {
-      return install_func(this);
+    if (installFunc != nullptr) {
+      return installFunc(this);
     }
   }
 
@@ -41,12 +41,12 @@ void PluginManager::UnloadPlugin(std::string &path) {
   DynLibManager &dynlibMgr = DynLibManagerInst::Instance();
   DynLib *lib = dynlibMgr.GetDynLib(path);
   if (lib != nullptr) {
-    std::string uninstall_symbol = "UnInstallPlugin";
-    UNINSTALL_PLUGIN_FUNC uninstall_func =
-        (UNINSTALL_PLUGIN_FUNC)lib->GetSymbol(uninstall_symbol);
+    std::string uninstallSymbol = "UnInstallPlugin";
+    UNINSTALL_PLUGIN_FUNC uninstallFunc =
+        (UNINSTALL_PLUGIN_FUNC)lib->GetSymbol(uninstallSymbol);
 
-    if (uninstall_func != nullptr) {
-      uninstall_func(this);
+    if (uninstallFunc != nullptr) {
+      uninstallFunc(this);
     }
 
     dynlibMgr.Unload(path);
