@@ -343,6 +343,7 @@ bool ShaderProgram::Link() {
 
   _res.id = glCreateProgram();
 
+<<<<<<< HEAD
 #ifdef _DEBUG
   GLenum error = glGetError();
   const GLubyte *error_str = glGetString(error);
