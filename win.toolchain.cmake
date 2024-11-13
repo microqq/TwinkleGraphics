@@ -3,9 +3,14 @@
 # cmake build: 
 # cd $project_dir
 # mkdir build & cd build
+<<<<<<< Updated upstream
 # cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../win.toolchain.cmake ..
 
 cmake_minimum_required( VERSION 3.30.0 )
+=======
+# cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG=ON -DBUILD_GTESTS=ON -DCMAKE_TOOLCHAIN_FILE=../win.toolchain.cmake ..
+cmake_minimum_required( VERSION 2.6.3 )
+>>>>>>> Stashed changes
 SET(CMAKE_SYSTEM_NAME Windows)
 
 SET (CMAKE_C_FLAGS                "-Wall -std=c11")

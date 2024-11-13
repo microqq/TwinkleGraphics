@@ -50,9 +50,9 @@ set(TWGraphics_SRCs
 )
 
 set(TWUILib_Srcs
+    ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twMainFrame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twWindow.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/UI/twWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UI/twSizePolicy.cpp
 )
 

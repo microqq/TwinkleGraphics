@@ -114,64 +114,12 @@ void Shader::SetupCompile() {
   _res.id = glCreateShader(_res.type);
 
 #ifdef _DEBUG
-<<<<<<< HEAD
   GLenum error = glGetError();
   const GLubyte *error_str = glGetString(error);
   if (error_str != nullptr) {
     Console::LogError("Shader ", error_str, "\n");
   }
 #endif
-=======
-        GLenum error = glGetError();
-        const GLubyte *error_str = glGetString(error);
-#endif
-    }
-
-//     /**
-//  * @brief Construct a new Shader:: Shader object
-//  * 
-//  * @param type 
-//  */
-//     Shader::Shader(ShaderType type, const char *source)
-//         : Object()
-//         , _res()
-//         , _compiled(false)
-//     {
-//         _res.type = (uint32)type;
-//         _res.id = glCreateShader(_res.type);
-
-//         glShaderSource(_res.id, 1, &source, NULL);
-//         glCompileShader(_res.id);
-
-//         // test
-//         {
-//             _source = std::make_shared<ShaderSource>();
-//             _source->content = std::string(source);
-//             _source->filename = "";
-
-//             const char* macros[] = {"#define VERTCOLOR\n", "#define VERTNORMAL\n"};
-//             SetDefineMacros(macros, 2);
-//         }
-
-
-// #ifdef _DEBUG
-//         GLenum error = glGetError();
-//         const GLubyte *error_str = glGetString(error);
-// #endif
-
-//         _compiled = true;
-//         _setupCompile = true;
-//     }
-
-    Shader::Shader(const Shader &copy)
-        : _res(copy._res)
-    {
-    }
-
-    Shader::~Shader()
-    {
-        Console::LogInfo("Shader: Shader ", _res.id, "(hash: ", _res.hash, ") deconstruct.\n");
->>>>>>> master
 
   const char *source = _source->content.c_str();
   glShaderSource(_res.id, 1, &source, NULL);
@@ -249,17 +197,10 @@ bool Shader::Compile() {
     GLsizei len;
     glGetShaderiv(_res.id, GL_INFO_LOG_LENGTH, &len);
 
-<<<<<<< HEAD
     GLchar *log = new GLchar[len + 1];
     glGetShaderInfoLog(_res.id, len, &len, log);
     Console::LogError("Shader ", _res.id, "  compilation failed: ", log, "\n");
     SAFE_DEL_ARR(log);
-=======
-            GLchar *log = new GLchar[len + 1];
-            glGetShaderInfoLog(_res.id, len, &len, log);
-            Console::LogError("Shader: Shader ", _res.id, "  compilation failed: ", log, "\n");
-            SAFE_DEL_ARR(log);
->>>>>>> master
 #endif /* DEBUG */
 
     glDeleteShader(_res.id);
@@ -299,7 +240,6 @@ void Shader::InsertDefMacros(const char *defMacros[], int length) {
     }
   }
 
-<<<<<<< HEAD
   if (position != -1) {
     std::string preStr = _source->content.substr(0, position - 1) + "\n";
     std::string postStr =
@@ -307,51 +247,6 @@ void Shader::InsertDefMacros(const char *defMacros[], int length) {
     for (int32 i = 0; i < length; i++) {
       preStr = preStr + defMacros[i];
       // _source->content.insert(position - 1, )
-=======
-    void Shader::InsertDefMacros(const char *defMacros[], int length)
-    {
-        if(_source == nullptr)
-        {
-            return;
-        }
-
-        bool versionMatch = false;
-        int32 position = -1;
-        std::istringstream input(_source->content.c_str());
-        for (std::array<char, 256> out; input.getline(&out[0], 256);)
-        {
-            std::regex extensionRegex("\\s*#extension\\s+");
-            std::regex versionRegex("\\s*#version\\s*[0-9]*\\score\\s*");
-            std::smatch sm;
-            std::string extString(&out[0]);
-
-            if(!versionMatch && std::regex_match(&out[0], versionRegex))
-            {
-                position = input.tellg();
-                versionMatch = true;
-                continue;
-            }
-
-            if(std::regex_search(extString, sm, extensionRegex))
-            {
-                position = input.tellg();
-                continue;
-            }
-        }
-
-        if(position != -1)
-        {
-            std::string preStr = _source->content.substr(0, position - 1) + "\n";
-            std::string postStr = _source->content.substr(position, _source->content.length() - position);
-            for(int32 i = 0; i < length; i++)
-            {
-                preStr = preStr + defMacros[i];
-                // _source->content.insert(position - 1, )
-
-            }
-            _source->content = preStr + postStr;
-        }
->>>>>>> master
     }
     _source->content = preStr + postStr;
   }
@@ -385,18 +280,12 @@ void Shader::ParseShaderIncludes(const char *source) {
       ShaderIncludeSourcePtr includeSource =
           textMgr.ReadText(textFilename.c_str());
 
-<<<<<<< HEAD
       assert(includeSource != nullptr);
       includeSource->filename = sm.str();
       ParseShaderIncludes(includeSource->content.c_str());
       _includeSouces.emplace_back(includeSource);
 
       // Console::LogInfo("Shader ", _res.id, " include ", sm.str(), "\n");
-=======
-                Console::LogInfo("ShaderInclude: Shader ", _res.id, " include ", sm.str(), "\n");
-            }
-        }
->>>>>>> master
     }
   }
 }
@@ -454,7 +343,6 @@ bool ShaderProgram::Link() {
 
   _res.id = glCreateProgram();
 
-<<<<<<< HEAD
 #ifdef _DEBUG
   GLenum error = glGetError();
   const GLubyte *error_str = glGetString(error);
@@ -462,11 +350,6 @@ bool ShaderProgram::Link() {
     Console::LogError("ShaderProgram ", error_str, "\n");
   }
 #endif
-=======
-    ShaderProgram::~ShaderProgram()
-    {
-        Console::LogInfo("Shader: Shader Program ", _res.id, "(hash: ", _res.hash, ") deconstruct\n");
->>>>>>> master
 
   for (int i = 0; i < _linkShaderCount; i++) {
     glAttachShader(_res.id, _shaders[i]->GetRenderResource().id);
@@ -482,17 +365,10 @@ bool ShaderProgram::Link() {
     GLsizei len;
     glGetProgramiv(_res.id, GL_INFO_LOG_LENGTH, &len);
 
-<<<<<<< HEAD
     GLchar *log = new GLchar[len + 1];
     glGetProgramInfoLog(_res.id, len, &len, log);
     Console::LogError("Shader linking failed: ", log, "\n");
     SAFE_DEL_ARR(log);
-=======
-            GLchar *log = new GLchar[len + 1];
-            glGetProgramInfoLog(_res.id, len, &len, log);
-            Console::LogError("Shader: Shader linking failed: ", log, "\n");
-            SAFE_DEL_ARR(log);
->>>>>>> master
 #endif /* DEBUG */
 
     for (int i = 0; i < _linkShaderCount; i++) {
@@ -574,7 +450,6 @@ ShaderReader::ShaderReader(ShaderOption *option) : ResourceReader() {
   }
 }
 
-<<<<<<< HEAD
 ShaderReader::ShaderReader(ShaderProgramOption *option) : ResourceReader() {
   if (option != nullptr) {
     if (_option != nullptr) {
@@ -641,24 +516,6 @@ ReadResult<Shader> ShaderReader::Read(const char *filename) {
     Console::LogError("ShaderReader open shader file ", subFilename,
                       " failed\n");
 #endif
-=======
-    /**
-     * @brief 
-     * 
-     * @tparam  
-     * @param filename 
-     * @param option 
-     * @return ReadResult<Shader::Ptr> 
-     */
-    template <>
-    ReadResult<Shader::Ptr> ShaderReader::Read<Shader::Ptr>(const char *filename, ReaderOption *option)
-    {
-        FILE *fp;
-        fp = fopen(filename, "rb");
-        if (fp)
-        {
-            Console::LogInfo("Shader: ShaderReader open shader file ", filename, " successed.\n");
->>>>>>> master
 
     ReadResult<Shader> result(ReadResult<Shader>::Status::FAILED);
     return result;
@@ -686,29 +543,7 @@ ReadResult<ShaderProgram> ShaderReader::ReadProgramAsync(std::string filename) {
       shader = shaderMgr.ReadShader(shaderOption._optionData.filename.c_str(),
                                     &shaderOption);
 
-<<<<<<< HEAD
       program->AddShader(shader);
-=======
-            if(_readInfo.compileImmediate)
-            {
-                if (!(sharedShader->Compile()))
-                {
-                    return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
-                }
-            }
-
-            return ReadResult<Shader::Ptr>(sharedShader, ReadResult<Shader::Ptr>::Status::SUCCESS);
-        }
-        else
-        {
-#ifdef _DEBUG
-            Console::LogError("Shader: ShaderReader open shader file ", filename, " failed\n");
-#endif
-            return ReadResult<Shader::Ptr>(ReadResult<Shader::Ptr>::Status::FAILED);
-        }
-
-        return ReadResult<Shader::Ptr>();
->>>>>>> master
     }
 
     return ReadResult<ShaderProgram>(shared_from_this(), program,

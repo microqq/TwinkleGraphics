@@ -1,3 +1,10 @@
+# Windows 10
+# install mingw-w64(set env, copy mingw-make.exe to make.exe)
+# cmake build: 
+# cd $project_dir
+# mkdir build & cd build
+# cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+
 cmake_minimum_required(VERSION 3.30.0)
 cmake_policy(VERSION 3.30.0)
 

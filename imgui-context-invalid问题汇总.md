@@ -75,3 +75,7 @@ __TWAPI ImGuiContextManager &ImGuiContextMgrInstance();
 解决办法：问题查了一段时间，最后发现是glfw窗口设置了输入事件回调函数，这样会导致imgui input event被截断？有些链接提供的办法说是要在imgui初始化之前先设置glfw的输入事件回到函数，不确定这样的说法是否正确，尝试过设置io.wantCaptureMouse等参数，发现并没有作用，不知是否设代码编写问题？
 
 确认了下，在imgui初始化之前设置glfw窗口的输入事件回调函数，是可以避免imgui控件无法响应输入事件的。
+
+#### 3、rendergraph 合并到 master时出现非常多的冲突，当然这是因为我比较坑，文件太多
+
+https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/addressing-merge-conflicts/resolving-a-merge-conflict-using-the-command-line

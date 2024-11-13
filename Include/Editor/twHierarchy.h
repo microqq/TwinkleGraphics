@@ -7,6 +7,7 @@
 #include "twWidget.h"
 
 namespace TwinkleGraphics {
+
 struct HierarchyItem {
   std::string name;
 };
