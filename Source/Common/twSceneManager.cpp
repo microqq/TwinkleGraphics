@@ -1,31 +1,25 @@
 #include "twSceneManager.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 Scene::Scene()
-    : Object()
-    , _maincamera(nullptr)
-    , _validCameraCount(-1)
-{}
-
-Scene::~Scene()
-{
-
+    : Object(), _cameralists(), _maincamera(nullptr), _rootNode(nullptr) {
+  _rootNode = std::make_shared<SceneNode>();
 }
 
-void Scene::Init()
-{}
+Scene::~Scene() { _cameralists.clear(); }
 
-void Scene::Update(float32 delta_time)
-{}
+void Scene::Init() {}
 
-void Scene::Render()
-{
-    // [[deprecated]]
-    // if(_maincamera != nullptr)
-    // {
-    //     _maincamera->ClearRenderContext();
-    // }        
+void Scene::Update(float32 delta_time) { SortCamera(); }
+
+SceneManager::~SceneManager() { _sceneLists.clear(); }
+
+void SceneManager::Update(float deltaTime) {
+  if (_currentScene == nullptr) {
+    return;
+  }
+
+  _currentScene->Update(deltaTime);
 }
 
 } // namespace TwinkleGraphics

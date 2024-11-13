@@ -2,21 +2,17 @@
 
 #include "twCommon.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 std::vector<std::string> GLExtensions;
 
-bool CheckSupportExtension(std::string extension)
-{
-    for(auto e : GLExtensions)
-    {
-        if(e == extension)
-        {
-            return true;
-        }
+bool CheckSupportExtension(std::string extension) {
+  for (auto e : GLExtensions) {
+    if (e == extension) {
+      return true;
     }
+  }
 
-    return false;
+  return false;
 }
 
-}
+} // namespace TwinkleGraphics

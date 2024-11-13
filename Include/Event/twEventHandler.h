@@ -1,255 +1,182 @@
 #ifndef TW_EVENTHANDLER_H
 #define TW_EVENTHANDLER_H
 
-#include <functional>
-#include <vector>
 #include <algorithm>
 #include <atomic>
+#include <functional>
+#include <vector>
 
-#include "twObject.h"
-#include "twEventArgs.h"
 #include "twConsoleLog.h"
+#include "twEventArgs.h"
+#include "twObject.h"
 
-#define MemFuncTypePart1 typedef void
-#define MemFuncTypePart2(T) (T::*T ##MemFuncType)
-#define MemFuncTypePart3 (Object::Ptr, BaseEventArgs::Ptr)
+#define MemEventHandlerPart1 typedef void
+#define MemEventHandlerPart2(T) (T::*T##MemFuncType)
+#define MemEventHandlerPart3 (ObjectPtr, BaseEventArgsPtr)
 
-#define DefMemFuncType(T) MemFuncTypePart1 MemFuncTypePart2(T)MemFuncTypePart3
-#define MemFuncType(T) T##MemFuncType
+#define DefMemEventHandlerType(T)                                              \
+  MemEventHandlerPart1 MemEventHandlerPart2(T) MemEventHandlerPart3
+#define MemEventHandlerType(T) T##MemFuncType
 
-#define EventHandlerCallBack(CALLBACK, CLASS_NAME, MEMBER_FUNC)              \
-    EventHandler::HandlerFuncPointer CALLBACK =                              \
-        [](Object::Ptr sender, BaseEventArgs::Ptr args) {                    \
-            CLASS_NAME *listener = dynamic_cast<CLASS_NAME *>(sender.get()); \
-            listener->MEMBER_FUNC(sender, args);                             \
-        };
+#define MakeClassEventHandlerFunPtr(TFUNC, TPTR)                               \
+  std::make_shared<EventHandlerFunction>(                                      \
+      std::bind(TFUNC, TPTR, std::placeholders::_1, std::placeholders::_2))
 
-#define RegisterEventHandlerCallBack(HANDLER, CALLBACK) \
-    {                                                   \
-        EventHandler::HandlerFunc func(CALLBACK);       \
-        HANDLER += func;                                \
+#define MakeEventHandlerFunPtr(FUNC)                                           \
+  std::make_shared<EventHandlerFunction>(FUNC)
+
+namespace TwinkleGraphics {
+using HandlerId = unsigned int;
+using EventHandlerFuncPointer = void (*)(ObjectPtr, BaseEventArgsPtr);
+using EventHandlerFunction = std::function<void(ObjectPtr, BaseEventArgsPtr)>;
+using EventHandlerFunctionPtr = std::shared_ptr<EventHandlerFunction>;
+
+class __TWAPI EventHandler : public Object {
+public:
+  using Ptr = std::shared_ptr<EventHandler>;
+
+  using HFuncIterator = std::vector<EventHandlerFunctionPtr>::iterator;
+
+  EventHandler() : Object() { _handlerId = ++HandlerIdCounter; }
+
+  EventHandler(const EventHandlerFunctionPtr &func) : Object() {
+    _handlerFuncList.emplace_back(func);
+    _handlerId = ++HandlerIdCounter;
+  }
+
+  EventHandler(const EventHandler &src) : Object() {
+    _handlerFuncList = src._handlerFuncList;
+    _handlerId = src._handlerId;
+  }
+
+  EventHandler(EventHandler &&src) : Object() {
+    _handlerFuncList = std::move(src._handlerFuncList);
+    _handlerId = src._handlerId;
+  }
+
+  virtual ~EventHandler() { _handlerFuncList.clear(); }
+
+  const EventHandlerFunctionPtr &operator[](int index) {
+    int size = _handlerFuncList.size();
+    assert(index >= 0 && index < size);
+
+    return _handlerFuncList[index];
+  }
+
+  EventHandler &operator=(const EventHandler &src) {
+    _handlerFuncList = src._handlerFuncList;
+    _handlerId = src._handlerId;
+
+    return *this;
+  }
+
+  EventHandler &operator=(EventHandler &&src) {
+    std::swap(_handlerFuncList, src._handlerFuncList);
+    _handlerId = src._handlerId;
+
+    return *this;
+  }
+
+  EventHandler &operator+=(const EventHandlerFunctionPtr &func) {
+    HFuncIterator iter = FindHandlerFunc(func);
+    if (iter != _handlerFuncList.end()) {
+      return *this;
     }
 
-#define UnRegisterEventHandlerCallBack(HANDLER, CALLBACK) \
-    {                                                     \
-        EventHandler::HandlerFunc func(CALLBACK);         \
-        HANDLER -= func;                                  \
+    Add(func);
+
+    return *this;
+  }
+
+  EventHandler &operator-=(const EventHandlerFunctionPtr &func) {
+    HFuncIterator iter = FindHandlerFunc(func);
+    if (iter != _handlerFuncList.end()) {
+      Remove(iter);
     }
 
-namespace TwinkleGraphics
-{
-    typedef unsigned int HandlerId;
+    return *this;
+  }
 
-    class EventHandler : public Object
-    {
-    public:
-        typedef void(*HandlerFuncPointer)(Object::Ptr, BaseEventArgs::Ptr);
-        typedef std::function<void(Object::Ptr, BaseEventArgs::Ptr)> HandlerFunc;
-        typedef std::shared_ptr<HandlerFunc> HandlerFuncPtr;
-        typedef std::shared_ptr<EventHandler> Ptr;
+  EventHandler &operator-=(int index) {
+    Remove(index);
 
-        using HFuncIterator = std::vector<HandlerFunc>::iterator;
+    return *this;
+  }
 
-        EventHandler()
-            : Object()
-        {
-            _handlerId = ++HandlerIdCounter;
-        }
+  bool operator==(const EventHandler &other) {
+    return _handlerId == other._handlerId;
+  }
 
-        EventHandler(const HandlerFunc& func)
-            : Object()
-        {
-            _handlerFuncList.push_back(func);
-            _handlerId = ++HandlerIdCounter;
-        }
+  void operator()(ObjectPtr sender, BaseEventArgsPtr args) {
+    Invoke(sender, args);
+  }
 
-        EventHandler(const EventHandler &src)
-            : Object()
-        {
-            _handlerFuncList = src._handlerFuncList;
-            _handlerId = src._handlerId;
-        }
+  inline HandlerId GetHandlerId() const { return _handlerId; }
+  inline int GetHandlerFuncSize() { return _handlerFuncList.size(); }
 
-        EventHandler(EventHandler &&src)
-            : Object()
-        {
-            _handlerFuncList = std::move(src._handlerFuncList);
-            _handlerId = src._handlerId;
-        }
+  void Remove(int index) {
+    int size = _handlerFuncList.size();
+    assert(index >= 0 && index < size);
 
-        virtual ~EventHandler()
-        {
-            _handlerFuncList.clear();
-        }
+    HFuncIterator iter = _handlerFuncList.begin();
+    HFuncIterator end = _handlerFuncList.end();
+    iter += index;
 
-        const HandlerFunc& operator[](int index)
-        {
-            int size = _handlerFuncList.size();
-            assert(index >= 0 && index < size);
+    if (iter != end) {
+      _handlerFuncList.erase(iter);
+    }
+  }
 
-            return _handlerFuncList[index];
-        }
+  void Clear() { _handlerFuncList.clear(); }
 
-        EventHandler& operator=(const EventHandler& src)
-        {
-            _handlerFuncList = src._handlerFuncList;
-            _handlerId = src._handlerId;
+  void Invoke(ObjectPtr sender, BaseEventArgsPtr args) {
+    for (auto func : _handlerFuncList) {
+      (*func)(sender, args);
+    }
+  }
 
-            return *this;
-        }
+  HFuncIterator FindHandlerFunc(const EventHandlerFunctionPtr &func) {
+    HFuncIterator begin = _handlerFuncList.begin();
+    HFuncIterator end = _handlerFuncList.end();
 
-        EventHandler& operator=(EventHandler&& src)
-        {
-            std::swap(_handlerFuncList, src._handlerFuncList);
-            _handlerId = src._handlerId;
+    if (func == nullptr) {
+      return end;
+    }
 
-            return *this;
-        }
+    while (begin != end) {
+      if (*begin == nullptr) {
+        ++begin;
+        continue;
+      }
 
-        EventHandler& operator+=(const HandlerFunc& func)
-        {
-            HFuncIterator iter = FindHandlerFunc(func);
-            if (iter != _handlerFuncList.end())
-            {
-                return *this;
-            }
+      EventHandlerFunctionPtr pointer = *begin;
+      if (pointer == func) {
+        return begin;
+      }
+      ++begin;
+    }
+    return end;
+  }
 
-            Add(func);
+private:
+  void Add(const EventHandlerFunctionPtr &func) {
+    _handlerFuncList.emplace_back(func);
+  }
+  void Remove(HFuncIterator iter) {
+    if (iter != _handlerFuncList.end()) {
+      _handlerFuncList.erase(iter);
+    }
+  }
 
-            return *this;
-        }
+private:
+  // try to traverse std::vector<std::function<***>> find element makes compile
+  // error : "no match for 'operator=='"
+  // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
 
-        EventHandler& operator-=(const HandlerFunc& func)
-        {
-            HFuncIterator iter = FindHandlerFunc(func);
-            if(iter != _handlerFuncList.end())
-            {
-                Remove(iter);
-            }
-
-            return *this;
-        }
-
-        bool operator==(const EventHandler& other)
-        {
-            return _handlerId == other._handlerId;
-        }
-
-        void operator()(Object::Ptr sender, BaseEventArgs::Ptr args)
-        {
-            Invoke(sender, args);
-        }
-
-        inline HandlerId GetHandlerId() const { return _handlerId; }
-        inline int GetHandlerFuncSize() { return _handlerFuncList.size(); }
-
-        void FindHandlerFunc(const HandlerFunc& func, bool& finded)
-        {
-            HFuncIterator iter = FindHandlerFunc(func);
-            finded = (iter != _handlerFuncList.end());
-        }
-
-        void Remove(int index)
-        {
-            int size = _handlerFuncList.size();
-            assert(index >= 0 && index < size);
-
-            HFuncIterator iter = _handlerFuncList.begin();
-            HFuncIterator end = _handlerFuncList.end();
-            iter += index;
-
-            if(iter != end)
-            {
-                _handlerFuncList.erase(iter);
-            }
-        }
-
-        void RemoveAll()
-        {
-            _handlerFuncList.clear();
-        }
-
-        void Invoke(Object::Ptr sender, BaseEventArgs::Ptr args)
-        {
-            for(auto func : _handlerFuncList)
-            {
-                func(sender, args);
-            }
-        }
-
-    private:
-        void Add(const HandlerFunc& func)
-        {
-            _handlerFuncList.push_back(func);
-        }
-        void Remove(HFuncIterator iter)
-        {
-            if(iter != _handlerFuncList.end())
-            {
-                _handlerFuncList.erase(iter);
-            }
-        }
-
-        HFuncIterator FindHandlerFunc(const HandlerFunc &func)
-        {
-            HandlerFuncPointer const* findPointer = func.target<HandlerFuncPointer>();
-
-            HFuncIterator begin = _handlerFuncList.begin();
-            HFuncIterator end = _handlerFuncList.end();
-            while (begin != end)
-            {
-                HandlerFuncPointer *pointer = (*begin).target<HandlerFuncPointer>();
-                if (pointer == nullptr)
-                {
-                    ++begin;
-                    continue;
-                }
-
-                if (*pointer == *findPointer)
-                {
-                    return begin;
-                }
-                ++begin;
-            }
-            return end;
-        }
-
-        // template <class T>
-        // HFuncIterator FindMemberHandlerFunc(const HandlerFunc& func)
-        // {
-        //     typedef void(T::*FuncType)(Object::Ptr, BaseEventArgs::Ptr);
-
-        //     // Console::LogInfo("Member function type: ", func.target_type().name(), "\n");
-        //     FuncType const* findPointer = func.template target<FuncType>();
-
-        //     HFuncIterator begin = _handlerFuncList.begin();            
-        //     HFuncIterator end = _handlerFuncList.end();
-        //     while(begin != end)
-        //     {
-        //         FuncType const* pointer = (*begin)->template target<FuncType>();
-        //         if(pointer == nullptr)
-        //         {
-        //             ++begin;
-        //             continue;
-        //         }
-
-        //         if(*pointer == *findPointer)
-        //         {
-        //             return begin;
-        //         }
-        //         ++begin;
-        //     }
-        //     return end;
-        // }
-
-    private:
-        // try to traverse std::vector<std::function<***>> find element makes compile error : "no match for 'operator=='"
-        // https://stackoverflow.com/questions/18666486/stdvector-of-stdfunctions-find
-
-        std::vector<HandlerFunc> _handlerFuncList;
-        HandlerId _handlerId;
-        static std::atomic_uint HandlerIdCounter;
-    };
+  std::vector<EventHandlerFunctionPtr> _handlerFuncList;
+  HandlerId _handlerId;
+  static std::atomic_uint HandlerIdCounter;
+};
 } // namespace TwinkleGraphics
 
 #endif

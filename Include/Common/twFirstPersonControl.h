@@ -7,38 +7,32 @@
 
 #include "twOrbitControl.h"
 
-namespace TwinkleGraphics
-{
-class FirstPersonControl : public OrbitControl
-{
+namespace TwinkleGraphics {
+class __TWAPI FirstPersonControl : public OrbitControl {
 public:
-    typedef std::shared_ptr<FirstPersonControl> Ptr;
+  using Ptr = std::shared_ptr<FirstPersonControl>;
 
-    FirstPersonControl(Camera::Ptr camera); 
-    virtual ~FirstPersonControl();
+  FirstPersonControl(CameraPtr camera);
+  virtual ~FirstPersonControl();
 
-    void SetStep(float stepx, float stepz)
-    {
-        _stepX = stepx;
-        _stepZ = stepz;
-    }
+  void SetStep(float stepx, float stepz) {
+    _stepX = stepx;
+    _stepZ = stepz;
+  }
 
-    virtual void HandleKeyPress(int32 key
-        , int32 scannode
-        , int32 action
-        , int32 mods) override;
-    virtual void HandleKeyRelease(int32 key
-        , int32 scannode
-        , int32 action
-        , int32 mods) override;
+  virtual void HandleKeyPress(int32 key, int32 scannode, int32 action,
+                              int32 mods) override;
+  virtual void HandleKeyRelease(int32 key, int32 scannode, int32 action,
+                                int32 mods) override;
 
 protected:
-
 private:
-    float _stepX; 
-    float _stepZ;
-}; 
-} // namespace TwinkleGraphics
+  float _stepX;
+  float _stepZ;
+};
 
+using FirstPersonControlPtr = FirstPersonControl::Ptr;
+
+} // namespace TwinkleGraphics
 
 #endif

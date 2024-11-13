@@ -3,38 +3,22 @@
 
 #include "twCommon.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 
-enum class PipelineType
-{
-    FORWARD = 0,
-    DEFERRED = 1
-};
+enum class PipelineType { FORWARD = 0, DEFERRED = 1 };
 
-struct RenderQueue
-{
-        
-};
-
+struct RenderQueue {};
 
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
-class RenderPipeline
-{
+class RenderPipeline {
 public:
-    RenderPipeline();
-    ~RenderPipeline();
+  RenderPipeline();
+  ~RenderPipeline();
 };
 
-
-
-
 } // namespace TwinkleGraphics
-
-
-
 
 #endif

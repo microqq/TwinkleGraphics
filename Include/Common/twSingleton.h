@@ -2,52 +2,32 @@
 #ifndef TW_SINGLETON_H
 #define TW_SINGLETON_H
 
-namespace TwinkleGraphics
-{
+#include <memory>
+#include <mutex>
+
+namespace TwinkleGraphics {
 /**
- * @brief 
- * 
- * @tparam T 
+ * @brief
+ *
+ * @tparam T
  */
-template <typename T>
-class Singleton
-{
+template <typename T> class Singleton {
 public:
-    // static T* getInstance()
-    // {
-    //     static bool init = []() -> bool {
-    //         _instance = new T;
-    //         return true;
-    //     }();
+  Singleton(const Singleton<T> &copy) = delete;
+  Singleton(Singleton<T> &&) = delete;
+  Singleton<T> &operator=(const Singleton<T> &copy) = delete;
+  Singleton<T> &operator=(Singleton<T> &&) = delete;
 
-    //     return _instance;
-    // }
-
-    Singleton(const Singleton<T> &copy) = delete;
-    Singleton(Singleton<T> &&) = delete;
-    Singleton<T> &operator=(const Singleton<T> &copy) = delete;
-    Singleton<T> &operator=(Singleton<T> &&) = delete;
-
-    T *operator->() { return _instance; }
-    const T *operator->() const { return _instance; }
-    T &operator*() { return *_instance; }
-    const T &operator*() const { return *_instance; }
-
-    //protected:
-    Singleton()
-    {
-        static bool init = []() -> bool {
-            _instance = new T;
-            return true;
-        }();
-    }
+  static T &Instance();
 
 private:
-    static T *_instance;
+  Singleton() = default;
 };
 
-template <typename T>
-T *Singleton<T>::_instance = nullptr;
+template <typename T> T &Singleton<T>::Instance() {
+  static T instance{};
+  return instance;
+}
 } // namespace TwinkleGraphics
 
 #endif

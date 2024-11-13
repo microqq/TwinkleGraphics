@@ -15,7 +15,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "${env:MINGWBINS}/gdb.exe",
+            "miDebuggerPath": "D:/Program Files/mingw64/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "为 gdb 启用整齐打印",
@@ -25,11 +25,44 @@
             ]
         },
         {
+            "name": "(gdb) TWEditor",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Output/twEditor.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "D:/Program Files/mingw64/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },        
+        {
             "name": "(gdb) TWTests",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Output/TWTests.exe",
-            "args": [],
+            "args": [
+                // "--gtest_filter=EventTests.AddEventHandler",
+                // "--gtest_filter=EventTests.FireEvent",
+                // "--gtest_filter=EventTests.FireInThreadingMode",
+                // "--gtest_filter=MaterialTests.UniformSetting",
+                // "--gtest_filter=RingbufferTests.PushPopElements",
+                // "--gtest_filter=ThreadTests.PushTasks",
+                // "--gtest_filter=ThreadTests.ProducerConsumers",
+                // "--gtest_filter=ThreadTests.ProducersConsumer",
+                // "--gtest_filter=ThreadTests.ProducersConsumers",
+                // "--gtest_filter=ThreadTests.FutureGet",
+                "--gtest_filter=ResourceReaderTests.ReadAsync",
+                // "--gtest_filter=ResourceReaderTests.Read",
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

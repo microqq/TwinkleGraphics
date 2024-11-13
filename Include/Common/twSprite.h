@@ -5,52 +5,60 @@
 #include "twGeometry.h"
 #include "twTexture.h"
 
-namespace TwinkleGraphics
-{
-class SpriteRenderer : public MeshRenderer
-{
+namespace TwinkleGraphics {
+class __TWAPI SpriteRenderer : public MeshRenderer {
 public:
-    typedef std::shared_ptr<SpriteRenderer> Ptr;
+  using Ptr = std::shared_ptr<SpriteRenderer>;
 
-    SpriteRenderer(Texture::Ptr texture);
-    virtual ~SpriteRenderer();
+  SpriteRenderer(TexturePtr texture);
+  virtual ~SpriteRenderer();
 
-    void SetFlip(bvec2 flip);
-    void SetColor(vec4& color);
+  void SetFlip(bvec2 flip);
+  void SetColor(vec4 &color);
 
 private:
-    void Init(Texture::Ptr texture);
+  void Init(TexturePtr texture);
 
 private:
 };
 
+using SpriteRendererPtr = SpriteRenderer::Ptr;
 
-class Sprite : public Quad
-{
+class __TWAPI Sprite : public Quad {
 public:
-    typedef std::shared_ptr<Sprite> Ptr;
+  using Ptr = std::shared_ptr<Sprite>;
 
-    Sprite(Texture::Ptr texture, MeshDataFlag flag = MeshDataFlag(8));
-    Sprite(Texture::Ptr texture, glm::vec2 size, MeshDataFlag flag = MeshDataFlag(8));
-    virtual ~Sprite();
+  Sprite(TexturePtr texture, MeshDataFlag flag = MeshDataFlag(8));
+  Sprite(TexturePtr texture, glm::vec2 size,
+         MeshDataFlag flag = MeshDataFlag(8));
+  virtual ~Sprite();
 
-    void SetFlip(bvec2 flip);
-    void SetColor(vec4& color);
-    void SetTexture(Texture::Ptr texture);
-    Texture::Ptr GetTexture() { if(_renderer == nullptr || _renderer->GetSharedMaterial() == nullptr) return nullptr; return _renderer->GetSharedMaterial()->GetMainTexture(); }
-    Material::Ptr GetMaterial() { return _renderer->GetSharedMaterial(); }
+  void SetFlip(bvec2 flip);
+  void SetColor(vec4 &color);
+  void SetTexture(TexturePtr texture);
+  TexturePtr GetTexture() {
+    if (_renderer == nullptr) {
+      return nullptr;
+    }
+
+    MaterialPtr mat = _renderer->GetMaterial();
+    if (mat == nullptr) {
+      return nullptr;
+    }
+    return mat->GetMainTexture();
+  }
+  MaterialPtr GetMaterial() { return _renderer->GetMaterial(); }
 
 private:
-    void InitRenderer(Texture::Ptr texture);
-
-    void UpdateSize()
-    {}
+  void InitRenderer(TexturePtr texture);
+  void Resize() {}
 
 private:
-    SpriteRenderer::Ptr _spriteRenderer;
-    int32 _perpixelunit = 100;
+  SpriteRendererPtr _spriteRenderer;
+  int32 _perpixelunit = 100;
 };
 
+using SpritePtr = Sprite::Ptr;
 
 } // namespace TwinkleGraphics
 

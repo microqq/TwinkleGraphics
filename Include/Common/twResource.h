@@ -3,136 +3,190 @@
 #ifndef TW_RESOURCE_H
 #define TW_RESOURCE_H
 
+#include <functional>
 #include <iostream>
-#include <string>
 #include <map>
 #include <memory>
+#include <string>
+#include <variant>
+#include <vector>
 
 #include "twCommon.h"
+#include "twRingBuffer.h"
+#include "twThreadPool.h"
 
-namespace TwinkleGraphics
-{
-class Resource;
+#define DECLARE_READERID                                                       \
+public:                                                                        \
+  static ReaderId ID
+#define DEFINE_READERID(T) ReaderId T::ID = std::hash<std::string>{}(#T);
+#define CACHEID_FROMSTRING(STR) std::hash<std::string>{}(STR);
+
+// #define INITIALISE_READERID _id = ID;
+
+namespace TwinkleGraphics {
+class ReaderOption;
 class ResourceReader;
 class ResourceManager;
-typedef Singleton<ResourceManager> ResourceManagerInst;
+using ReaderId = uint16_t;
+using CacheId = uint64_t;
 
-class Resource : public Object
-{
+using ReadSuccessCallbackFunc = std::function<void(ObjectPtr)>;
+using ReadFailedCallbackFunc = std::function<void()>;
+using ReadSuccessCallbackFuncPtr = std::shared_ptr<ReadSuccessCallbackFunc>;
+using ReadFailedCallbackFuncPtr = std::shared_ptr<ReadFailedCallbackFunc>;
+
+enum class CacheHint {
+  CACHE_NONE = 0,
+  CACHE_OBJECT = 1,
+  CACHE_SCENEOBJECT = 2
+};
+
+enum class CacheStoreHint { TEMPORARY = 1, TIMELIMITED = 2, PERMERNANTLY = 3 };
+
+class __TWAPI ReaderOption {
 public:
-    typedef std::shared_ptr<Resource> Ptr;
-    typedef std::weak_ptr<Resource> WeakPtr;
+  ReaderOption();
+  ReaderOption(const ReaderOption &src);
+  const ReaderOption &operator=(const ReaderOption &src) = delete;
+  virtual ~ReaderOption();
 
-    Resource()
-        : Object()
-    {}
-    virtual ~Resource() {}
+  void SetCacheHint(CacheHint hint);
+  CacheHint GetCacheHint();
+
+  void SetStoreHint(CacheStoreHint hint, float storeTime = 100.0f);
+  CacheStoreHint GetStoreHint();
+  float GetStoreTime();
+
+  template <typename Caller, typename Func, typename... Args>
+  void AddSuccessFunc(int insertPos, Caller &&caller, Func &&func,
+                      Args &&...args) {
+    auto concreteCallback =
+        std::bind(std::forward<Func>(func), std::forward<Caller>(caller),
+                  std::placeholders::_1, std::forward<Args>(args)...);
+    ReadSuccessCallbackFuncPtr callback =
+        std::make_shared<ReadSuccessCallbackFunc>(
+            [concreteCallback](ObjectPtr obj) { concreteCallback(obj); });
+
+    AddSuccessFunc(insertPos, callback);
+  }
+
+  template <typename Caller, typename Func, typename... Args>
+  void AddFailedFunc(int insertPos, Caller &&caller, Func &&func,
+                     Args &&...args) {
+    auto concreteCallback =
+        std::bind(std::forward<Func>(func), std::forward<Caller>(caller),
+                  std::forward<Args>(args)...);
+    ReadFailedCallbackFuncPtr callback =
+        std::make_shared<ReadFailedCallbackFunc>(
+            [concreteCallback]() { concreteCallback(); });
+
+    AddFailedFunc(insertPos, callback);
+  }
+
+  void AddSuccessFunc(int insertPos, ReadSuccessCallbackFuncPtr func);
+  void AddFailedFunc(int insertPos, ReadFailedCallbackFuncPtr func);
+  void OnReadSuccess(ObjectPtr obj) const;
+  void OnReadFailed() const;
 
 protected:
-    uint32 _hash;
+  std::vector<ReadSuccessCallbackFuncPtr> _successFuncList;
+  std::vector<ReadFailedCallbackFuncPtr> _failedFuncList;
+  CacheHint _cacheHint = CacheHint::CACHE_OBJECT;
+  CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
+  float _storeTime;
 };
 
+class __TWAPI ResourceReader {
+public:
+  using Ptr = std::shared_ptr<ResourceReader>;
+
+  virtual ~ResourceReader();
+  ReaderOption *GetReaderOption();
+
+protected:
+  ResourceReader();
+  void Reset();
+
+protected:
+  ReaderOption *_option = nullptr;
+  bool _asynchronize = false;
+
+  friend class ResourceManager;
+};
+
+using ResourceReaderPtr = ResourceReader::Ptr;
 
 /**
- * @brief 
- * 
- * @tparam TPtr 
+ * @brief
+ *
+ * @tparam TPtr
  */
-template<class TPtr>
-class ReadResult
-{
+template <class T> class __TWAPI ReadResult {
 public:
-    enum class Status
-    {
-        NONE,
-        SUCCESS,
-        FAILED
-    };
+  enum class Status { NONE, WAITTOLOAD, LOADING, SUCCESS, FAILED };
 
-    ReadResult(Status status = Status::NONE)
-        : _sharedObject(nullptr)
-        , _status(status)
-    {}
-    ReadResult(TPtr shared_obj, Status status = Status::NONE)
-        : _sharedObject(shared_obj)
-        , _status(status)
-    {}
-    ReadResult(const ReadResult& copyop)
-        : _sharedObject(copyop._sharedObject)
-        , _status(copyop._status)
-    {}
-    ~ReadResult()
-    {}
+  ReadResult(Status status = Status::NONE)
+      : _sharedObject(nullptr), _reader(nullptr), _status(status) {}
+  ReadResult(ResourceReaderPtr reader, typename T::Ptr obj,
+             Status status = Status::NONE)
+      : _sharedObject(obj), _reader(reader), _status(status) {}
+  ReadResult(const ReadResult &src)
+      : _sharedObject(src._sharedObject), _reader(src._reader),
+        _status(src._status) {}
+  ~ReadResult() {}
 
-    TPtr GetSharedObject() const { return _sharedObject; }
-    Status GetStatus() const { return _status; }
-    ReadResult& operator =(const ReadResult& result) 
-    {
-        _sharedObject = result._sharedObject;
-        _status = result._status;
+  inline ReadResult &operator=(const ReadResult &result) {
+    _sharedObject = result._sharedObject;
+    _status = result._status;
 
-        return *this;
-    }
+    return *this;
+  }
+
+  inline typename T::Ptr GetSharedObject() const { return _sharedObject; }
+  inline Status GetStatus() const { return _status; }
+  inline ResourceReaderPtr GetReader() { return _reader; }
 
 private:
-    TPtr _sharedObject;
-    Status _status;
+  typename T::Ptr _sharedObject;
+  ResourceReaderPtr _reader;
+  Status _status;
 };
 
-class ReaderOption
-{
+class ResourceCache : public INonCopyable {
 public:
-    ReaderOption()
-    {}
-    ~ReaderOption()
-    {}
-};
+  using Ptr = std::shared_ptr<ResourceCache>;
 
-enum class ResourceCacheHint
-{
-};
-class ResourceCache
-{
-};
+  ResourceCache(CacheId id, ObjectPtr obj,
+                CacheStoreHint hint = CacheStoreHint::TIMELIMITED,
+                float limit = 100.0f)
+      : _cachedObject(obj), _timeLimit(limit), _storeHint(hint), _cacheId(id) {}
 
-class ResourceManager
-{
-public:
-    ResourceManager() {}
-    ~ResourceManager() {}
+  ~ResourceCache() {}
 
-    /**
-     * @brief 
-     * 
-     * @tparam R 
-     * @tparam TPtr 
-     * @tparam Args 
-     * @param filename 
-     * @param option 
-     * @param args 
-     * @return ReadResult<TPtr> 
-     */
-    template<class R, class TPtr, class... Args>
-    ReadResult<TPtr> Read(const char* filename, ReaderOption* option, Args&&...args)
-    {
-        //get GUID with filename, read from cache
+  ObjectPtr GetCachedObject() { return _cachedObject; }
 
-        //Todo: if not found in cache, should get reader from pool. use placement new
-        //else
-        R* r = new R(std::forward<Args>(args)...);
+  CacheId GetCacheId() { return _cacheId; }
 
-        //  http://klamp.works/2015/10/09/call-template-method-of-template-class-from-template-function.html
-        // error: use 'template' keyword to treat 'Read' as a dependent template name
-        // return r->Read<TPtr>(filename, option);
-        return r->template Read<TPtr>(filename, option);
+  bool Expired(float deltaTime = 0.0f) {
+    if (CacheStoreHint::PERMERNANTLY == _storeHint) {
+      return true;
+    } else if (CacheStoreHint::TIMELIMITED == _storeHint) {
+      _timeLimit -= deltaTime;
+      return _timeLimit <= 0.0f;
     }
 
+    return true;
+  }
+
 private:
-    typedef std::map<std::string, ResourceReader*> MapLoaders;
+  ObjectPtr _cachedObject = nullptr;
 
-    std::map<std::string, ResourceReader*> _readers;
+  // cache life time(seconds)
+  float _timeLimit;
+  CacheStoreHint _storeHint = CacheStoreHint::TIMELIMITED;
+
+  CacheId _cacheId = 0;
 };
-
 
 } // namespace TwinkleGraphics
 

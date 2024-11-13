@@ -5,8 +5,7 @@
 
 out vec2 texcoord;
 
-void main()
-{
-    texcoord = vertexUV.xy;
-    gl_Position = vec4(vertexPos, 1.0f);
+void main() {
+  texcoord = vertexUV.xy;
+  gl_Position = vec4(vertexPos, 1.0f);
 }

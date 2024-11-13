@@ -4,16 +4,15 @@
 #include </GLSLIncludes/vertexLayout.glsl>
 
 #ifdef VERTUV
-    out vec2 inUV;
+out vec2 inUV;
 #endif
 
 uniform mat4 mvp;
 
-void main()
-{
+void main() {
 #ifdef VERTUV
-    inUV = vertexUV.xy;
+  inUV = vertexUV.xy;
 #endif
 
-    gl_Position= mvp * vec4(vertexPos, 1.f);
+  gl_Position = mvp * vec4(vertexPos, 1.f);
 }

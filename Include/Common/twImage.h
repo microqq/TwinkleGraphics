@@ -1,116 +1,98 @@
-
-
 #ifndef TW_IMAGE_H
 #define TW_IMAGE_H
 
+#include <memory>
 #include <vector>
-#include "vermilion.h"
 
 #include "twCommon.h"
 #include "twResource.h"
+#include "vermilion.h"
 
-namespace TwinkleGraphics
-{
-typedef vglImageData ImageData;
-typedef vglImageMipData SubImageData;
-
+namespace TwinkleGraphics {
+using ImageData = vglImageData;
+using SubImageData = vglImageMipData;
 
 class Image;
 class ImageReader;
-class ImageManager;
-typedef Singleton<ImageManager> ImageManagerInst;
 
+struct ImageSource : public Object {
+  using Ptr = std::shared_ptr<ImageSource>;
+  using WeakPtr = std::weak_ptr<ImageSource>;
 
-// class SubImage : public Object
-// {
-// public:
-//     typedef std::shared_ptr<SubImage> Ptr;
-
-//     SubImage()
-//         : Object()
-//     {}
-//     virtual ~SubImage()
-//     {
-//     }
-
-//     void SetData(SubImageData &data) { _data = data; }
-//     const SubImageData& GetSubImageData() { return _data; }
-
-// private:
-//     SubImageData _data;
-// };
-
-class ImageResource : public Resource
-{
-public:
-    ImageResource()
-        : Resource()
-    {}
-    virtual ~ImageResource()
-    {}
-
-private:
-
+  ImageData imagedata;
+  std::string filename;
 };
 
-class Image : public Object
-{
+using ImageSourcePtr = ImageSource::Ptr;
+
+class __TWAPI Image : public Object {
 public:
-    typedef std::shared_ptr<Image> Ptr;
+  using Ptr = std::shared_ptr<Image>;
 
-    Image();
-    Image(const char* filename, const ImageData& data);
-    virtual ~Image();
+  Image();
+  Image(const char *filename, const ImageData &data);
+  virtual ~Image();
 
-    void SetImageSource(ImageData &&data) { _data = data; }
-    const ImageData& GetImageSource() { return _data; }
-    ImageData* GetImageSourcePtr() { return &_data; }
+  void SetImageSource(ImageData &&data) { _source->imagedata = data; }
+  const ImageData &GetImageSource() { return _source->imagedata; }
+  ImageData *GetImageSourcePtr() { return &_source->imagedata; }
 
-    void SetFilename(const char* filename) { _filename = filename; }
-    const std::string& GetFilename() { return _filename; }
+  void SetFilename(const char *filename) { _source->filename = filename; }
+  const std::string &GetFilename() { return _source->filename; }
 
 private:
-    ImageData _data;
-    std::string _filename;
+  ImageSourcePtr _source;
 };
 
-struct ImageReadInfo
-{
-    std::string filename;
+using ImagePtr = Image::Ptr;
+
+class ImageOption final : public ReaderOption {
+public:
+  ImageOption() : ReaderOption() {}
+  ImageOption(const ImageOption &src) : ReaderOption(src) {}
+
+  const ImageOption &operator=(const ImageOption &src) = delete;
+
+  virtual ~ImageOption() {}
+
+private:
+  friend class ImageReader;
+  friend class ImageManager;
 };
 
-class ImageReader
-{
+class __TWAPI ImageReader final : public ResourceReader,
+                                        public Reference<ImageReader>,
+                                        public INonCopyable {
 public:
-    ImageReader(ImageReadInfo& info);
-    ~ImageReader();
+  using Ptr = std::shared_ptr<ImageReader>;
 
-    template <typename TPtr>
-    ReadResult<TPtr> Read(const char *filename, ReaderOption *option);
+  ImageReader();
+  ImageReader(ImageOption *option);
+  virtual ~ImageReader();
 
-private:
-    ReadResult<Image::Ptr> ReadDDS(const char *filename, ReaderOption *option);
-    ReadResult<Image::Ptr> ReadOthers(const char *filename, ReaderOption *option);
+  ReadResult<Image> Read(const char *filename);
+  ReadResult<Image> ReadAsync(std::string filename);
 
-private:
-    ImageReadInfo _info;
-};
+  void SetOption(ImageOption *option) {
+    if (option == nullptr)
+      return;
 
-
-class ImageManager
-{
-public:
-    ImageManager();
-    ~ImageManager();
-
-    void ReadImages(ImageReadInfo images_info[], Image::Ptr images[], int num);
-    Image::Ptr ReadImage(ImageReadInfo& image_info);
+    if (_option != nullptr) {
+      SAFE_DEL(_option);
+    }
+    _option = new ImageOption(*option);
+  }
 
 private:
-    
+  ReadResult<Image> ReadDDS(const char *filename);
+  ReadResult<Image> ReadOthers(const char *filename);
+
+  void OnReadImageSuccess(ObjectPtr obj);
+  void OnReadImageFailed();
+
+  DECLARE_READERID;
 };
 
 } // namespace TwinkleGraphics
-
 
 #endif

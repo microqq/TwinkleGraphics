@@ -7,8 +7,7 @@ out vec3 texcoord;
 
 uniform mat4 mvp;
 
-void main()
-{
-    texcoord = vertexPos;
-    gl_Position = (mvp * vec4(vertexPos, 1.0f)).xyww;
+void main() {
+  texcoord = vertexPos;
+  gl_Position = (mvp * vec4(vertexPos, 1.0f)).xyww;
 }

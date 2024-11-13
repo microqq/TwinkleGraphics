@@ -2,102 +2,83 @@
 #define TW_RINGBUFFER_H
 
 #include <array>
-#include "twConsoleLog.h"
+#include <assert.h>
 
-namespace TwinkleGraphics
-{
-    template <class T, unsigned int CapacityCount = 128U>
-    class RingBuffer
-    {
-    public:
-        RingBuffer()
-            : _array()
-            , _head(-1)
-            , _tail(-1)
-        {}
-        ~RingBuffer()
-        {}
+// #include "twConsoleLog.h"
 
-        inline unsigned int Capacity() { return _capacity; }
-        inline unsigned int Length() 
-        {
-            if(_head == -1 && _tail == -1)
-            {
-                return 0;
-            }
+namespace TwinkleGraphics {
+template <class T, unsigned int CapacityCount = 128U> class RingBuffer {
+public:
+  RingBuffer() : _array(), _head(-1), _tail(-1) {}
+  ~RingBuffer() {}
 
-            if(_tail < _head)
-            {
-                return _capacity - _head + _tail + 1;
-            }
+  inline unsigned int Capacity() { return _capacity; }
+  inline unsigned int Length() {
+    if (_head == -1 && _tail == -1) {
+      return 0;
+    }
 
-            return _tail - _head + 1;
-        }
+    if (_tail < _head) {
+      return _capacity - _head + _tail + 1;
+    }
 
-        inline T& Head() { return _array[_head]; }
-        inline T& Tail() { return _array[_tail]; }
+    return _tail - _head + 1;
+  }
 
-        inline int HeadIndex() { return _head; }
-        inline int TailIndex() { return _tail; }
+  inline T &Head() { return _array[_head]; }
+  inline T &Tail() { return _array[_tail]; }
 
-        template<class... Args>
-        T* PushBack(Args... args)
-        {
-            if(Length() == _capacity)
-            {
-                Console::LogWarning("RingBuffer: There is no free space push back.\n");
-                return nullptr;
-            }
+  inline int HeadIndex() { return _head; }
+  inline int TailIndex() { return _tail; }
 
-            if(_head == -1)
-            {
-                ++_head;
-            }
+  template <class... Args> T *PushBack(Args... args) {
+    if (Length() == _capacity) {
+      // Console::LogWarning("RingBuffer There is no free space push back.\n");
+      return nullptr;
+    }
 
-            ++_tail;
-            _tail %= _capacity;
+    if (_head == -1) {
+      ++_head;
+    }
 
-            T* ele = new (&(_array[_tail]))T(std::forward<Args>(args)...);
-            return ele;
-        }
+    ++_tail;
+    _tail %= _capacity;
 
-        T* PopFront()
-        {
-            int length = Length();
-            int retIndex = _head;
-            if(length == 0)
-            {
-                Console::LogWarning("RingBuffer: There is no more elements pop front.\n");
-                return nullptr;
-            }
-            else if(1 == length)
-            {
-                _head = _tail = -1;
-            }
-            else
-            {
-                ++_head;
-                _head %= _capacity;
-            }
+    T *ele = new (&(_array[_tail])) T(std::forward<Args>(args)...);
+    return ele;
+  }
 
-            return &(_array[retIndex]);
-        }
+  T *PopFront() {
+    int length = Length();
+    int retIndex = _head;
+    if (length == 0) {
+      // Console::LogWarning("RingBuffer There is no more elements pop
+      // front.\n");
+      return nullptr;
+    } else if (1 == length) {
+      _head = _tail = -1;
+    } else {
+      ++_head;
+      _head %= _capacity;
+    }
 
-        T& operator[](unsigned int index)
-        {
-            int length = Length();
-            assert(index >= 0 && index < length);
+    return &(_array[retIndex]);
+  }
 
-            int realIndex = (_head + index) % _capacity;
-            return _array[realIndex];
-        }
+  T &operator[](unsigned int index) {
+    int length = Length();
+    assert(index >= 0 && index < length);
 
-    protected:
-        std::array<T, CapacityCount> _array;
-        unsigned int _capacity = CapacityCount;
-        int _head = -1;
-        int _tail = -1;
-    };
+    int realIndex = (_head + index) % _capacity;
+    return _array[realIndex];
+  }
+
+protected:
+  std::array<T, CapacityCount> _array;
+  unsigned int _capacity = CapacityCount;
+  int _head = -1;
+  int _tail = -1;
+};
 } // namespace TwinkleGraphics
 
 #endif

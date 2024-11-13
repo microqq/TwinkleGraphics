@@ -3,43 +3,56 @@
 
 #include <array>
 #include <map>
+#include <mutex>
 
-#include "twSingleton.h"
-#include "twRingBuffer.h"
-#include "twEventArgs.h"
 #include "twEvent.h"
+#include "twEventArgs.h"
+#include "twRingBuffer.h"
+#include "twSingleton.h"
 
-namespace TwinkleGraphics
-{
-    class EventManager;
-    typedef Singleton<EventManager> EventManagerInst;
-    typedef RingBuffer<Event> EventQueue;
-    typedef std::multimap<EventId, EventHandler> MultiEventHandlerCollection;
+namespace TwinkleGraphics {
+using EventQueue = RingBuffer<Event, 4096U>;
+using MultiEventHandlerCollection = std::multimap<EventId, EventHandler>;
 
-    class EventManager
-    {
-    public:
-        EventManager();
-        ~EventManager();
+class __TWAPI EventManager : public IUpdatable,
+                                   public INonCopyable,
+                                   public IDestroyable {
+public:
+  virtual ~EventManager();
+  virtual void Update(float deltaTime = 0.0f) override;
+  virtual void Destroy() override {}
 
-        void Subscribe(EventId id, const EventHandler::HandlerFunc& func);
-        void Subscribe(EventId id, const EventHandler& handler);
-        void UnSubscribe(EventId id, const EventHandler::HandlerFunc& func);
-        void UnSubscribe(EventId id, const EventHandler& handler);
+  void Subscribe(EventId id, const EventHandlerFunctionPtr &func);
+  void Subscribe(EventId id, const EventHandler &handler);
+  void UnSubscribe(EventId id, const EventHandlerFunctionPtr &func);
+  void UnSubscribe(EventId id, const EventHandler &handler);
 
-        void Fire(Object::Ptr sender, BaseEventArgs::Ptr args);
-        void FireImmediately(Object::Ptr sender, BaseEventArgs::Ptr args);
+  void Fire(ObjectPtr sender, BaseEventArgsPtr args);
+  void FireImmediately(ObjectPtr sender, BaseEventArgsPtr args);
 
-        void Update();
+  u32 GetEventsCount() { return _queue.Length(); }
 
-    private:
-        EventHandler* FindFirstEventHandler(EventId id);
-        void HandleEvent(Object::Ptr sender, BaseEventArgs::Ptr args);
+private:
+  explicit EventManager();
 
-    private:
-        EventQueue _queue;
-        MultiEventHandlerCollection _handlerCollection;
-    };
+  EventHandler *FindFirstEventHandler(EventId id);
+  void HandleEvents();
+  void HandleEvents(ObjectPtr sender, BaseEventArgsPtr args);
+
+  void CompressEvents();
+
+private:
+  EventQueue _queue;
+  MultiEventHandlerCollection _handlerCollection;
+#ifdef _EVT_MULTTHREAD
+  std::mutex _queue_mutex;
+  std::mutex _handlers_mutex;
+#endif
+
+  friend class Singleton<EventManager>;
+};
+
+__TWAPI EventManager &EventMgrInstance();
 } // namespace TwinkleGraphics
 
 #endif

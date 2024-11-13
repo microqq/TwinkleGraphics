@@ -1,19 +1,9 @@
 
 #include "twGeometry.h"
 
-namespace TwinkleGraphics
-{
-Geometry::Geometry()
-    : Object()
-    , ISceneNode(true)
-    , IRenderableObject()
-    , _mesh(nullptr)
-{
-}
+namespace TwinkleGraphics {
+Geometry::Geometry() : SceneNode(true), RenderableObject(), _mesh(nullptr) {}
 
-Geometry::~Geometry()
-{
-
-}
+Geometry::~Geometry() {}
 
 } // namespace TwinkleGraphics

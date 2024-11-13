@@ -1,15 +1,10 @@
 
 #include "twRenderPipeline.h"
 
-namespace TwinkleGraphics
-{
+namespace TwinkleGraphics {
 
-RenderPipeline::RenderPipeline()
-{
-}
+RenderPipeline::RenderPipeline() {}
 
-RenderPipeline::~RenderPipeline()
-{
-}
+RenderPipeline::~RenderPipeline() {}
 
 } // namespace TwinkleGraphics

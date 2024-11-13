@@ -5,37 +5,33 @@
 
 #include "twCamera.h"
 
-namespace TwinkleGraphics
-{
-class CameraControl : public Object
-{
+namespace TwinkleGraphics {
+class __TWAPI CameraControl : public Object {
 public:
-    typedef std::shared_ptr<CameraControl> Ptr;
+  using Ptr = std::shared_ptr<CameraControl>;
 
-    CameraControl(Camera::Ptr camera) : _camera(camera) {}
-    virtual ~CameraControl() {}
+  CameraControl(CameraPtr camera) : _camera(camera) {}
+  virtual ~CameraControl() {}
 
-    void SetCamera(Camera::Ptr camera) { _camera = camera; }
-    Camera::Ptr GetCamera() { return _camera; }
-    virtual void UpdateCamera() {}
+  void SetCamera(CameraPtr camera) { _camera = camera; }
+  CameraPtr GetCamera() { return _camera; }
+  virtual void UpdateCamera() {}
 
-    virtual void HandleMouseMove(glm::dvec2 move) {}
-    virtual void HandleMouseLeftButtonDrag(glm::dvec2 p1, glm::dvec2 p2) {}
-    virtual void HandleMouseRightButtonDrag(glm::dvec2 p1, glm::dvec2 p2) {}
-    virtual void HandleMouseScroll(glm::dvec2 scroll) {}
-    virtual void HandleKeyPress(int32 key
-        , int32 scannode
-        , int32 action
-        , int32 mods) {}
-    virtual void HandleKeyRelease(int32 key
-        , int32 scannode
-        , int32 action
-        , int32 mods) {}
+  virtual void HandleMouseMove(glm::dvec2 move) {}
+  virtual void HandleMouseLeftButtonDrag(glm::dvec2 p1, glm::dvec2 p2) {}
+  virtual void HandleMouseRightButtonDrag(glm::dvec2 p1, glm::dvec2 p2) {}
+  virtual void HandleMouseScroll(glm::dvec2 scroll) {}
+  virtual void HandleKeyPress(int32 key, int32 scannode, int32 action,
+                              int32 mods) {}
+  virtual void HandleKeyRelease(int32 key, int32 scannode, int32 action,
+                                int32 mods) {}
 
 protected:
-    Camera::Ptr _camera;
+  CameraPtr _camera;
 };
-} // namespace TwinkleGraphics
 
+using CameraControlPtr = CameraControl::Ptr;
+
+} // namespace TwinkleGraphics
 
 #endif

@@ -5,60 +5,29 @@
 #include <iostream>
 #include <string>
 
-#include "twView.h"
 #include "twConsoleLog.h"
 
-namespace TwinkleGraphics
-{
-class Plugin
-{
+namespace TwinkleGraphics {
+class Plugin {
 public:
-    Plugin(std::string& name)
-        : _name(name)
-    {}
-    virtual ~Plugin() {}
+  Plugin(std::string &name) : _name(name) {}
+  virtual ~Plugin() {}
 
-    std::string& GetName() { return _name; }
+  std::string &GetName() { return _name; }
 
-    virtual void Install() 
-    {
-        Console::LogInfo("------------------------------Plugin Install:", 
-             _name, 
-             "------------------------------\n"
-            );
-    }
-    virtual void UnInstall() 
-    {
-        Console::LogInfo("------------------------------Plugin UnInstall:", 
-             _name, 
-             "------------------------------\n"
-            );
-    }
+  virtual void Install() {
+    Console::LogInfo("------------------------------Plugin Install:", _name,
+                     "------------------------------\n");
+  }
+  virtual void UnInstall() {
+    Console::LogInfo("------------------------------Plugin UnInstall:", _name,
+                     "------------------------------\n");
+  }
 
 protected:
-    std::string _name;
+  std::string _name;
 };
 
-class GLPlugin : public Plugin
-{
-public:
-    GLPlugin(std::string& name)
-        : Plugin(name)
-        , _views()
-        , _viewsCount(0)
-    {}
-    virtual ~GLPlugin() {}
-
-    virtual void UpdateViews() {}
-    int GetViewsCount() { return _viewsCount; }
-    View** GetViews() { return _views; }
-
-protected:
-    glm::ivec2 _windowSize;
-
-    View* _views[MAX_VIEWPORT_COUNT];
-    int _viewsCount;
-};
 } // namespace TwinkleGraphics
 
 #endif

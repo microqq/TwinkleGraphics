@@ -6,14 +6,18 @@
 # SET System Variable %GTESTINCLUDE% & %GTESLIB%
 # VSCode: Install GoogleTest Adapter extension
 
-SET(Tests_SRCs
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(Tests_SRCs
     ${CMAKE_CURRENT_LIST_DIR}/twEventTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twMaterialTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/twRingBufferTest.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twThreadTest.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twReaderTest.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/twBoundingVolumeTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/main.cpp
 )
-
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -Wall")
 
 add_executable(TWTests ${Tests_SRCs})
     target_include_directories(TWTests PUBLIC
@@ -23,16 +27,16 @@ add_executable(TWTests ${Tests_SRCs})
         ${GTESTINCLUDEDIR}
 )
 
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries(TWTests twCommon)
-    target_link_libraries(TWTests twEvent)
+if(WIN32)
+    target_link_libraries(TWTests twGraphics)
     target_link_libraries(TWTests ${GTESTLIBDIR}/libgtest.a)
     target_link_libraries(TWTests ${GTESTLIBDIR}/libgtest_main.a)
-endif()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(TWTests twCommon)
+elseif(LINUX)
+    target_link_libraries(TWTests twGraphics)
     target_link_libraries(TWTests ${GTEST_BOTH_LIBRARIES})
     target_link_libraries(TWTests ${CMAKE_THREAD_LIBS_INIT})
-endif()
+else()
+endif(WIN32)
+
+
+

@@ -6,44 +6,43 @@
 #include "twGeometry.h"
 #include "twTransform.h"
 
-namespace TwinkleGraphics
-{
-    class Model
-    {
-    public:
-        typedef std::shared_ptr<Model> Ptr;
+namespace TwinkleGraphics {
+class __TWAPI Model : public Object {
+public:
+  using Ptr = std::shared_ptr<Model>;
 
-        Model();
-        virtual ~Model();
+  Model();
+  virtual ~Model();
+  virtual void SetValid(bool valid) override;
 
-        void AddGeometry(Geometry::Ptr geom);
-        void RemoveGeometry(int index);
-        void SetRootGeometry(Geometry::Ptr geom) { _rootGeometry = geom; }
-        Geometry::Ptr GetGeometry(int index);
-        Geometry::Ptr GetRootGeometry() { return _rootGeometry; }
-        int32 GetGeometriesCount() { return _geometries.size(); }
+  void AddGeometry(GeometryPtr geom);
+  void RemoveGeometry(int index);
+  void SetRootGeometry(GeometryPtr geom) { _rootGeometry = geom; }
+  GeometryPtr GetGeometry(int index);
+  GeometryPtr GetRootGeometry() { return _rootGeometry; }
+  int32 GetGeometriesCount() { return _geometries.size(); }
 
-        /**
-         * just for test
-         */
-        void Render();
+  /**
+   * just for test
+   */
+  void Render();
 
-    protected:
-        std::vector<Geometry::Ptr> _geometries;
-        Geometry::Ptr _rootGeometry;
-    };
+protected:
+  std::vector<GeometryPtr> _geometries;
+  GeometryPtr _rootGeometry;
+};
 
-    class SkeletonModel : public Model
-    {
-    public:
-        typedef std::shared_ptr<SkeletonModel> Ptr;
+class SkeletonModel : public Model {
+public:
+  using Ptr = std::shared_ptr<SkeletonModel>;
 
-        SkeletonModel();
-        virtual ~SkeletonModel();
+  SkeletonModel();
+  virtual ~SkeletonModel();
 
-    private:
-    };
+private:
+};
 
+using ModelPtr = Model::Ptr;
 
 } // namespace TwinkleGraphics
 #endif
