@@ -57,10 +57,17 @@ public:
   }
 
 protected:
+<<<<<<< HEAD
   void Initialize();
   virtual void Zoom(glm::vec2 factor);
   virtual void Pan(glm::vec2 p1, glm::vec2 p2);
   virtual void Trackball(glm::vec2 p1, glm::vec2 p2);
+=======
+    void Initialize();
+    virtual void Zoom(glm::vec2 factor);
+    virtual void Pan(glm::vec2 p1, glm::vec2 p2);
+    virtual void Trackball(glm::vec2 p1, glm::vec2 p2);
+>>>>>>> master
 
   SceneNodePtr _target = nullptr;
 

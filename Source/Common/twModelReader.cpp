@@ -242,6 +242,7 @@ SubMeshPtr ModelReader::ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset,
       verticeNormal[i] = vector;
     }
 
+<<<<<<< HEAD
     for (unsigned int j = 0; j < AI_MAX_NUMBER_OF_TEXTURECOORDS; j++) {
       if (uvs[j] != nullptr) {
         if (mesh->mTextureCoords[j]) {
@@ -255,6 +256,22 @@ SubMeshPtr ModelReader::ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset,
           uvs[j][i] = vec;
         } else {
           uvs[j][i] = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+=======
+    /**
+     * 
+     */
+    template <>
+    ReadResult<Model::Ptr> ModelReader::Read<Model::Ptr>(const char *filename, ReaderOption *option)
+    {
+        // https://learnopengl.com/
+        Assimp::Importer importer;
+        const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        // check for errors
+        if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+        {
+            Console::LogError("ERROR::ASSIMP:: ", importer.GetErrorString(), "\n");
+            return ReadResult<Model::Ptr>(ReadResult<Model::Ptr>::Status::FAILED);
+>>>>>>> master
         }
       }
     }
@@ -294,6 +311,7 @@ SubMeshPtr ModelReader::ProcessMesh(aiMesh *mesh, MeshPtr tMesh, int32 offset,
   return subMesh;
 }
 
+<<<<<<< HEAD
 /**
  *   https://learnopengl.com/
  */
@@ -310,6 +328,73 @@ MaterialPtr ModelReader::ProcessMaterial(aiMesh *mesh, const aiScene *scene,
     if (logicAnd > 0) {
       vertLayoutMacros += VertexLayoutDefines[index];
       numVerteLayoutMacros++;
+=======
+        Console::LogInfo("ModelReader: Process material vertex shader macros\n", vertMarco, "\n");
+
+        char* vertMacros[] = { vertMarco };
+        ShaderReadInfo shaderReadInfos[] = 
+        {
+            {std::string("Assets/Shaders/standard.vert"), ShaderType::VERTEX_SHADER, 1, vertMacros, true},
+            {std::string("Assets/Shaders/standard.frag"), ShaderType::FRAGMENT_SHADER, 1, vertMacros, true}
+        };
+
+        StandardMaterial::Ptr material = std::make_shared<StandardMaterial>(shaderReadInfos, 2);
+
+        // process materials
+        aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];    
+        // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
+        // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
+        // Same applies to other texture as the following list summarizes:
+        // diffuse: texture_diffuseN
+        // specular: texture_specularN
+        // normal: texture_normalN
+
+        // 1. diffuse maps
+        std::vector<Texture::Ptr> diffuseMaps = LoadTextures(aiMat, aiTextureType_DIFFUSE, dir);
+        SetMaterialTextures(diffuseMaps, material, "diffuseTex");
+
+        // 2. specular maps
+        std::vector<Texture::Ptr> specularMaps = LoadTextures(aiMat, aiTextureType_SPECULAR, dir);
+        SetMaterialTextures(specularMaps, material, "specularTex");
+
+        // 3. normal maps
+        std::vector<Texture::Ptr> normalMaps = LoadTextures(aiMat, aiTextureType_NORMALS, dir);
+        SetMaterialTextures(normalMaps, material, "normalTex");
+        
+        // 4. height maps
+        std::vector<Texture::Ptr> heightMaps = LoadTextures(aiMat, aiTextureType_HEIGHT, dir);
+        SetMaterialTextures(heightMaps, material, "heightTex");
+
+        // 5. amibient maps
+        std::vector<Texture::Ptr> ambientMaps = LoadTextures(aiMat, aiTextureType_AMBIENT, dir);
+        SetMaterialTextures(ambientMaps, material, "ambientTex");
+
+        // 6. emissive maps
+        std::vector<Texture::Ptr> emissiveMaps = LoadTextures(aiMat, aiTextureType_EMISSIVE, dir);
+        SetMaterialTextures(emissiveMaps, material, "emissiveTex");
+
+        // 7. shininess maps
+        std::vector<Texture::Ptr> shininessMaps = LoadTextures(aiMat, aiTextureType_SHININESS, dir);
+        SetMaterialTextures(shininessMaps, material, "shininessTex");
+
+        // 8. opacity maps
+        std::vector<Texture::Ptr> opacityMaps = LoadTextures(aiMat, aiTextureType_OPACITY, dir);
+        SetMaterialTextures(opacityMaps, material, "opacityTex");
+
+        // 9. displacement maps
+        std::vector<Texture::Ptr> displacementMaps = LoadTextures(aiMat, aiTextureType_DISPLACEMENT, dir);
+        SetMaterialTextures(displacementMaps, material, "displacementTex");
+
+        // 10. lightmap maps
+        std::vector<Texture::Ptr> lightmapMaps = LoadTextures(aiMat, aiTextureType_LIGHTMAP, dir);
+        SetMaterialTextures(lightmapMaps, material, "lightmapTex");
+
+        // 11. reflection maps
+        std::vector<Texture::Ptr> reflectionMaps = LoadTextures(aiMat, aiTextureType_REFLECTION, dir);
+        SetMaterialTextures(reflectionMaps, material, "reflectionTex");
+
+        return material;
+>>>>>>> master
     }
     operand <<= 1;
     index++;

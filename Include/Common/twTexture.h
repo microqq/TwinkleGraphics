@@ -7,6 +7,7 @@
 
 #include "twConsoleLog.h"
 #include "twImage.h"
+#include "twConsoleLog.h"
 
 namespace TwinkleGraphics {
 using InternalFormat = GLenum;

@@ -4,6 +4,7 @@
 
 #include "twConsoleLog.h"
 #include "twPluginManager.h"
+#include "twConsoleLog.h"
 
 
 namespace TwinkleGraphics {
