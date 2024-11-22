@@ -4,12 +4,13 @@
 
 namespace TwinkleGraphics
 {
-    FirstPersonControl::FirstPersonControl(CameraPtr camera)
+    FirstPersonControl::FirstPersonControl(CameraPtr camera, float distance)
         : OrbitControl(camera)
         , _stepX(1.0f)
         , _stepZ(1.0f)
     {
-        _camera->Translate(glm::vec3(0.0f, 0.0f, -_distance));
+        OrbitControl::SetMinDistance(distance);
+        OrbitControl::SetDistance(distance);
     }
 
     FirstPersonControl::~FirstPersonControl()

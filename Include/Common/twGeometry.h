@@ -1345,7 +1345,7 @@ private:
         for (int32 row = 0; row < _vPointsCount; row++) {
           int32 index = col * _vPointsCount + row;
           int32 indexP1 = index + _vPointsCount;
-          int32 indexP0 = index;
+          int32 &indexP0 = index;
 
           points[index] =
               ((_controlPoints[indexP1] - _controlPoints[indexP0]) *

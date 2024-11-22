@@ -36,6 +36,7 @@ void AntiAliasing::Install() {
   FirstPersonControlPtr cameraControl =
       std::make_shared<FirstPersonControl>(camera);
   cameraControl->SetMinDistance(-5000.0f);
+  cameraControl->SetDistance(0.1f);
   cameraControl->SetMaxDistance(5000.0f);
   cameraControl->SetStep(2.0f, 2.0f);
   _view->SetCameraControl(cameraControl);

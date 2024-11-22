@@ -16,12 +16,12 @@ public:
 
   void SetTargetNode(SceneNodePtr target) { _target = target; }
 
-  void SetMaxDistance(float32 max_distance) {
-    _maxDistance = max_distance;
+  void SetMaxDistance(float32 maxDistance) {
+    _maxDistance = maxDistance;
     _dirty = true;
   }
-  void SetMinDistance(float32 min_distance) {
-    _minDistance = min_distance;
+  void SetMinDistance(float32 minDistance) {
+    _minDistance = minDistance;
     _dirty = true;
   }
   void SetDistance(float32 distance) {

@@ -80,4 +80,6 @@
         "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic-openexr"
     },
+    "marscode.chatLanguage": "cn",
+    "Codegeex.Comment.LanguagePreference": "English",
 }

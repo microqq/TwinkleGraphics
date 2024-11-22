@@ -12,7 +12,7 @@ class __TWAPI FirstPersonControl : public OrbitControl {
 public:
   using Ptr = std::shared_ptr<FirstPersonControl>;
 
-  FirstPersonControl(CameraPtr camera);
+  FirstPersonControl(CameraPtr camera, float distance = 1.0);
   virtual ~FirstPersonControl();
 
   void SetStep(float stepx, float stepz) {

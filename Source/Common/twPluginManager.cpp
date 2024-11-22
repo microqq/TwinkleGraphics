@@ -4,7 +4,6 @@
 
 #include "twConsoleLog.h"
 #include "twPluginManager.h"
-#include "twConsoleLog.h"
 
 
 namespace TwinkleGraphics {
@@ -22,19 +21,29 @@ Plugin *PluginManager::GetPlugin(PluginName &name) {
   return nullptr;
 }
 
+// 加载指定路径的插件并返回插件的指针
 Plugin *PluginManager::LoadPlugin(std::string &path) {
+  // 获取动态链接库管理器实例
   DynLibManager &dynlibMgr = DynLibManagerInst::Instance();
+  // 从动态链接库管理器中加载指定路径的动态链接库
   DynLib *lib = dynlibMgr.Load(path);
+
+  // 如果成功加载了动态链接库
   if (lib != nullptr) {
+    // 定义安装插件的符号名称
     std::string installSymbol = "InstallPlugin";
+    // 从动态链接库中获取安装插件的函数指针
     INSTALL_PLUGIN_FUNC installFunc =
         (INSTALL_PLUGIN_FUNC)lib->GetSymbol(installSymbol);
 
+    // 如果成功获取了安装插件的函数指针
     if (installFunc != nullptr) {
+      // 调用安装插件函数并返回插件的指针
       return installFunc(this);
     }
   }
 
+  // 如果加载失败或获取符号失败，则返回空指针
   return nullptr;
 }
 

@@ -2,19 +2,24 @@
 #include "twShader.h"
 
 namespace TwinkleGraphics {
+// 获取资源管理器实例的引用
 ResourceManager &ResourceMgrInstance() {
   return Singleton<ResourceManager>::Instance();
 }
 
+// 析构函数，销毁资源管理器中的所有资源
 ResourceManager::~ResourceManager() { Destroy(); }
 
+// 更新资源管理器中的资源缓存和任务队列
 void ResourceManager::Update(float deltaTime) {
+  // 更新资源缓存，每0.02秒更新一次
   UpdateResourceCache(0.02f);
 
-  int taskPerFrame = 4;
+  int taskPerFrame = 4; // 每帧处理的任务数
   IPackedReadTask::Ptr packedTask;
+  // 处理任务队列中的任务
   while (_taskQueue.Pop(packedTask)) {
-    packedTask->PushTask();
+    packedTask->PushTask(); // 执行任务
     --taskPerFrame;
 
     if (taskPerFrame <= 0) {

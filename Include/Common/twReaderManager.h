@@ -1,9 +1,9 @@
 #ifndef TW_READERMANAGER_H
 #define TW_READERMANAGER_H
 
+#include <algorithm>
 #include <future>
 #include <vector>
-#include <algorithm>
 
 #include "twResource.h"
 

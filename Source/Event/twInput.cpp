@@ -8,7 +8,7 @@ InputManager &InputMgrInstance() { return Singleton<InputManager>::Instance(); }
 
 InputManager::InputManager()
     : IUpdatable(), INonCopyable(), _pressedKeys{KeyState::KEY_RELEASE},
-      _pressedMouseButtons{MouseState::MOUSE_RELEASE} {}
+      _pressedButtons{MouseState::MOUSE_RELEASE} {}
 
 InputManager::~InputManager() {}
 
@@ -19,7 +19,7 @@ KeyState InputManager::GetPressedKey(KeyCode key) {
 }
 
 MouseState InputManager::GetPressedMouse(MouseButton button) {
-  return _pressedMouseButtons[(int)button];
+  return _pressedButtons[(int)button];
 }
 
 void InputManager::SetPressedKey(KeyCode key, KeyState state) {
@@ -30,7 +30,7 @@ void InputManager::SetPressedKey(KeyCode key, KeyState state) {
 }
 
 void InputManager::SetPressedMouse(MouseButton button, MouseState state) {
-  _pressedMouseButtons[(int)button] = state;
+  _pressedButtons[(int)button] = state;
 
   // fire mousebuttonevent
   EventManager &eventMgrInst = EventMgrInstance();
@@ -63,7 +63,7 @@ void InputManager::SetScroll(double dx, double dy) {
 void InputManager::SetWindowSize(vec2 size) {
   EventManager &eventMgrInst = EventMgrInstance();
 
-  // if(_pressedMouseButtons[MOUSE_BUTTON_LEFT] == MOUSE_RELEASE)
+  // if(_pressedButtons[MOUSE_BUTTON_LEFT] == MOUSE_RELEASE)
   {
     ResizeEventArgs::Ptr event = std::make_shared<ResizeEventArgs>();
     event->SetSize(size);
@@ -74,14 +74,14 @@ void InputManager::SetWindowSize(vec2 size) {
 }
 
 void InputManager::ReleasePressedMouseButtons() {
-  for (auto &key : _pressedKeys) {
-    key = KeyState::KEY_RELEASE;
+  for (auto &button : _pressedButtons) {
+    button = MouseState::MOUSE_RELEASE;
   }
 }
 
 void InputManager::ReleasePressedKeys() {
-  for (auto &button : _pressedMouseButtons) {
-    button = MouseState::MOUSE_RELEASE;
+  for (auto &key : _pressedKeys) {
+    key = KeyState::KEY_RELEASE;
   }
 }
 

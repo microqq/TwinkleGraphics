@@ -195,7 +195,7 @@ private:
 private:
   vec2 _mousePosition;
   KeyState _pressedKeys[MAX_KEY_COUNT];
-  MouseState _pressedMouseButtons[MAX_MOUSE_COUNT];
+  MouseState _pressedButtons[MAX_MOUSE_COUNT];
   bool _cursorEntered = false;
 
   friend class Singleton<InputManager>;

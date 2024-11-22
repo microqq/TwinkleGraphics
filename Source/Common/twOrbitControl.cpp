@@ -24,6 +24,9 @@ void OrbitControl::Initialize() {
   _camera->Translate(glm::vec3(0.0f, 0.0f, _distance));
 }
 
+/// Updates the camera's view and projection matrices if the OrbitControl object
+/// has been marked as dirty. This ensures the camera's matrices are up-to-date
+/// with any changes made to the OrbitControl object.
 void OrbitControl::UpdateCamera() {
   // translate\rotate...
 
@@ -35,6 +38,15 @@ void OrbitControl::UpdateCamera() {
   }
 }
 
+/// Zooms the camera in or out based on the provided factor.
+/// The camera's distance from the target is adjusted based on the y-component
+/// of the factor. The distance is clamped between the minimum and maximum
+/// distance values set in the OrbitControl object.
+/// After adjusting the distance, the camera is translated along the z-axis
+/// to update its position.
+/// The OrbitControl object is marked as dirty after the zoom operation,
+/// so the camera's view and projection matrices will be updated on the
+/// next call to UpdateCamera().
 void OrbitControl::Zoom(glm::vec2 factor) {
   float32 dy = factor.y;
 
@@ -58,11 +70,16 @@ void OrbitControl::Zoom(glm::vec2 factor) {
   _dirty = true;
 }
 
+
 /**
- * @brief
- *
- * @param p1
- * @param p2
+ * @brief Pans the camera by the difference between the two input positions.
+ * The input positions are in screen space coordinates, and are normalized to the
+ * range [0, 1] based on the camera's viewport size. The resulting pan vector is
+ * then applied to the camera's translation, effectively moving the camera in the
+ * opposite direction.
+ * 
+ * @param p1 The first input position in screen space.
+ * @param p2 The second input position in screen space.
  */
 void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2) {
   glm::vec2 screenSize = glm::vec2(_camera->GetViewport().Width(),
@@ -85,11 +102,15 @@ void OrbitControl::Pan(glm::vec2 p1, glm::vec2 p2) {
   _dirty = true;
 }
 
+
 /**
- * @brief
- * p1、p2 relative to screen space
- * @param p1
- * @param p2
+ * @brief Applies a trackball-style rotation to the camera's orientation.
+ * The trackball rotation is calculated based on the difference between two input
+ * positions in screen space. The resulting rotation is then applied to the
+ * target object's orientation.
+ * 
+ * @param p1 The first input position in screen space.
+ * @param p2 The second input position in screen space.
  */
 void OrbitControl::Trackball(glm::vec2 p1, glm::vec2 p2) {
   glm::vec2 screenSize = glm::vec2(_camera->GetViewport().Width(),
